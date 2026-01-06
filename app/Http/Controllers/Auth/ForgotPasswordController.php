@@ -10,6 +10,7 @@ use App\Models\MailSetting;
 use App\Traits\MailInfo;
 use Cache;
 use DB;
+use App\Models\GeneralSetting;
 
 class ForgotPasswordController extends Controller
 {
@@ -41,8 +42,10 @@ class ForgotPasswordController extends Controller
      */
     public function showLinkRequestForm()
     {
-        $general_setting =  Cache::remember('general_setting', 60*60*24*365, function () {
-            return DB::table('general_settings')->latest()->first();
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        $general_setting =  Cache::remember($key_prefix . 'general_setting', 60*60*24*365, function () {
+            // return DB::table('general_settings')->latest()->first();
+            return GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
         });
         return view('backend.auth.passwords.email', compact('general_setting'));
     }

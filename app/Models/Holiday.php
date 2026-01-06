@@ -5,7 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 class Holiday extends Model
-{
+{   
+    protected $connection = 'tenant';           
     protected $fillable = ["user_id", "from_date", "to_date", "note", "is_approved",'recurring','region'];
 
     public static function createHoliday($data) {

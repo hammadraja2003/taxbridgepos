@@ -210,8 +210,8 @@
                     <div class="row">
                         <input type="hidden" name="balance">
                         <div class="col-md-6">
-                            <label>{{__('db.Recieved Amount')}} *</label>
-                            <input type="text" name="paying_amount" class="form-control numkey"  step="any" required>
+                            <label>{{__('db.Payable Amount')}} *</label>
+                            <input type="text" name="paying_amount" class="form-control numkey"  step="any" required readonly>
                         </div>
                         <div class="col-md-6">
                             <label>{{__('db.Paying Amount')}} *</label>
@@ -297,7 +297,7 @@
                 {!! Form::open(['route' => 'purchase.update-payment', 'method' => 'post', 'class' => 'payment-form' ]) !!}
                     <div class="row">
                         <div class="col-md-6">
-                            <label>{{__('db.Recieved Amount')}} *</label>
+                            <label>{{__('db.Payable Amount')}} *</label>
                             <input type="text" name="edit_paying_amount" class="form-control numkey"  step="any" required>
                         </div>
                         <div class="col-md-6">
@@ -519,11 +519,16 @@
         let currency_name = $(this).data('currency_name');
         let currency_id = $(this).data('currency_id');
         let exchange_rate = parseFloat($(this).data('exchange_rate')) || 1;
+        // if(show_purchase_product_details == 1){
+        //     var balance = $('table.purchase-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('td:nth-child(11)').text();
+        // }else{
+        //     var balance = $('table.purchase-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('td:nth-child(9)').text();
+        // }
         if(show_purchase_product_details == 1){
-            var balance = $('table.purchase-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('td:nth-child(11)').text();
+            var balance = $('table.purchase-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('td:nth-child(12)').text(); // Changed 11 to 12
         }else{
-            var balance = $('table.purchase-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('td:nth-child(9)').text();
-        }
+            var balance = $('table.purchase-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('td:nth-child(10)').text(); // Changed 9 to 10
+        }     
 
         balance = parseFloat(balance.replace(/,/g, ''));
         $('input[name="amount"]').val(balance);

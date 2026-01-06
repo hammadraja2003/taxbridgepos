@@ -12,6 +12,7 @@ class Printer extends Model
      * @var array
      */
     protected $guarded = ['id'];
+    protected $connection = 'tenant';
 
     public function warehouse()
     {
@@ -57,4 +58,3 @@ class Printer extends Model
     }
 
 }
-

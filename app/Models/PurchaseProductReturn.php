@@ -5,7 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 class PurchaseProductReturn extends Model
-{
+{   
+    protected $connection = 'tenant';   
     protected $table = 'purchase_product_return';
 
     protected $fillable =[

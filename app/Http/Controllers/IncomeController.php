@@ -8,7 +8,7 @@ use App\Models\Account;
 use App\Models\Warehouse;
 use App\Models\CashRegister;
 use App\Traits\StaffAccess;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 use Spatie\Permission\Models\Permission;
 use App\Helpers\DateHelper;
 use Auth;

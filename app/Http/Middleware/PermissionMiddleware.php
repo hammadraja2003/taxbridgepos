@@ -22,12 +22,13 @@ class PermissionMiddleware
         if (!$user) {
            return redirect('/')->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
         }
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
 
         $role_has_permissions_list = Cache::remember(
-            'role_has_permissions_list' . $user->role_id,
+            $key_prefix . 'role_has_permissions_list' . $user->role_id,
             60 * 60 * 24 * 365,
             function () use ($user) {
-                return DB::table('permissions')
+                return DB::connection('master')->table('permissions')
                     ->join('role_has_permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
                     ->where('role_id', $user->role_id)
                     ->select('permissions.name')

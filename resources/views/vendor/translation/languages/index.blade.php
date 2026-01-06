@@ -4,7 +4,7 @@
 @endpush
 @section('content')
 
-    @include('includes.session_message')
+    <!-- @include('includes.session_message') -->
     
     <div class="container mt-5">
         <div class="d-flex justify-content-between align-items-center mb-4">

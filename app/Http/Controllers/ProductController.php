@@ -30,7 +30,7 @@ use Illuminate\Validation\Rule;
 use App\Models\Product_Supplier;
 use App\Models\Product_Warehouse;
 use Illuminate\Support\Facades\DB;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 use Illuminate\Support\Facades\Log;
 use App\Models\Scopes\ExcludeRecipe;
 use Illuminate\Support\Facades\Auth;
@@ -433,7 +433,7 @@ class ProductController extends Controller
             $numberOfProduct = Product::where('is_active', true)->count();
             $custom_fields = CustomField::where('belongs_to', 'product')->get();
 
-            $general_setting = DB::table('general_settings')->select('modules')->first();
+            $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
             if(in_array('restaurant',explode(',',$general_setting->modules))){
                 $kitchen_list = DB::table('kitchens')->where('is_active',1)->get();
                 $menu_type_list = DB::table('menu_type')->where('is_active',1)->get();
@@ -669,8 +669,10 @@ class ProductController extends Controller
                 }
             }
         }
-        $this->cacheForget('product_list');
-        $this->cacheForget('product_list_with_variant');
+        
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';   
+        $this->cacheForget($key_prefix.'product_list');
+        $this->cacheForget($key_prefix.'product_list_with_variant');
         \Session::flash('create_message', 'Product created successfully');
     }
 
@@ -1210,14 +1212,14 @@ class ProductController extends Controller
             $noOfVariantValue = 0;
             $custom_fields = CustomField::where('belongs_to', 'product')->get();
 
-            $general_setting = DB::table('general_settings')->select('modules')->first();
+            $general_setting = DB::connection('master')->table('general_settings')->select('modules')->first();
             if(in_array('ecommerce', explode(',',$general_setting->modules))) {
                 $product_arr = explode(',',$lims_product_data->related_products);
                 $related_products = DB::table('products')->whereIn('id',$product_arr)->get();
                 return view('backend.product.edit',compact('related_products','lims_product_list_without_variant', 'lims_product_list_with_variant', 'lims_brand_list', 'lims_category_list', 'lims_unit_list', 'lims_tax_list', 'lims_product_data', 'lims_product_variant_data', 'lims_warehouse_list', 'noOfVariantValue', 'custom_fields'));
             }
 
-            $general_setting = DB::table('general_settings')->select('modules')->first();
+            $general_setting = DB::connection('master')->table('general_settings')->select('modules')->first();
             if(in_array('restaurant',explode(',',$general_setting->modules))){
                 $kitchen_list = DB::table('kitchens')->where('is_active',1)->get();
                 $menu_type_list = DB::table('menu_type')->where('is_active',1)->get();
@@ -1238,7 +1240,6 @@ class ProductController extends Controller
 
     public function updateProduct(Request $request)
     {
-
         if(!env('USER_VERIFIED')) {
             return redirect()->back()->with('not_permitted', __('db.This feature is disable for demo!'));
         }
@@ -1255,49 +1256,54 @@ class ProductController extends Controller
             ]);
 
             $lims_product_data = Product::findOrFail($request->input('id'));
+
+            
             $data = $request->except('image', 'file', 'prev_img');
             $data['name'] = htmlspecialchars(trim($data['name']), ENT_QUOTES);
             $data['profit_margin_type'] = $request->input('profit_margin_type', 'percentage');
             $data['profit_margin'] = $request->input('profit_margin', 0);
+            
+            
+            $general_setting = DB::connection('master')->table('general_settings')->select('modules')->first();
+            
 
-            $general_setting = DB::table('general_settings')->select('modules')->first();
-            if(in_array('ecommerce', explode(',',$general_setting->modules))) {
-                $data['slug'] = Str::slug($data['name'], '-');
-                $data['slug'] = preg_replace('/[^A-Za-z0-9\-]/', '', $data['slug']);
-                $data['slug'] = str_replace( '\/', '/', $data['slug'] );
-                $data['related_products'] = rtrim($request->products, ",");
+            // if(in_array('ecommerce', explode(',',$general_setting->modules))) {
+            //     $data['slug'] = Str::slug($data['name'], '-');
+            //     $data['slug'] = preg_replace('/[^A-Za-z0-9\-]/', '', $data['slug']);
+            //     $data['slug'] = str_replace( '\/', '/', $data['slug'] );
+            //     $data['related_products'] = rtrim($request->products, ",");
 
-                if(isset($request->in_stock))
-                    $data['in_stock'] = $request->input('in_stock');
-                else
-                    $data['in_stock'] = 0;
+            //     if(isset($request->in_stock))
+            //         $data['in_stock'] = $request->input('in_stock');
+            //     else
+            //         $data['in_stock'] = 0;
 
-                if(isset($request->is_online))
-                    $data['is_online'] = $request->input('is_online');
-                else
-                    $data['is_online'] = 0;
-            }
+            //     if(isset($request->is_online))
+            //         $data['is_online'] = $request->input('is_online');
+            //     else
+            //         $data['is_online'] = 0;
+            // }
 
-            if(in_array('restaurant', explode(',',$general_setting->modules))) {
-                $data['slug'] = Str::slug($data['name'], '-');
-                $data['slug'] = preg_replace('/[^A-Za-z0-9\-]/', '', $data['slug']);
-                $data['slug'] = str_replace( '\/', '/', $data['slug'] );
-                $data['related_products'] = rtrim($request->products, ",");
-                $data['extras'] = rtrim($request->extras, ",");
+            // if(in_array('restaurant', explode(',',$general_setting->modules))) {
+            //     $data['slug'] = Str::slug($data['name'], '-');
+            //     $data['slug'] = preg_replace('/[^A-Za-z0-9\-]/', '', $data['slug']);
+            //     $data['slug'] = str_replace( '\/', '/', $data['slug'] );
+            //     $data['related_products'] = rtrim($request->products, ",");
+            //     $data['extras'] = rtrim($request->extras, ",");
 
-                if(isset($request->is_online))
-                    $data['is_online'] = $request->input('is_online');
-                else
-                    $data['is_online'] = 0;
+            //     if(isset($request->is_online))
+            //         $data['is_online'] = $request->input('is_online');
+            //     else
+            //         $data['is_online'] = 0;
 
-                if(isset($request->is_addon))
-                    $data['is_addon'] = $request->input('is_addon');
-                else
-                    $data['is_addon'] = 0;
+            //     if(isset($request->is_addon))
+            //         $data['is_addon'] = $request->input('is_addon');
+            //     else
+            //         $data['is_addon'] = 0;
 
-                $data['kitchen_id'] = $request->kitchen_id;
-                $data['menu_type'] = implode(",", $request->menu_type);
-            }
+            //     $data['kitchen_id'] = $request->kitchen_id;
+            //     $data['menu_type'] = implode(",", $request->menu_type);
+            // }
 
 
             if($data['type'] == 'combo') {
@@ -1386,8 +1392,7 @@ class ProductController extends Controller
                     $data['image'] = $lims_product_data->image. ',' . implode(",", $image_names);
                 else
                     $data['image'] = implode(",", $image_names);
-            }
-            else
+            }else
                 $data['image'] = $lims_product_data->image;
 
             $file = $request->file;
@@ -1454,8 +1459,7 @@ class ProductController extends Controller
 
                     $new_product_variant_ids[] = $lims_product_variant_data->id;
                 }
-            }
-            else {
+            }else {
                 $data['is_variant'] = null;
                 $data['variant_option'] = null;
                 $data['variant_value'] = null;
@@ -1466,7 +1470,6 @@ class ProductController extends Controller
                     $productVariant = ProductVariant::find($product_variant_id);
                     if ($productVariant->qty > 0) {
                         DB::rollBack();
-                        // return dd($productVariant);
                         return redirect()->back()->with('not_permitted', __('db.This variant has a quantity; you cannot delete it'));
                     }
                     Product_Warehouse::where('product_id', $productVariant->product_id)
@@ -1532,10 +1535,13 @@ class ProductController extends Controller
             }
             if(count($custom_field_data))
                 DB::table('products')->where('id', $lims_product_data->id)->update($custom_field_data);
-            $this->cacheForget('product_list');
-            $this->cacheForget('product_list_with_variant');
+            
+            $key_prefix = 'tenant_' . session('bus_config_id') . '_';   
+            $this->cacheForget($key_prefix.'product_list');
+            $this->cacheForget($key_prefix.'product_list_with_variant');
 
             DB::commit();
+            // return redirect('product')->with('message', 'Product updated successfully');
 
             \Session::flash('edit_message', 'Product updated successfully');
         } catch (\Exception $e) {
@@ -1680,7 +1686,8 @@ class ProductController extends Controller
         $barcode_settings = Barcode::select(DB::raw('CONCAT(name, ", ", COALESCE(description, "")) as name, id, is_default'))->get();
         $default = $barcode_settings->where('is_default', 1)->first();
         $barcode_settings = $barcode_settings->pluck('name', 'id');
-        $warehouses = Warehouse::orderBy('name', 'asc')
+        $warehouses = Warehouse::where('is_active', 1)
+                                ->orderBy('name', 'asc')
                                 ->pluck('name', 'id');
 
         return view('backend.product.print_barcode', compact('barcode_settings','lims_product_list_without_variant', 'lims_product_list_with_variant', 'preLoadedproducts','warehouses'));
@@ -2074,8 +2081,9 @@ class ProductController extends Controller
             }
 
             fclose($file);
-            $this->cacheForget('product_list');
-            $this->cacheForget('product_list_with_variant');
+            $key_prefix = 'tenant_' . session('bus_config_id') . '_';   
+            $this->cacheForget($key_prefix.'product_list');
+            $this->cacheForget($key_prefix.'product_list_with_variant');
             DB::commit();
             return redirect('products')->with('import_message', __('db.Products imported successfully!'));
         } catch (\Exception $e) {
@@ -2125,8 +2133,9 @@ class ProductController extends Controller
                 }
             }
         }
-        $this->cacheForget('product_list');
-        $this->cacheForget('product_list_with_variant');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';   
+        $this->cacheForget($key_prefix.'product_list');
+        $this->cacheForget($key_prefix.'product_list_with_variant');
         return 'Product deleted successfully!';
     }
 
@@ -2145,8 +2154,9 @@ class ProductController extends Controller
                 }
             }
             $lims_product_data->save();
-            $this->cacheForget('product_list');
-            $this->cacheForget('product_list_with_variant');
+            $key_prefix = 'tenant_' . session('bus_config_id') . '_';   
+            $this->cacheForget($key_prefix.'product_list');
+            $this->cacheForget($key_prefix.'product_list_with_variant');
             // return redirect('products')->with('message', __('db.Product deleted successfully'));
             return redirect()->back()->with('message', __('db.Product deleted successfully'));
         }

@@ -7,7 +7,7 @@ use Illuminate\Validation\Rule;
 use App\Http\Resources\UnitResource;
 use App\Http\Resources\AccountResource;
 use Auth;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 use Spatie\Permission\Models\Permission;
 use App\Models\Unit;
 use App\Models\Brand;

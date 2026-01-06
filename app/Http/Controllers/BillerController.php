@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Biller;
 use App\Models\MailSetting;
 use Illuminate\Validation\Rule;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 use Spatie\Permission\Models\Permission;
 use Auth;
 use App\Mail\BillerCreate;
@@ -79,10 +79,15 @@ class BillerController extends Controller
             $lims_biller_data['image'] = $imageName;
         }
         Biller::create($lims_biller_data);
-        $this->cacheForget('biller_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        $this->cacheForget($key_prefix.'biller_list');
 
         $mailSetting = MailSetting::latest()->first();
-        $message = $this->mailAction($lims_biller_data, $mailSetting);
+        if(!empty($mailSetting) && !empty($lims_biller_data['email'])) {
+            $message = $this->mailAction($lims_biller_data, $mailSetting);
+        }else {
+            $message = 'Data inserted successfully.';
+        }
         return redirect('biller')->with('message', $message);
 
     }
@@ -138,7 +143,8 @@ class BillerController extends Controller
         }
 
         $lims_biller_data->update($input);
-        $this->cacheForget('biller_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        $this->cacheForget($key_prefix.'biller_list');
         return redirect('biller')->with('message', __('db.Data updated successfully'));
     }
 
@@ -188,7 +194,8 @@ class BillerController extends Controller
             $biller->save();
             $message = $this->mailAction($data, $mailSetting);
         }
-        $this->cacheForget('biller_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        $this->cacheForget($key_prefix.'biller_list');
         return redirect('biller')->with('message', $message);
     }
 
@@ -223,7 +230,8 @@ class BillerController extends Controller
             $this->fileDelete(public_path('images/biller'),$lims_biller_data->image);
         }
 
-        $this->cacheForget('biller_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        $this->cacheForget($key_prefix.'biller_list');
         return 'Biller deleted successfully!';
     }
 
@@ -234,7 +242,8 @@ class BillerController extends Controller
 
         $lims_biller_data->is_active = false;
         $lims_biller_data->save();
-        $this->cacheForget('biller_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        $this->cacheForget($key_prefix.'biller_list');
         return redirect('biller')->with('not_permitted', __('db.Data deleted successfully'));
     }
 }

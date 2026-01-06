@@ -41,42 +41,53 @@ class AppServiceProvider extends ServiceProvider
             return;
         }
 
-        $translationLogic = function () {
-            try {
-                if (!DB::connection()->getDatabaseName()) {
-                    return;
-                }
-            } catch (\Exception $e) {
-                // Skip logic if DB connection fails
-                return;
-            }
+        // $translationLogic = function () {
+        //     try {
+        //         if (!DB::connection()->getDatabaseName()) {
+        //             return;
+        //         }
+        //     } catch (\Exception $e) {
+        //         // Skip logic if DB connection fails
+        //         return;
+        //     }
 
-            try {
-                if (isset($_COOKIE['language'])) {
-                    App::setLocale($_COOKIE['language']);
-                } elseif (Schema::hasTable('languages')) {
-                    $language = DB::table('languages')->where('is_default', true)->first();
-                    App::setLocale($language->language ?? 'en');
-                } else {
-                    App::setLocale('en');
-                }
+        //     try {
+        //         // if (isset($_COOKIE['language'])) {
+        //         //     App::setLocale($_COOKIE['language']);
+        //         // } elseif (Schema::hasTable('languages')) {
+        //         //     $language = DB::table('languages')->where('is_default', true)->first();
+        //         //     App::setLocale($language->language ?? 'en');
+        //         // } else {
+        //         //     App::setLocale('en');
+        //         // }
+        //         // In app/Providers/AppServiceProvider.php inside $translationLogic
 
-                if (Schema::hasTable('translations')) {
-                    $currentLocale = App::getLocale();
+        //         if (isset($_COOKIE['language'])) {
+        //             App::setLocale($_COOKIE['language']);
+        //         } else {
+        //             // Use the Model so it respects '$connection = 'tenant''
+        //             // This will attempt to connect to the Tenant DB.
+        //             // If the connection is not ready, it will be caught by the catch block below.
+        //             $language = \App\Models\Language::where('is_default', true)->first();
+        //             App::setLocale($language->language ?? 'en');
+        //         }
 
-                    $translations = Cache::rememberForever("translations_{$currentLocale}", function () use ($currentLocale) {
-                        return \App\Models\Translation::getTrnaslactionsByLocale($currentLocale);
-                    });
+        //         if (Schema::hasTable('translations')) {
+        //             $currentLocale = App::getLocale();
 
-                    if (!empty($translations)) {
-                        app('translator')->addLines($translations, $currentLocale);
-                    }
-                }
-            } catch (\Exception $e) {
-                // Optional: log the error
-                // Log::error($e->getMessage());
-            }
-        };
+        //             $translations = Cache::rememberForever("translations_{$currentLocale}", function () use ($currentLocale) {
+        //                 return \App\Models\Translation::getTrnaslactionsByLocale($currentLocale);
+        //             });
+
+        //             if (!empty($translations)) {
+        //                 app('translator')->addLines($translations, $currentLocale);
+        //             }
+        //         }
+        //     } catch (\Exception $e) {
+        //         // Optional: log the error
+        //         // Log::error($e->getMessage());
+        //     }
+        // };
 
         $permissionLogic = function () {
             Blade::if('can', function ($permission) {
@@ -88,7 +99,7 @@ class AppServiceProvider extends ServiceProvider
                     'role_has_permissions_list' . $user->role_id,
                     60 * 60 * 24 * 365,
                     function () use ($user) {
-                        return DB::table('permissions')
+                        return DB::connection('master')->table('permissions')
                             ->join('role_has_permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
                             ->where('role_id', $user->role_id)
                             ->select('permissions.name')
@@ -100,46 +111,46 @@ class AppServiceProvider extends ServiceProvider
             });
         };
 
-        if (config('database.connections.saleprosaas_landlord')) {
-            ///new code for superadmin//
-            if (!app()->bound('tenancy')) {
-                $locale = null;
-                if (config('database.connections.mysql.database') && Schema::hasTable('languages')) {
-                    // Fallback to default language
-                    $default_language = DB::table('languages')->where('is_default', true)->first();
-                    $locale = $default_language->code ?? 'en';
-                } else {
-                    $locale = 'en';
-                }
+        // if (config('database.connections.saleprosaas_landlord')) {
+        //     ///new code for superadmin//
+        //     if (!app()->bound('tenancy')) {
+        //         $locale = null;
+        //         if (config('database.connections.mysql.database') && Schema::hasTable('languages')) {
+        //             // Fallback to default language
+        //             $default_language = DB::table('languages')->where('is_default', true)->first();
+        //             $locale = $default_language->code ?? 'en';
+        //         } else {
+        //             $locale = 'en';
+        //         }
 
-                // Finally, set the app locale
-                App::setLocale($locale);
+        //         // Finally, set the app locale
+        //         App::setLocale($locale);
 
-                // Check if language file exists
-                $langFile = resource_path("lang/{$locale}.php");
-                if (!file_exists($langFile)) {
-                    $langFile = resource_path("lang/master.php");
-                }
+        //         // Check if language file exists
+        //         $langFile = resource_path("lang/{$locale}.php");
+        //         if (!file_exists($langFile)) {
+        //             $langFile = resource_path("lang/master.php");
+        //         }
 
-                $transData = include $langFile; // loads the array
-                $translations = [];
-                foreach ($transData as $group => $items) {
-                    foreach ($items as $key => $value) {
-                        $translations["{$group}.{$key}"] = $value;
-                    }
-                }
-                // Merge translations into Laravel's translator
-                app('translator')->addLines($translations, $locale);
-            }
-            ///new code for superadmin//
+        //         $transData = include $langFile; // loads the array
+        //         $translations = [];
+        //         foreach ($transData as $group => $items) {
+        //             foreach ($items as $key => $value) {
+        //                 $translations["{$group}.{$key}"] = $value;
+        //             }
+        //         }
+        //         // Merge translations into Laravel's translator
+        //         app('translator')->addLines($translations, $locale);
+        //     }
+        //     ///new code for superadmin//
 
-            Event::listen(TenancyBootstrapped::class, function () use ($translationLogic, $permissionLogic) {
-                $translationLogic();
-                $permissionLogic();
-            });
-        } else {
-            $translationLogic();
+        //     Event::listen(TenancyBootstrapped::class, function () use ($translationLogic, $permissionLogic) {
+        //         $translationLogic();
+        //         $permissionLogic();
+        //     });
+        // } else {
+            // $translationLogic();
             $permissionLogic();
-        }
+        // }
     }
 }

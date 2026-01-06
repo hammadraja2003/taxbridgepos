@@ -7,35 +7,39 @@ use App\Models\Employee;
 use App\Models\HrmSetting;
 use App\Models\Attendance;
 use App\Models\Warehouse;
+use App\Models\GeneralSetting;
 use Carbon\Carbon;
 use Auth;
 use DB;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 use Spatie\Permission\Models\Permission;
 
 class AttendanceController extends Controller
 {
     public function index()
     {
+        $master_database = config('database.connections.master.database');
+
         $role = Role::find(Auth::user()->role_id);
         if($role->hasPermissionTo('attendance')) {
             $lims_employee_list = Employee::where('is_active', true)->get();
             $lims_hrm_setting_data = HrmSetting::latest()->first();
             $lims_warehouse_list = Warehouse::where('is_active', true)->get();
-            $general_setting = DB::table('general_settings')->latest()->first();
+            $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
+            
             if(Auth::user()->role_id > 2 && $general_setting->staff_access == 'own')
             $lims_attendance_data = Attendance::leftJoin('employees', 'employees.id', '=', 'attendances.employee_id')
-                ->leftJoin('users', 'users.id', '=', 'attendances.user_id')
+                ->leftJoin($master_database.'.users', $master_database.'.users.id', '=', 'attendances.user_id')
                 ->orderBy('attendances.date', 'desc')
                 ->where('attendances.user_id', Auth::id())
-                ->select(['attendances.*', 'employees.name as employee_name', 'users.name as user_name','users.warehouse_id as warehouse_id'])
+                ->select(['attendances.*', 'employees.name as employee_name', $master_database.'.users.name as user_name',$master_database.'.users.warehouse_id as warehouse_id'])
                 ->get()
                 ->groupBy(['date','employee_id']);
             else
             $lims_attendance_data = Attendance::leftJoin('employees', 'employees.id', '=', 'attendances.employee_id')
-                ->leftJoin('users', 'users.id', '=', 'attendances.user_id')
+                ->leftJoin($master_database.'.users', $master_database.'.users.id', '=', 'attendances.user_id')
                 ->orderBy('attendances.date', 'desc')
-                ->select(['attendances.*', 'employees.name as employee_name', 'users.name as user_name','users.warehouse_id as warehouse_id'])
+                ->select(['attendances.*', 'employees.name as employee_name', $master_database.'.users.name as user_name',$master_database.'.users.warehouse_id as warehouse_id'])
                 ->get()
                 ->groupBy(['date','employee_id']);
 

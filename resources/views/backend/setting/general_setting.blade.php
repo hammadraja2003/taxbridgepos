@@ -391,7 +391,7 @@
 
                                 <div class="col-md-6 mt-2">
                                     <div class="form-group mb-3">
-                                        <label for="app_key">App Key <x-info title="It is to set up your SalePro mobile app" type="info" /></label>
+                                        <label for="app_key">App Key <x-info title="It is to set up your TaxBridge mobile app" type="info" /></label>
                                         <div class="input-group">
                                             <input type="text" id="app_key" name="app_key" class="form-control" value="{{ $lims_general_setting_data->app_key }}" readonly>
                                             @if(empty($lims_general_setting_data->app_key))

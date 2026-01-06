@@ -10,8 +10,9 @@ use App\Models\Product;
 use DB;
 use App\Models\StockCount;
 use Auth;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 use Spatie\Permission\Models\Permission;
+use App\Models\GeneralSetting;
 
 class StockCountController extends Controller
 {
@@ -22,7 +23,7 @@ class StockCountController extends Controller
             $lims_warehouse_list = Warehouse::where('is_active', true)->get();
             $lims_brand_list = Brand::where('is_active', true)->get();
             $lims_category_list = Category::where('is_active', true)->get();
-            $general_setting = DB::table('general_settings')->latest()->first();
+            $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
             if(Auth::user()->role_id > 2 && $general_setting->staff_access == 'own')
                 $lims_stock_count_all = StockCount::orderBy('id', 'desc')->where('user_id', Auth::id())->get();
             else

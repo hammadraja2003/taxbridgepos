@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class MobileToken extends Model
 {
     use HasFactory;
+    protected $connection = 'tenant';
     
     protected $fillable = [
         'name',

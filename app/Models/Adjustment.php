@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Adjustment extends Model
 {
+    protected $connection = 'tenant';   
     protected $fillable =[
         "reference_no", 
         "warehouse_id", 

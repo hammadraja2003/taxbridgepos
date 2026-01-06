@@ -4,7 +4,7 @@
 @endpush
 @section('content')
 
-    @include('includes.session_message')
+    <!-- @include('includes.session_message') -->
 
 
     <form action="{{ route('languages.translations.index', ['language' => $language]) }}" method="get">
@@ -177,6 +177,3 @@
 </script>
 
 @endpush
-
-
-

@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\DiscountPlan;
 use App\Models\DiscountPlanCustomer;
 use App\Models\Customer;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 use Auth;
 
 class DiscountPlanController extends Controller

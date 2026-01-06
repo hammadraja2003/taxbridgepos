@@ -5,7 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 class Customer extends Model
-{
+{   
+    protected $connection = 'tenant';       
     protected $fillable =[
         "customer_group_id", "user_id", "name", "company_name",
         "email", "type", "phone_number", "wa_number", "tax_no", "address", "city",

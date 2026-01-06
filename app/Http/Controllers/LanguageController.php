@@ -8,7 +8,7 @@ use App\Models\Translation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Input;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 use Auth;
 
 class LanguageController extends Controller

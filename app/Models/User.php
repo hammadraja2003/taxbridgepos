@@ -11,9 +11,10 @@ class User extends Authenticatable
 {
     use HasApiTokens, Notifiable;
     use HasRoles;
+    protected $connection = 'master';
 
     protected $fillable = [
-        'name', 'email', 'password',"phone","company_name", "role_id", "biller_id", "warehouse_id", "kitchen_id", "service_staff", "is_active", "is_deleted"
+    'name', 'email', 'password',"phone","company_name", "role_id", "biller_id", "warehouse_id", "kitchen_id", "service_staff", "is_active", "is_deleted", "bus_config_id"
     ];
 
     protected $hidden = [
@@ -27,5 +28,10 @@ class User extends Authenticatable
 
     public function holiday() {
         return $this->hasMany('App\Models\Holiday');
+    }
+
+    public function notifications()
+    {
+        return $this->morphMany(\App\Models\Notification::class, 'notifiable')->latest();
     }
 }

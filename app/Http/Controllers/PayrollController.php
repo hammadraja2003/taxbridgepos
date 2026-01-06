@@ -8,7 +8,7 @@ use App\Models\Employee;
 use App\Models\Payroll;
 use Auth;
 use DB;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 use Spatie\Permission\Models\Permission;
 use App\Mail\PayrollDetails;
 use App\Models\Attendance;
@@ -20,6 +20,7 @@ use App\Models\Overtime;
 use App\Models\Payment;
 use App\Models\Sale;
 use App\Models\Warehouse;
+use App\Models\GeneralSetting;
 use Illuminate\Support\Carbon;
 
 class PayrollController extends Controller
@@ -36,7 +37,7 @@ class PayrollController extends Controller
         $lims_account_list = Account::where('is_active', true)->get();
         $lims_employee_list = Employee::where('is_active', true)->get();
         $lims_warehouse_list = Warehouse::where('is_active', true)->get();
-        $general_setting = DB::table('general_settings')->latest()->first();
+        $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
 
         // Fetch payrolls with employee info, leaves, attendance, and work duration
         $lims_payroll_all = Payroll::with('employee')

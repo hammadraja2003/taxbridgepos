@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Holiday;
 use Auth;
 use User;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 use Spatie\Permission\Models\Permission;
 use Mail;
 use App\Mail\HolidayApprove;

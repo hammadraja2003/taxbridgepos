@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class PackingSlip extends Model
 {
     use HasFactory;
-
+    protected $connection = 'tenant';   
     protected $fillable = ["reference_no", "sale_id", "delivery_id", "amount", "status"];
 
     public function sale()

@@ -70,7 +70,8 @@ class AddonInstallController extends Controller
             return redirect()->back()->with('not_permitted', __($db_str.'This feature is disable for demo!'));
         }
 
-        $url = 'https://lion-coders.com/api/addon-install/';
+        // $url = 'https://lion-coders.com/api/addon-install/';
+        $url = '';
         $ch = curl_init(); // Initialize cURL
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
@@ -109,13 +110,13 @@ class AddonInstallController extends Controller
                     }
 
                     if ($module != 'saas') {
-                        $settings = DB::table('general_settings')->select('id','modules')->first();
+                        $settings = DB::connection('master')->table('general_settings')->select('id','modules')->first();
                         if(isset($settings->modules) && (!in_array($module,explode(',',$settings->modules)))){
                             $new_modules = $settings->modules.','.$module;
                         }else{
                             $new_modules = $module;
                         }
-                        DB::table('general_settings')->where('id',1)->update(['modules'=>$new_modules]);
+                        DB::connection('master')->table('general_settings')->where('id',1)->update(['modules'=>$new_modules]);
                     }
 
                     if ($module == 'ecommerce') {

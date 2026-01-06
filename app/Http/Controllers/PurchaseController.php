@@ -31,7 +31,7 @@ use App\Services\PaymentService;
 use App\Models\PaymentWithCheque;
 use App\Models\Product_Warehouse;
 use Illuminate\Support\Facades\DB;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 use Illuminate\Support\Facades\Auth;
 use App\Models\PaymentWithCreditCard;
 use Spatie\Permission\Models\Permission;
@@ -147,7 +147,7 @@ class PurchaseController extends Controller
 
         try {
             $data = $request->except('document');
-            $data['user_id'] = Auth::id();
+            $data['user_id'] = Auth::user()->id;
 
             if(!isset($data['reference_no']))
             {
@@ -382,11 +382,10 @@ class PurchaseController extends Controller
                     'cheque_no' => $data['cheque_no'],
                     'account_id' => $data['account_id'],
                     'payment_note' => $data['payment_note'],
+                    'supplier_id' => $request->supplier_id,
                     'purchase_id' => $lims_purchase_data->id,
-
                     'currency_id' => $lims_purchase_data->currency_id,
                     'exchange_rate' => $lims_purchase_data->exchange_rate ?? 1,
-
                     'payment_at' => $data['payment_at']
                 ];
 
@@ -878,9 +877,11 @@ class PurchaseController extends Controller
                         <a href="'.route('purchase.duplicate', $purchase->id).'" class="btn btn-link"><i class="fa fa-copy"></i> '.__('db.Duplicate').'</a>
                         </li>';
                 if(in_array("purchases-edit", $request['all_permission']))
-                    $nestedData['options'] .= '<li>
-                        <a href="'.route('purchases.edit', $purchase->id).'" class="btn btn-link"><i class="dripicons-document-edit"></i> '.__('db.edit').'</a>
-                        </li>';
+                    if($purchase->payment_status == 1){
+                        $nestedData['options'] .= '<li>
+                            <a href="'.route('purchases.edit', $purchase->id).'" class="btn btn-link"><i class="dripicons-document-edit"></i> '.__('db.edit').'</a>
+                            </li>';
+                    }
                 if(in_array("purchase-payment-index", $request['all_permission']))
                     $nestedData['options'] .=
                         '<li>
@@ -888,6 +889,7 @@ class PurchaseController extends Controller
                         </li>';
 
                 if(in_array("purchase-payment-add", $request['all_permission'])) {
+                    // if($purchase->payment_status == 1){
                     $currency_code_name = $purchase->currency->code ?? 'USD';
                     $nestedData['options'] .=
                         '<li>
@@ -903,8 +905,9 @@ class PurchaseController extends Controller
                                 <i class="fa fa-plus"></i> '.__('db.Add Payment').'
                             </button>
                         </li>';
+                    // }
                 }
-                if(in_array("purchases-delete", $request['all_permission']))
+                if(in_array("purchases-delete", $request['all_permission']))   
                     $nestedData['options'] .= \Form::open(["route" => ["purchases.destroy", $purchase->id], "method" => "DELETE"] ).'
                             <li>
                               <button type="submit" class="btn btn-link" onclick="return confirmDelete()"><i class="dripicons-trash"></i> '.__("db.delete").'</button>
@@ -1503,6 +1506,8 @@ class PurchaseController extends Controller
     public function addPayment(Request $request)
     {
         $data = $request->except('_token');
+
+        // $data['supplier_id'] = Purchase::find($request->purchase_id)->supplier_id;
 
         if (isset($data['payment_at'])) {
             $data['payment_at'] = normalize_to_sql_datetime($data['payment_at']);
@@ -2257,6 +2262,7 @@ class PurchaseController extends Controller
                     'supplier_address' => $supplier->address ?? '-',
                 ];
             });
+            
 
         return response()->json(['data' => $purchases]);
     }

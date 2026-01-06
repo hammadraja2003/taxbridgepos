@@ -81,6 +81,12 @@ use App\Http\Controllers\OvertimeController;
 use App\Http\Controllers\SaleAgentController;
 use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\WhatsappController;
+use Illuminate\Support\Facades\Redis;
+
+Route::get('/' , function(){
+    Log::info('User logged in');
+    return view('backend.auth.login');
+});
 
 Route::get('webview/auth', function (Request $request) {
     // Get token from Authorization header
@@ -109,24 +115,25 @@ Route::get('migrate', function() {
 
 Route::get('clear',function() {
     Artisan::call('optimize:clear');
-    cache()->forget('biller_list');
-    cache()->forget('brand_list');
-    cache()->forget('category_list');
-    cache()->forget('coupon_list');
-    cache()->forget('customer_list');
-    cache()->forget('customer_group_list');
-    cache()->forget('product_list');
-    cache()->forget('product_list_with_variant');
-    cache()->forget('warehouse_list');
-    cache()->forget('table_list');
-    cache()->forget('tax_list');
-    cache()->forget('currency');
-    cache()->forget('general_setting');
-    cache()->forget('pos_setting');
-    cache()->forget('user_role');
-    cache()->forget('permissions');
-    cache()->forget('role_has_permissions');
-    cache()->forget('role_has_permissions_list');
+    $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+    cache()->forget($key_prefix . 'biller_list');
+    cache()->forget($key_prefix . 'brand_list');
+    cache()->forget($key_prefix . 'category_list');
+    cache()->forget($key_prefix . 'coupon_list');
+    cache()->forget($key_prefix . 'customer_list');
+    cache()->forget($key_prefix . 'customer_group_list');
+    cache()->forget($key_prefix . 'product_list');
+    cache()->forget($key_prefix . 'product_list_with_variant');
+    cache()->forget($key_prefix . 'warehouse_list');
+    cache()->forget($key_prefix . 'table_list');
+    cache()->forget($key_prefix . 'tax_list');
+    cache()->forget($key_prefix . 'currency');
+    cache()->forget($key_prefix . 'general_setting');
+    cache()->forget($key_prefix . 'pos_setting');
+    cache()->forget($key_prefix . 'user_role');
+    cache()->forget($key_prefix . 'permissions');
+    cache()->forget($key_prefix . 'role_has_permissions');
+    cache()->forget($key_prefix . 'role_has_permissions_list');
     dd('cleared');
 });
 
@@ -148,7 +155,7 @@ Route::group(['middleware' => 'auth'], function() {
     });
 });
 
-Route::group(['middleware' => ['common', 'auth', 'active']], function() {
+Route::group(['middleware' => ['auth', 'settenantconnection', 'common', 'active']], function() {
 
     Route::get('/languages', [LanguageController::class, 'index'])->name('languages');
     Route::post('/languages/create', [LanguageController::class, 'store']);
@@ -178,7 +185,7 @@ Route::group(['middleware' => ['common', 'auth', 'active']], function() {
         Route::get('/recent-payment', 'recentPayment');
         Route::get('switch-theme/{theme}', 'switchTheme')->name('switchTheme');
         Route::get('/dashboard-filter/{start_date}/{end_date}/{warehouse_id}', 'dashboardFilter');
-        Route::get('addon-list', 'addonList');
+        // Route::get('addon-list', 'addonList');
         Route::get('my-transactions/{year}/{month}', 'myTransaction');
     });
 

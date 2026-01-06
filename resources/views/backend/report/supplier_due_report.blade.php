@@ -73,7 +73,7 @@
                     ?>
                     <tr>
                         <td>{{$key}}</td>
-                        <td>{{date($general_setting->date_format, strtotime($purchase_data->updated_at->toDateString())) . ' '. $purchase_data->updated_at->toTimeString()}}</td>
+                        <td>{{date($general_setting->date_format, strtotime($purchase_data->created_at->toDateString())) . ' '. $purchase_data->created_at->toTimeString()}}</td>
                         <td>{{$purchase_data->reference_no}}</td>
                         <td>{{$supplier->name .' (' .$supplier->phone_number . ')'}}</td>
                         <td>{{number_format((float)$purchase_data->grand_total, $general_setting->decimal, '.', '')}}</td>

@@ -31,7 +31,7 @@ use App\Models\PaymentWithCheque;
 use App\Enums\RewardPointTypeEnum;
 use App\Models\RewardPointSetting;
 use Illuminate\Support\Facades\DB;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 use App\Enums\DiscountPlanTypeEnum;
 use App\Models\PaymentWithGiftCard;
 use App\Models\DiscountPlanCustomer;
@@ -148,6 +148,7 @@ class CustomerController extends Controller
 
                 $nestedData['reward_point'] = $customer->points;
                 $nestedData['deposited_balance'] = number_format($customer->deposit - $customer->expense, 2);
+                $nestedData['opening_balance'] = number_format($customer->opening_balance, 2);
 
                 $returned_amount = DB::table('sales')
                                     ->join('returns', 'sales.id', '=', 'returns.sale_id')
@@ -442,7 +443,8 @@ class CustomerController extends Controller
         if($role->hasPermissionTo('customers-add')){
             $lims_customer_group_all = CustomerGroup::where('is_active',true)->get();
             $custom_fields = CustomField::where('belongs_to', 'customer')->get();
-            return view('backend.customer.create', compact('lims_customer_group_all', 'custom_fields'));
+            $roles = Role::where('is_active',true)->where('bus_config_id', session('bus_config_id'))->where('role_type', 4)->get();
+            return view('backend.customer.create', compact('lims_customer_group_all', 'custom_fields', 'roles'));
         }
         else
             return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
@@ -459,35 +461,36 @@ class CustomerController extends Controller
             ],
         ]);
         //validation for supplier if create both user and supplier
-        if(isset($request->both)) {
-            $this->validate($request, [
-                'company_name' => [
-                    'max:255',
-                    Rule::unique('suppliers')->where(function ($query) {
-                        return $query->where('is_active', 1);
-                    }),
-                ],
-                'email' => [
-                    'max:255',
-                    Rule::unique('suppliers')->where(function ($query) {
-                        return $query->where('is_active', 1);
-                    }),
-                ],
-            ]);
-        }
+        // if(isset($request->both)) {
+        //     $this->validate($request, [
+        //         'company_name' => [
+        //             'max:255',
+        //             Rule::unique('suppliers')->where(function ($query) {
+        //                 return $query->where('is_active', 1);
+        //             }),
+        //         ],
+        //         'email' => [
+        //             'max:255',
+        //             Rule::unique('suppliers')->where(function ($query) {
+        //                 return $query->where('is_active', 1);
+        //             }),
+        //         ],
+        //     ]);
+        // }
         //validation for user if given user access
         if(isset($request->user)) {
+            $connection = getConnectionName(\App\Models\Roles::class);
             $this->validate($request, [
                 'name' => [
                     'max:255',
-                    Rule::unique('users')->where(function ($query) {
+                    Rule::unique($connection.'.users')->where(function ($query) {
                         return $query->where('is_deleted', false);
                     }),
                 ],
                 'email' => [
                     'email',
                     'max:255',
-                    Rule::unique('users')->where(function ($query) {
+                    Rule::unique($connection.'.users')->where(function ($query) {
                         return $query->where('is_deleted', false);
                     }),
                 ],
@@ -499,37 +502,27 @@ class CustomerController extends Controller
         $prefixMessage = 'Customer';
         if(isset($request->user)) {
             $customer_data['phone'] = $customer_data['phone_number'];
-            $customer_data['role_id'] = 5;
+            // $customer_data['role_id'] = 5;
+            $customer_data['role_id'] = $request->role_id;
             $customer_data['is_deleted'] = false;
+            $customer_data['bus_config_id'] = session('bus_config_id');
             $customer_data['password'] = bcrypt($customer_data['password']);
+
             $user = User::create($customer_data);
             $customer_data['user_id'] = $user->id;
             $prefixMessage .= ', User';
         }
         $customer_data['name'] = $customer_data['customer_name'];
-        if(isset($request->both)) {
-            Supplier::create($customer_data);
-            $prefixMessage .= ' and Supplier';
-        }
+        // if(isset($request->both)) {
+        //     Supplier::create($customer_data);
+        //     $prefixMessage .= ' and Supplier';
+        // }
 
         $fullMessage = $prefixMessage.' created successfully!';
         $mail_setting = MailSetting::latest()->first();
-        $message = $this->mailAction($customer_data, $mail_setting, $request, $fullMessage);
-
-        // if($customer_data['email'] && $mail_setting) {
-        //     $this->setMailInfo($mail_setting);
-        //     try {
-        //         Mail::to($customer_data['email'])->send(new CustomerCreate($customer_data));
-        //         if(isset($request->both))
-        //             Mail::to($customer_data['email'])->send(new SupplierCreate($customer_data));
-        //         $message .= ' created successfully!';
-        //     }
-        //     catch(\Exception $e){
-        //         $message .= ' created successfully. Please setup your <a href="setting/mail_setting">mail setting</a> to send mail.';
-        //     }
-        // }
-        // else
-        //     $message .= ' created successfully!';
+        if(!empty($mail_setting) && $customer_data['email'] != '' ) {
+            $message = $this->mailAction($customer_data, $mail_setting, $request, $fullMessage);
+        }
 
         $lims_customer_data = Customer::create($customer_data);
 
@@ -567,7 +560,8 @@ class CustomerController extends Controller
         }
         if(count($custom_field_data))
             DB::table('customers')->where('id', $lims_customer_data->id)->update($custom_field_data);
-        $this->cacheForget('customer_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        $this->cacheForget($key_prefix.'customer_list');
         $customerInfo['id'] = $lims_customer_data->id;
         $customerInfo['name'] = $lims_customer_data->name;
         $customerInfo['phone_number'] = $lims_customer_data->phone_number;
@@ -604,7 +598,13 @@ class CustomerController extends Controller
         $opening_balance = $customer->opening_balance ?? 0;
 
         $total_sales = Sale::where('customer_id', $id)->sum('grand_total');
-        $total_paid = Payment::where('user_id', $id)->sum('amount');
+
+       $total_paid = DB::table('payments')
+        ->join('sales', 'payments.sale_id', '=', 'sales.id')
+        ->where('sales.customer_id', $id)
+        ->whereNull('sales.deleted_at')
+        ->sum('payments.amount');
+
 
         $balance_due = ($opening_balance + $total_sales) - $total_paid;
 
@@ -620,6 +620,15 @@ class CustomerController extends Controller
 
     public function ledger($id)
     {
+        $opening_balance = Customer::where('id', $id)->get()->map(function ($s) {
+            return [
+                'date' => $s->created_at->format('Y-m-d'),
+                'type' => 'Opening Balance',
+                'reference' => $s->reference_no,
+                'debit' => floatval($s->opening_balance),
+                'credit' => 0,
+            ];
+        });
         $sales = Sale::where('customer_id', $id)->get()->map(function ($s) {
             return [
                 'date' => $s->created_at->format('Y-m-d'),
@@ -630,17 +639,31 @@ class CustomerController extends Controller
             ];
         });
 
-        $payments = Payment::where('user_id', $id)->get()->map(function ($p) {
-            return [
-                'date' => $p->created_at->format('Y-m-d'),
-                'type' => 'Payment',
-                'reference' => $p->payment_reference,
-                'debit' => 0,
-                'credit' => floatval($p->amount),
-            ];
-        });
+        $payments = DB::table('payments')
+            ->join('sales', 'payments.sale_id', '=', 'sales.id')
+            ->where('sales.customer_id', $id)
+            ->whereNull('sales.deleted_at')
+            ->select(
+                'payments.id',
+                'payments.created_at',
+                'payments.payment_reference',
+                'payments.amount',
+                'payments.paying_method',
+                'payments.payment_at'
+            )
+            ->latest('payments.created_at')
+            ->get()
+            ->map(function ($payment) {
+                return [
+                    'date' => date('Y-m-d', strtotime($payment->created_at)),
+                    'type' => 'Payment',
+                    'reference' => $payment->payment_reference,
+                    'debit' => 0,
+                    'credit' => floatval($payment->amount),
+                ];
+            });
 
-        $ledger = $sales->merge($payments)->sortBy('date')->values()->toArray();
+        $ledger = $opening_balance->merge($sales)->merge($payments)->sortBy('date')->values()->toArray();
 
         $balance = 0;
         foreach ($ledger as $key => $row) {
@@ -725,7 +748,8 @@ class CustomerController extends Controller
         }
         if(count($custom_field_data))
             DB::table('customers')->where('id', $lims_customer_data->id)->update($custom_field_data);
-        $this->cacheForget('customer_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        $this->cacheForget($key_prefix.'customer_list');
 
         return redirect('customer')->with('edit_message', $message);
     }
@@ -811,7 +835,8 @@ class CustomerController extends Controller
             //     }
 
             }
-            $this->cacheForget('customer_list');
+            $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+            $this->cacheForget($key_prefix.'customer_list');
             return redirect('customer')->with('import_message', $message);
         }
         else
@@ -1010,7 +1035,8 @@ class CustomerController extends Controller
             $lims_customer_data->is_active = false;
             $lims_customer_data->save();
         }
-        $this->cacheForget('customer_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        $this->cacheForget($key_prefix.'customer_list');
         return 'Customer deleted successfully!';
     }
 
@@ -1031,7 +1057,8 @@ class CustomerController extends Controller
 
         $lims_customer_data->is_active = false;
         $lims_customer_data->save();
-        $this->cacheForget('customer_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        $this->cacheForget($key_prefix.'customer_list');
         return redirect('customer')->with('not_permitted', __('db.Data deleted successfully'));
     }
 

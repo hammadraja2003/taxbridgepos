@@ -26,7 +26,7 @@
             <tbody>
                 @foreach($lims_gift_card_all as $key=>$gift_card)
                 <?php
-                    $created_by = DB::table('users')->find($gift_card->created_by);
+                    $created_by = DB::connection('master')->table('users')->find($gift_card->created_by);
                 ?>
                 <tr data-id="{{$gift_card->id}}">
                     <td>{{$key}}</td>
@@ -37,7 +37,7 @@
                     ?>
                     <td>{{$client}}</td>
                     @else
-                    <?php $user = DB::table('users')->find($gift_card->user_id);
+                    <?php $user = DB::connection('master')->table('users')->find($gift_card->user_id);
                           $client = $user->name;
                      ?>
                     <td>{{$client}}</td>

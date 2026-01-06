@@ -8,6 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class DiscountPlanCustomer extends Model
 {
     use HasFactory;
-
+    protected $connection = 'tenant';   
     protected $fillable = ['discount_plan_id', 'customer_id'];
 }

@@ -5,7 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 class Expense extends Model
-{
+{   
+    protected $connection = 'tenant';           
     protected $fillable =[
         "reference_no", "expense_category_id", "warehouse_id", "account_id",
         "user_id", "cash_register_id", "employee_id", "type",

@@ -98,7 +98,7 @@
                     {!! Form::open(['route' => 'notifications.store', 'method' => 'post']) !!}
                       <div class="row">
                           <?php
-                              $lims_user_list = DB::table('users')->where([
+                              $lims_user_list = DB::connection('master')->table('users')->where([
                                 ['is_active', true],
                                 ['id', '!=', \Auth::user()->id]
                               ])->get();
@@ -245,7 +245,7 @@
                   <p class="italic"><small>{{__('db.The field labels marked with * are required input fields')}}.</small></p>
                     {!! Form::open(['route' => 'report.user', 'method' => 'post']) !!}
                     <?php
-                      $lims_user_list = DB::table('users')->where('is_active', true)->get();
+                      $lims_user_list = DB::connection('master')->table('users')->where('is_active', true)->get();
                     ?>
                       <div class="form-group">
                           <label>{{__('db.User')}} *</label>

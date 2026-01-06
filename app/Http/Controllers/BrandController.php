@@ -54,12 +54,13 @@ class BrandController extends Controller
             $input['image'] = $imageName;
         }
         $brand = Brand::create($input);
-        $this->cacheForget('brand_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        $this->cacheForget($key_prefix.'brand_list');
 
         if(isset($input['ajax']))
             return $brand;
-        else 
-            return redirect('brand');
+        else
+            return redirect('brand')->with('message', 'Brand added successfully!');
     }
 
     public function edit($id)
@@ -101,8 +102,9 @@ class BrandController extends Controller
             $lims_brand_data->image = $imageName;
         }
         $lims_brand_data->save();
-        $this->cacheForget('brand_list');
-        return redirect('brand');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        $this->cacheForget($key_prefix.'brand_list');
+        return redirect('brand')->with('message', 'Brand updated successfully!');
     }
 
     public function importBrand(Request $request)
@@ -140,7 +142,8 @@ class BrandController extends Controller
            $brand->is_active = true;
            $brand->save();
         }
-        $this->cacheForget('brand_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        $this->cacheForget($key_prefix.'brand_list');
         return redirect('brand')->with('message', __('db.Brand imported successfully'));
     }
 
@@ -158,7 +161,8 @@ class BrandController extends Controller
             $lims_brand_data->is_active = false;
             $lims_brand_data->save();
         }
-        $this->cacheForget('brand_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        $this->cacheForget($key_prefix.'brand_list');
         return 'Brand deleted successfully!';
     }
 
@@ -173,8 +177,9 @@ class BrandController extends Controller
             unlink('images/brand/'.$lims_brand_data->image);
         }
         $lims_brand_data->save();
-        $this->cacheForget('brand_list');
-        return redirect('brand')->with('not_permitted', __('db.Brand deleted successfully!'));
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        $this->cacheForget($key_prefix.'brand_list');
+        return redirect('brand')->with('message', __('db.Brand deleted successfully!'));
     }
 
     public function exportBrand(Request $request)

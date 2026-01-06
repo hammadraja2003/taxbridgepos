@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Intervention\Image\ImageManager;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 use Intervention\Image\Drivers\Gd\Driver as GdDriver;
 
 class InvoiceSettingController extends Controller

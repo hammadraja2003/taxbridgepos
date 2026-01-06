@@ -210,7 +210,7 @@ $(function () {
             { data: 'credit' },
             { data: 'balance' }
         ],
-        order: [[0, 'desc']],
+        order: [[0, 'asc']],
         responsive: true,
     });
 

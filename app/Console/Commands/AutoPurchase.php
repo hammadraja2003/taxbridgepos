@@ -51,7 +51,7 @@ class AutoPurchase extends Command
                                 ->select('warehouse_id')
                                 ->latest()
                                 ->first();
-            $user_data = DB::table('users')
+            $user_data = DB::connection('master')->table('users')
                         ->select('id')
                         ->where([
                             ['is_active', true],

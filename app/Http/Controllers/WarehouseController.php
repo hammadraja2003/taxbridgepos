@@ -44,7 +44,8 @@ class WarehouseController extends Controller
                 'qty' => 0
             ]);
         }
-        $this->cacheForget('warehouse_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';   
+        $this->cacheForget($key_prefix.'warehouse_list');
         return redirect('warehouse')->with('message', __('db.Data inserted successfully'));
     }
 
@@ -67,7 +68,8 @@ class WarehouseController extends Controller
         $input = $request->all();
         $lims_warehouse_data = Warehouse::find($input['warehouse_id']);
         $lims_warehouse_data->update($input);
-        $this->cacheForget('warehouse_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';   
+        $this->cacheForget($key_prefix.'warehouse_list');
         return redirect('warehouse')->with('message', __('db.Data updated successfully'));
     }
 
@@ -109,7 +111,8 @@ class WarehouseController extends Controller
            $warehouse->is_active = true;
            $warehouse->save();
         }
-        $this->cacheForget('warehouse_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';   
+        $this->cacheForget($key_prefix.'warehouse_list');
         return redirect('warehouse')->with('message', __('db.Warehouse imported successfully'));
     }
 
@@ -120,7 +123,8 @@ class WarehouseController extends Controller
             $lims_warehouse_data = Warehouse::find($id);
             $lims_warehouse_data->deactivate();
         }
-        $this->cacheForget('warehouse_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';   
+        $this->cacheForget($key_prefix.'warehouse_list');
         return __('db.Data deleted successfully');
     }
 
@@ -128,7 +132,8 @@ class WarehouseController extends Controller
     {
         $lims_warehouse_data = Warehouse::find($id);
         $lims_warehouse_data->deactivate();
-        $this->cacheForget('warehouse_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';   
+        $this->cacheForget($key_prefix.'warehouse_list');
         return redirect('warehouse')->with('not_permitted', __('db.Data deleted successfully'));
     }
 

@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Installment extends Model
 {
     use HasFactory;
-
-     protected $fillable = [
+    protected $connection = 'tenant';   
+    protected $fillable = [
         'installment_plan_id',
         'status',
         'payment_date',

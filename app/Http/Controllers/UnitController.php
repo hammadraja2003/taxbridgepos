@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Unit;
 use Illuminate\Validation\Rule;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 use Spatie\Permission\Models\Permission;
 use Auth;
 
@@ -56,7 +56,7 @@ class UnitController extends Controller
             ]);
         }
 
-        return redirect('unit');
+        return redirect('unit')->with('message', 'Unit added successfully!');
     }
 
     public function limsUnitSearch()
@@ -97,7 +97,7 @@ class UnitController extends Controller
         }
         $lims_unit_data = Unit::where('id',$input['unit_id'])->first();
         $lims_unit_data->update($input);
-        return redirect('unit');
+        return redirect('unit')->with('message', 'Unit updated successfully!');
     }
 
     public function importUnit(Request $request)
@@ -166,6 +166,6 @@ class UnitController extends Controller
         $lims_unit_data = Unit::findOrFail($id);
         $lims_unit_data->is_active = false;
         $lims_unit_data->save();
-        return redirect('unit');
+        return redirect('unit')->with('message', 'Unit deleted successfully!');
     }
 }

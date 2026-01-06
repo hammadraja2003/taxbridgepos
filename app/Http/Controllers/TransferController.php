@@ -18,7 +18,7 @@ use App\Models\ProductVariant;
 use App\Models\ProductPurchase;
 use App\Models\ProductTransfer;
 use App\Models\Product_Warehouse;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 use Illuminate\Support\Facades\Mail;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Validator;

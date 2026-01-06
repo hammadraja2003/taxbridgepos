@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Cache;
 use DB;
@@ -29,11 +30,8 @@ class LoginController extends Controller
      */
 
     public function __construct()
-
     {
-
         $this->middleware('guest')->except('logout');
-
     }
 
     public function showLoginForm()
@@ -43,18 +41,13 @@ class LoginController extends Controller
             $theme = $_COOKIE['theme'];
         else
             $theme = 'light';
-        //get general setting value
-        $general_setting =  Cache::remember('general_setting', 60*60*24*365, function () {
-            return DB::table('general_settings')->latest()->first();
-        });
 
         $numberOfUserAccount = \App\Models\User::where('is_active', true)->count();
-        return view('backend.auth.login', compact('theme', 'general_setting', 'numberOfUserAccount'));
+        return view('backend.auth.login', compact('theme', 'numberOfUserAccount'));
     }
 
     public function login(Request $request)
     {
-
         $input = $request->all();
 
         $this->validate($request, [
@@ -63,16 +56,42 @@ class LoginController extends Controller
         ]);
 
         $fieldType = filter_var($request->name, FILTER_VALIDATE_EMAIL) ? 'email' : 'name';
+        $credentials = array($fieldType => $input['name'], 'password' => $input['password']);
 
-        if(auth()->attempt(array($fieldType => $input['name'], 'password' => $input['password'])))
-        {
-            setcookie('login_now', 1, time() + (86400 * 1), "/");
-            //return redirect('/dashboard');
-            return redirect()->intended('/dashboard');
+        if (Auth::guard('web')->attempt($credentials, $request->boolean('remember'))) {
+            $user = Auth::guard('web')->user();
+
+            // --- Validate tenant configuration before login ---
+            if (empty($user->bus_config_id) || $user->bus_config_id == 0 || $user->bus_config_id <= 0 || $user->is_active != 1) {
+                // Logout user if validation fails
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+                
+                return redirect()->route('login')->with('delete_message', 'Your account is not configured. Please contact administrator.');
+            }
+
+            // --- Session regeneration ---
+            $request->session()->regenerate();
+
+            // --- Set tenant context ---
+            try {
+                app(\App\Services\TenantManager::class)->setTenant($user->bus_config_id);
+                $request->session()->put('bus_config_id', $user->bus_config_id);
+            } catch (\Exception $e) {
+                // Logout if tenant setup fails
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+                
+                return redirect()->route('login')->with('delete_message', 'Unable to configure tenant. Please contact administrator.');
+            }
+
+            return redirect()->intended('/dashboard')->with('message', 'User Login Successful');
         }
-        else {
-            return redirect()->route('login')->with('error', __('db.Username And Password Are Wrong.'));
-        }
+
+        // --- Invalid credentials ---
+        return redirect()->route('login')->with('delete_message', 'Username And Password Are Wrong.');
     }
 
     public function logout(Request $request)

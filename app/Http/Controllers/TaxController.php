@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Tax;
 use Illuminate\Validation\Rule;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 use Spatie\Permission\Models\Permission;
 use Auth;
 
@@ -40,7 +40,8 @@ class TaxController extends Controller
         $input = $request->all();
         $input['is_active'] = true;
         $tax = Tax::create($input);
-        $this->cacheForget('tax_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';   
+        $this->cacheForget($key_prefix.'tax_list');
         if(isset($input['ajax']))
             return $tax;
         else
@@ -77,7 +78,8 @@ class TaxController extends Controller
         $input = $request->all();
         $lims_tax_data = Tax::where('id', $input['tax_id'])->first();
         $lims_tax_data->update($input);
-        $this->cacheForget('tax_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';   
+        $this->cacheForget($key_prefix.'tax_list');
         return redirect('tax')->with('message', __('db.Data updated successfully'));
     }
 
@@ -127,7 +129,8 @@ class TaxController extends Controller
             $lims_tax_data->is_active = false;
             $lims_tax_data->save();
         }
-        $this->cacheForget('tax_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';   
+        $this->cacheForget($key_prefix.'tax_list');
         return 'Tax deleted successfully!';
     }
 
@@ -136,7 +139,8 @@ class TaxController extends Controller
         $lims_tax_data = Tax::findOrFail($id);
         $lims_tax_data->is_active = false;
         $lims_tax_data->save();
-        $this->cacheForget('tax_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';   
+        $this->cacheForget($key_prefix.'tax_list');
         return redirect('tax')->with('not_permitted', __('db.Data deleted successfully'));
     }
 }

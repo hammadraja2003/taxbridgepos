@@ -1,6 +1,7 @@
 <?php
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 
 if (!function_exists('normalize_to_sql_datetime')) {
     function normalize_to_sql_datetime($input, $useCurrentTime = false)
@@ -54,5 +55,84 @@ if (!function_exists('normalize_to_sql_datetime')) {
             // totally failed → return current datetime
             return Carbon::now()->format('Y-m-d H:i:s');
         }
+    }
+}
+if (!function_exists('getTenantUnreadNotificationsByDate')) {
+ function getTenantUnreadNotificationsByDate($date, $user = null)
+    {
+        $user = $user ?? Auth::user();
+        
+        if (!$user) {
+            return 0;
+        }
+
+        return DB::connection('tenant')
+            ->table('notifications')
+            ->where('notifiable_id', $user->id)
+            ->where('notifiable_type', 'App\\Models\\User')
+            ->whereNull('read_at')
+            ->where('data->reminder_date', $date)
+            ->count();
+    }
+}
+if (!function_exists('getGeneralSetting')) {
+    function getGeneralSetting()
+    {
+        $bus_config_id = session()->get('bus_config_id');
+        $key_prefix = 'tenant_' . $bus_config_id . '_';
+        $general_setting = cache()->get($key_prefix . 'general_setting');
+        
+        if (!$general_setting) {
+            // Fallback to master connection
+            $general_setting = DB::connection('master')
+                ->table('general_settings')
+                ->where('bus_config_id', $bus_config_id)
+                ->latest()
+                ->first();
+        }
+        
+        return $general_setting;
+    }
+}
+if (!function_exists('getConnectionName')) {
+    function getConnectionName($model)
+    {
+        if (is_string($model)) {
+            $model = app($model);
+        }
+        if (! $model instanceof Model) {
+            throw new InvalidArgumentException('Invalid model provided');
+        }
+
+        return $model->getConnectionName()
+            ?? config('database.default');
+    }
+}
+if (!function_exists('getProductTypeDropdown')) {
+
+    function getProductTypeDropdown(
+        $name,
+        $class = 'form-control selectpicker',
+        $id = '',
+        $required = false,
+        $selectedValue = null
+    ) {
+        $typeValues = ['standard', 'combo', 'digital', 'service'];
+
+        $requiredAttr = $required ? 'required' : '';
+        $idAttr = $id ? "id=\"{$id}\"" : '';
+
+        $html = "<select name=\"{$name}\" class=\"{$class}\" {$idAttr} {$requiredAttr}>";
+
+        foreach ($typeValues as $value) {
+            $selected = ($value === strtolower($selectedValue)) ? 'selected' : '';
+            $label = ucfirst($value);
+
+            $html .= "<option value=\"{$value}\" {$selected}>{$label}</option>";
+        }
+
+        $html .= "</select>";
+
+        return $html;
     }
 }

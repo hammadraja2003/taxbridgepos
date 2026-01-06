@@ -7,7 +7,7 @@ use App\Models\LeaveType;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 
 class LeaveController extends Controller
 {

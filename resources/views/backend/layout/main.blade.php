@@ -205,6 +205,18 @@
       <nav class="navbar">
         <a id="toggle-btn" href="#" class="menu-btn"><i class="fa fa-bars"> </i></a>
 
+
+
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <h5 class="mb-0 fw-semibold">
+             Company: {{ $general_setting->company_name ?? '—' }}
+          </h5>
+          <h5 class="mb-0 fw-semibold">
+             DB: {{ $business_config->db_name ?? '—' }}
+          </h5>
+      </div>
+
+
         <ul class="nav-menu list-unstyled d-flex flex-md-row align-items-md-center">
           <div class="dropdown">
 
@@ -314,8 +326,9 @@
           <li class="nav-item d-none d-lg-block"><a id="btnFullscreen" data-toggle="tooltip" title="{{ __('Full Screen') }}"><i class="dripicons-expand"></i></a></li>
           @if(\Auth::user()->role_id <= 2) <li class="nav-item"><a href="{{route('cashRegister.index') }}" data-toggle="tooltip" title="{{ __('Cash Register List') }}"><i class="dripicons-archive"></i></a></li>
             @endif
+            
             @php
-            $total_notifications = $alert_product + $dso_alert_product_no + $expire_alert_products + Auth::user()->unreadNotifications->where('data.reminder_date', date('Y-m-d'))->count();
+            $total_notifications = $alert_product + $dso_alert_product_no + $expire_alert_products;
             @endphp
 
             <li class="nav-item" id="notification-icon">
@@ -365,17 +378,7 @@
                         @endif
 
                         {{-- Reminder Notifications --}}
-                        @foreach(Auth::user()->unreadNotifications->where('data.reminder_date', date('Y-m-d')) as $notification)
-                        <li class="notifications">
-                            @if($notification->data['document_name'])
-                            <a target="_blank" href="{{ url('documents/notification', $notification->data['document_name']) }}" class="btn btn-link">
-                                {{ $notification->data['message'] }}
-                            </a>
-                            @else
-                            <a href="#" class="btn btn-link">{{ $notification->data['message'] }}</a>
-                            @endif
-                        </li>
-                        @endforeach
+                     
 
                     @endif
 
@@ -439,8 +442,7 @@
       </nav>
     </header>
     @endif
-
-
+    <!-- @include('includes.session_message') -->
     <div style="display:none" id="content" class="animate-bottom">
       @yield('content')
     </div>
@@ -449,7 +451,13 @@
       <div class="container-fluid">
         <div class="row">
           <div class="col-sm-12">
-            <p>&copy; {{$general_setting->site_title}} | {{ __('Developed') }} {{ __('By') }} <span class="external">{{$general_setting->developed_by}}</span> | V {{env('VERSION') }}</p>
+            <p>
+                &copy; {{ date('Y') }} <strong>{{ __('Developed') }} {{ __('By') }}</strong> 
+                <a href="https://taxbridge.pk/" target="_blank" class="external">
+                    TaxBridge
+                </a>. 
+                All rights reserved.  | V {{env('VERSION') }}
+            </p>
           </div>
         </div>
       </div>
@@ -468,9 +476,10 @@
             {!! Form::open(['route' => 'notifications.store', 'method' => 'post', 'files'=> true]) !!}
             <div class="row">
               <?php
-              $lims_user_list = DB::table('users')->where([
+              $lims_user_list = \App\Models\User::where([
                 ['is_active', true],
-                ['id', '!=', \Auth::user()->id]
+                ['id', '!=', \Auth::user()->id],
+                ['bus_config_id', session('bus_config_id')]
               ])->get();
               ?>
               <div class="col-md-4 form-group">
@@ -618,7 +627,7 @@
               <div class="col-md-6 form-group">
                 <label>{{ __('Expense Category') }} *</label>
                 <select name="expense_category_id" class="selectpicker form-control" required data-live-search="true" data-live-search-style="begins" title="Select Expense Category...">
-                    <option value="0">Employee Expense</option>
+                    <!-- <option value="0">Employee Expense</option> -->
                     @foreach($lims_expense_category_list as $expense_category)
                   <option value="{{$expense_category->id}}">{{$expense_category->name . ' (' . $expense_category->code. ')'}}</option>
                   @endforeach
@@ -959,7 +968,10 @@
             <p class="italic"><small>{{ __('The field labels marked with * are required input fields') }}.</small></p>
             {!! Form::open(['route' => 'report.user', 'method' => 'post']) !!}
             <?php
-            $lims_user_list = DB::table('users')->where('is_active', true)->get();
+            $lims_user_list = \App\Models\User::where([
+              ['is_active', true],
+              ['id', '!=', \Auth::user()->id]
+            ])->get();  
             ?>
             <div class="form-group">
               <label>{{ __('User') }} *</label>
@@ -1450,6 +1462,14 @@
     });
 
   </script>
+
+  <script>
+    $(document).ready(function() {
+        $(".alert").delay(3000).slideUp(300, function() {
+            $(this).remove();
+        });
+    });
+</script>
 </body>
 
 </html>

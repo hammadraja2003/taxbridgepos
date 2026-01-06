@@ -22,24 +22,25 @@ class ResetDB extends Command
     public function handle()
     {
         //clearing all the cached queries
-        $this->cacheForget('biller_list');
-        $this->cacheForget('brand_list');
-        $this->cacheForget('category_list');
-        $this->cacheForget('coupon_list');
-        $this->cacheForget('customer_list');
-        $this->cacheForget('customer_group_list');
-        $this->cacheForget('product_list');
-        $this->cacheForget('product_list_with_variant');
-        $this->cacheForget('warehouse_list');
-        $this->cacheForget('table_list');
-        $this->cacheForget('tax_list');
-        $this->cacheForget('currency');
-        $this->cacheForget('general_setting');
-        $this->cacheForget('pos_setting');
-        $this->cacheForget('user_role');
-        $this->cacheForget('permissions');
-        $this->cacheForget('role_has_permissions');
-        $this->cacheForget('role_has_permissions_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        $this->cacheForget($key_prefix . 'biller_list');
+        $this->cacheForget($key_prefix . 'brand_list');
+        $this->cacheForget($key_prefix . 'category_list');
+        $this->cacheForget($key_prefix . 'coupon_list');
+        $this->cacheForget($key_prefix . 'customer_list');
+        $this->cacheForget($key_prefix . 'customer_group_list');
+        $this->cacheForget($key_prefix . 'product_list');
+        $this->cacheForget($key_prefix . 'product_list_with_variant');
+        $this->cacheForget($key_prefix . 'warehouse_list');
+        $this->cacheForget($key_prefix . 'table_list');
+        $this->cacheForget($key_prefix . 'tax_list');
+        $this->cacheForget($key_prefix . 'currency');
+        $this->cacheForget($key_prefix . 'general_setting');
+        $this->cacheForget($key_prefix . 'pos_setting');
+        $this->cacheForget($key_prefix . 'user_role');
+        $this->cacheForget($key_prefix . 'permissions');
+        $this->cacheForget($key_prefix . 'role_has_permissions');
+        $this->cacheForget($key_prefix . 'role_has_permissions_list');
 
         // Disable foreign key checks to avoid constraint issues
         DB::statement('SET FOREIGN_KEY_CHECKS = 0;');

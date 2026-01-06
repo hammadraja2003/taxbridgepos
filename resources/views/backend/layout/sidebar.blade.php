@@ -531,20 +531,20 @@
             @if(config('database.connections.saleprosaas_landlord'))
                 @php
                     tenancy()->central(function () use (&$disable_tenant_support_tickets) {
-                        $disable_tenant_support_tickets = DB::table('general_settings')->latest()
-                                                        ->first()->disable_tenant_support_tickets;
+                        $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
+                        $disable_tenant_support_tickets = $general_setting->disable_tenant_support_tickets;
                     });
                 @endphp
-                @if(!$disable_tenant_support_tickets)
+                @if($disable_tenant_support_tickets)
                     <li><a href="{{route('tickets.index')}}"><i class="dripicons-ticket"></i> {{__('db.support_tickets')}}</a></li>
                 @endif
             @endif
 
             @can ('addons')
                 @if(\Auth::user()->role_id != 5)
-                    @if(!config('database.connections.saleprosaas_landlord'))
+                    <!-- @if(!config('database.connections.saleprosaas_landlord'))
                         <li><a href="{{url('addon-list')}}" id="addon-list"> <i class="dripicons-flag"></i><span>{{__('db.Addons')}}</span></a></li>
-                    @endif
+                    @endif -->
                     @if (in_array('woocommerce',explode(',',$general_setting->modules)))
                         <li><a href="{{route('woocommerce.index')}}"> <i class="fa fa-wordpress"></i><span>WooCommerce</span></a></li>
                     @endif

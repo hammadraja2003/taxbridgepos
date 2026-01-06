@@ -314,8 +314,9 @@
                                     categoryIdArray: category_id
                                 },
                                 success:function(data){
-                                    dt.rows({ page: 'current', selected: true }).deselect();
-                                    dt.rows({ page: 'current', selected: true }).remove().draw(false);
+                                    setTimeout(function () {
+                                        location.reload();
+                                    }, 300);
                                 }
                             });
                         }

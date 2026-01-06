@@ -108,7 +108,8 @@
                     <td>{{ $user->email}}</td>
                     <td>{{ $user->company_name}}</td>
                     <td>{{ $user->phone}}</td>
-                    <?php $role = DB::table('roles')->find($user->role_id);?>
+
+                    <?php $role = DB::connection('master')->table('roles')->find($user->role_id);?>
                     <td>{{ $role->name }}</td>
                     <td class="text-center">
                         <div class="custom-control custom-switch">

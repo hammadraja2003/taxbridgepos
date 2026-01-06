@@ -51,7 +51,7 @@ use App\Models\MailSetting;
 use Stripe\Stripe;
 use NumberToWords\NumberToWords;
 use Illuminate\Support\Facades\Auth;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 use Spatie\Permission\Models\Permission;
 use App\Mail\SaleDetails;
 use App\Mail\LogMessage;
@@ -175,7 +175,7 @@ class SaleController extends Controller
 
     public function saleData(Request $request)
     {
-        $general_setting = GeneralSetting::select('modules')->first();
+        $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
         // 1. Column mapping for DataTables
         $columns = array(
             2 => 'created_at',
@@ -429,7 +429,8 @@ class SaleController extends Controller
                 $nestedData['key'] = $key;
                 $nestedData['date'] = date(config('date_format').' h:i:s a', strtotime($sale->created_at));
                 $nestedData['reference_no'] = $sale->reference_no;
-                $nestedData['created_by'] = $user->name;
+                // $nestedData['created_by'] = $user->name;
+                $nestedData['created_by'] = $sale->user->name ?? 'N/A';
                 $nestedData['customer'] = $sale->customer->name.'<br>'.$sale->customer->phone_number.'<input type="hidden" class="deposit" value="'.($sale->customer->deposit - $sale->customer->expense).'" />'.'<input type="hidden" class="points" value="'.$sale->customer->points.'" />';
 
                 $warehouse = Warehouse::select('name')->where('id', $sale->warehouse_id)->first();
@@ -609,7 +610,7 @@ class SaleController extends Controller
                     if($table) $table_name = $table->name;
                 }
 
-                $nestedData['sale'] = array( '[ "'.date(config('date_format'), strtotime($sale->created_at->toDateString())).'"', ' "'.$sale->reference_no.'"', ' "'.$sale_status_text.'"', ' "'.@$sale->biller->name.'"', ' "'.@$sale->biller->company_name.'"', ' "'.@$sale->biller->email.'"', ' "'.@$sale->biller->phone_number.'"', ' "'.@$sale->biller->address.'"', ' "'.@$sale->biller->city.'"', ' "'.@$sale->customer->name.'"', ' "'.@$sale->customer->phone_number.'"', ' "'.@$sale->customer->address.'"', ' "'.@$sale->customer->city.'"', ' "'.@$sale->id.'"', ' "'.@$sale->total_tax.'"', ' "'.$sale->total_discount.'"', ' "'.$sale->total_price.'"', ' "'.$sale->order_tax.'"', ' "'.$sale->order_tax_rate.'"', ' "'.$sale->order_discount.'"', ' "'.$sale->shipping_cost.'"', ' "'.$sale->grand_total.'"', ' "'.$sale->paid_amount.'"', ' "'.preg_replace('/[\n\r]/', "<br>", $sale->sale_note).'"', ' "'.preg_replace('/[\n\r]/', "<br>", $sale->staff_note).'"', ' "'.$sale->user->name.'"', ' "'.$sale->user->email.'"', ' "'.$sale->warehouse->name.'"', ' "'.$coupon_code.'"', ' "'.$sale->coupon_discount.'"', ' "'.$sale->document.'"', ' "'.$currency_code.'"', ' "'.$sale->exchange_rate.'"', ' "'.$table_name.'"]'
+                $nestedData['sale'] = array( '[ "'.date(config('date_format'), strtotime($sale->created_at->toDateString())).'"', ' "'.$sale->reference_no.'"', ' "'.$sale_status_text.'"', ' "'.@$sale->biller->name.'"', ' "'.@$sale->biller->company_name.'"', ' "'.@$sale->biller->email.'"', ' "'.@$sale->biller->phone_number.'"', ' "'.@$sale->biller->address.'"', ' "'.@$sale->biller->city.'"', ' "'.@$sale->customer->name.'"', ' "'.@$sale->customer->phone_number.'"', ' "'.@$sale->customer->address.'"', ' "'.@$sale->customer->city.'"', ' "'.@$sale->id.'"', ' "'.@$sale->total_tax.'"', ' "'.$sale->total_discount.'"', ' "'.$sale->total_price.'"', ' "'.$sale->order_tax.'"', ' "'.$sale->order_tax_rate.'"', ' "'.$sale->order_discount.'"', ' "'.$sale->shipping_cost.'"', ' "'.$sale->grand_total.'"', ' "'.$sale->paid_amount.'"', ' "'.preg_replace('/[\n\r]/', "<br>", $sale->sale_note).'"', ' "'.preg_replace('/[\n\r]/', "<br>", $sale->staff_note).'"', ' "'.($sale->user->name ?? 'N/A').'"', ' "'.($sale->user->email ?? 'N/A').'"', ' "'.$sale->warehouse->name.'"', ' "'.$coupon_code.'"', ' "'.$sale->coupon_discount.'"', ' "'.$sale->document.'"', ' "'.$currency_code.'"', ' "'.$sale->exchange_rate.'"', ' "'.$table_name.'"]'
                 );
                 $data[] = $nestedData;
             }
@@ -660,13 +661,13 @@ class SaleController extends Controller
             $lims_customer_group_all = CustomerGroup::where('is_active', true)->get();
 
             $lims_account_list = Account::select('id', 'name','is_default','is_active')->where('is_active', true)->get();
-
-            if(cache()->has('general_setting'))
+            
+            if(cache()->has('tenant_'.session('bus_config_id').'_general_setting'))
             {
-                $general_setting = cache()->get('general_setting');
+                $general_setting = cache()->get('tenant_'.session('bus_config_id').'_general_setting');
             }else {
-                $general_setting = GeneralSetting::select('modules')->first();
-                cache()->put('general_setting', $general_setting, 60 * 60 * 24);
+                $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
+                cache()->put('tenant_'.session('bus_config_id').'_general_setting', $general_setting, 60 * 60 * 24);
             }
             if(in_array('restaurant',explode(',',$general_setting->modules))){
                 $lims_table_list = Table::join('floors','tables.floor_id','=','floors.id')
@@ -674,7 +675,7 @@ class SaleController extends Controller
                         ->get();
 
                 $service_list = DB::table('services')->where('is_active',1)->get();
-                $waiter_list = DB::table('users')->where('service_staff',1)->where('is_active',1)->get();
+                $waiter_list = DB::connection('master')->table('users')->where('service_staff',1)->where('is_active',1)->get();
 
                 return view('backend.sale.create',compact('currency_list', 'lims_customer_list', 'lims_warehouse_list', 'lims_biller_list', 'lims_pos_setting_data', 'lims_tax_list', 'lims_reward_point_setting_data','options', 'numberOfInvoice', 'custom_fields', 'lims_customer_group_all', 'lims_table_list', 'service_list', 'waiter_list'));
 
@@ -689,7 +690,6 @@ class SaleController extends Controller
 
     public function store(StoreSaleRequest $request)
     {
-
         $data = $request->all();
 
         /*try {*/
@@ -712,12 +712,12 @@ class SaleController extends Controller
             if($cash_register_data)
                 $data['cash_register_id'] = $cash_register_data->id;
 
-            if(cache()->has('general_setting'))
+            if(cache()->has('tenant_'.session('bus_config_id').'_general_setting'))
             {
-                $general_setting = cache()->get('general_setting');
+                $general_setting = cache()->get('tenant_'.session('bus_config_id').'_general_setting');
             }else {
-                $general_setting = GeneralSetting::latest()->first();
-                cache()->put('general_setting', $general_setting, 60 * 60 * 24);
+                $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
+                cache()->put('tenant_'.session('bus_config_id').'_general_setting', $general_setting, 60 * 60 * 24);
             }
 
             if (isset($data['created_at'])) {
@@ -1108,12 +1108,12 @@ class SaleController extends Controller
                 $product_sale['tax'] = $tax[$i];
                 $product_sale['total'] = $mail_data['total'][$i] = $total[$i];
 
-                if(cache()->has('general_setting'))
+                if(cache()->has('tenant_'.session('bus_config_id').'_general_setting'))
                 {
-                    $general_setting = cache()->get('general_setting');
+                    $general_setting = cache()->get('tenant_'.session('bus_config_id').'_general_setting');
                 }else {
-                    $general_setting = GeneralSetting::select('modules')->first();
-                    cache()->put('general_setting', $general_setting, 60 * 60 * 24);
+                    $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
+                    cache()->put('tenant_'.session('bus_config_id').'_general_setting', $general_setting, 60 * 60 * 24);
                 }
 
                 if (in_array('restaurant', explode(',', $general_setting->modules))) {
@@ -1543,12 +1543,12 @@ class SaleController extends Controller
     {
         $data = $request->all();
 
-        if(cache()->has('general_setting'))
+        if(cache()->has('tenant_'.session('bus_config_id').'_general_setting'))
         {
-            $general_setting = cache()->get('general_setting');
+            $general_setting = cache()->get('tenant_'.session('bus_config_id').'_general_setting');
         }else {
-            $general_setting = GeneralSetting::latest()->first();
-            cache()->put('general_setting', $general_setting, 60 * 60 * 24);
+            $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
+            cache()->put('tenant_'.session('bus_config_id').'_general_setting', $general_setting, 60 * 60 * 24);
         }
 
         $company = $general_setting->company_name;
@@ -1719,7 +1719,9 @@ class SaleController extends Controller
                                         ->select('product_warehouse.*', 'products.name', 'products.code', 'products.type', 'products.product_list', 'products.qty_list', 'products.is_embeded')
                                         ->get();
         //return $lims_product_warehouse_data;
-        config()->set('database.connections.mysql.strict', false);
+        // config()->set('database.connections.mysql.strict', false);
+        $connection = config('database.default');
+        config()->set("database.connections.{$connection}.strict", false);  
         \DB::reconnect(); //important as the existing connection if any would be in strict mode
 
         $query = Product::join('product_warehouse', 'products.id', '=', 'product_warehouse.product_id');
@@ -1745,7 +1747,7 @@ class SaleController extends Controller
         ->get();
 
         //now changing back the strict ON
-        config()->set('database.connections.mysql.strict', true);
+        config()->set("database.connections.{$connection}.strict", true);
         \DB::reconnect();
 
         $query = Product::join('product_warehouse', 'products.id', '=', 'product_warehouse.product_id');
@@ -1775,6 +1777,8 @@ class SaleController extends Controller
         ->select('product_warehouse.*', 'products.is_embeded')
         //->groupBy('product_warehouse.product_id')
         ->get();
+        config()->set("database.connections.{$connection}.strict", true);
+        \DB::reconnect();
 
         $lims_product_with_variant_warehouse_data = $query->whereNotNull('product_warehouse.variant_id')
         ->select('product_warehouse.*', 'products.name', 'products.code', 'products.type', 'products.product_list', 'products.qty_list', 'products.is_embeded')
@@ -1940,44 +1944,47 @@ class SaleController extends Controller
                 $all_permission[] = $permission->name;
             if(empty($all_permission))
                 $all_permission[] = 'dummy text';
+            $key_prefix = 'tenant_' . session('bus_config_id') . '_';
 
-            $lims_customer_list = Cache::remember('customer_list', 60*60*24, function () {
+            $lims_customer_list = Cache::remember($key_prefix . 'customer_list', 60*60*24, function () {
                 return Customer::where('is_active', true)->get();
             });
-            $lims_customer_group_all = Cache::remember('customer_group_list', 60*60*24, function () {
+            $lims_customer_group_all = Cache::remember($key_prefix . 'customer_group_list', 60*60*24, function () {
                 return CustomerGroup::where('is_active', true)->get();
             });
-            $lims_warehouse_list = Cache::remember('warehouse_list', 60*60*24*365, function () {
+            $lims_warehouse_list = Cache::remember($key_prefix . 'warehouse_list', 60*60*24*365, function () {
                 return Warehouse::where('is_active', true)->get();
             });
-            $lims_biller_list = Cache::remember('biller_list', 60*60*24*30, function () {
+            $lims_biller_list = Cache::remember($key_prefix . 'biller_list', 60*60*24*30, function () {
                 return Biller::where('is_active', true)->get();
             });
             $lims_reward_point_setting_data = RewardPointSetting::latest()->first();
-            $lims_tax_list = Cache::remember('tax_list', 60*60*24*30, function () {
+            $lims_tax_list = Cache::remember($key_prefix . 'tax_list', 60*60*24*30, function () {
                 return Tax::where('is_active', true)->get();
             });
 
-            $lims_pos_setting_data = Cache::remember('pos_setting', 60*60*24*30, function () {
+            $lims_pos_setting_data = Cache::remember($key_prefix . 'pos_setting', 60*60*24*30, function () {
                 return PosSetting::latest()->first();
             });
             if($lims_pos_setting_data)
                 $options = explode(',', $lims_pos_setting_data->payment_options);
             else
                 $options = [];
-            $lims_brand_list = Cache::remember('brand_list', 60*60*24*30, function () {
+            $lims_brand_list = Cache::remember($key_prefix . 'brand_list', 60*60*24*30, function () {
                 return Brand::where('is_active',true)->get();
             });
-            $lims_category_list = Cache::remember('category_list', 60*60*24*30, function () {
+            $lims_category_list = Cache::remember($key_prefix . 'category_list', 60*60*24*30, function () {
                 return Category::where('is_active',true)->get();
             });
 
-            if(cache()->has('general_setting'))
+         
+
+            if(cache()->has('tenant_'.session('bus_config_id').'_general_setting'))
             {
-                $general_setting = cache()->get('general_setting');
+                $general_setting = cache()->get('tenant_'.session('bus_config_id').'_general_setting');
             }else {
-                $general_setting = DB::table('general_settings')->select('modules')->first();
-                cache()->put('general_setting', $general_setting, 60 * 60 * 24);
+                $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
+                cache()->put('tenant_'.session('bus_config_id').'_general_setting', $general_setting, 60 * 60 * 24);
             }
 
             if(in_array('restaurant',explode(',',$general_setting->modules))){
@@ -1986,14 +1993,14 @@ class SaleController extends Controller
                         ->get();
 
                 $service_list = DB::table('services')->where('is_active',1)->get();
-                $waiter_list = DB::table('users')->where('service_staff',1)->where('is_active',1)->get();
+                $waiter_list = DB::connection('master')->table('users')->where('service_staff',1)->where('is_active',1)->get();
             }else{
-                $lims_table_list = Cache::remember('table_list', 60*60*24*30, function () {
+                $lims_table_list = Cache::remember($key_prefix . 'table_list', 60*60*24*30, function () {
                     return Table::where('is_active',true)->get();
                 });
             }
 
-            $lims_coupon_list = Cache::remember('coupon_list', 60*60*24*30, function () {
+            $lims_coupon_list = Cache::remember($key_prefix . 'coupon_list', 60*60*24*30, function () {
                 return Coupon::where('is_active',true)->get();
             });
             $flag = 0;
@@ -2081,12 +2088,12 @@ class SaleController extends Controller
 
     public function recentSale()
     {
-        if(cache()->has('general_setting'))
+        if(cache()->has('tenant_'.session('bus_config_id').'_general_setting'))
         {
-            $general_setting = cache()->get('general_setting');
+            $general_setting = cache()->get('tenant_'.session('bus_config_id').'_general_setting');
         }else {
-            $general_setting = DB::table('general_settings')->select('modules')->first();
-            cache()->put('general_setting', $general_setting, 60 * 60 * 24);
+            $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
+            cache()->put('tenant_'.session('bus_config_id').'_general_setting', $general_setting, 60 * 60 * 24);
         }
         if(in_array('restaurant',explode(',',$general_setting->modules))){
             if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
@@ -2310,12 +2317,13 @@ class SaleController extends Controller
                 ['discount_plan_customers.customer_id', $customerId]
             ])->select('discounts.*')->get();
 
-        if(cache()->has('general_setting'))
+        if(cache()->has('tenant_'.session('bus_config_id').'_general_setting'))
         {
-            $general_setting = cache()->get('general_setting');
+            $general_setting = cache()->get('tenant_'.session('bus_config_id').'_general_setting');
         }else {
-            $general_setting = DB::table('general_settings')->select('modules')->first();
-            cache()->put('general_setting', $general_setting, 60 * 60 * 24);
+            // $general_setting = DB::table('general_settings')->select('modules')->first();
+            $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
+            cache()->put('tenant_'.session('bus_config_id').'_general_setting', $general_setting, 60 * 60 * 24);
         }
         if ($general_setting && in_array('restaurant', explode(',', $general_setting->modules))) {
             // Try to find base product
@@ -2578,12 +2586,13 @@ class SaleController extends Controller
             else
                 $product_sale[9][$key] = __('db.No');
 
-            if(cache()->has('general_setting'))
+            if(cache()->has('tenant_'.session('bus_config_id').'_general_setting'))
             {
-                $general_setting = cache()->get('general_setting');
+                $general_setting = cache()->get('tenant_'.session('bus_config_id').'_general_setting');
             }else {
-                $general_setting = DB::table('general_settings')->select('modules')->first();
-                cache()->put('general_setting', $general_setting, 60 * 60 * 24);
+                // $general_setting = DB::table('general_settings')->select('modules')->first();
+                $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
+                cache()->put('tenant_'.session('bus_config_id').'_general_setting', $general_setting, 60 * 60 * 24);
             }
             if(in_array('restaurant',explode(',',$general_setting->modules))){
                 $product_sale[10][$key] = $product_sale_data->topping_id;
@@ -2902,12 +2911,12 @@ class SaleController extends Controller
             $data['created_at'] = date('Y-m-d H:i:s');
         }
 
-        if(cache()->has('general_setting'))
+        if(cache()->has('tenant_'.session('bus_config_id').'_general_setting'))
         {
-            $general_setting = cache()->get('general_setting');
+            $general_setting = cache()->get('tenant_'.session('bus_config_id').'_general_setting');
         }else {
-            $general_setting = GeneralSetting::latest()->first();
-            cache()->put('general_setting', $general_setting, 60 * 60 * 24);
+            $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
+            cache()->put('tenant_'.session('bus_config_id').'_general_setting', $general_setting, 60 * 60 * 24);
         }
         if(in_array('restaurant',explode(',',$general_setting->modules))){
             $topping_product = $data['topping_product'] ?? [];
@@ -3321,12 +3330,13 @@ class SaleController extends Controller
 
     public function printLastReciept()
     {
-        if(cache()->has('general_setting'))
+        if(cache()->has('tenant_'.session('bus_config_id').'_general_setting'))
         {
-            $general_setting = cache()->get('general_setting');
+            $general_setting = cache()->get('tenant_'.session('bus_config_id').'_general_setting');
         }else {
-            $general_setting = DB::table('general_settings')->select('modules')->first();
-            cache()->put('general_setting', $general_setting, 60 * 60 * 24);
+            // $general_setting = DB::table('general_settings')->select('modules')->first();
+            $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
+            cache()->put('tenant_'.session('bus_config_id').'_general_setting', $general_setting, 60 * 60 * 24);
         }
         if(in_array('restaurant',explode(',',$general_setting->modules))){
             $sale = Sale::where('sale_status', 5)->whereNull('deleted_at')->latest()->first();
@@ -3372,7 +3382,8 @@ class SaleController extends Controller
     ) {
 
         $data = [];
-        $general_setting = DB::table('general_settings')->latest()->first();
+        // $general_setting = DB::table('general_settings')->latest()->first();
+        $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
         $show = json_decode($invoice_settings->show_column);
         // ✅ Shop / Warehouse info
         if (isset($show->show_warehouse_info) && $show->show_warehouse_info == 1) {
@@ -3615,7 +3626,7 @@ class SaleController extends Controller
             $lims_product_sale_data = Product_Sale::where('sale_id', $id)->get();
             if(cache()->has('biller_list'))
             {
-                $lims_biller_data = cache()->get('biller_list')->find($lims_sale_data->biller_id);
+                $lims_biller_data = cache()->get('tenant_'.session('bus_config_id').'_biller_list')->find($lims_sale_data->biller_id);
             }
             else{
                 $lims_biller_data = Biller::find($lims_sale_data->biller_id);
@@ -3623,7 +3634,7 @@ class SaleController extends Controller
 
             if(cache()->has('warehouse_list'))
             {
-                $lims_warehouse_data = cache()->get('warehouse_list')->find($lims_sale_data->warehouse_id);
+                $lims_warehouse_data = cache()->get('tenant_'.session('bus_config_id').'_warehouse_list')->find($lims_sale_data->warehouse_id);
             }
             else{
                 $lims_warehouse_data = Warehouse::find($lims_sale_data->warehouse_id);
@@ -3631,7 +3642,7 @@ class SaleController extends Controller
 
             if(cache()->has('customer_list'))
             {
-                $lims_customer_data = cache()->get('customer_list')->find($lims_sale_data->customer_id);
+                $lims_customer_data = cache()->get('tenant_'.session('bus_config_id').'_customer_list')->find($lims_sale_data->customer_id);
             }
             else{
                 $lims_customer_data = Customer::find($lims_sale_data->customer_id);
@@ -3640,7 +3651,7 @@ class SaleController extends Controller
             $lims_payment_data = Payment::where('sale_id', $id)->get();
             if(cache()->has('pos_setting'))
             {
-                $lims_pos_setting_data = cache()->get('pos_setting');
+                $lims_pos_setting_data = cache()->get('tenant_'.session('bus_config_id').'_pos_setting');
             }
             else{
                 $lims_pos_setting_data = PosSetting::select('invoice_option','thermal_invoice_size')->latest()->first();
@@ -3677,7 +3688,7 @@ class SaleController extends Controller
             if(is_null($lims_sale_data->exchange_rate))
             {
                 $numberInWords = $numberTransformer->toWords($lims_sale_data->grand_total);
-                $currency_code = cache()->get('currency')->code;
+                $currency_code = cache()->get('tenant_'.session('bus_config_id').'_currency')->code;
             } else {
                 $numberInWords = $numberTransformer->toWords($lims_sale_data->grand_total);
                 $sale_currency = DB::table('currencies')->select('code')->where('id',$lims_sale_data->currency_id)->first();
@@ -3831,8 +3842,10 @@ class SaleController extends Controller
 
     public function addPayment(Request $request)
     {
+        
         $data = $request->except('document');
         $data = $request->all();
+        $customer_id = Sale::find($request->sale_id)->customer_id;
         $document = $request->document;
         if ($document) {
             $v = Validator::make(
@@ -4566,12 +4579,13 @@ class SaleController extends Controller
     }
 
     public function deleteBySelection(Request $request){
-        if(cache()->has('general_setting'))
+        if(cache()->has('tenant_'.session('bus_config_id').'_general_setting'))
         {
-            $general_setting = cache()->get('general_setting');
+            $general_setting = cache()->get('tenant_'.session('bus_config_id').'_general_setting');
         }else {
-            $general_setting = DB::table('general_settings')->latest()->first();
-            cache()->put('general_setting', $general_setting, 60 * 60 * 24);
+            // $general_setting = DB::table('general_settings')->latest()->first();
+            $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
+            cache()->put('tenant_'.session('bus_config_id').'_general_setting', $general_setting, 60 * 60 * 24);
         }
         
         $sale_id = $request['saleIdArray'];
@@ -4737,12 +4751,13 @@ class SaleController extends Controller
 
     public function destroy($id)
     {
-        if(cache()->has('general_setting'))
+        if(cache()->has('tenant_'.session('bus_config_id').'_general_setting'))
         {
-            $general_setting = cache()->get('general_setting');
+            $general_setting = cache()->get('tenant_'.session('bus_config_id').'_general_setting');
         }else {
-            $general_setting = DB::table('general_settings')->latest()->first();
-            cache()->put('general_setting', $general_setting, 60 * 60 * 24);
+            // $general_setting = DB::table('general_settings')->latest()->first();
+            $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
+            cache()->put('tenant_'.session('bus_config_id').'_general_setting', $general_setting, 60 * 60 * 24);
         }
 
         $url = url()->previous();
@@ -5052,12 +5067,13 @@ class SaleController extends Controller
 
         $results = array_combine($keys, $vals);
 
-        if(cache()->has('general_setting'))
+        if(cache()->has('tenant_'.session('bus_config_id').'_general_setting'))
         {
-            $general_setting = cache()->get('general_setting');
+            $general_setting = cache()->get('tenant_'.session('bus_config_id').'_general_setting');
         }else {
-            $general_setting = DB::table('general_settings')->latest()->first();
-            cache()->put('general_setting', $general_setting, 60 * 60 * 24);
+            // $general_setting = DB::table('general_settings')->latest()->first();
+            $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
+            cache()->put('tenant_'.session('bus_config_id').'_general_setting', $general_setting, 60 * 60 * 24);
         }
         $company = $general_setting->company_name;
 

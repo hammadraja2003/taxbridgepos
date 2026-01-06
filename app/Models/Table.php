@@ -8,6 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Table extends Model
 {
     use HasFactory;
-
+    protected $connection = 'tenant';
     protected $fillable = ['name', 'number_of_person', 'description', 'floor_id', 'is_active'];
 }

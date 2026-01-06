@@ -326,7 +326,7 @@
 
                                         <div class="col-md-4">
                                             <div class="form-group">
-                                                <label>{{__('db.Recieved Amount')}} *</label>
+                                                <label>{{__('db.Payable Amount')}} *</label>
                                                 <input type="number" name="paying_amount[]" class="form-control" id="paying-amount" step="any" />
                                             </div>
                                         </div>
@@ -546,6 +546,7 @@
 
             if(payment_status == 3 || payment_status == 4){
                 var balance = $('#account_id option:selected').data('total_balance');
+                alert(balance);
                 var currency_rate = $('#currency-id option:selected').data('rate');
                 let grandTotal = parseFloat($('#grand_total').text()) || 0;
                 balance = currency_rate * balance;
@@ -1245,6 +1246,12 @@
                 $('input[name="paying_amount[]"]').val($('input[name="grand_total"]').val());
                 $('input[name="amount[]"]').val($('input[name="grand_total"]').val());
                 $('input[name="paid_amount"]').val($('input[name="grand_total"]').val());
+            } else if (payment_status == '3') {
+                if($('input[name="paying_amount[]"]').val() == '') {
+                    $('input[name="paying_amount[]"]').val($('input[name="grand_total"]').val());
+                    $('input[name="amount[]"]').val($('input[name="grand_total"]').val());
+                    $('input[name="paid_amount"]').val($('input[name="grand_total"]').val());
+                }
             }
             $("#account-list").attr("hidden", false);
         } else {

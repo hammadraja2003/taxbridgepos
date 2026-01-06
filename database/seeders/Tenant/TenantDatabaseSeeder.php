@@ -32,7 +32,7 @@ class TenantDatabaseSeeder extends Seeder
             DB::table('general_settings')->insert([
                 [
                     'id' => 1,
-                    'site_title' => !empty(self::$tenantData) ? self::$tenantData['site_title'] : 'SalePro POS SaaS',
+                    'site_title' => !empty(self::$tenantData) ? self::$tenantData['site_title'] : 'TaxBridge POS SaaS',
                     'site_logo' => !empty(self::$tenantData) ? self::$tenantData['site_logo'] : '20250102042651.png',
                     'is_rtl' => 0,
                     'currency' => '1',
@@ -41,7 +41,7 @@ class TenantDatabaseSeeder extends Seeder
                     'staff_access' => 'own',
                     'without_stock' => 'no',
                     'date_format' => 'd/m/Y',
-                    'developed_by' => !empty(self::$tenantData) ? self::$tenantData['developed_by'] : 'Lioncoders',
+                    'developed_by' => !empty(self::$tenantData) ? self::$tenantData['developed_by'] : 'TaxBridge POS SaaS',
                     'invoice_format' => 'standard',
                     'decimal' => 2,
                     'state' => 1,
@@ -59,8 +59,8 @@ class TenantDatabaseSeeder extends Seeder
             ]);
         }
 
-        if (!DB::table('users')->count()) {
-            DB::table('users')->insert([
+        if (!DB::connection('master')->table('users')->count()) {
+            DB::connection('master')->table('users')->insert([
                 [
                     'id' => 1,
                     'name' => !empty(self::$tenantData) ? self::$tenantData['name'] : 'admin',
@@ -68,7 +68,7 @@ class TenantDatabaseSeeder extends Seeder
                     'password' => !empty(self::$tenantData) ? self::$tenantData['password'] : '$2y$10$DWAHTfjcvwCpOCXaJg11MOhsqns03uvlwiSUOQwkHL2YYrtrXPcL6',
                     'remember_token' => '6mN44MyRiQZfCi0QvFFIYAU9LXIUz9CdNIlrRS5Lg8wBoJmxVu8auzTP42ZW',
                     'phone' => !empty(self::$tenantData) ? self::$tenantData['phone'] : '12112',
-                    'company_name' => !empty(self::$tenantData) ? self::$tenantData['company_name'] : 'lioncoders',
+                    'company_name' => !empty(self::$tenantData) ? self::$tenantData['company_name'] : 'TaxBridge POS',
                     'role_id' => 1,
                     'biller_id' => NULL,
                     'warehouse_id' => NULL,
@@ -78,8 +78,8 @@ class TenantDatabaseSeeder extends Seeder
             ]);
         }
 
-        if (!DB::table('roles')->count()) {
-            DB::table('roles')->insert([
+        if (!DB::connection('master')->table('roles')->count()) {
+            DB::connection('master')->table('roles')->insert([
                 [
                     'id' => 1,
                     'name' => 'Admin',
@@ -112,7 +112,7 @@ class TenantDatabaseSeeder extends Seeder
         }
 
         ///permissions table data insert start///
-        $existing_permissions = DB::table('permissions')
+        $existing_permissions = DB::connection('master')->table('permissions')
         ->select('name', 'guard_name')
         ->get();
 
@@ -1010,12 +1010,12 @@ class TenantDatabaseSeeder extends Seeder
         }
 
         if (!empty($insertData)) {
-            DB::table('permissions')->insert($insertData);
+            DB::connection('master')->table('permissions')->insert($insertData);
         }
         ///permissions table data insert end///
 
         ///role_has_permissions table data insert start///
-        $existing_role_has_permissions = DB::table('role_has_permissions')
+        $existing_role_has_permissions = DB::connection('master')->table('role_has_permissions')
         ->select('permission_id', 'role_id')
         ->get();
 
@@ -1404,7 +1404,7 @@ class TenantDatabaseSeeder extends Seeder
         }
 
         if (!empty($insertData)) {
-            DB::table('role_has_permissions')->insert($insertData);
+            DB::connection('master')->table('role_has_permissions')->insert($insertData);
         }
         ///role_has_permissions table data insert end///
 

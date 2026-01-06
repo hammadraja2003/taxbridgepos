@@ -13,15 +13,39 @@ use Illuminate\Support\Facades\DB;
 
 class CashRegisterController extends Controller
 {
+	// public function index()
+	// {
+	// 	if(Auth::user()->role_id <= 2) {
+	// 		$lims_cash_register_all = CashRegister::with('user', 'warehouse')->get();
+	// 		return view('backend.cash_register.index', compact('lims_cash_register_all'));
+	// 	}
+	// 	else
+	// 		return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
+	// }
+
 	public function index()
 	{
-		if(Auth::user()->role_id <= 2) {
-			$lims_cash_register_all = CashRegister::with('user', 'warehouse')->get();
-			return view('backend.cash_register.index', compact('lims_cash_register_all'));
+		if (Auth::user()->role_id <= 2) {
+
+			$lims_cash_register_all = CashRegister::with('warehouse')->get();
+
+			$userIds = $lims_cash_register_all->pluck('user_id')->unique();
+
+			$users = \App\Models\User::whereIn('id', $userIds)
+						->get()
+						->keyBy('id');
+
+			return view('backend.cash_register.index', compact(
+				'lims_cash_register_all',
+				'users'
+			));
 		}
-		else
-			return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
+
+		return redirect()->back()
+			->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
 	}
+
+
 	public function store(Request $request)
 	{
 		$data = $request->all();

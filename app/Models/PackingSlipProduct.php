@@ -8,5 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class PackingSlipProduct extends Model
 {
     use HasFactory;
+    protected $connection = 'tenant';   
     protected $fillable = ["packing_slip_id", "product_id", "variant_id"];
 }

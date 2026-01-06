@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class InstallmentPlan extends Model
 {
     use HasFactory;
-
+    protected $connection = 'tenant';   
     protected $fillable = [
         'reference_type',
         'reference_id',

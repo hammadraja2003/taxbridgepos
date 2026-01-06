@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class RewardPoint extends Model
 {
     use HasFactory;
+    protected $connection = 'tenant';
     protected $table = 'reward_points';
      protected $fillable = [
         'customer_id',

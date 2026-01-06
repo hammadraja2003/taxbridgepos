@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Country extends Model
 {
     use HasFactory;
+    protected $connection = 'tenant';
 
     /**
      * This Model has been created for testing purpose(Seeder, Factory, PHPUnit Testing and others).

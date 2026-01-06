@@ -8,6 +8,7 @@ use App\SellingPriceGroup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Cache;
+use App\Models\GeneralSetting;
 
 class LabelsController extends Controller
 {
@@ -43,8 +44,9 @@ class LabelsController extends Controller
             // if($barcode_details->is_continuous){
             //     $barcode_details->row_distance = 0;
             // }
-            $general_setting =  Cache::remember('general_setting', 60*60*24*365, function () {
-                return DB::table('general_settings')->latest()->first();
+            $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+            $general_setting =  Cache::remember($key_prefix . 'general_setting', 60*60*24*365, function () {
+                return GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
             });
             $business_name = $general_setting->company_name;
 

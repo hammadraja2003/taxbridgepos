@@ -32,12 +32,14 @@
                                     <div class="form-group">
                                         <label>{{__('db.Product Type')}} *</strong> </label>
                                         <div class="input-group">
-                                            <select name="type" required class="form-control selectpicker" id="type">
-                                                <option value="standard">Standard</option>
-                                                <option value="combo">Combo</option>
-                                                <option value="digital">Digital</option>
-                                                <option value="service">Service</option>
-                                            </select>
+                                            {!! getProductTypeDropdown(
+                                                name: 'type',
+                                                class: 'form-control selectpicker',
+                                                id: 'type',
+                                                required: true,
+                                                selectedValue: old('type', 'standard')
+                                            ) !!}
+
                                         </div>
                                     </div>
                                 </div>
@@ -233,7 +235,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>{{__('db.Daily Sale Objective')}}</strong></label> <i class="dripicons-question" data-toggle="tooltip" title="{{__('db.Minimum qty which must be sold in a day If not, you will be notified on dashboard But you have to set up the cron job properly for that Follow the documentation in that regard')}}"></i>
+                                        <label>{{__('db.Daily Sale Objective')}}</strong></label> <i class="dripicons-question" data-toggle="tooltip" title="{{__('db.Minimum qty which must be sold in a day If not, you will be notified on dashboard But you have to set up the cron job properly for that contact support in that regard')}}"></i>
                                         <input type="number" name="daily_sale_objective" class="form-control" step="any">
                                     </div>
                                 </div>
@@ -269,7 +271,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Warranty and Guarantee [20-01-2025] -->
+                                <!-- Warranty and Guarantee  -->
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>{{ __('db.Warranty') }}</label>

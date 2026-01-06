@@ -433,7 +433,7 @@
                                 @endif
                             </small><br>
                             @if (isset($show->show_footer_text) && $show->show_footer_text == 1)
-                                <strong>{{ $invoice_settings->footer_text ?? __('db.Thank you for shopping with us Please come again') }}</strong>
+                                <strong>{!! $invoice_settings->footer_text ?? __('db.Thank you for shopping with us Please come again') !!}</strong>
                             @endif
                     </tr>
                     <tr>

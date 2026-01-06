@@ -8,6 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class SmsTemplate extends Model
 {
     use HasFactory;
-
+    protected $connection = 'tenant';
     protected $fillable = ['name','content','is_default','is_default_ecommerce'];
 }

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Shift extends Model
 {
     use HasFactory;
+    protected $connection = 'tenant';
     protected $table = 'shifts';
     protected $fillable = [
         'name',

@@ -154,6 +154,9 @@
                                                         <th>{{__('db.Batch No')}}</th>
                                                         <th>{{__('db.Expired Date')}}</th>
                                                         <th>{{__('db.Net Unit Cost')}}</th>
+                                                        <th>{{__('db.Profit Margin')}}</th>
+                                                        <th>{{__('db.Profit Margin Type')}}</th>
+                                                        <th>{{__('db.Product Price')}}</th> 
                                                         <th>{{__('db.Discount')}}</th>
                                                         <th>{{__('db.Tax')}}</th>
                                                         <th>{{__('db.Subtotal')}}</th>
@@ -233,7 +236,22 @@
                                                             <input type="text" class="form-control expired-date" name="expired_date[]" disabled />
                                                         </td>
                                                         @endif
-                                                        <td class="net_unit_cost">{{ number_format((float)$product_purchase->net_unit_cost, $general_setting->decimal, '.', '')}} </td>
+                                                        <td class="net_unit_cost">{{ number_format((float)$product_purchase->net_unit_cost, $general_setting->decimal, '.', '')}}
+                                                        </td>
+                                                        <?php 
+                                                            // Logic to calculate/retrieve margin and price
+                                                            // Note: Adjust 'price' if your product column name is different
+                                                            $temp_price = $product_data->price ?? 0; 
+                                                            $temp_margin_type = 'percentage';
+                                                            $temp_margin = 0;
+                                                            
+                                                            if($product_purchase->net_unit_cost > 0) {
+                                                                $temp_margin = (($temp_price - $product_purchase->net_unit_cost) / $product_purchase->net_unit_cost) * 100;
+                                                            }
+                                                        ?>
+                                                        <td class="net_unit_margin">{{ number_format((float)$temp_margin, $general_setting->decimal, '.', '')}}</td>
+                                                        <td class="net_unit_margin_type">{{ $temp_margin_type }}</td>
+                                                        <td class="net_unit_price">{{ number_format((float)$temp_price, $general_setting->decimal, '.', '')}}</td>
                                                         <td class="discount">{{ number_format((float)$product_purchase->discount, $general_setting->decimal, '.', '')}}</td>
                                                         <td class="tax">{{ number_format((float)$product_purchase->tax, $general_setting->decimal, '.', '')}}</td>
                                                         <td class="sub-total">{{ number_format((float)$product_purchase->total, $general_setting->decimal, '.', '')}}</td>
@@ -245,6 +263,10 @@
                                                         <input type="hidden" class="purchase-unit-operator" value="{{$unit_operator}}"/>
                                                         <input type="hidden" class="purchase-unit-operation-value" value="{{$unit_operation_value}}"/>
                                                         <input type="hidden" class="net_unit_cost" name="net_unit_cost[]" value="{{$product_purchase->net_unit_cost}}" />
+                                                        <input type="hidden" class="unit_cost" name="unit_cost[]" value="{{$product_purchase->net_unit_cost}}" />
+                                                        <input type="hidden" class="net_unit_margin" name="net_unit_margin[]" value="{{$temp_margin}}" />
+                                                        <input type="hidden" class="net_unit_margin_type" name="net_unit_margin_type[]" value="{{$temp_margin_type}}" />
+                                                        <input type="hidden" class="net_unit_price" name="net_unit_price[]" value="{{$temp_price}}" />
                                                         <input type="hidden" class="discount-value" name="discount[]" value="{{$product_purchase->discount}}" />
                                                         <input type="hidden" class="tax-rate" name="tax_rate[]" value="{{$product_purchase->tax_rate}}"/>
                                                         @if($tax)
@@ -400,6 +422,23 @@
                                 <label>{{__('db.Unit Discount')}}</label>
                                 <input type="number" name="edit_discount" class="form-control" step="any">
                             </div>
+                            <!-- INSERT START -->
+                            <div class="col-md-4 form-group">
+                                <label>{{__('db.Profit Margin Type')}}</label>
+                                <select name="edit_profit_margin_type" class="form-control" required>
+                                    <option value="percentage">Percentage (%)</option>
+                                    <option value="flat">Flat</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 form-group">
+                                <label>{{__('db.Profit Margin')}}</label>
+                                <input type="number" name="edit_profit_margin" class="form-control" step="any">
+                            </div>
+                            <div class="col-md-4 form-group">
+                                <label>{{__('db.Product Price')}}</label>
+                                <input type="number" name="edit_product_price" class="form-control" step="any">
+                            </div>
+                            <!-- INSERT END -->
                             <div class="col-md-4 form-group">
                                 <label>{{__('db.Unit Cost')}}</label>
                                 <input type="number" name="edit_unit_cost" class="form-control" step="any">
@@ -440,6 +479,57 @@
 @push('scripts')
 <script type="text/javascript">
 
+    $(document).ready(function(){
+        // Function to recalculate price based on cost & margin
+function recalcPrice() {
+    let cost = parseFloat($('input[name="edit_unit_cost"]').val()) || 0;
+    let margin = parseFloat($('input[name="edit_profit_margin"]').val()) || 0;
+    let type = $('select[name="edit_profit_margin_type"]').val();
+    let price = 0;
+
+    if (type === 'percentage') {
+        price = cost + (cost * margin / 100);
+    } else {
+        price = cost + margin;
+    }
+    $('input[name="edit_product_price"]').val(price ? price.toFixed(2) : 0);
+}
+
+// Function to recalculate margin based on cost & price
+function recalcMargin() {
+    let cost = parseFloat($('input[name="edit_unit_cost"]').val()) || 0;
+    let price = parseFloat($('input[name="edit_product_price"]').val()) || 0;
+    let type = $('select[name="edit_profit_margin_type"]').val();
+    let margin = 0;
+
+    if (cost <= 0) {
+        $('input[name="edit_profit_margin"]').val(0);
+        return;
+    }
+
+    if (type === 'percentage') {
+        margin = ((price - cost) / cost) * 100;
+    } else {
+        margin = price - cost;
+    }
+    $('input[name="edit_profit_margin"]').val(margin ? margin.toFixed(2) : 0);
+}
+
+// Event Listeners for Modal
+$('input[name="edit_unit_cost"]').on("input", function () {
+    if ($('input[name="edit_profit_margin"]').val()) recalcPrice();
+});
+$('input[name="edit_profit_margin"]').on("input", function () {
+    if ($('input[name="edit_unit_cost"]').val()) recalcPrice();
+});
+$('input[name="edit_product_price"]').on("input", function () {
+    if ($('input[name="edit_unit_cost"]').val()) recalcMargin();
+});
+$('select[name="edit_profit_margin_type"]').on("change", function () {
+    recalcPrice();
+});
+    });
+
     $("ul#purchase").siblings('a').addClass("active");
     $("ul#purchase").addClass("show");
 
@@ -448,6 +538,10 @@ var lims_product_array = [];
 var product_code = [];
 var product_name = [];
 var product_qty = [];
+
+var profit_margin = [];
+var profit_margin_type = [];
+var product_price = [];
 
 // array data with selection
 var product_cost = [];
@@ -468,6 +562,9 @@ var temp_unit_operation_value = [];
 var rowindex;
 var customer_group_rate;
 var row_product_cost;
+var row_profit_margin = 0;
+var row_profit_margin_type;
+var row_product_price = 0;
 
 var rownumber = $('table.order-list tbody tr:last').index();
 for(rowindex  =0; rowindex <= rownumber; rowindex++){
@@ -481,6 +578,9 @@ for(rowindex  =0; rowindex <= rownumber; rowindex++){
     temp_unit_name = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit').val().split(',');
     unit_name.push($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit').val());
     unit_operator.push($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit-operator').val());
+    profit_margin.push(parseFloat($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_margin').text()));
+profit_margin_type.push($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_margin_type').text());
+product_price.push(parseFloat($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_price').text()));
     unit_operation_value.push($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit-operation-value').val());
     $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.purchase-unit').val(temp_unit_name[0]);
 }
@@ -620,6 +720,8 @@ $("table.order-list").on("click", ".edit-product", function() {
         htmlText = '<div class="col-md-12 form-group imei-section"><label>IMEI or Serial Numbers</label><input type="text" name="imei_numbers" value="'+imeiNumbers+'" class="form-control imei_number" placeholder="Type imei or serial numbers and separate them by comma. Example:1001,2001" step="any"></div>';
         $("#editModal .modal-element").append(htmlText);
     }
+
+ 
     var row_product_name = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('td:nth-child(1)').text();
     var row_product_code = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('td:nth-child(2)').text();
     $('#modal_header').text(row_product_name + '(' + row_product_code + ')');
@@ -631,6 +733,10 @@ $("table.order-list").on("click", ".edit-product", function() {
 
     unitConversion();
     $('input[name="edit_unit_cost"]').val(row_product_cost.toFixed({{$general_setting->decimal}}));
+    $('input[name="edit_profit_margin"]').val(profit_margin[rowindex]);
+    $('select[name="edit_profit_margin_type"]').val(profit_margin_type[rowindex]);
+    $('input[name="edit_product_price"]').val(product_price[rowindex]);
+    $('.selectpicker').selectpicker('refresh'); // Refresh select picker for margin type
 
     var tax_name_all = <?php echo json_encode($tax_name_all) ?>;
     var pos = tax_name_all.indexOf(tax_name[rowindex]);
@@ -679,6 +785,20 @@ $('button[name="update_btn"]').on("click", function() {
 
     tax_rate[rowindex] = parseFloat(tax_rate_all[$('select[name="edit_tax_rate"]').val()]);
     tax_name[rowindex] = $('select[name="edit_tax_rate"] option:selected').text();
+
+    profit_margin[rowindex] = $('input[name="edit_profit_margin"]').val();
+    profit_margin_type[rowindex] = $('select[name="edit_profit_margin_type"]').val();
+    product_price[rowindex] = $('input[name="edit_product_price"]').val();
+
+    // Update display in table
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_margin').text(parseFloat(profit_margin[rowindex]).toFixed({{$general_setting->decimal}}));
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_margin').val(profit_margin[rowindex]);
+
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_margin_type').text(profit_margin_type[rowindex]);
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_margin_type').val(profit_margin_type[rowindex]);
+
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_price').text(parseFloat(product_price[rowindex]).toFixed(2));
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_price').val(product_price[rowindex]);
 
 
     if (row_unit_operator == '*') {
@@ -750,6 +870,9 @@ function productSearch(data) {
                     cols += '<td><input type="text" class="form-control expired-date" name="expired_date[]" disabled/></td>';
                 }
                 cols += '<td class="net_unit_cost"></td>';
+                cols += '<td class="net_unit_margin"></td>';
+                cols += '<td class="net_unit_margin_type"></td>';
+                cols += '<td class="net_unit_price"></td>';
                 cols += '<td class="discount">{{number_format(0, $general_setting->decimal, '.', '')}}</td>';
                 cols += '<td class="tax"></td>';
                 cols += '<td class="sub-total"></td>';
@@ -758,12 +881,18 @@ function productSearch(data) {
                 cols += '<input type="hidden" class="product-id" name="product_id[]" value="' + data[9] + '"/>';
                 cols += '<input type="hidden" class="purchase-unit" name="purchase_unit[]" value="' + temp_unit_name[0] + '"/>';
                 cols += '<input type="hidden" class="net_unit_cost" name="net_unit_cost[]" />';
+                cols += '<input type="hidden" class="net_unit_margin" name="net_unit_margin[]" />';
+                cols += '<input type="hidden" class="net_unit_margin_type" name="net_unit_margin_type[]" />';
+                cols += '<input type="hidden" class="net_unit_price" name="net_unit_price[]" />';
                 cols += '<input type="hidden" class="discount-value" name="discount[]" />';
                 cols += '<input type="hidden" class="tax-rate" name="tax_rate[]" value="' + data[3] + '"/>';
                 cols += '<input type="hidden" class="tax-value" name="tax[]" />';
                 cols += '<input type="hidden" class="subtotal-value" name="subtotal[]" />';
                 cols += '<input type="hidden" class="imei-number" name="imei_number[]" />';
                 cols += '<input type="hidden" class="original-cost" value="'+data[2]+'" />';
+                cols += '<input type="hidden" class="original-profit-margin" value="'+data['profit_margin']+'" />';
+                cols += '<input type="hidden" class="original-profit-margin-type" value="'+(data['profit_margin_type'] || 'percentage')+'" />';
+                cols += '<input type="hidden" class="original-price" value="'+data['product_price']+'" />';
 
                 newRow.append(cols);
                 $("table.order-list tbody").prepend(newRow);
@@ -777,8 +906,11 @@ function productSearch(data) {
                 unit_name.splice(rowindex, 0, data[6]);
                 unit_operator.splice(rowindex, 0, data[7]);
                 unit_operation_value.splice(rowindex, 0, data[8]);
+                profit_margin.splice(rowindex, 0, parseFloat(data['profit_margin']));
+                profit_margin_type.splice(rowindex, 0, data['profit_margin_type'] || 'percentage');
+                product_price.splice(rowindex, 0, parseFloat(data['product_price']));
                 is_imei.splice(rowindex, 0, data[11]);
-                calculateRowProductData(1);
+                checkQuantity(1, true);
                 if(data[11]) {
                     $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.edit-product').click();
                 }
@@ -804,6 +936,12 @@ function checkQuantity(purchase_qty, flag) {
     else
         $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.recieved').val(0);
 
+    if(flag) {
+        product_cost[rowindex] = parseFloat($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.original-cost').val());
+        profit_margin[rowindex] = parseFloat($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.original-profit-margin').val());
+        profit_margin_type[rowindex] = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.original-profit-margin-type').val();
+        product_price[rowindex] = parseFloat($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.original-price').val());
+    }
     calculateRowProductData(purchase_qty);
 }
 
@@ -816,11 +954,21 @@ function calculateRowProductData(quantity) {
 
     if (tax_method[rowindex] == 1) {
         var net_unit_cost = row_product_cost - product_discount[rowindex];
+        var net_unit_margin = row_profit_margin;
+        var net_unit_margin_type = row_profit_margin_type;
+        var net_unit_price = row_product_price;
+
         var tax = net_unit_cost * quantity * (tax_rate[rowindex] / 100);
         var sub_total = (net_unit_cost * quantity) + tax;
 
         $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_cost').text(net_unit_cost.toFixed({{$general_setting->decimal}}));
         $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_cost').val(net_unit_cost.toFixed({{$general_setting->decimal}}));
+        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_margin').text(net_unit_margin.toFixed({{$general_setting->decimal}}));
+        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_margin').val(net_unit_margin.toFixed({{$general_setting->decimal}}));
+        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_margin_type').text(net_unit_margin_type);
+        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_margin_type').val(net_unit_margin_type);
+        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_price').text(net_unit_price.toFixed({{$general_setting->decimal}}));
+        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_price').val(net_unit_price.toFixed({{$general_setting->decimal}}));
         $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax').text(tax.toFixed({{$general_setting->decimal}}));
         $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax-value').val(tax.toFixed({{$general_setting->decimal}}));
         $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.sub-total').text(sub_total.toFixed({{$general_setting->decimal}}));
@@ -828,11 +976,21 @@ function calculateRowProductData(quantity) {
     } else {
         var sub_total_unit = row_product_cost - product_discount[rowindex];
         var net_unit_cost = (100 / (100 + tax_rate[rowindex])) * sub_total_unit;
+        var net_unit_margin = row_profit_margin;
+        var net_unit_margin_type = row_profit_margin_type;
+        var net_unit_price = row_product_price;
+
         var tax = (sub_total_unit - net_unit_cost) * quantity;
         var sub_total = sub_total_unit * quantity;
 
         $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_cost').text(net_unit_cost.toFixed({{$general_setting->decimal}}));
         $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_cost').val(net_unit_cost.toFixed({{$general_setting->decimal}}));
+        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_margin').text(net_unit_margin.toFixed({{$general_setting->decimal}}));
+        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_margin').val(net_unit_margin.toFixed({{$general_setting->decimal}}));
+        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_margin_type').text(net_unit_margin_type);
+        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_margin_type').val(net_unit_margin_type);
+        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_price').text(net_unit_price.toFixed({{$general_setting->decimal}}));
+        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_price').val(net_unit_price.toFixed({{$general_setting->decimal}}));
         $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax').text(tax.toFixed({{$general_setting->decimal}}));
         $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax-value').val(tax.toFixed({{$general_setting->decimal}}));
         $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.sub-total').text(sub_total.toFixed({{$general_setting->decimal}}));
@@ -851,6 +1009,10 @@ function unitConversion() {
     } else {
         row_product_cost = product_cost[rowindex] / row_unit_operation_value;
     }
+    row_profit_margin = parseFloat(profit_margin[rowindex]);
+    row_profit_margin_type = profit_margin_type[rowindex] || 'percentage';
+    profit_margin_type[rowindex] = row_profit_margin_type;
+    row_product_price = parseFloat(product_price[rowindex]);
 }
 
 function calculateTotal() {

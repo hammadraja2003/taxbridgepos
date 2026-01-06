@@ -5,7 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 class RewardPointSetting extends Model
-{
+{   
+    protected $connection = 'tenant';   
     protected $fillable = [
         "per_point_amount",
         "minimum_amount",

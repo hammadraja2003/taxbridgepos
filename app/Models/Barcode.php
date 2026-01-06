@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Barcode extends Model
 {
+    protected $connection = 'tenant';   
     use HasFactory;
 
     protected $guarded = ['id'];

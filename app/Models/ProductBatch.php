@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 class ProductBatch extends Model
-{
+{   
+    protected $connection = 'tenant';       
     protected $fillable = ["product_id", "batch_no", "expired_date", "qty"];
 }

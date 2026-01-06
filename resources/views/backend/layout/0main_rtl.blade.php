@@ -126,32 +126,32 @@
             <ul id="side-main-menu" class="side-menu list-unstyled">
               <li><a href="{{url('/')}}"> <i class="dripicons-meter"></i><span>{{ __('dbdashboard') }}</span></a></li>
                <?php
-                  $role = DB::table('roles')->find(Auth::user()->role_id);
-                  $category_permission_active = DB::table('permissions')
+                  $role = DB::connection('master')->table('roles')->find(Auth::user()->role_id);
+                  $category_permission_active = DB::connection('master')->table('permissions')
                       ->join('role_has_permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
                       ->where([
                         ['permissions.name', 'category'],
                         ['role_id', $role->id] ])->first();
-                  $index_permission = DB::table('permissions')->where('name', 'products-index')->first();
-                  $index_permission_active = DB::table('role_has_permissions')->where([
+                  $index_permission = DB::connection('master')->table('permissions')->where('name', 'products-index')->first();
+                  $index_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                       ['permission_id', $index_permission->id],
                       ['role_id', $role->id]
                   ])->first();
 
-                  $print_barcode = DB::table('permissions')->where('name', 'print_barcode')->first();
-                      $print_barcode_active = DB::table('role_has_permissions')->where([
+                  $print_barcode = DB::connection('master')->table('permissions')->where('name', 'print_barcode')->first();
+                      $print_barcode_active = DB::connection('master')->table('role_has_permissions')->where([
                           ['permission_id', $print_barcode->id],
                           ['role_id', $role->id]
                       ])->first();
 
-                  $stock_count = DB::table('permissions')->where('name', 'stock_count')->first();
-                      $stock_count_active = DB::table('role_has_permissions')->where([
+                  $stock_count = DB::connection('master')->table('permissions')->where('name', 'stock_count')->first();
+                      $stock_count_active = DB::connection('master')->table('role_has_permissions')->where([
                           ['permission_id', $stock_count->id],
                           ['role_id', $role->id]
                       ])->first();
 
-                    $adjustment = DB::table('permissions')->where('name', 'adjustment')->first();
-                    $adjustment_active = DB::table('role_has_permissions')->where([
+                    $adjustment = DB::connection('master')->table('permissions')->where('name', 'adjustment')->first();
+                    $adjustment_active = DB::connection('master')->table('role_has_permissions')->where([
                         ['permission_id', $adjustment->id],
                         ['role_id', $role->id]
                     ])->first();
@@ -165,8 +165,8 @@
                   @if($index_permission_active)
                   <li id="product-list-menu"><a href="{{route('products.index')}}">{{__('dbproduct_list')}}</a></li>
                   <?php
-                    $add_permission = DB::table('permissions')->where('name', 'products-add')->first();
-                    $add_permission_active = DB::table('role_has_permissions')->where([
+                    $add_permission = DB::connection('master')->table('permissions')->where('name', 'products-add')->first();
+                    $add_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                         ['permission_id', $add_permission->id],
                         ['role_id', $role->id]
                     ])->first();
@@ -189,8 +189,8 @@
               </li>
               @endif
               <?php
-                $index_permission = DB::table('permissions')->where('name', 'purchases-index')->first();
-                  $index_permission_active = DB::table('role_has_permissions')->where([
+                $index_permission = DB::connection('master')->table('permissions')->where('name', 'purchases-index')->first();
+                  $index_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                         ['permission_id', $index_permission->id],
                         ['role_id', $role->id]
                     ])->first();
@@ -200,8 +200,8 @@
                 <ul id="purchase" class="collapse list-unstyled ">
                   <li id="purchase-list-menu"><a href="{{route('purchases.index')}}">{{__('db.Purchase List')}}</a></li>
                   <?php
-                    $add_permission = DB::table('permissions')->where('name', 'purchases-add')->first();
-                    $add_permission_active = DB::table('role_has_permissions')->where([
+                    $add_permission = DB::connection('master')->table('permissions')->where('name', 'purchases-add')->first();
+                    $add_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                         ['permission_id', $add_permission->id],
                         ['role_id', $role->id]
                     ])->first();
@@ -214,32 +214,32 @@
               </li>
               @endif
               <?php
-                $sale_index_permission = DB::table('permissions')->where('name', 'sales-index')->first();
-                $sale_index_permission_active = DB::table('role_has_permissions')->where([
+                $sale_index_permission = DB::connection('master')->table('permissions')->where('name', 'sales-index')->first();
+                $sale_index_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                         ['permission_id', $sale_index_permission->id],
                         ['role_id', $role->id]
                     ])->first();
 
-                $gift_card_permission = DB::table('permissions')->where('name', 'gift_card')->first();
-                $gift_card_permission_active = DB::table('role_has_permissions')->where([
+                $gift_card_permission = DB::connection('master')->table('permissions')->where('name', 'gift_card')->first();
+                $gift_card_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                         ['permission_id', $gift_card_permission->id],
                         ['role_id', $role->id]
                     ])->first();
 
-                $coupon_permission = DB::table('permissions')->where('name', 'coupon')->first();
-                $coupon_permission_active = DB::table('role_has_permissions')->where([
+                $coupon_permission = DB::connection('master')->table('permissions')->where('name', 'coupon')->first();
+                $coupon_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                         ['permission_id', $coupon_permission->id],
                         ['role_id', $role->id]
                     ])->first();
 
-                $delivery_permission_active = DB::table('permissions')
+                $delivery_permission_active = DB::connection('master')->table('permissions')
                       ->join('role_has_permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
                       ->where([
                         ['permissions.name', 'delivery'],
                         ['role_id', $role->id] ])->first();
 
-                $sale_add_permission = DB::table('permissions')->where('name', 'sales-add')->first();
-                $sale_add_permission_active = DB::table('role_has_permissions')->where([
+                $sale_add_permission = DB::connection('master')->table('permissions')->where('name', 'sales-add')->first();
+                $sale_add_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                     ['permission_id', $sale_add_permission->id],
                     ['role_id', $role->id]
                 ])->first();
@@ -270,8 +270,8 @@
               @endif
 
               <?php
-                $index_permission = DB::table('permissions')->where('name', 'expenses-index')->first();
-                $index_permission_active = DB::table('role_has_permissions')->where([
+                $index_permission = DB::connection('master')->table('permissions')->where('name', 'expenses-index')->first();
+                $index_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                         ['permission_id', $index_permission->id],
                         ['role_id', $role->id]
                     ])->first();
@@ -282,8 +282,8 @@
                   <li id="exp-cat-menu"><a href="{{route('expense_categories.index')}}">{{__('db.Expense Category')}}</a></li>
                   <li id="exp-list-menu"><a href="{{route('expenses.index')}}">{{__('db.Expense List')}}</a></li>
                   <?php
-                    $add_permission = DB::table('permissions')->where('name', 'expenses-add')->first();
-                    $add_permission_active = DB::table('role_has_permissions')->where([
+                    $add_permission = DB::connection('master')->table('permissions')->where('name', 'expenses-add')->first();
+                    $add_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                         ['permission_id', $add_permission->id],
                         ['role_id', $role->id]
                     ])->first();
@@ -295,8 +295,8 @@
               </li>
               @endif
               <?php
-                $index_permission = DB::table('permissions')->where('name', 'quotes-index')->first();
-                $index_permission_active = DB::table('role_has_permissions')->where([
+                $index_permission = DB::connection('master')->table('permissions')->where('name', 'quotes-index')->first();
+                $index_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                         ['permission_id', $index_permission->id],
                         ['role_id', $role->id]
                     ])->first();
@@ -306,8 +306,8 @@
                 <ul id="quotation" class="collapse list-unstyled ">
                   <li id="quotation-list-menu"><a href="{{route('quotations.index')}}">{{__('db.Quotation List')}}</a></li>
                   <?php
-                    $add_permission = DB::table('permissions')->where('name', 'quotes-add')->first();
-                    $add_permission_active = DB::table('role_has_permissions')->where([
+                    $add_permission = DB::connection('master')->table('permissions')->where('name', 'quotes-add')->first();
+                    $add_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                         ['permission_id', $add_permission->id],
                         ['role_id', $role->id]
                     ])->first();
@@ -319,8 +319,8 @@
               </li>
               @endif
               <?php
-                $index_permission = DB::table('permissions')->where('name', 'transfers-index')->first();
-                $index_permission_active = DB::table('role_has_permissions')->where([
+                $index_permission = DB::connection('master')->table('permissions')->where('name', 'transfers-index')->first();
+                $index_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                         ['permission_id', $index_permission->id],
                         ['role_id', $role->id]
                     ])->first();
@@ -330,8 +330,8 @@
                 <ul id="transfer" class="collapse list-unstyled ">
                   <li id="transfer-list-menu"><a href="{{route('transfers.index')}}">{{__('db.Transfer List')}}</a></li>
                   <?php
-                    $add_permission = DB::table('permissions')->where('name', 'transfers-add')->first();
-                    $add_permission_active = DB::table('role_has_permissions')->where([
+                    $add_permission = DB::connection('master')->table('permissions')->where('name', 'transfers-add')->first();
+                    $add_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                         ['permission_id', $add_permission->id],
                         ['role_id', $role->id]
                     ])->first();
@@ -345,16 +345,16 @@
               @endif
 
               <?php
-                $sale_return_index_permission = DB::table('permissions')->where('name', 'returns-index')->first();
+                $sale_return_index_permission = DB::connection('master')->table('permissions')->where('name', 'returns-index')->first();
 
-                $sale_return_index_permission_active = DB::table('role_has_permissions')->where([
+                $sale_return_index_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                         ['permission_id', $sale_return_index_permission->id],
                         ['role_id', $role->id]
                     ])->first();
 
-                $purchase_return_index_permission = DB::table('permissions')->where('name', 'purchase-return-index')->first();
+                $purchase_return_index_permission = DB::connection('master')->table('permissions')->where('name', 'purchase-return-index')->first();
 
-                $purchase_return_index_permission_active = DB::table('role_has_permissions')->where([
+                $purchase_return_index_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                             ['permission_id', $purchase_return_index_permission->id],
                             ['role_id', $role->id]
                         ])->first();
@@ -372,26 +372,26 @@
               </li>
               @endif
               <?php
-                $index_permission = DB::table('permissions')->where('name', 'account-index')->first();
-                $index_permission_active = DB::table('role_has_permissions')->where([
+                $index_permission = DB::connection('master')->table('permissions')->where('name', 'account-index')->first();
+                $index_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                         ['permission_id', $index_permission->id],
                         ['role_id', $role->id]
                     ])->first();
 
-                $money_transfer_permission = DB::table('permissions')->where('name', 'money-transfer')->first();
-                $money_transfer_permission_active = DB::table('role_has_permissions')->where([
+                $money_transfer_permission = DB::connection('master')->table('permissions')->where('name', 'money-transfer')->first();
+                $money_transfer_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                         ['permission_id', $money_transfer_permission->id],
                         ['role_id', $role->id]
                     ])->first();
 
-                $balance_sheet_permission = DB::table('permissions')->where('name', 'balance-sheet')->first();
-                $balance_sheet_permission_active = DB::table('role_has_permissions')->where([
+                $balance_sheet_permission = DB::connection('master')->table('permissions')->where('name', 'balance-sheet')->first();
+                $balance_sheet_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                         ['permission_id', $balance_sheet_permission->id],
                         ['role_id', $role->id]
                     ])->first();
 
-                $account_statement_permission = DB::table('permissions')->where('name', 'account-statement')->first();
-                $account_statement_permission_active = DB::table('role_has_permissions')->where([
+                $account_statement_permission = DB::connection('master')->table('permissions')->where('name', 'account-statement')->first();
+                $account_statement_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                         ['permission_id', $account_statement_permission->id],
                         ['role_id', $role->id]
                     ])->first();
@@ -417,23 +417,23 @@
               </li>
               @endif
               <?php
-                $department = DB::table('permissions')->where('name', 'department')->first();
-                $department_active = DB::table('role_has_permissions')->where([
+                $department = DB::connection('master')->table('permissions')->where('name', 'department')->first();
+                $department_active = DB::connection('master')->table('role_has_permissions')->where([
                         ['permission_id', $department->id],
                         ['role_id', $role->id]
                     ])->first();
-                $index_employee = DB::table('permissions')->where('name', 'employees-index')->first();
-                $index_employee_active = DB::table('role_has_permissions')->where([
+                $index_employee = DB::connection('master')->table('permissions')->where('name', 'employees-index')->first();
+                $index_employee_active = DB::connection('master')->table('role_has_permissions')->where([
                         ['permission_id', $index_employee->id],
                         ['role_id', $role->id]
                     ])->first();
-                $attendance = DB::table('permissions')->where('name', 'attendance')->first();
-                $attendance_active = DB::table('role_has_permissions')->where([
+                $attendance = DB::connection('master')->table('permissions')->where('name', 'attendance')->first();
+                $attendance_active = DB::connection('master')->table('role_has_permissions')->where([
                         ['permission_id', $attendance->id],
                         ['role_id', $role->id]
                     ])->first();
-                $payroll = DB::table('permissions')->where('name', 'payroll')->first();
-                $payroll_active = DB::table('role_has_permissions')->where([
+                $payroll = DB::connection('master')->table('permissions')->where('name', 'payroll')->first();
+                $payroll_active = DB::connection('master')->table('role_has_permissions')->where([
                         ['permission_id', $payroll->id],
                         ['role_id', $role->id]
                     ])->first();
@@ -466,23 +466,23 @@
                         ['permissions.name', 'users-index'],
                         ['role_id', $role->id] ])->first();
 
-                  $customer_index_permission = DB::table('permissions')->where('name', 'customers-index')->first();
+                  $customer_index_permission = DB::connection('master')->table('permissions')->where('name', 'customers-index')->first();
 
-                  $customer_index_permission_active = DB::table('role_has_permissions')->where([
+                  $customer_index_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                             ['permission_id', $customer_index_permission->id],
                             ['role_id', $role->id]
                         ])->first();
 
-                  $biller_index_permission = DB::table('permissions')->where('name', 'billers-index')->first();
+                  $biller_index_permission = DB::connection('master')->table('permissions')->where('name', 'billers-index')->first();
 
-                  $biller_index_permission_active = DB::table('role_has_permissions')->where([
+                  $biller_index_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                             ['permission_id', $biller_index_permission->id],
                             ['role_id', $role->id]
                         ])->first();
 
-                  $supplier_index_permission = DB::table('permissions')->where('name', 'suppliers-index')->first();
+                  $supplier_index_permission = DB::connection('master')->table('permissions')->where('name', 'suppliers-index')->first();
 
-                  $supplier_index_permission_active = DB::table('role_has_permissions')->where([
+                  $supplier_index_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                             ['permission_id', $supplier_index_permission->id],
                             ['role_id', $role->id]
                         ])->first();
@@ -507,8 +507,8 @@
                   @if($customer_index_permission_active)
                   <li id="customer-list-menu"><a href="{{route('customer.index')}}">{{__('db.Customer List')}}</a></li>
                   <?php
-                    $customer_add_permission = DB::table('permissions')->where('name', 'customers-add')->first();
-                    $customer_add_permission_active = DB::table('role_has_permissions')->where([
+                    $customer_add_permission = DB::connection('master')->table('permissions')->where('name', 'customers-add')->first();
+                    $customer_add_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                         ['permission_id', $customer_add_permission->id],
                         ['role_id', $role->id]
                     ])->first();
@@ -521,8 +521,8 @@
                   @if($biller_index_permission_active)
                   <li id="biller-list-menu"><a href="{{route('biller.index')}}">{{__('db.Biller List')}}</a></li>
                   <?php
-                    $biller_add_permission = DB::table('permissions')->where('name', 'billers-add')->first();
-                    $biller_add_permission_active = DB::table('role_has_permissions')->where([
+                    $biller_add_permission = DB::connection('master')->table('permissions')->where('name', 'billers-add')->first();
+                    $biller_add_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                         ['permission_id', $biller_add_permission->id],
                         ['role_id', $role->id]
                     ])->first();
@@ -535,8 +535,8 @@
                   @if($supplier_index_permission_active)
                   <li id="supplier-list-menu"><a href="{{route('supplier.index')}}">{{__('db.Supplier List')}}</a></li>
                   <?php
-                    $supplier_add_permission = DB::table('permissions')->where('name', 'suppliers-add')->first();
-                    $supplier_add_permission_active = DB::table('role_has_permissions')->where([
+                    $supplier_add_permission = DB::connection('master')->table('permissions')->where('name', 'suppliers-add')->first();
+                    $supplier_add_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                         ['permission_id', $supplier_add_permission->id],
                         ['role_id', $role->id]
                     ])->first();
@@ -550,12 +550,12 @@
               @endif
 
               <?php
-                $profit_loss_active = DB::table('permissions')
+                $profit_loss_active = DB::connection('master')->table('permissions')
                       ->join('role_has_permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
                       ->where([
                         ['permissions.name', 'profit-loss'],
                         ['role_id', $role->id] ])->first();
-                $best_seller_active = DB::table('permissions')
+                $best_seller_active = DB::connection('master')->table('permissions')
                       ->join('role_has_permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
                       ->where([
                         ['permissions.name', 'best-seller'],
@@ -759,92 +759,92 @@
               <li><a href="#setting" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-gear"></i><span>{{__('db.settings')}}</span></a>
                 <ul id="setting" class="collapse list-unstyled ">
                   <?php
-                      $send_notification_permission = DB::table('permissions')->where('name', 'send_notification')->first();
-                      $send_notification_permission_active = DB::table('role_has_permissions')->where([
+                      $send_notification_permission = DB::connection('master')->table('permissions')->where('name', 'send_notification')->first();
+                      $send_notification_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                                   ['permission_id', $send_notification_permission->id],
                                   ['role_id', $role->id]
                               ])->first();
 
-                      $warehouse_permission = DB::table('permissions')->where('name', 'warehouse')->first();
-                      $warehouse_permission_active = DB::table('role_has_permissions')->where([
+                      $warehouse_permission = DB::connection('master')->table('permissions')->where('name', 'warehouse')->first();
+                      $warehouse_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                                   ['permission_id', $warehouse_permission->id],
                                   ['role_id', $role->id]
                               ])->first();
 
-                      $customer_group_permission = DB::table('permissions')->where('name', 'customer_group')->first();
-                      $customer_group_permission_active = DB::table('role_has_permissions')->where([
+                      $customer_group_permission = DB::connection('master')->table('permissions')->where('name', 'customer_group')->first();
+                      $customer_group_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                                   ['permission_id', $customer_group_permission->id],
                                   ['role_id', $role->id]
                               ])->first();
 
-                      $brand_permission = DB::table('permissions')->where('name', 'brand')->first();
-                      $brand_permission_active = DB::table('role_has_permissions')->where([
+                      $brand_permission = DB::connection('master')->table('permissions')->where('name', 'brand')->first();
+                      $brand_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                                   ['permission_id', $brand_permission->id],
                                   ['role_id', $role->id]
                               ])->first();
 
-                      $unit_permission = DB::table('permissions')->where('name', 'unit')->first();
-                      $unit_permission_active = DB::table('role_has_permissions')->where([
+                      $unit_permission = DB::connection('master')->table('permissions')->where('name', 'unit')->first();
+                      $unit_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                                   ['permission_id', $unit_permission->id],
                                   ['role_id', $role->id]
                               ])->first();
 
-                      $currency_permission = DB::table('permissions')->where('name', 'currency')->first();
-                      $currency_permission_active = DB::table('role_has_permissions')->where([
+                      $currency_permission = DB::connection('master')->table('permissions')->where('name', 'currency')->first();
+                      $currency_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                                   ['permission_id', $currency_permission->id],
                                   ['role_id', $role->id]
                               ])->first();
 
-                      $tax_permission = DB::table('permissions')->where('name', 'tax')->first();
-                      $tax_permission_active = DB::table('role_has_permissions')->where([
+                      $tax_permission = DB::connection('master')->table('permissions')->where('name', 'tax')->first();
+                      $tax_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                                   ['permission_id', $tax_permission->id],
                                   ['role_id', $role->id]
                               ])->first();
 
-                      $general_setting_permission = DB::table('permissions')->where('name', 'general_setting')->first();
-                      $general_setting_permission_active = DB::table('role_has_permissions')->where([
+                      $general_setting_permission = DB::connection('master')->table('permissions')->where('name', 'general_setting')->first();
+                      $general_setting_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                                   ['permission_id', $general_setting_permission->id],
                                   ['role_id', $role->id]
                               ])->first();
 
-                      $backup_database_permission = DB::table('permissions')->where('name', 'backup_database')->first();
-                      $backup_database_permission_active = DB::table('role_has_permissions')->where([
+                      $backup_database_permission = DB::connection('master')->table('permissions')->where('name', 'backup_database')->first();
+                      $backup_database_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                                   ['permission_id', $backup_database_permission->id],
                                   ['role_id', $role->id]
                               ])->first();
 
-                      $mail_setting_permission = DB::table('permissions')->where('name', 'mail_setting')->first();
-                      $mail_setting_permission_active = DB::table('role_has_permissions')->where([
+                      $mail_setting_permission = DB::connection('master')->table('permissions')->where('name', 'mail_setting')->first();
+                      $mail_setting_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                           ['permission_id', $mail_setting_permission->id],
                           ['role_id', $role->id]
                       ])->first();
 
-                      $sms_setting_permission = DB::table('permissions')->where('name', 'sms_setting')->first();
-                      $sms_setting_permission_active = DB::table('role_has_permissions')->where([
+                      $sms_setting_permission = DB::connection('master')->table('permissions')->where('name', 'sms_setting')->first();
+                      $sms_setting_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                           ['permission_id', $sms_setting_permission->id],
                           ['role_id', $role->id]
                       ])->first();
 
-                      $create_sms_permission = DB::table('permissions')->where('name', 'create_sms')->first();
-                      $create_sms_permission_active = DB::table('role_has_permissions')->where([
+                      $create_sms_permission = DB::connection('master')->table('permissions')->where('name', 'create_sms')->first();
+                      $create_sms_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                           ['permission_id', $create_sms_permission->id],
                           ['role_id', $role->id]
                       ])->first();
 
-                      $pos_setting_permission = DB::table('permissions')->where('name', 'pos_setting')->first();
-                      $pos_setting_permission_active = DB::table('role_has_permissions')->where([
+                      $pos_setting_permission = DB::connection('master')->table('permissions')->where('name', 'pos_setting')->first();
+                      $pos_setting_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                           ['permission_id', $pos_setting_permission->id],
                           ['role_id', $role->id]
                       ])->first();
 
-                      $hrm_setting_permission = DB::table('permissions')->where('name', 'hrm_setting')->first();
-                      $hrm_setting_permission_active = DB::table('role_has_permissions')->where([
+                      $hrm_setting_permission = DB::connection('master')->table('permissions')->where('name', 'hrm_setting')->first();
+                      $hrm_setting_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                           ['permission_id', $hrm_setting_permission->id],
                           ['role_id', $role->id]
                       ])->first();
 
-                      $reward_point_setting_permission = DB::table('permissions')->where('name', 'reward_point_setting')->first();
-                      $reward_point_setting_permission_active = DB::table('role_has_permissions')->where([
+                      $reward_point_setting_permission = DB::connection('master')->table('permissions')->where('name', 'reward_point_setting')->first();
+                      $reward_point_setting_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                           ['permission_id', $reward_point_setting_permission->id],
                           ['role_id', $role->id]
                       ])->first();
@@ -922,14 +922,14 @@
 
               <ul class="nav-menu list-unstyled d-flex flex-md-row align-items-md-center">
                 <?php
-                  $add_permission = DB::table('permissions')->where('name', 'sales-add')->first();
-                  $add_permission_active = DB::table('role_has_permissions')->where([
+                  $add_permission = DB::connection('master')->table('permissions')->where('name', 'sales-add')->first();
+                  $add_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                       ['permission_id', $add_permission->id],
                       ['role_id', $role->id]
                   ])->first();
 
-                  $empty_database_permission = DB::table('permissions')->where('name', 'empty_database')->first();
-                  $empty_database_permission_active = DB::table('role_has_permissions')->where([
+                  $empty_database_permission = DB::connection('master')->table('permissions')->where('name', 'empty_database')->first();
+                  $empty_database_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                       ['permission_id', $empty_database_permission->id],
                       ['role_id', $role->id]
                   ])->first();
@@ -1046,7 +1046,7 @@
                     {!! Form::open(['route' => 'notifications.store', 'method' => 'post']) !!}
                       <div class="row">
                           <?php
-                              $lims_user_list = DB::table('users')->where([
+                              $lims_user_list = DB::connection('master')->table('users')->where([
                                 ['is_active', true],
                                 ['id', '!=', \Auth::user()->id]
                               ])->get();
@@ -1277,7 +1277,7 @@
                   <p class="italic"><small>{{__('db.The field labels marked with * are required input fields')}}.</small></p>
                     {!! Form::open(['route' => 'report.user', 'method' => 'post']) !!}
                     <?php
-                      $lims_user_list = DB::table('users')->where('is_active', true)->get();
+                      $lims_user_list = DB::connection('master')->table('users')->where('is_active', true)->get();
                     ?>
                       <div class="form-group">
                           <label>{{__('db.User')}} *</label>

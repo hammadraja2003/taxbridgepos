@@ -25,6 +25,7 @@
                     <th>{{__('db.Reward Points')}}</th>
                     <th>{{__('db.Deposited Balance')}}</th>
                     <th>{{__('db.Total Due')}}</th>
+                    <th>{{__('db.Opening Balance')}}</th>
                     @foreach($custom_fields as $fieldName)
                     <th>{{$fieldName}}</th>
                     @endforeach
@@ -600,7 +601,7 @@
         $('#view-points').modal('hide');
     });
 
-    var columns = [{"data": "key"}, {"data": "customer_group"}, {"data": "customer_details"}, {"data": "discount_plan"}, {"data": "reward_point"}, {"data": "deposited_balance"}, {"data": "total_due"}];
+    var columns = [{"data": "key"}, {"data": "customer_group"}, {"data": "customer_details"}, {"data": "discount_plan"}, {"data": "reward_point"}, {"data": "deposited_balance"}, {"data": "total_due"}, {"data": "opening_balance"}];
     var field_name = <?php echo json_encode($field_name) ?>;
     for(i = 0; i < field_name.length; i++) {
         columns.push({"data": field_name[i]});

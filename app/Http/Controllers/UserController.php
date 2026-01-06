@@ -14,7 +14,7 @@ use Auth;
 use Hash;
 use Keygen;
 use Illuminate\Validation\Rule;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 use Spatie\Permission\Models\Permission;
 use App\Mail\UserDetails;
 use Mail;
@@ -159,7 +159,8 @@ class UserController extends Controller
         $lims_user_data = User::find($id);
         $lims_user_data->update($input);
 
-        cache()->forget('user_role');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        cache()->forget($key_prefix . 'user_role');
         return redirect('user')->with('message2', __('db.Data updated successfullly'));
     }
 
@@ -256,7 +257,7 @@ class UserController extends Controller
 
     public function notificationUsers()
     {
-        $notification_users = DB::table('users')->where([
+        $notification_users = DB::connection('master')->table('users')->where([
             ['is_active', true],
             ['id', '!=', \Auth::user()->id],
             ['role_id', '!=', '5']
@@ -272,7 +273,7 @@ class UserController extends Controller
 
     public function allUsers()
     {
-        $lims_user_list = DB::table('users')->where('is_active', true)->get();
+        $lims_user_list = DB::connection('master')->table('users')->where('is_active', true)->get();
 
         $html = '';
         foreach($lims_user_list as $user){

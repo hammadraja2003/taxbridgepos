@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\CustomerGroup;
 use Illuminate\Validation\Rule;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 use Spatie\Permission\Models\Permission;
 use Auth;
 use DB;
@@ -39,7 +39,8 @@ class CustomerGroupController extends Controller
         $lims_customer_group_data = $request->all();
         $lims_customer_group_data['is_active'] = true;
         CustomerGroup::create($lims_customer_group_data);
-        $this->cacheForget('customer_group_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        $this->cacheForget($key_prefix.'customer_group_list');
         return redirect('customer_group')->with('message', __('db.Data inserted successfully'));
     }
 
@@ -64,7 +65,8 @@ class CustomerGroupController extends Controller
         $lims_customer_group_data = CustomerGroup::find($input['customer_group_id']);
 
         $lims_customer_group_data->update($input);
-        $this->cacheForget('customer_group_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        $this->cacheForget($key_prefix.'customer_group_list');
         return redirect('customer_group')->with('message', __('db.Data updated successfully'));
     }
 
@@ -104,7 +106,8 @@ class CustomerGroupController extends Controller
            $customer_group->is_active = true;
            $customer_group->save();
         }
-        $this->cacheForget('customer_group_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        $this->cacheForget($key_prefix.'customer_group_list');
         return redirect('customer_group')->with('message', __('db.Customer Group imported successfully'));
 
     }
@@ -138,9 +141,8 @@ class CustomerGroupController extends Controller
             $lims_customer_group_data->is_active = false;
             $lims_customer_group_data->save();
         }
-
-        $this->cacheForget('customer_group_list');
-
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        $this->cacheForget($key_prefix.'customer_group_list');
         return 'Customer Group deleted successfully!';
     }
 
@@ -150,7 +152,8 @@ class CustomerGroupController extends Controller
         $lims_customer_group_data->is_active = false;
         $lims_customer_group_data->save();
 
-        $this->cacheForget('customer_group_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        $this->cacheForget($key_prefix.'customer_group_list');
 
         return redirect('customer_group')->with('not_permitted', __('db.Data deleted successfully'));
     }

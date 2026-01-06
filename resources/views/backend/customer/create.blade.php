@@ -23,12 +23,12 @@
                         <p class="italic"><small>{{__('db.The field labels marked with * are required input fields')}}.</small></p>
                         {!! Form::open(['route' => 'customer.store', 'method' => 'post', 'files' => true, 'id' => 'customer_form']) !!}
                         <div class="row">
-                            <div class="col-md-4 mt-4">
+                            <!-- <div class="col-md-4 mt-4">
                                 <div class="form-group">
                                     <input type="checkbox" name="both" value="1" />&nbsp;
                                     <label>{{__('db.Both Customer and Supplier')}}</label>
                                 </div>
-                            </div>
+                            </div> -->
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label>{{__('db.Customer Group')}} *</strong> </label>
@@ -143,10 +143,20 @@
                                     <input type="number" name="credit_limit" class="form-control" value="0" step="any" min="0">
                                 </div>
                             </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>{{__('db.Role')}}</label>
+                                    <select name="role_id" class="form-control">
+                                        @foreach($roles as $role)
+                                            <option value="{{$role->id}}">{{$role->name}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                         <div class="row">
                             @foreach($custom_fields as $field)
-                                @if(!$field->is_admin || \Auth::user()->role_id == 1)
+                                @if(!$field->is_admin)
                                     <div class="{{'col-md-'.$field->grid_value}}">
                                         <div class="form-group">
                                             <label>{{$field->name}}</label>
@@ -246,7 +256,7 @@
         fetch("https://ipapi.co/json")
             .then((res) => res.json())
             .then((data) => callback(data.country_code))
-            .catch(() => callback("us"));
+            .catch(() => callback("pk"));
         },
         utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"
     });

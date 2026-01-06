@@ -39,12 +39,13 @@
                                     <div class="form-group">
                                         <label>{{__('db.Product Type')}} * </label>
                                         <div class="input-group">
-                                            <select name="type" required class="form-control selectpicker" id="type">
-                                                <option value="standard">Standard</option>
-                                                <option value="combo">Combo</option>
-                                                <option value="digital">Digital</option>
-                                                <option value="service">Service</option>
-                                            </select>
+                                            {!! getProductTypeDropdown(
+                                                name: 'type',
+                                                class: 'form-control selectpicker',
+                                                id: 'type',
+                                                required: true,
+                                                selectedValue: old('type', $lims_product_data->type)
+                                            ) !!}
                                             <input type="hidden" name="type_hidden" value="{{$lims_product_data->type}}">
                                         </div>
                                     </div>

@@ -9,5 +9,6 @@ class ActivityLog extends Model
 {
     use HasFactory;
 
+    protected $connection = 'tenant';   
     protected $fillable = ['date', 'user_id', 'action', 'reference_no', 'item_description'];
 }

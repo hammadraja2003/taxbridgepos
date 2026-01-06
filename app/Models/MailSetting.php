@@ -8,6 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class MailSetting extends Model
 {
     use HasFactory;
-
+    protected $connection = 'tenant';   
     protected $fillable = ["driver", "host", "port", "from_address", "from_name", "username", "password", "encryption"];
 }

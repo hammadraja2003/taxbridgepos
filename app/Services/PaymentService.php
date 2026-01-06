@@ -64,6 +64,7 @@ class PaymentService
 
         $lims_payment_data = new Payment();
         $lims_payment_data->user_id = Auth::id();
+        // $lims_payment_data->user_id = $data['supplier_id'];
         $lims_payment_data->purchase_id = $lims_purchase_data->id;
         $lims_payment_data->account_id = $data['account_id'];
         $lims_payment_data->payment_reference = 'ppr-' . date("Ymd") . '-'. date("his");

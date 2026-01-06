@@ -5,7 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 class Leave extends Model
-{
+{   
+    protected $connection = 'tenant';   
     protected $table = 'leaves';
     protected $fillable = [
         'employee_id',

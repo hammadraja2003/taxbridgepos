@@ -10,7 +10,7 @@ use App\Models\Category;
 use App\Models\Product;
 use DB;
 use Auth;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Validation\Rule;
 use App\Traits\TenantInfo;
@@ -25,7 +25,7 @@ class CategoryController extends Controller
 
     public function index()
     {
-        $role = Role::find(Auth::user()->role_id);
+        $role = Role::find(Auth::user()->role_id);        
         if($role->hasPermissionTo('category')) {
             return view('backend.category.create');
         }
@@ -199,7 +199,8 @@ class CategoryController extends Controller
         }
         $category = Category::create($lims_category_data);
 
-        $this->cacheForget('category_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        $this->cacheForget($key_prefix.'category_list');
         if($lims_category_data['ajax'])
             return $category;
         else
@@ -343,7 +344,8 @@ class CategoryController extends Controller
             $category->is_active = true;
             $category->save();
         }
-        $this->cacheForget('category_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        $this->cacheForget($key_prefix.'category_list');
         return redirect('category')->with('message', __('db.Category imported successfully'));
     }
 
@@ -363,7 +365,8 @@ class CategoryController extends Controller
             $this->fileDelete(public_path('images/category/'),$lims_category_data->image);
             $this->fileDelete(public_path('images/category/icons/'),$lims_category_data->icon);
         }
-        $this->cacheForget('category_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        $this->cacheForget($key_prefix.'category_list');
         return 'Category deleted successfully!';
     }
 
@@ -381,7 +384,8 @@ class CategoryController extends Controller
         $this->fileDelete(public_path('images/category/icons/'),$lims_category_data->icon);
 
         $lims_category_data->save();
-        $this->cacheForget('category_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        $this->cacheForget($key_prefix.'category_list');
         return redirect('category')->with('not_permitted', __('db.Category deleted successfully'));
     }
 }

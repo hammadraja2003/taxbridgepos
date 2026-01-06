@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class CustomerGroup extends Model
 {
+    
+    protected $connection = 'tenant';
+    protected $table = 'customer_groups';
     protected $fillable =[
 
         "name", "percentage", "is_active"

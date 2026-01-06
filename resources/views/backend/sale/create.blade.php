@@ -57,7 +57,7 @@
                                                 @php
                                                   $deposit = [];
                                                   $points = [];
-                                                  $customer_active = DB::table('permissions')
+                                                  $customer_active = DB::connection('master')->table('permissions')
                                                   ->join('role_has_permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
                                                   ->where([
                                                     ['permissions.name', 'customers-add'],
@@ -1116,15 +1116,12 @@
 
     $('#currency').val(currency['id']);
 
-    $('#currency').val(currency['id']);
-
     $('#currency').change(function(){
         var rate = $(this).find(':selected').data('rate');
         var currency_id = $(this).val();
         $('#exchange_rate').val(rate);
         //$('input[name="currency_id"]').val(currency_id);
         currency['exchange_rate'] = rate;
-        alert(currency['exchange_rate']);
         $("table.order-list tbody .product-id").each(function(index) {
             rowindex = index;
             currencyChange = true;
@@ -1134,7 +1131,7 @@
             console.log(price);
             
             checkDiscount(qty, true, price);
-            couponDiscount();
+            // couponDiscount();
         });
     });
 

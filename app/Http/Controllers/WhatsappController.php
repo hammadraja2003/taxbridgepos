@@ -79,7 +79,7 @@ class WhatsappController extends Controller
         $receivers = [];
 
         // // User
-        // $users = DB::table('users')->select('name', 'phone')->get();
+        // $users = DB::connection('master')->table('users')->select('name', 'phone')->get();
         // if ($users->count()) {
         //     $receivers['Users'] = $users;
         // }

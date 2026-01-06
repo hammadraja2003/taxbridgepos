@@ -23,7 +23,7 @@ use App\Models\Variant;
 use DB;
 use NumberToWords\NumberToWords;
 use Auth;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 use Spatie\Permission\Models\Permission;
 use App\Mail\QuotationDetails;
 use Mail;
@@ -32,6 +32,7 @@ use App\Models\MailSetting;
 use App\Traits\MailInfo;
 use App\Traits\StaffAccess;
 use App\Traits\TenantInfo;
+use App\Models\Currency;
 
 class QuotationController extends Controller
 {
@@ -500,7 +501,7 @@ class QuotationController extends Controller
                 Mail::to($mail_data['email'])->send(new QuotationDetails($mail_data));
             }
             catch(\Exception $e){
-                $message = 'Quotation created successfully. Please setup your <a href="setting/mail_setting">mail setting</a> to send mail.';
+                $message = 'Quotation created successfully. Please setup your mail setting to send mail.';
             }
         }
         return redirect('quotations')->with('message', $message);
@@ -515,7 +516,7 @@ class QuotationController extends Controller
         $mail_setting = MailSetting::latest()->first();
 
         if(!$mail_setting) {
-            $message = 'Please setup your <a href="setting/mail_setting">mail setting</a> to send mail.';
+            $message = 'Please setup your mail setting to send mail.';
         }else if(!$lims_customer_data->email) {
             $message = 'Customer doesnt have email!';
         }
@@ -555,7 +556,7 @@ class QuotationController extends Controller
                 $message = 'Mail sent successfully';
             }
             catch(\Exception $e){
-                $message = 'Please setup your <a href="setting/mail_setting">mail setting</a> to send mail.';
+                $message = 'Please setup your mail setting to send mail.';
             }
         }
 
@@ -569,6 +570,175 @@ class QuotationController extends Controller
          return $lims_customer_group_data->percentage;
     }
 
+    // public function getProduct($id)
+    // {
+    //     $product_code = [];
+    //     $product_name = [];
+    //     $product_qty = [];
+    //     $product_price = [];
+    //     $product_data = [];
+    //     $batch_no = [];
+    //     $product_batch_id = [];
+    //     $expired_date = [];
+    //     $is_embeded = [];
+    //     $imei_number = [];
+
+    //     //retrieve data of product without variant
+    //     $lims_product_warehouse_data = Product::join('product_warehouse', 'products.id', '=', 'product_warehouse.product_id')
+    //     ->where([
+    //         ['products.is_active', true],
+    //         ['product_warehouse.warehouse_id', $id],
+    //     ])
+    //     ->whereNull('product_warehouse.variant_id')
+    //     ->whereNull('product_warehouse.product_batch_id')
+    //     ->select('product_warehouse.*')
+    //     ->get();
+
+    //     foreach ($lims_product_warehouse_data as $product_warehouse)
+    //     {
+    //         $product_qty[] = $product_warehouse->qty;
+    //         $product_price[] = $product_warehouse->price;
+    //         $lims_product_data = Product::find($product_warehouse->product_id);
+    //         $product_code[] =  $lims_product_data->code;
+    //         $product_name[] = $lims_product_data->name;
+    //         $product_type[] = $lims_product_data->type;
+    //         $product_id[] = $lims_product_data->id;
+    //         $product_list[] = null;
+    //         $qty_list[] = null;
+    //         $batch_no[] = null;
+    //         $product_batch_id[] = null;
+    //         $expired_date[] = null;
+    //         if($product_warehouse->is_embeded)
+    //             $is_embeded[] = $product_warehouse->is_embeded;
+    //         else
+    //             $is_embeded[] = 0;
+    //         $imei_number[] = null;
+    //     }
+
+    //     $lims_product_with_imei_warehouse_data = Product::join('product_warehouse', 'products.id', '=', 'product_warehouse.product_id')
+    //     ->where([
+    //         ['products.is_active', true],
+    //         ['products.is_imei', true],
+    //         ['product_warehouse.warehouse_id', $id],
+    //         ['product_warehouse.qty', '>', 0]
+    //     ])
+    //     ->whereNull('product_warehouse.variant_id')
+    //     ->whereNotNull('product_warehouse.imei_number')
+    //     ->select('product_warehouse.*', 'products.is_embeded')
+    //     ->groupBy('product_warehouse.product_id')
+    //     ->selectRaw('MAX(product_warehouse.id) as id')
+    //     ->get();
+
+    //     config()->set('database.connections.mysql.strict', false);
+    //     \DB::reconnect(); //important as the existing connection if any would be in strict mode
+
+    //     $lims_product_with_batch_warehouse_data = Product::join('product_warehouse', 'products.id', '=', 'product_warehouse.product_id')
+    //     ->where([
+    //         ['products.is_active', true],
+    //         ['product_warehouse.warehouse_id', $id],
+    //     ])
+    //     ->whereNull('product_warehouse.variant_id')
+    //     ->whereNotNull('product_warehouse.product_batch_id')
+    //     ->select('product_warehouse.*')
+    //     ->groupBy('product_warehouse.product_id')
+    //     ->get();
+
+    //     //now changing back the strict ON
+    //     config()->set('database.connections.mysql.strict', true);
+    //     \DB::reconnect();
+
+    //     foreach ($lims_product_with_batch_warehouse_data as $product_warehouse)
+    //     {
+    //         $product_qty[] = $product_warehouse->qty;
+    //         $product_price[] = $product_warehouse->price;
+    //         $lims_product_data = Product::find($product_warehouse->product_id);
+    //         $product_code[] =  $lims_product_data->code;
+    //         $product_name[] = $lims_product_data->name;
+    //         $product_type[] = $lims_product_data->type;
+    //         $product_id[] = $lims_product_data->id;
+    //         $product_list[] = null;
+    //         $qty_list[] = null;
+    //         $product_batch_data = ProductBatch::select('id', 'batch_no')->find($product_warehouse->product_batch_id);
+    //         $batch_no[] = $product_batch_data->batch_no;
+    //         $product_batch_id[] = $product_batch_data->id;
+    //         $expired_date[] = null;
+    //         if($product_warehouse->is_embeded)
+    //             $is_embeded[] = $product_warehouse->is_embeded;
+    //         else
+    //             $is_embeded[] = 0;
+    //         $imei_number[] = null;
+    //     }
+
+    //       //product with imei
+    //       foreach ($lims_product_with_imei_warehouse_data as $product_warehouse)
+    //       {
+    //           $imei_numbers = explode(",", $product_warehouse->imei_number);
+    //           foreach ($imei_numbers as $key => $number) {
+    //               $product_qty[] = $product_warehouse->qty;
+    //               $product_price[] = $product_warehouse->price;
+    //               $lims_product_data = Product::find($product_warehouse->product_id);
+    //               $product_code[] =  $lims_product_data->code;
+    //               $product_name[] = htmlspecialchars($lims_product_data->name);
+    //               $product_type[] = $lims_product_data->type;
+    //               $product_id[] = $lims_product_data->id;
+    //               $product_list[] = $lims_product_data->product_list;
+    //               $qty_list[] = $lims_product_data->qty_list;
+    //               $batch_no[] = null;
+    //               $product_batch_id[] = null;
+    //               $expired_date[] = null;
+    //               $is_embeded[] = 0;
+    //               $imei_number[] = $number;
+    //           }
+    //       }
+
+    //     //retrieve data of product with variant
+    //     $lims_product_warehouse_data = Product::join('product_warehouse', 'products.id', '=', 'product_warehouse.product_id')
+    //     ->where([
+    //         ['products.is_active', true],
+    //         ['product_warehouse.warehouse_id', $id],
+    //     ])->whereNotNull('product_warehouse.variant_id')->select('product_warehouse.*')->get();
+    //     foreach ($lims_product_warehouse_data as $product_warehouse)
+    //     {
+    //         $lims_product_data = Product::find($product_warehouse->product_id);
+    //         $lims_product_variant_data = ProductVariant::select('item_code')->FindExactProduct($product_warehouse->product_id, $product_warehouse->variant_id)->first();
+    //         if($lims_product_variant_data) {
+    //             $product_qty[] = $product_warehouse->qty;
+    //             $product_code[] =  $lims_product_variant_data->item_code;
+    //             $product_name[] = $lims_product_data->name;
+    //             $product_type[] = $lims_product_data->type;
+    //             $product_id[] = $lims_product_data->id;
+    //             $product_list[] = null;
+    //             $qty_list[] = null;
+    //             $batch_no[] = null;
+    //             $product_batch_id[] = null;
+    //         }
+    //         $expired_date[] = null;
+    //         if($product_warehouse->is_embeded)
+    //             $is_embeded[] = $product_warehouse->is_embeded;
+    //         else
+    //             $is_embeded[] = 0;
+    //         $imei_number[] = null;
+    //     }
+    //     //retrieve product data of digital and combo
+    //     $lims_product_data = Product::whereNotIn('type', ['standard'])->where('is_active', true)->get();
+    //     foreach ($lims_product_data as $product)
+    //     {
+    //         $product_qty[] = $product->qty;
+    //         $product_code[] =  $product->code;
+    //         $product_name[] = $product->name;
+    //         $product_type[] = $product->type;
+    //         $product_id[] = $product->id;
+    //         $product_list[] = $product->product_list;
+    //         $lims_product_data = $product->id;
+    //         $qty_list[] = $product->qty_list;
+    //         $expired_date[] = null;
+    //         $is_embeded[] = 0;
+    //         $imei_number[] = null;
+    //     }
+    //     $product_data = [$product_code, $product_name, $product_qty, $product_type, $product_id, $product_list, $qty_list, $product_price, $batch_no, $product_batch_id, $expired_date, $is_embeded, $imei_number];
+    //     return $product_data;
+    // }
+
     public function getProduct($id)
     {
         $product_code = [];
@@ -581,6 +751,10 @@ class QuotationController extends Controller
         $expired_date = [];
         $is_embeded = [];
         $imei_number = [];
+        $product_type = [];
+        $product_id = [];
+        $product_list = [];
+        $qty_list = [];
 
         //retrieve data of product without variant
         $lims_product_warehouse_data = Product::join('product_warehouse', 'products.id', '=', 'product_warehouse.product_id')
@@ -624,11 +798,8 @@ class QuotationController extends Controller
         ->whereNull('product_warehouse.variant_id')
         ->whereNotNull('product_warehouse.imei_number')
         ->select('product_warehouse.*', 'products.is_embeded')
-        ->groupBy('product_warehouse.product_id')
+        ->groupBy('product_warehouse.product_id', 'product_warehouse.id')
         ->get();
-
-        config()->set('database.connections.mysql.strict', false);
-        \DB::reconnect(); //important as the existing connection if any would be in strict mode
 
         $lims_product_with_batch_warehouse_data = Product::join('product_warehouse', 'products.id', '=', 'product_warehouse.product_id')
         ->where([
@@ -638,12 +809,8 @@ class QuotationController extends Controller
         ->whereNull('product_warehouse.variant_id')
         ->whereNotNull('product_warehouse.product_batch_id')
         ->select('product_warehouse.*')
-        ->groupBy('product_warehouse.product_id')
+        ->groupBy('product_warehouse.product_id', 'product_warehouse.id')
         ->get();
-
-        //now changing back the strict ON
-        config()->set('database.connections.mysql.strict', true);
-        \DB::reconnect();
 
         foreach ($lims_product_with_batch_warehouse_data as $product_warehouse)
         {
@@ -667,27 +834,27 @@ class QuotationController extends Controller
             $imei_number[] = null;
         }
 
-          //product with imei
-          foreach ($lims_product_with_imei_warehouse_data as $product_warehouse)
-          {
-              $imei_numbers = explode(",", $product_warehouse->imei_number);
-              foreach ($imei_numbers as $key => $number) {
-                  $product_qty[] = $product_warehouse->qty;
-                  $product_price[] = $product_warehouse->price;
-                  $lims_product_data = Product::find($product_warehouse->product_id);
-                  $product_code[] =  $lims_product_data->code;
-                  $product_name[] = htmlspecialchars($lims_product_data->name);
-                  $product_type[] = $lims_product_data->type;
-                  $product_id[] = $lims_product_data->id;
-                  $product_list[] = $lims_product_data->product_list;
-                  $qty_list[] = $lims_product_data->qty_list;
-                  $batch_no[] = null;
-                  $product_batch_id[] = null;
-                  $expired_date[] = null;
-                  $is_embeded[] = 0;
-                  $imei_number[] = $number;
-              }
-          }
+        //product with imei
+        foreach ($lims_product_with_imei_warehouse_data as $product_warehouse)
+        {
+            $imei_numbers = explode(",", $product_warehouse->imei_number);
+            foreach ($imei_numbers as $key => $number) {
+                $product_qty[] = $product_warehouse->qty;
+                $product_price[] = $product_warehouse->price;
+                $lims_product_data = Product::find($product_warehouse->product_id);
+                $product_code[] =  $lims_product_data->code;
+                $product_name[] = htmlspecialchars($lims_product_data->name);
+                $product_type[] = $lims_product_data->type;
+                $product_id[] = $lims_product_data->id;
+                $product_list[] = $lims_product_data->product_list;
+                $qty_list[] = $lims_product_data->qty_list;
+                $batch_no[] = null;
+                $product_batch_id[] = null;
+                $expired_date[] = null;
+                $is_embeded[] = 0;
+                $imei_number[] = $number;
+            }
+        }
 
         //retrieve data of product with variant
         $lims_product_warehouse_data = Product::join('product_warehouse', 'products.id', '=', 'product_warehouse.product_id')
@@ -695,6 +862,7 @@ class QuotationController extends Controller
             ['products.is_active', true],
             ['product_warehouse.warehouse_id', $id],
         ])->whereNotNull('product_warehouse.variant_id')->select('product_warehouse.*')->get();
+        
         foreach ($lims_product_warehouse_data as $product_warehouse)
         {
             $lims_product_data = Product::find($product_warehouse->product_id);
@@ -717,6 +885,7 @@ class QuotationController extends Controller
                 $is_embeded[] = 0;
             $imei_number[] = null;
         }
+        
         //retrieve product data of digital and combo
         $lims_product_data = Product::whereNotIn('type', ['standard'])->where('is_active', true)->get();
         foreach ($lims_product_data as $product)
@@ -733,6 +902,7 @@ class QuotationController extends Controller
             $is_embeded[] = 0;
             $imei_number[] = null;
         }
+        
         $product_data = [$product_code, $product_name, $product_qty, $product_type, $product_id, $product_list, $qty_list, $product_price, $batch_no, $product_batch_id, $expired_date, $is_embeded, $imei_number];
         return $product_data;
     }
@@ -1088,7 +1258,7 @@ class QuotationController extends Controller
                 Mail::to($mail_data['email'])->send(new QuotationDetails($mail_data));
             }
             catch(\Exception $e){
-                $message = 'Quotation updated successfully. Please setup your <a href="setting/mail_setting">mail setting</a> to send mail.';
+                $message = 'Quotation updated successfully. Please setup your mail setting to send mail.';
             }
         }
         return redirect('quotations')->with('message', $message);
@@ -1103,7 +1273,8 @@ class QuotationController extends Controller
         $lims_quotation_data = Quotation::find($id);
         $lims_product_quotation_data = ProductQuotation::where('quotation_id', $id)->get();
         $lims_pos_setting_data = PosSetting::latest()->first();
-        return view('backend.quotation.create_sale',compact('lims_customer_list', 'lims_warehouse_list', 'lims_biller_list', 'lims_tax_list', 'lims_quotation_data','lims_product_quotation_data', 'lims_pos_setting_data'));
+        $currency_list = Currency::where('is_active', true)->get();
+        return view('backend.quotation.create_sale',compact('lims_customer_list', 'lims_warehouse_list', 'lims_biller_list', 'lims_tax_list', 'lims_quotation_data','lims_product_quotation_data', 'lims_pos_setting_data', 'currency_list'));
     }
 
     public function createPurchase($id)

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Account extends Model
 {
+    protected $connection = 'tenant';
     protected $fillable =[
         "account_no", "name", "initial_balance", "total_balance", "note", "is_default", "is_active", "code", "type", "parent_account_id", "is_payment"
     ];

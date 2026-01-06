@@ -11,13 +11,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Translation extends Model
 {
     use HasFactory;
+    // protected $connection = 'master';
+    protected $connection = 'tenant';
     
     protected $fillable = ['locale', 'group', 'key', 'value'];
 
     // Get Default Language (Cached)
     public static function getTrnaslactionsByLocale(string $locale)
     {
-        return Cache::rememberForever('translations_by_locale', function () use($locale) {
+        // return Cache::rememberForever('translations_by_locale', function () use($locale) {
+        return Cache::rememberForever('translations_by_locale_' . $locale, function () use($locale) {
             return self::where('locale', $locale)
                 ->get()
                 ->mapWithKeys(function ($item) {

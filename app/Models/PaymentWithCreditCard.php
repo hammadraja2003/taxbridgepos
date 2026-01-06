@@ -5,7 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 class PaymentWithCreditCard extends Model
-{
+{   
+    protected $connection = 'tenant';       
     protected $table = 'payment_with_credit_card';
 
     protected $fillable =[

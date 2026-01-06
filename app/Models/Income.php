@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Income extends Model
 {
     use HasFactory;
-
+    protected $connection = 'tenant';           
     protected $fillable =[
         "reference_no", "income_category_id", "warehouse_id", "account_id", "user_id", "cash_register_id", "amount", "note", "created_at"
     ];

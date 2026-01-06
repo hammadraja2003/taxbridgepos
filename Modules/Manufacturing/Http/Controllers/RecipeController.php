@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 
 class RecipeController extends Controller
 {
@@ -83,7 +83,8 @@ class RecipeController extends Controller
             $numberOfProduct = Product::where('is_active', true)->count();
             $custom_fields = CustomField::where('belongs_to', 'product')->get();
 
-            $general_setting = DB::table('general_settings')->select('modules')->first();
+            // $general_setting = DB::table('general_settings')->select('modules')->first();
+            $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
             $lims_product_list = Product::where([
                     ['type', 'standard'],
                     ['is_active', true]
@@ -184,7 +185,8 @@ class RecipeController extends Controller
             $numberOfProduct = Product::where('is_active', true)->count();
             $custom_fields = CustomField::where('belongs_to', 'product')->get();
 
-            $general_setting = DB::table('general_settings')->select('modules')->first();
+            // $general_setting = DB::table('general_settings')->select('modules')->first();
+            $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
             $lims_product_data = Product::where([
             ['id', $id],
         ])->first();

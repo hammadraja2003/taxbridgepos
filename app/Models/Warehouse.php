@@ -5,7 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 class Warehouse extends Model
-{
+{   
+    protected $connection = 'tenant';   
     protected $fillable =[
 
         "name", "phone", "email", "address", "is_active"

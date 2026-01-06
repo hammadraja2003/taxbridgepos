@@ -7,6 +7,7 @@ use App\Models\Account;
 use App\Models\Payment;
 use App\Models\Customer;
 use App\Models\Purchase;
+use App\Models\ReturnPurchase;
 use App\Models\Supplier;
 use App\Models\MailSetting;
 use App\Mail\CustomerCreate;
@@ -17,7 +18,7 @@ use App\Models\CustomerGroup;
 use App\Models\PurchaseProductReturn;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Permission;
 
@@ -48,6 +49,7 @@ class SupplierController extends Controller
                                 ['payment_status', 1],
                                 ['supplier_id', $request->supplier_id]
                             ])->get();
+
         $total_paid_amount = $request->amount;
         foreach ($lims_due_purchase_data as $key => $purchase_data) {
             if($total_paid_amount == 0)
@@ -70,7 +72,7 @@ class SupplierController extends Controller
             Payment::create([
                 'payment_reference' => 'ppr-'.date("Ymd").'-'.date("his"),
                 'purchase_id' => $purchase_data->id,
-                'user_id' => Auth::id(),
+                'user_id' => $purchase_data->supplier_id,
                 'cash_register_id' => $cash_register_id,
                 'account_id' => $account_data->id,
                 'amount' => $paid_amount,
@@ -195,16 +197,21 @@ class SupplierController extends Controller
         // Total purchase from supplier
         $total_purchases = Purchase::where('supplier_id', $id)->sum('grand_total');
 
-        // Total paid to supplier
-        $total_paid = Payment::where('user_id', $id)->sum('amount');
+        $total_return = ReturnPurchase::where('supplier_id', $id)->sum('grand_total');
 
+        // Total paid to supplier
+        $total_paid = DB::table('payments')
+        ->join('purchases', 'payments.purchase_id', '=', 'purchases.id')
+        ->where('purchases.supplier_id', $id)
+        ->sum('payments.amount');
         // Balance formula
-        $balance_due = ($opening_balance + $total_purchases) - $total_paid;
+        $balance_due = ($opening_balance + $total_purchases) - ($total_paid + $total_return);
 
         return view('backend.supplier.view', [
             'lims_supplier_data' => $supplier,
             'opening_balance' => $opening_balance,
             'total_purchase' => $total_purchases,
+            'total_return' => $total_return,
             'total_paid' => $total_paid,
             'balance_due' => $balance_due,
         ]);
@@ -215,7 +222,7 @@ class SupplierController extends Controller
         // Supplier Purchases
         $purchases = Purchase::where('supplier_id', $id)->get()->map(function ($p) {
             return [
-                'date'      => $p->date ?? $p->created_at->format('Y-m-d'),
+                'date'      => $p->date ?? $p->created_at->format('Y-m-d H:i:s'),
                 'type'      => 'Purchase',
                 'reference' => $p->reference_no,
                 'debit'     => floatval($p->grand_total), // increase payable
@@ -224,9 +231,12 @@ class SupplierController extends Controller
         });
 
         // Supplier Payments (must check correct column)
-        $payments = Payment::where('user_id', $id)->get()->map(function ($p) {
+        $payments = DB::table('payments')
+        ->join('purchases', 'payments.purchase_id', '=', 'purchases.id')
+        ->where('purchases.supplier_id', $id)
+        ->get()->map(function ($p) {
             return [
-                'date'      => $p->date ?? $p->created_at->format('Y-m-d'),
+                'date'      => $p->date ?? $p->created_at->format('Y-m-d H:i:s'),
                 'type'      => 'Payment',
                 'reference' => $p->payment_reference ?? '-',
                 'debit'     => 0,
@@ -234,23 +244,23 @@ class SupplierController extends Controller
             ];
         });
 
-        // Supplier Returns (no supplier_id directly → join through purchase)
-        $returns = PurchaseProductReturn::whereHas('purchaseReturn.purchase', function ($q) use ($id) {
-                $q->where('supplier_id', $id);
-            })
+        // Supplier Returns (Query the Return Transaction directly)
+        $returns = \App\Models\ReturnPurchase::where('supplier_id', $id)
             ->get()
             ->map(function ($r) {
                 return [
-                    'date'      => $r->purchaseReturn->date ?? $r->purchaseReturn->created_at->format('Y-m-d'),
+                    'date'      => $r->created_at->format('Y-m-d H:i:s'), // or $r->date if it exists
                     'type'      => 'Purchase Return',
-                    'reference' => $r->purchaseReturn->return_reference ?? '-',
+                    'reference' => $r->reference_no ?? '-',
                     'debit'     => 0,
-                    'credit'    => floatval($r->purchaseReturn->grand_total),
+                    'credit'    => floatval($r->grand_total),
                 ];
             });
+            // return $returns;
 
         // Merge All
         $ledger = $purchases->merge($payments)->merge($returns)->sortBy('date')->values()->toArray();
+
 
         // Running Balance
         $balance = 0;

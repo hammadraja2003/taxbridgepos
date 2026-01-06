@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Designation extends Model
 {
     use HasFactory;
-
+    protected $connection = 'tenant';   
     protected $fillable = [
         'name',
         'is_active',

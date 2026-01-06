@@ -152,7 +152,7 @@
                                             <label>{{__('db.Account')}}</label>
                                             <select class="form-control" name="account_id">
                                                 @foreach($lims_account_list as $account)
-                                                <option value="{{$account->id}}" {{ $lims_product_purchase_payment_acc_id->account_id == $account->id ? 'selected' : ''}}>{{$account->name}}</option>
+                                                <option value="{{$account['id']}}" {{ $lims_product_purchase_payment_acc_id != null && $lims_product_purchase_payment_acc_id->account_id == $account['id'] ? 'selected' : ''}}>{{$account['name']}}</option>
                                                 @endforeach
                                             </select>
                                         </div>

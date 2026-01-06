@@ -386,12 +386,9 @@
                                         brandIdArray: brand_id
                                     },
                                     success: function(data) {
-                                        $(':checkbox:checked').each(function(i) {
-                                            if (i) {
-                                                 dt.row($(this).closest('tr')).remove().draw(false);
-                                            }
-                                        });
-                                        alert(data);    
+                                        setTimeout(function () {
+                                            location.reload();
+                                        }, 300);    
                                     }
 
                                 });

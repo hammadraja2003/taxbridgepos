@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Overtime;
 use App\Models\Employee;
 use Illuminate\Support\Facades\Auth;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 
 class OvertimeController extends Controller
 {

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Challan extends Model
 {
+    protected $connection = 'tenant';   
     protected $fillable = ['reference_no', 'courier_id', 'status', 'packing_slip_list', 'amount_list', 'cash_list', 'cheque_list', 'online_payment_list', 'delivery_charge_list', 'status_list', 'closing_date', 'created_by_id', 'closed_by_id', 'created_at'];
 
 

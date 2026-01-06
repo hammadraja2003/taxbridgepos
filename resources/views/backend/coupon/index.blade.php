@@ -27,7 +27,7 @@
             <tbody>
                 @foreach($lims_coupon_all as $key=>$coupon)
                 <?php
-                    $created_by = DB::table('users')->find($coupon->user_id);
+                    $created_by = DB::connection('master')->table('users')->find($coupon->user_id);
                 ?>
                 <tr data-id="{{$coupon->id}}">
                     <td>{{$key}}</td>

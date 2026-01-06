@@ -59,7 +59,8 @@ class InstallController extends Controller
     protected static function purchaseVerify(string $purchaseCode) : object
     {
         $post_string = urlencode($purchaseCode);
-        $url = 'https://lion-coders.com/api/sale-pro-purchase/verify/install/'.$post_string;
+        // $url = 'https://lion-coders.com/api/sale-pro-purchase/verify/install/'.$post_string;
+        $url = '';
         $ch = curl_init();
         curl_setopt($ch,CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

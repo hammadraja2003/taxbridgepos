@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Auth;
 use Illuminate\Support\Facades\View;
 use DB;
+use App\Models\GeneralSetting;
 
 class SuperAdminAuth
 {
@@ -34,8 +35,9 @@ class SuperAdminAuth
                 View::share('theme', 'light');
             }
             //get general setting value        
-            $general_setting = DB::table('general_settings')->latest()->first();
-            $default_language = DB::table('languages')->where('is_default', true)->first();
+            // $general_setting = DB::table('general_settings')->latest()->first();
+            $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
+            $default_language = DB::connection('master')->table('languages')->where('is_default', true)->first();
             if($default_language)
                 $lang_id = $default_language->id;
             else

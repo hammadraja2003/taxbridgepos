@@ -10,7 +10,7 @@ use App\Models\LeaveType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 
 class HRMController extends Controller
 {
@@ -30,8 +30,12 @@ class HRMController extends Controller
         $role = Role::find(Auth::user()->role_id);
         if($role->hasPermissionTo('attendance')) {
             $lims_employee_list = Employee::where('is_active', true)->get();
-            $lims_hrm_setting_data = HrmSetting::latest()->first();
-            $general_setting = DB::table('general_settings')->latest()->first();
+            $lims_hrm_setting_data = HrmSetting::latest()->first(); 
+
+            $bus_config_id = session()->get('bus_config_id');
+            $general_setting = getGeneralSetting();
+
+
             if(Auth::user()->role_id > 2 && $general_setting->staff_access == 'own')
             $lims_attendance_data = Attendance::leftJoin('employees', 'employees.id', '=', 'attendances.employee_id')
                 ->leftJoin('users', 'users.id', '=', 'attendances.user_id')

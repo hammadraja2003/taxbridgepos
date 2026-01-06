@@ -9,7 +9,7 @@ use App\Models\Warehouse;
 use App\Models\CashRegister;
 use App\Traits\StaffAccess;
 use App\Traits\TenantInfo;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Validator;
 use App\Helpers\DateHelper;

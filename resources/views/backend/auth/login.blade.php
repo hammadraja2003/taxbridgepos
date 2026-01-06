@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html  lang="{{ str_replace('_', '-', app()->getLocale()) }}">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>{{$general_setting->site_title}}</title>
+    <title>{{ config('app.name', 'TaxBridgePOS') }}</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="all,follow">
     <link rel="manifest" href="{{url('manifest.json')}}">
-    @if(!config('database.connections.saleprosaas_landlord'))
-    <link rel="icon" type="image/png" href="{{url('logo', $general_setting->site_logo)}}" />
+
+    <link rel="icon" href="{{ asset('logo/favicon.ico') }}" type="image/x-icon">
     <!-- Bootstrap CSS-->
     <link rel="stylesheet" href="<?php echo asset('vendor/bootstrap/css/bootstrap.min.css') ?>" type="text/css">
     <!-- Font Awesome CSS-->
@@ -17,28 +17,13 @@
     <noscript><link href="<?php echo asset('vendor/font-awesome/css/font-awesome.min.css') ?>" rel="stylesheet"></noscript>
     <!-- login stylesheet-->
     <link rel="stylesheet" href="<?php echo asset('css/auth.css') ?>" id="theme-stylesheet" type="text/css">
-    @else
-    <link rel="icon" type="image/png" href="{{url('../../logo', $general_setting->site_logo)}}" />
-    <!-- Bootstrap CSS-->
-    <link rel="stylesheet" href="<?php echo asset('../../vendor/bootstrap/css/bootstrap.min.css') ?>" type="text/css">
-    <!-- Font Awesome CSS-->
-    <link rel="preload" href="<?php echo asset('../../vendor/font-awesome/css/font-awesome.min.css') ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link href="<?php echo asset('../../vendor/font-awesome/css/font-awesome.min.css') ?>" rel="stylesheet"></noscript>
-    <!-- login stylesheet-->
-    <link rel="stylesheet" href="<?php echo asset('../../css/auth.css') ?>" id="theme-stylesheet" type="text/css">
-    @endif
 
     <!-- Google fonts -->
-    @if($general_setting->font_css)
-      {!! $general_setting->font_css !!}
-    @else
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap" rel="stylesheet">
-    @endif
 
-    <!-- Custom CSS from general settings -->
-    {!! $general_setting->auth_css !!}
   </head>
   <body>
     <div class="page login-page">
@@ -46,11 +31,7 @@
         <div class="form-outer text-center d-flex align-items-center">
           <div class="form-inner">
             <div class="logo">
-                @if($general_setting->site_logo)
-                <img src="{{url('logo', $general_setting->site_logo)}}" width="110">
-                @else
-                <span>{{$general_setting->site_title}}</span>
-                @endif
+                <img src="{{ asset('logo/tax-bridgePOS-logo.svg') }}" width="110">
             </div>
             @if(session()->has('delete_message'))
             <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('delete_message') }}</div>
@@ -65,7 +46,7 @@
               @csrf
               <div class="form-group-material">
                 <input id="login-username" type="text" name="name" required class="input-material" value="">
-                <label for="login-username" class="label-material">{{__('db.UserName')}}</label>
+                <label for="login-username" class="label-material">UserName</label>
                 @if(session()->has('error'))
                     <p>
                         <strong>{{ session()->get('error') }}</strong>
@@ -75,7 +56,7 @@
 
               <div class="form-group-material">
                 <input id="login-password" type="password" name="password" required class="input-material" value="">
-                <label for="login-password" class="label-material">{{__('db.Password')}}</label>
+                <label for="login-password" class="label-material">Password</label>
                 <!-- Eye Icon -->
                 <span id="togglePassword" class="position-absolute" style="right: 0; top: 50%; transform: translateY(-50%); cursor: pointer;">
                     <i class="fa fa-eye-slash"></i>
@@ -86,75 +67,61 @@
                     </p>
                 @endif
               </div>
-              <button type="submit" class="btn btn-primary btn-block">{{__('db.LogIn')}}</button>
+              <button type="submit" class="btn btn-primary btn-block">LogIn</button>
             </form>
 
-            @if($general_setting->disable_forgot_password == 0)
-            <a href="{{ route('password.request') }}" class="forgot-pass">{{__('db.Forgot Password?')}}</a>
-            @endif
+            <a href="{{ route('password.request') }}" class="forgot-pass">Forgot Password?</a>
+            
+            <!-- <p class="register-section">
+              Do not have an account?
+              <a href="{{url('register')}}" class="signup register-section">Register</a>
+            </p> -->
 
-            @if($general_setting->disable_signup == 0)
-            <p class="register-section">
-              {{__('db.Do not have an account?')}}
-              <a href="{{url('register')}}" class="signup register-section">{{__('db.Register')}}</a>
-            </p>
-            @endif
+            <div class="row">
+              <div class="col-md-12 text-center">
+                <div class="" style="font-size:11px;color:#666;margin-bottom:15px">Login as</div>
+                <button data-page="back_admin" data-env=".env" class="btn btn-sm btn-success demo-btn">Admin</button>
+                <button data-page="back_staff" data-env=".env" class="btn btn-sm btn-info demo-btn">Staff</button>
+                <button data-page="back_customer" data-env=".env" class="btn btn-sm btn-dark demo-btn">Customer</button>
+              </div>
+            </div>
           </div>
+      </div>
           <div class="copyrights text-center">
-            <p>{{__('db.Developed By')}} <span class="external">{{$general_setting->developed_by}}</span></p>
-          </div>
-        </div>
-      </div>
+            <p>
+                &copy; {{ date('Y') }} <strong>{{ __('Developed') }} {{ __('By') }}</strong> 
+                <a href="https://taxbridge.pk/" target="_blank" class="external">
+                    TaxBridge
+                </a>. 
+                All rights reserved.  | V {{env('VERSION') }}
+            </p>
 
-      <!-- This section for demo only-->
-      @if(!env('USER_VERIFIED') && !config('database.connections.saleprosaas_landlord'))
-      <div class="switch-theme" id="switch-theme" style="background-color:rgba(255,255,255,0.9);border:1px solid #999;padding:15px;position:fixed;bottom:0px;left:0px;right:0px;z-index:99">
-        <div class="row">
-          <div class="col-md-4 text-center">
-            <div class="" style="font-size:11px;color:#666;margin-bottom:15px">Login as</div>
-            <button data-page="back_admin" data-env=".env" class="btn btn-sm btn-success demo-btn">Admin</button>
-            <button data-page="back_staff" data-env=".env" class="btn btn-sm btn-info demo-btn">Staff</button>
-            <button data-page="back_customer" data-env=".env" class="btn btn-sm btn-dark demo-btn">Customer</button>
-          </div>
-          <div class="col-md-8 text-center">
-            <hr class="d-lg-none d-md-none d-sm-block">
-            <div class="text-center" style="font-size:11px;color:#666;margin-bottom:15px">Premium Add-ons</div>
-            <button data-page="ecom_front" data-env=".env.ecom" class="btn btn-primary btn-sm demo-btn">eCommerce - Frontend</button>
-            <button data-page="back_admin" data-env=".env.ecom" class="btn btn-primary btn-sm demo-btn">eCommerce - Backend</button>
-            <button data-page="back_admin" data-env=".env.wcom" class="btn btn-primary btn-sm demo-btn">WooCommerce</button>
-            <a target="_blank" href="#" class="btn btn-primary btn-sm">SAAS</a>
-            <br><br>
           </div>
         </div>
       </div>
-      @endif
-      <!-- This section for demo only-->
     </div>
   </body>
 </html>
-@if(!config('database.connections.saleprosaas_landlord'))
 <script type="text/javascript" src="<?php echo asset('vendor/jquery/jquery.min.js') ?>"></script>
-@else
-<script type="text/javascript" src="<?php echo asset('../../vendor/jquery/jquery.min.js') ?>"></script>
-@endif
+
 <script>
-    @if(config('database.connections.saleprosaas_landlord'))
-        if(localStorage.getItem("message")) {
-            alert(localStorage.getItem("message"));
-            localStorage.removeItem("message");
-        }
+    // @if(config('database.connections.saleprosaas_landlord'))
+    //     if(localStorage.getItem("message")) {
+    //         alert(localStorage.getItem("message"));
+    //         localStorage.removeItem("message");
+    //     }
         numberOfUserAccount = <?php echo json_encode($numberOfUserAccount)?>;
-        $.ajax({
-            type: 'GET',
-            async: false,
-            url: '{{route("package.fetchData", $general_setting->package_id)}}',
-            success: function(data) {
-                if(data['number_of_user_account'] > 0 && data['number_of_user_account'] <= numberOfUserAccount) {
-                    $(".register-section").addClass('d-none');
-                }
-            }
-        });
-    @endif
+        // $.ajax({
+        //     type: 'GET',
+        //     async: false,
+        //     url: '{{route("package.fetchData", $general_setting->package_id)}}',
+        //     success: function(data) {
+        //         if(data['number_of_user_account'] > 0 && data['number_of_user_account'] <= numberOfUserAccount) {
+        //             $(".register-section").addClass('d-none');
+        //         }
+        //     }
+        // });
+    // @endif
 
     $("div.alert").delay(4000).slideUp(800);
 

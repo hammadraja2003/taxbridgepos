@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Brand extends Model
 {
+    protected $connection = 'tenant';
     protected $fillable =[
 
         "title", "image", "page_title", "short_description", "slug", "is_active"

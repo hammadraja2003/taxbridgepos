@@ -16,6 +16,7 @@ use Mail;
 use Illuminate\Support\Facades\Artisan;
 use Database\Seeders\Tenant\TenantDatabaseSeeder;
 use Modules\Ecommerce\Database\Seeders\EcommerceDatabaseSeeder;
+use App\Models\GeneralSetting;
 
 trait TenantInfo
 {
@@ -131,10 +132,12 @@ trait TenantInfo
     //This function is called from tenantCheckout() in payment controller
     public function createTenant($request)
     {
-        if (cache()->has('general_setting')) {
-            $general_setting = cache()->get('general_setting');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        if (cache()->has($key_prefix.'general_setting')) {
+            $general_setting = cache()->get($key_prefix.'general_setting');
         } else {
-            $general_setting = DB::table('general_settings')->latest()->first();
+            // $general_setting = DB::table('general_settings')->latest()->first();
+            $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
         }
         $package = Package::select('is_free_trial', 'features')->find($request->package_id);
         $features = json_decode($package->features);
@@ -327,16 +330,17 @@ trait TenantInfo
         $tenant->run(function () use ($tenant, $abandoned_permission_ids, $permission_ids, $package_id, $modules, $expiry_date, $subscription_type) {
 
             if (count($abandoned_permission_ids)) {
-                DB::table('role_has_permissions')->whereIn('permission_id', $abandoned_permission_ids)->delete();
+                DB::connection('master')->table('role_has_permissions')->whereIn('permission_id', $abandoned_permission_ids)->delete();
             }
             if (count($permission_ids)) {
                 foreach ($permission_ids as $permission_id) {
-                    if (!(DB::table('role_has_permissions')->where([['role_id', 1], ['permission_id', $permission_id]])->first())) {
-                        DB::table('role_has_permissions')->insert(['role_id' => 1, 'permission_id' => $permission_id]);
+                    if (!(DB::connection('master')->table('role_has_permissions')->where([['role_id', 1], ['permission_id', $permission_id]])->first())) {
+                        DB::connection('master')->table('role_has_permissions')->insert(['role_id' => 1, 'permission_id' => $permission_id]);
                     }
                 }
             }
-            $general_setting = \App\Models\GeneralSetting::latest()->first();
+            // $general_setting = \App\Models\GeneralSetting::latest()->first();
+            $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
             if ($expiry_date != null && $subscription_type != null) {
                 $general_setting->update(['package_id' => $package_id, 'modules' => $modules, 'expiry_date' => $expiry_date, 'subscription_type' => $subscription_type]);
             } else {

@@ -23,7 +23,7 @@ use ZipArchive;
 use Twilio\Rest\Client;
 use Clickatell\Rest;
 use Clickatell\ClickatellException;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 use Auth;
 use Mail;
 
@@ -41,27 +41,28 @@ class SettingController extends Controller
 
     public function emptyDatabase()
     {
-        if(!env('USER_VERIFIED'))
+        // if(!env('USER_VERIFIED'))
             return redirect()->back()->with('not_permitted', __('db.This feature is disable for demo!'));
 
         // Clear cached queries
-        $this->cacheForget('biller_list');
-        $this->cacheForget('brand_list');
-        $this->cacheForget('category_list');
-        $this->cacheForget('coupon_list');
-        $this->cacheForget('customer_list');
-        $this->cacheForget('customer_group_list');
-        $this->cacheForget('product_list');
-        $this->cacheForget('product_list_with_variant');
-        $this->cacheForget('warehouse_list');
-        $this->cacheForget('tax_list');
-        $this->cacheForget('currency');
-        $this->cacheForget('general_setting');
-        $this->cacheForget('pos_setting');
-        $this->cacheForget('user_role');
-        $this->cacheForget('permissions');
-        $this->cacheForget('role_has_permissions');
-        $this->cacheForget('role_has_permissions_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';   
+        $this->cacheForget($key_prefix.'biller_list');
+        $this->cacheForget($key_prefix.'brand_list');
+        $this->cacheForget($key_prefix.'category_list');
+        $this->cacheForget($key_prefix.'coupon_list');
+        $this->cacheForget($key_prefix.'customer_list');
+        $this->cacheForget($key_prefix.'customer_group_list');
+        $this->cacheForget($key_prefix.'product_list');
+        $this->cacheForget($key_prefix.'product_list_with_variant');
+        $this->cacheForget($key_prefix.'warehouse_list');
+        $this->cacheForget($key_prefix.'tax_list');
+        $this->cacheForget($key_prefix.'currency');
+        $this->cacheForget($key_prefix.'general_setting');
+        $this->cacheForget($key_prefix.'pos_setting');
+        $this->cacheForget($key_prefix.'user_role');
+        $this->cacheForget($key_prefix.'permissions');
+        $this->cacheForget($key_prefix.'role_has_permissions');
+        $this->cacheForget($key_prefix.'role_has_permissions_list');
 
         $tables = DB::select('SHOW TABLES');
 
@@ -93,8 +94,9 @@ class SettingController extends Controller
 
     public function activityLog()
     {
+        $master_database = config('database.connections.master.database');
         $query = DB::table('activity_logs')
-            ->join('users', 'activity_logs.user_id', '=', 'users.id')
+            ->join($master_database.'.users', 'activity_logs.user_id', '=', 'users.id')
             ->orderBy('activity_logs.id', 'desc')
             ->select('activity_logs.*', 'users.name as user_name');
 
@@ -109,16 +111,19 @@ class SettingController extends Controller
 
     public function generalSetting()
     {
-        $lims_general_setting_data = GeneralSetting::latest()->first();
+        $bus_config_id = session()->get('bus_config_id');        
+        $lims_general_setting_data = GeneralSetting::where('bus_config_id', $bus_config_id)->first();
+        
         $lims_account_list = Account::where('is_active', true)->get();
         $lims_currency_list = Currency::get();
         $zones_array = array();
         $timestamp = time();
-
-        if(!config('database.connections.saleprosaas_landlord'))
+        
+        if(!config('database.connections.saleprosaas_landlord')){
             $installUrl = config('app.url');
-        else
+        } else{
             $installUrl = "https://" .$this->getTenantId().'.'.env('CENTRAL_DOMAIN');
+        }
 
         foreach(timezone_identifiers_list() as $key => $zone) {
             date_default_timezone_set($zone);
@@ -134,13 +139,22 @@ class SettingController extends Controller
             return redirect()->back()->with('not_permitted', __('db.This feature is disable for demo!'));
 
         $this->validate($request, [
-            'site_logo' => 'image|mimes:jpg,jpeg,png,gif|max:5120',
+            'site_logo' => 'image|mimes:jpg,jpeg,png,gif,svg|max:5120',
         ]);
 
         $data = $request->except('site_logo');
-
-        $general_setting = GeneralSetting::latest()->first();
-        $general_setting->id = 1;
+        
+        // Get bus_config_id from session
+        $bus_config_id = session()->get('bus_config_id');
+        
+        // Find or create general setting for this business
+        $general_setting = GeneralSetting::where('bus_config_id', $bus_config_id)->first();
+        
+        if (!$general_setting) {
+            $general_setting = new GeneralSetting();
+            $general_setting->bus_config_id = $bus_config_id;
+        }
+        
         $general_setting->site_title = $data['site_title'];
 
         if(isset($data['is_rtl']))
@@ -187,6 +201,7 @@ class SettingController extends Controller
         $general_setting->show_products_details_in_sales_table = $data['show_products_details_in_sales_table'];
         $general_setting->show_products_details_in_purchase_table = $data['show_products_details_in_purchase_table'];
         $general_setting->timezone = $request->timezone;
+        
         $logo = $request->site_logo;
         if ($logo) {
             $this->fileDelete('logo/', $general_setting->site_logo);
@@ -207,11 +222,11 @@ class SettingController extends Controller
             $general_setting->favicon = $faviconName;
         }
 
-        // $general_setting->expiry_type = $data['expiry_type'];
-        // $general_setting->expiry_value = $data['expiry_value'];
-
         $general_setting->save();
-        cache()->forget('general_setting');
+        
+        // Clear cache for this specific business
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        cache()->forget($key_prefix . 'general_setting');
 
         return redirect()->back()->with('message', __('db.Data updated successfully'));
     }
@@ -761,7 +776,8 @@ class SettingController extends Controller
             $pos_setting->show_print_invoice = true;
 
         $pos_setting->save();
-        cache()->forget('pos_setting');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        cache()->forget($key_prefix . 'pos_setting');
         return redirect()->back()->with('message', __('db.POS setting updated successfully'));
     }
 }

@@ -5,7 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 class Delivery extends Model
-{
+{   
+    protected $connection = 'tenant';       
     protected $fillable =[
         "reference_no", "sale_id", "packing_slip_ids", "user_id", "address", "courier_id", "delivered_by", "recieved_by", "file", "status", "note"
     ];

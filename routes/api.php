@@ -112,7 +112,7 @@ Route::group(['middleware' => $middleware], function () {
         Route::get('/recent-payment', 'recentPayment');
         Route::get('switch-theme/{theme}', 'switchTheme')->name('switchTheme');
         Route::get('/dashboard-filter/{start_date}/{end_date}/{warehouse_id}', 'dashboardFilter');
-        Route::get('addon-list', 'addonList');
+        // Route::get('addon-list', 'addonList');
         Route::get('my-transactions/{year}/{month}', 'myTransaction');
     });
 

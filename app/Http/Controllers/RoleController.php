@@ -6,15 +6,16 @@ use Illuminate\Http\Request;
 use App\Models\Roles;
 use Auth;
 use Illuminate\Validation\Rule;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
+use App\Models\Roles as Role;
+use App\Models\Permissions as Permission;
 
 class RoleController extends Controller
 {
     public function index()
     {
         if(Auth::user()->role_id <= 2) {
-            $lims_role_all = Roles::where('is_active', true)->get();
+            $bus_config_id = session('bus_config_id');
+            $lims_role_all = Roles::where('is_active', true)->where('bus_config_id', $bus_config_id)->get();
             return view('backend.role.create', compact('lims_role_all'));
         }
         else
@@ -23,16 +24,19 @@ class RoleController extends Controller
 
     public function store(Request $request)
     {
+        $connection = getConnectionName(\App\Models\Roles::class);
         $this->validate($request, [
             'name' => [
                 'max:255',
-                    Rule::unique('roles')->where(function ($query) {
+                Rule::unique($connection.'.roles')->where(function ($query) {
                     return $query->where('is_active', 1);
                 }),
             ],
         ]);
 
         $data = $request->all();
+        $bus_config_id = session('bus_config_id');
+        $data['bus_config_id'] = $bus_config_id;
         Roles::create($data);
         return redirect('role')->with('message', __('db.Data inserted successfully'));
     }
@@ -49,16 +53,19 @@ class RoleController extends Controller
 
     public function update(Request $request, $id)
     {
+        $connection = getConnectionName(\App\Models\Roles::class);
         $this->validate($request, [
             'name' => [
                 'max:255',
-                Rule::unique('roles')->ignore($request->role_id)->where(function ($query) {
+                Rule::unique($connection.'.roles')->ignore($request->role_id)->where(function ($query) {
                     return $query->where('is_active', 1);
                 }),
             ],
         ]);
 
         $input = $request->all();
+        $bus_config_id = session('bus_config_id');
+        $input['bus_config_id'] = $bus_config_id;
         $lims_role_data = Roles::where('id', $input['role_id'])->first();
         $lims_role_data->update($input);
         return redirect('role')->with('message', __('db.Data updated successfully'));
@@ -109,7 +116,8 @@ class RoleController extends Controller
             }
         }
 
-        cache()->forget('permissions');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        cache()->forget($key_prefix . 'permissions');
 
         return redirect('role')->with('message', __('db.Permission updated successfully'));
     }

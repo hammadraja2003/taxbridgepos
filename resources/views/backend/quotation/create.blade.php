@@ -64,6 +64,7 @@
                                             <button class="btn btn-secondary"><i class="fa fa-barcode"></i></button>
                                             <input type="text" name="product_code_name" id="lims_productcodeSearch" placeholder="{{__('db.Please type product code and select')}}" class="form-control" />
                                         </div>
+                                        <span class="not-found" style="color: red; display: none;">Product not found</span>
                                     </div>
                                 </div>
 		                        <div class="row mt-5">
@@ -381,7 +382,14 @@ var without_stock = <?php echo json_encode($general_setting->without_stock) ?>;
                 var data = ui.content[0].value;
                 $(this).autocomplete( "close" );
                 productSearch(data);
-            };
+            }else{
+                $(this).autocomplete( "close" );
+                $('.not-found').show();
+                setTimeout(function() {
+                    $('.not-found').hide();
+                }, 2000);
+                lims_productcodeSearch.val('');
+            }
         },
 	    select: function(event, ui) {
 	        var data = ui.item.value;
@@ -557,7 +565,6 @@ function productSearch(data){
             if(product_info[2] != 'null') {
                 imeiNumbers = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .imei-number').val();
                 imeiNumbersArray = imeiNumbers.split(",");
-                // console.log('arra '+ rowindex);
 
                 if(imeiNumbersArray.includes(product_info[2])) {
                     alert('Same imei or serial number is not allowed!');

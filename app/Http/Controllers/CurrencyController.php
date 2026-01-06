@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 use Spatie\Permission\Models\Permission;
 use App\Models\Currency;
 use App\Models\GeneralSetting;
@@ -32,7 +32,8 @@ class CurrencyController extends Controller
     {
         $data = $request->all();
         Currency::create($data);
-        cache()->forget('currency');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        cache()->forget($key_prefix . 'currency');
         return redirect()->back()->with('message', __('db.Currency created successfully'));
     }
 
@@ -53,7 +54,8 @@ class CurrencyController extends Controller
             GeneralSetting::latest()->first()->update(['currency' => $data['currency_id']]);
         }
         Currency::find($data['currency_id'])->update($data);
-        cache()->forget('currency');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        cache()->forget($key_prefix . 'currency');
         return redirect()->back()->with('message', __('db.Currency updated successfully'));
     }
 
@@ -62,7 +64,8 @@ class CurrencyController extends Controller
         if(!env('USER_VERIFIED'))
             return redirect()->back()->with('not_permitted', __('db.This feature is disable for demo!'));
         Currency::find($id)->update(['is_active' => false]);
-        cache()->forget('currency');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        cache()->forget($key_prefix . 'currency');
         return redirect()->back()->with('message', __('db.Currency deleted successfully'));
     }
 }

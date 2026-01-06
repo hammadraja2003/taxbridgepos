@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Coupon;
 use Auth;
 use Keygen;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 use Spatie\Permission\Models\Permission;
 use App\Traits\CacheForget;
 use DB;
@@ -43,7 +43,8 @@ class CouponController extends Controller
         $data['user_id'] = Auth::id();
         $data['is_active'] = true;
         Coupon::create($data);
-        $this->cacheForget('coupon_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        $this->cacheForget($key_prefix.'coupon_list');
         return redirect('coupons')->with('message', __('db.Coupon created successfully'));
     }
 
@@ -64,7 +65,8 @@ class CouponController extends Controller
             $data['minimum_amount'] = 0;
         $lims_coupon_data = Coupon::find($data['coupon_id']);
         $lims_coupon_data->update($data);
-        $this->cacheForget('coupon_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        $this->cacheForget($key_prefix.'coupon_list');
         return redirect('coupons')->with('message', __('db.Coupon updated successfully'));
     }
 
@@ -76,7 +78,8 @@ class CouponController extends Controller
             $lims_coupon_data->is_active = false;
             $lims_coupon_data->save();
         }
-        $this->cacheForget('coupon_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        $this->cacheForget($key_prefix.'coupon_list');
         return 'Coupon deleted successfully!';
     }
 
@@ -107,7 +110,8 @@ class CouponController extends Controller
         $lims_coupon_data = Coupon::find($id);
         $lims_coupon_data->is_active = false;
         $lims_coupon_data->save();
-        $this->cacheForget('coupon_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        $this->cacheForget($key_prefix.'coupon_list');
         return redirect('coupons')->with('not_permitted', __('db.Coupon deleted successfully'));
     }
 }

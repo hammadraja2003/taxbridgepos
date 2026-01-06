@@ -252,13 +252,13 @@
                             @endif
                             <?php
                             $today_sale_permission = $permission_list->where('name', 'today_sale')->first();
-                            $today_sale_permission_active = DB::table('role_has_permissions')->where([
+                            $today_sale_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                                 ['permission_id', $today_sale_permission->id],
                                 ['role_id', Auth::user()->role_id]
                             ])->first();
 
                             $today_profit_permission = $permission_list->where('name', 'today_profit')->first();
-                            $today_profit_permission_active = DB::table('role_has_permissions')->where([
+                            $today_profit_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                                 ['permission_id', $today_profit_permission->id],
                                 ['role_id', Auth::user()->role_id]
                             ])->first();
@@ -317,14 +317,14 @@
                                     @endif
                                     <?php
                                     $general_setting_permission = $permission_list->where('name', 'general_setting')->first();
-                                    $general_setting_permission_active = DB::table('role_has_permissions')->where([
+                                    $general_setting_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                                         ['permission_id', $general_setting_permission->id],
                                         ['role_id', Auth::user()->role_id]
                                     ])->first();
 
                                     $pos_setting_permission = $permission_list->where('name', 'pos_setting')->first();
 
-                                    $pos_setting_permission_active = DB::table('role_has_permissions')->where([
+                                    $pos_setting_permission_active = DB::connection('master')->table('role_has_permissions')->where([
                                         ['permission_id', $pos_setting_permission->id],
                                         ['role_id', Auth::user()->role_id]
                                     ])->first();
@@ -472,12 +472,11 @@
                 $keybord_active = $lims_pos_setting_data->keybord_active;
                 else
                 $keybord_active = 0;
-
-                $customer_active = DB::table('permissions')
-                ->join('role_has_permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
-                ->where([
-                ['permissions.name', 'customers-add'],
-                ['role_id', \Auth::user()->role_id] ])->first();
+                $customer_active = DB::connection('master')->table('permissions')
+                    ->join('role_has_permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+                    ->where([
+                    ['permissions.name', 'customers-add'],
+                    ['role_id', \Auth::user()->role_id] ])->first();
                 @endphp
                 <div class="row">
                     <div class="col-md-11 col-12">
@@ -2199,7 +2198,7 @@
         }
     });
 
-    ////Start the code is for SaleproSaas///
+    ////Start the code is for TaxBridgeSaas///
     @if(config('database.connections.saleprosaas_landlord'))
         numberOfInvoice = <?php echo json_encode($numberOfInvoice)?>;
         $.ajax({
@@ -2213,7 +2212,7 @@
             }
         });
     @endif
-    ////End the code is for SaleproSaas///
+    ////End the code is for TaxBridgeSaas///
 
     ///NOT NEEDED - Check///
     $("ul#sale").siblings('a').attr('aria-expanded','true');

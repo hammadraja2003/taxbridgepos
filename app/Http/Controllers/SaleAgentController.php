@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 use App\Models\Warehouse;
 use App\Models\Biller;
 use App\Models\Employee;
@@ -100,17 +100,18 @@ class SaleAgentController extends Controller
             $message = 'Sale Agent created successfully';
 
             if (isset($data['user'])) {
+                 $connection = getConnectionName(\App\Models\Roles::class);
                 $this->validate($request, [
                     'name' => [
                         'max:255',
-                        Rule::unique('users')->where(function ($query) {
+                        Rule::unique($connection.'.users')->where(function ($query) {
                             return $query->where('is_deleted', false);
                         }),
                     ],
                     'email' => [
                         'email',
                         'max:255',
-                        Rule::unique('users')->where(function ($query) {
+                        Rule::unique($connection.'.users')->where(function ($query) {
                             return $query->where('is_deleted', false);
                         }),
                     ],
@@ -121,6 +122,7 @@ class SaleAgentController extends Controller
                 $data['is_deleted'] = false;
                 $data['password'] = bcrypt($data['password']);
                 $data['phone'] = $data['phone_number'];
+                $data['bus_config_id'] = session('bus_config_id');
 
                 if (isset($data['company'])) {
                     $data['company_name'] = $data['company'];
@@ -167,13 +169,11 @@ class SaleAgentController extends Controller
             return redirect('sale-agents')->with('message', $message);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
-            dd($e);
             return redirect()->back()
                 ->withErrors($e->validator)
                 ->withInput();
 
         } catch (\Exception $e) {
-            // dd($e);
             Log::error('Sale Agent Store Error: '.$e->getMessage());
             return redirect()->back()
                 ->with('error', 'Something went wrong: ' . $e->getMessage())

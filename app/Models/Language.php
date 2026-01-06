@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Language extends Model
 {
     use HasFactory;
+    // protected $connection = 'master';
+    protected $connection = 'tenant';
     
     protected $fillable = ['language', 'name', 'is_default'];
 

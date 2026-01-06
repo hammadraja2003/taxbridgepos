@@ -68,6 +68,27 @@
                                             </select>
                                         </div>
                                     </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label>{{__('db.Currency')}} *</label>
+                                            <select name="currency_id" id="currency" class="form-control selectpicker" data-toggle="tooltip" title="" data-original-title="Sale currency">
+                                                @foreach($currency_list as $currency_data)
+                                                <option value="{{$currency_data->id}}" data-rate="{{$currency_data->exchange_rate}}">{{$currency_data->code}}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group mb-0">
+                                            <label>{{__('db.Exchange Rate')}} *</label>
+                                        </div>
+                                        <div class="form-group d-flex">
+                                            <input class="form-control" type="text" id="exchange_rate" name="exchange_rate" value="{{$currency->exchange_rate}}">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text" data-toggle="tooltip" title="" data-original-title="currency exchange rate">i</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12 mt-3">
@@ -488,6 +509,69 @@
 
 @push('scripts')
 <script type="text/javascript">
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    var currency = <?php echo json_encode($currency) ?>;
+    var currencyChange = false;
+    $('#currency').val(currency['id']);
+
+    $('#currency').change(function(){
+        var rate = $(this).find(':selected').data('rate');
+        var currency_id = $(this).val();
+        $('#exchange_rate').val(rate);
+        //$('input[name="currency_id"]').val(currency_id);
+        currency['exchange_rate'] = rate;
+        $("table.order-list tbody .product-id").each(function(index) {
+            rowindex = index;
+            currencyChange = true;
+            cur_product_id = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .product-id').val();
+            var qty = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.qty').val(); 
+            var price = parseFloat($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.product_price').val());
+            
+            checkDiscount(qty, true, price);
+            // couponDiscount();
+        });
+    });
+
+    function checkDiscount(qty, flag, price = 0) {
+    var customer_id = $('#customer_id').val();
+    var warehouse_id = $('#warehouse_id').val();
+    var product_id = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .product-id').val();
+
+        $.ajax({
+            type: 'GET',
+            async: false,
+            url: '{{url("/")}}/sales/check-discount?qty='+qty+'&customer_id='+customer_id+'&product_id='+product_id+'&warehouse_id='+warehouse_id,
+            success: function(data) {
+                if(product_price[rowindex].length == 0){
+                    product_price[rowindex] = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .product_price').val();
+                }
+                if(price > 0){     
+                    product_price[rowindex] = price;                
+                    product_price[rowindex] = parseFloat(product_price[rowindex] * currency['exchange_rate']) + parseFloat(product_price[rowindex] * currency['exchange_rate'] * customer_group_rate);
+                }
+
+                var productDiscount = parseFloat($('#discount').text());
+
+                if(flag == true)
+                    $('#discount').text(productDiscount+data[2]);
+                else if(flag == false)
+                    $('#discount').text(productDiscount-data[2]*qty);
+                else if(flag == 'input')
+                    $('#discount').text(productDiscount-data[2]*previousqty+data[2]*qty);
+                else
+                    $('#discount').text(productDiscount-data[2]);
+            }
+        });
+
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .qty').val(qty);
+    flag = true;
+    checkQuantity(String(qty), flag);
+}
     $("#payment").hide();
     $(".card-element").hide();
     $("#gift-card").hide();
@@ -1231,7 +1315,6 @@
                 type: $('.sale-form').attr('method'),
                 data: $('.sale-form').serialize(),
                 success: function(response) {
-                    console.log(response);
 
                     if (response.payment_method === 'pesapal' && response.redirect_url) {
                         // Redirect to the URL returned for Pesapal payment method
@@ -1253,6 +1336,7 @@
                                 $('#print-layout').html('');
                             }
                         }, 100);
+                        location.href = "{{route('sales.index')}}";
                     }
                     else if($('select[name="sale_status"]').val() != 1){
                         localStorage.clear();

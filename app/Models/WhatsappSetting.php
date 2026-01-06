@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Http;
 
 class WhatsappSetting extends Model
-{
+{   
+    protected $connection = 'tenant';   
     protected $fillable = [
         'phone_number_id',
         'business_account_id',

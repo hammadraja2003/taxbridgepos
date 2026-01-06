@@ -5,8 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 class GiftCard extends Model
-{
-     protected $fillable =[
+{   
+    protected $connection = 'tenant';       
+    protected $fillable =[
         "card_no", 
         "amount", 
         "expense", 

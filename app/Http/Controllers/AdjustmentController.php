@@ -15,7 +15,7 @@ use App\Models\StockCount;
 use App\Models\ProductVariant;
 use App\Models\ProductPurchase;
 use Auth;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 use Spatie\Permission\Models\Permission;
 
 class AdjustmentController extends Controller

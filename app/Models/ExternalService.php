@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class ExternalService extends Model
 {
     use HasFactory;
-
+    protected $connection = 'tenant';
     protected $table = 'external_services';
 
     protected $fillable = ['name', 'type', 'details', 'active'];

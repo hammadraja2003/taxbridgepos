@@ -1,6 +1,5 @@
 @extends('backend.layout.main')
 @section('content')
-
 @push('css')
 <style>
 .bootstrap-select:not([class*="col-"]):not([class*="form-control"]):not(.input-group-btn) {width: auto;}
@@ -14,8 +13,8 @@
 
     @php
         if ($general_setting->theme == 'default.css') {
-            $color = '#733686';
-            $color_rgba = 'rgba(115, 54, 134, 0.8)';
+            $color = '#023143';
+            $color_rgba = 'rgba(2, 49, 67, 0.8)';
         } elseif ($general_setting->theme == 'green.css') {
             $color = '#2ecc71';
             $color_rgba = 'rgba(46, 204, 113, 0.8)';
@@ -27,6 +26,7 @@
             $color_rgba = 'rgba(52, 73, 94, 0.8)';
         }
     @endphp
+    
     <div class="row">
 
         <div class="container-fluid">
@@ -53,7 +53,7 @@
                 <div class="brand-text float-left mt-4">
                     <h3 style="font-size:1em">{{ __('db.welcome') }} <span>{{ Auth::user()->name }}</span></h3>
                 </div>
-                @if (in_array('restaurant', explode(',', cache()->get('general_setting')->modules)))
+                @if (in_array('restaurant', explode(',', $general_setting->modules)))
                     @if (Auth::user()->role_id > 2 && isset(Auth::user()->service_staff))
                         @php
                             $cooked = DB::table('sales')
@@ -72,7 +72,7 @@
                         @endphp
                     @endif
                 @endif
-                @if (in_array('restaurant', explode(',', cache()->get('general_setting')->modules)))
+                @if (in_array('restaurant', explode(',', $general_setting->modules)))
                     <a href="{{ route('kitchen.dashboard') }}">
                         <div class="alert alert-warning alert-dismissible text-center mb-2">
                             <strong>{{ $cooked }} {{ __('db.Orders to serve') }}</strong>
@@ -183,11 +183,11 @@
                             <!-- Count item widget-->
                             <div class="col-sm-3">
                                 <div class="wrapper count-title">
-                                    <div class="icon"><i class="dripicons-return" style="color: #ff8952"></i></div>
+                                    <div class="icon"><i class="dripicons-return" style="color: #023143"></i></div>
                                     <div>
                                         <div class="count-number return-data">
                                             {{ number_format((float) $return, $general_setting->decimal, '.', '') }}</div>
-                                        <div class="name"><strong style="color: #ff8952">{{ __('db.Sale Return') }}
+                                        <div class="name"><strong style="color: #023143">{{ __('db.Sale Return') }}
                                                 <x-info title="Total Sale Return Amount" type="info" /></strong></div>
                                     </div>
                                 </div>

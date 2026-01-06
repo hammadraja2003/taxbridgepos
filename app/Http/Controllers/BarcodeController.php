@@ -6,7 +6,7 @@ use DB;
 use App\Models\Barcode;
 use Illuminate\Http\Request;
 use Auth;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 
 class BarcodeController extends Controller
 {

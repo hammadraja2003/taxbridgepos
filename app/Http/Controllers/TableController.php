@@ -57,8 +57,10 @@ class TableController extends Controller
                 ->where('id', $floor->id)
                 ->update(['floorplan' => json_encode($floorplan)]);
         }
+        
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';   
+        $this->cacheForget($key_prefix.'table_list');
 
-        $this->cacheForget('table_list');
         return redirect()->back()->with('message', __('db.Table created successfully'));
     }
 
@@ -147,8 +149,8 @@ class TableController extends Controller
 
             }
         }
-
-        $this->cacheForget('table_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';   
+        $this->cacheForget($key_prefix.'table_list');
         return redirect()->back()->with('message', __('db.Table updated successfully'));
     }
 
@@ -174,8 +176,8 @@ class TableController extends Controller
                 ->where('id', $table->floor_id)
                 ->update(['floorplan' => json_encode(array_values($updatedFloorplan))]);
         }
-
-        $this->cacheForget('table_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';   
+        $this->cacheForget($key_prefix.'table_list');
         return redirect()->back()->with('message', __('db.Table deleted successfully'));
     }
 }

@@ -120,7 +120,7 @@
                             <label>{{ __('db.Expense Category') }} *</label>
                             <select name="expense_category_id" class="selectpicker form-control" required
                                 data-live-search="true" data-live-search-style="begins" title="Select Expense Category...">
-                                <option value="0">{{ __('db.Employee Expense') }}</option>
+                                <!-- <option value="0">{{ __('db.Employee Expense') }}</option> -->
                                 @foreach ($lims_expense_category_list as $expense_category)
                                     <option value="{{ $expense_category->id }}">
                                         {{ $expense_category->name . ' (' . $expense_category->code . ')' }}</option>

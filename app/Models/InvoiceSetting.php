@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class InvoiceSetting extends Model
 {
     use HasFactory;
+    protected $connection = 'tenant';       
     protected $table = 'invoice_settings';
     protected $fillable = [
         'template_name',

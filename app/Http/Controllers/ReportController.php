@@ -35,7 +35,7 @@ use App\Models\ProductPurchase;
 use App\Models\ProductTransfer;
 use App\Models\ProductQuotation;
 use App\Models\Product_Warehouse;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 use App\Models\PurchaseProductReturn;
 use Spatie\Permission\Models\Permission;
 
@@ -633,7 +633,7 @@ class ReportController extends Controller
                             })
                             ->whereDate('sales.created_at', '>=' , $start_date)
                             ->whereDate('sales.created_at', '<=' , $end_date)
-                            ->groupBy('product_sales.product_id', 'product_sales.product_batch_id')
+                            ->groupBy('product_sales.product_id', 'product_sales.product_batch_id' , 'product_sales.sale_unit_id' )
                             ->get();
 
         config()->set('database.connections.mysql.strict', true);
@@ -1991,28 +1991,10 @@ class ReportController extends Controller
                 $nestedData['key'] = $key;
                 $nestedData['date'] = date(config('date_format'), strtotime($sale->created_at));
                 $nestedData['reference_no'] = $sale->reference_no;
-                $nestedData['customer'] = $sale->customer;
-                $product_sale_data = DB::table('sales')->join('product_sales', 'sales.id', '=', 'product_sales.sale_id')
-                                    ->join('products', 'product_sales.product_id', '=', 'products.id')
-                                    ->whereNull('sales.deleted_at')
-                                    ->where('sales.id', $sale->id)
-                                    ->select('products.name as product_name', 'product_sales.qty', 'product_sales.sale_unit_id')
-                                    ->get();
-                foreach ($product_sale_data as $index => $product_sale) {
-                    if($product_sale->sale_unit_id) {
-                        $unit_data = DB::table('units')->select('unit_code')->find($product_sale->sale_unit_id);
-                        $unitCode = $unit_data->unit_code;
-                    }
-                    else
-                        $unitCode = '';
-                    if($index)
-                        $nestedData['product'] .= '<br>'.$product_sale->product_name.' ('.number_format($product_sale->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
-                    else
-                        $nestedData['product'] = $product_sale->product_name.' ('.number_format($product_sale->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
-                }
-                $nestedData['grand_total'] = number_format($sale->grand_total, cache()->get('general_setting')->decimal);
-                $nestedData['paid'] = number_format($sale->paid_amount, cache()->get('general_setting')->decimal);
-                $nestedData['due'] = number_format($sale->grand_total - $sale->paid_amount, cache()->get('general_setting')->decimal);
+                $nestedData['customer'] = $sale->customer_name . ' (' . $sale->customer_phone_number . ')';
+                $nestedData['grand_total'] = number_format($sale->grand_total, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
+                $nestedData['paid'] = number_format($sale->paid_amount, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
+                $nestedData['due'] = number_format($sale->grand_total - $sale->paid_amount, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
                 if($sale->sale_status == 1){
                     $nestedData['status'] = '<div class="badge badge-success">'.__('db.Completed').'</div>';
                     $sale_status = __('db.Completed');
@@ -2127,13 +2109,13 @@ class ReportController extends Controller
                     else
                         $unitCode = '';
                     if($index)
-                        $nestedData['product'] .= '<br>'.$product_purchase->product_name.' ('.number_format($product_purchase->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] .= '<br>'.$product_purchase->product_name.' ('.number_format($product_purchase->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                     else
-                        $nestedData['product'] = $product_purchase->product_name.' ('.number_format($product_purchase->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] = $product_purchase->product_name.' ('.number_format($product_purchase->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                 }
-                $nestedData['grand_total'] = number_format($purchase->grand_total, cache()->get('general_setting')->decimal);
-                $nestedData['paid'] = number_format($purchase->paid_amount, cache()->get('general_setting')->decimal);
-                $nestedData['balance'] = number_format($purchase->grand_total - $purchase->paid_amount, cache()->get('general_setting')->decimal);
+                $nestedData['grand_total'] = number_format($purchase->grand_total, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
+                $nestedData['paid'] = number_format($purchase->paid_amount, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
+                $nestedData['balance'] = number_format($purchase->grand_total - $purchase->paid_amount, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
                 if($purchase->status == 1){
                     $nestedData['status'] = '<div class="badge badge-success">'.__('db.Completed').'</div>';
                     $status = __('db.Completed');
@@ -2248,11 +2230,11 @@ class ReportController extends Controller
                     else
                         $unitCode = '';
                     if($index)
-                        $nestedData['product'] .= '<br>'.$product_return->product_name.' ('.number_format($product_return->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] .= '<br>'.$product_return->product_name.' ('.number_format($product_return->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                     else
-                        $nestedData['product'] = $product_return->product_name.' ('.number_format($product_return->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] = $product_return->product_name.' ('.number_format($product_return->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                 }
-                $nestedData['grand_total'] = number_format($quotation->grand_total, cache()->get('general_setting')->decimal);
+                $nestedData['grand_total'] = number_format($quotation->grand_total, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
                 if($quotation->quotation_status == 1){
                     $nestedData['status'] = '<div class="badge badge-danger">'.__('db.Pending').'</div>';
                 }
@@ -2356,11 +2338,11 @@ class ReportController extends Controller
                     else
                         $unitCode = '';
                     if($index)
-                        $nestedData['product'] .= '<br>'.$product_return->product_name.' ('.number_format($product_return->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] .= '<br>'.$product_return->product_name.' ('.number_format($product_return->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                     else
-                        $nestedData['product'] = $product_return->product_name.' ('.number_format($product_return->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] = $product_return->product_name.' ('.number_format($product_return->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                 }
-                $nestedData['grand_total'] = number_format($sale->grand_total, cache()->get('general_setting')->decimal);
+                $nestedData['grand_total'] = number_format($sale->grand_total, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
                 $data[] = $nestedData;
             }
         }
@@ -2443,7 +2425,7 @@ class ReportController extends Controller
                 $nestedData['date'] = date(config('date_format'), strtotime($expense->created_at));
                 $nestedData['reference_no'] = $expense->reference_no;
                 $nestedData['category'] = $expense->category;
-                $nestedData['amount'] = number_format($expense->amount, cache()->get('general_setting')->decimal);
+                $nestedData['amount'] = number_format($expense->amount, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
                 $nestedData['note'] = $expense->note;
                 $data[] = $nestedData;
             }
@@ -2566,13 +2548,13 @@ class ReportController extends Controller
                     else
                         $unitCode = '';
                     if($index)
-                        $nestedData['product'] .= '<br>'.$product_sale->product_name.' ('.number_format($product_sale->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] .= '<br>'.$product_sale->product_name.' ('.number_format($product_sale->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                     else
-                        $nestedData['product'] = $product_sale->product_name.' ('.number_format($product_sale->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] = $product_sale->product_name.' ('.number_format($product_sale->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                 }
-                $nestedData['grand_total'] = number_format($sale->grand_total, cache()->get('general_setting')->decimal);
-                $nestedData['paid'] = number_format($sale->paid_amount, cache()->get('general_setting')->decimal);
-                $nestedData['due'] = number_format($sale->grand_total - $sale->paid_amount, cache()->get('general_setting')->decimal);
+                $nestedData['grand_total'] = number_format($sale->grand_total, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
+                $nestedData['paid'] = number_format($sale->paid_amount, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
+                $nestedData['due'] = number_format($sale->grand_total - $sale->paid_amount, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
                 if($sale->sale_status == 1){
                     $nestedData['status'] = '<div class="badge badge-success">'.__('db.Completed').'</div>';
                     $sale_status = __('db.Completed');
@@ -2682,11 +2664,11 @@ class ReportController extends Controller
                     else
                         $unitCode = '';
                     if($index)
-                        $nestedData['product'] .= '<br>'.$product_return->product_name.' ('.number_format($product_return->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] .= '<br>'.$product_return->product_name.' ('.number_format($product_return->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                     else
-                        $nestedData['product'] = $product_return->product_name.' ('.number_format($product_return->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] = $product_return->product_name.' ('.number_format($product_return->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                 }
-                $nestedData['grand_total'] = number_format($quotation->grand_total, cache()->get('general_setting')->decimal);
+                $nestedData['grand_total'] = number_format($quotation->grand_total, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
                 if($quotation->quotation_status == 1){
                     $nestedData['status'] = '<div class="badge badge-danger">'.__('db.Pending').'</div>';
                 }
@@ -2775,7 +2757,7 @@ class ReportController extends Controller
                 $nestedData['key'] = $key;
                 $nestedData['date'] = date(config('date_format'), strtotime($payment->created_at));
                 $nestedData['reference_no'] = $payment->payment_reference;
-                $nestedData['amount'] = number_format($payment->amount, cache()->get('general_setting')->decimal);
+                $nestedData['amount'] = number_format($payment->amount, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
                 $nestedData['paying_method'] = $payment->paying_method;
                 $data[] = $nestedData;
             }
@@ -2876,13 +2858,13 @@ class ReportController extends Controller
                     else
                         $unitCode = '';
                     if($index)
-                        $nestedData['product'] .= '<br>'.$product_sale->product_name.' ('.number_format($product_sale->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] .= '<br>'.$product_sale->product_name.' ('.number_format($product_sale->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                     else
-                        $nestedData['product'] = $product_sale->product_name.' ('.number_format($product_sale->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] = $product_sale->product_name.' ('.number_format($product_sale->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                 }
-                $nestedData['grand_total'] = number_format($sale->grand_total, cache()->get('general_setting')->decimal);
-                $nestedData['paid'] = number_format($sale->paid_amount, cache()->get('general_setting')->decimal);
-                $nestedData['due'] = number_format($sale->grand_total - $sale->paid_amount, cache()->get('general_setting')->decimal);
+                $nestedData['grand_total'] = number_format($sale->grand_total, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
+                $nestedData['paid'] = number_format($sale->paid_amount, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
+                $nestedData['due'] = number_format($sale->grand_total - $sale->paid_amount, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
                 if($sale->sale_status == 1){
                     $nestedData['status'] = '<div class="badge badge-success">'.__('db.Completed').'</div>';
                     $sale_status = __('db.Completed');
@@ -2998,13 +2980,13 @@ class ReportController extends Controller
                     else
                         $unitCode = '';
                     if($index)
-                        $nestedData['product'] .= '<br>'.$product_purchase->product_name.' ('.number_format($product_purchase->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] .= '<br>'.$product_purchase->product_name.' ('.number_format($product_purchase->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                     else
-                        $nestedData['product'] = $product_purchase->product_name.' ('.number_format($product_purchase->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] = $product_purchase->product_name.' ('.number_format($product_purchase->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                 }
-                $nestedData['grand_total'] = number_format($purchase->grand_total, cache()->get('general_setting')->decimal);
-                $nestedData['paid'] = number_format($purchase->paid_amount, cache()->get('general_setting')->decimal);
-                $nestedData['balance'] = number_format($purchase->grand_total - $purchase->paid_amount, cache()->get('general_setting')->decimal);
+                $nestedData['grand_total'] = number_format($purchase->grand_total, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
+                $nestedData['paid'] = number_format($purchase->paid_amount, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
+                $nestedData['balance'] = number_format($purchase->grand_total - $purchase->paid_amount, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
                 if($purchase->status == 1){
                     $nestedData['status'] = '<div class="badge badge-success">'.__('db.Completed').'</div>';
                     $status = __('db.Completed');
@@ -3114,11 +3096,11 @@ class ReportController extends Controller
                     else
                         $unitCode = '';
                     if($index)
-                        $nestedData['product'] .= '<br>'.$product_return->product_name.' ('.number_format($product_return->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] .= '<br>'.$product_return->product_name.' ('.number_format($product_return->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                     else
-                        $nestedData['product'] = $product_return->product_name.' ('.number_format($product_return->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] = $product_return->product_name.' ('.number_format($product_return->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                 }
-                $nestedData['grand_total'] = number_format($quotation->grand_total, cache()->get('general_setting')->decimal);
+                $nestedData['grand_total'] = number_format($quotation->grand_total, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
                 if($quotation->quotation_status == 1){
                     $nestedData['status'] = '<div class="badge badge-danger">'.__('db.Pending').'</div>';
                 }
@@ -3233,7 +3215,7 @@ class ReportController extends Controller
                         }
                     }
                 }
-                $nestedData['grandTotal'] = number_format($transfer->grand_total, cache()->get('general_setting')->decimal);
+                $nestedData['grandTotal'] = number_format($transfer->grand_total, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
                 if($transfer->status == 1){
                     $nestedData['status'] = '<div class="badge badge-success">'.__('db.Completed').'</div>';
                 }
@@ -3322,7 +3304,7 @@ class ReportController extends Controller
                 $nestedData['key'] = $key;
                 $nestedData['date'] = date(config('date_format'), strtotime($payment->created_at));
                 $nestedData['reference_no'] = $payment->payment_reference;
-                $nestedData['amount'] = number_format($payment->amount, cache()->get('general_setting')->decimal);
+                $nestedData['amount'] = number_format($payment->amount, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
                 $nestedData['paying_method'] = $payment->paying_method;
                 $data[] = $nestedData;
             }
@@ -3406,7 +3388,7 @@ class ReportController extends Controller
                 $nestedData['date'] = date(config('date_format'), strtotime($payroll->created_at));
                 $nestedData['reference_no'] = $payroll->reference_no;
                 $nestedData['employee'] = $payroll->employee;
-                $nestedData['amount'] = number_format($payroll->amount, cache()->get('general_setting')->decimal);
+                $nestedData['amount'] = number_format($payroll->amount, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
                 if($payroll->paying_method == 0)
                     $nestedData['method'] = 'Cash';
                 elseif($payroll->paying_method == 1)
@@ -3497,7 +3479,7 @@ class ReportController extends Controller
                 $nestedData['reference_no'] = $expense->reference_no;
                 $nestedData['warehouse'] = $expense->warehouse;
                 $nestedData['category'] = $expense->category;
-                $nestedData['amount'] = number_format($expense->amount, cache()->get('general_setting')->decimal);
+                $nestedData['amount'] = number_format($expense->amount, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
                 $nestedData['note'] = $expense->note;
                 $data[] = $nestedData;
             }
@@ -3612,9 +3594,9 @@ class ReportController extends Controller
                     else
                         $unitCode = '';
                     if($index)
-                        $nestedData['product'] .= '<br>'.$product_sale->product_name.' ('.number_format($product_sale->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] .= '<br>'.$product_sale->product_name.' ('.number_format($product_sale->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                     else
-                        $nestedData['product'] = $product_sale->product_name.' ('.number_format($product_sale->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] = $product_sale->product_name.' ('.number_format($product_sale->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                 }
                 //calculating product purchase cost
                 config()->set('database.connections.mysql.strict', false);
@@ -3630,10 +3612,10 @@ class ReportController extends Controller
                 config()->set('database.connections.mysql.strict', true);
                 DB::reconnect();
                 $product_cost = $this->calculateAverageCOGS($product_sale_data);
-                $nestedData['total_cost'] = number_format($product_cost[0], cache()->get('general_setting')->decimal);
-                $nestedData['grand_total'] = number_format($sale->grand_total, cache()->get('general_setting')->decimal);
-                $nestedData['paid'] = number_format($sale->paid_amount, cache()->get('general_setting')->decimal);
-                $nestedData['due'] = number_format($sale->grand_total - $sale->paid_amount, cache()->get('general_setting')->decimal);
+                $nestedData['total_cost'] = number_format($product_cost[0], cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
+                $nestedData['grand_total'] = number_format($sale->grand_total, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
+                $nestedData['paid'] = number_format($sale->paid_amount, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
+                $nestedData['due'] = number_format($sale->grand_total - $sale->paid_amount, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
                 if($sale->sale_status == 1){
                     $nestedData['status'] = '<div class="badge badge-success">'.__('db.Completed').'</div>';
                     $sale_status = __('db.Completed');
@@ -3730,7 +3712,7 @@ class ReportController extends Controller
                 $nestedData['date'] = date(config('date_format'), strtotime($payment->created_at));
                 $nestedData['reference_no'] = $payment->payment_reference;
                 $nestedData['sale_reference'] = $payment->sale_reference;
-                $nestedData['amount'] = number_format($payment->amount, cache()->get('general_setting')->decimal);
+                $nestedData['amount'] = number_format($payment->amount, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
                 $nestedData['paying_method'] = $payment->paying_method;
                 $data[] = $nestedData;
             }
@@ -3834,11 +3816,11 @@ class ReportController extends Controller
                     else
                         $unitCode = '';
                     if($index)
-                        $nestedData['product'] .= '<br>'.$product_return->product_name.' ('.number_format($product_return->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] .= '<br>'.$product_return->product_name.' ('.number_format($product_return->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                     else
-                        $nestedData['product'] = $product_return->product_name.' ('.number_format($product_return->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] = $product_return->product_name.' ('.number_format($product_return->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                 }
-                $nestedData['grand_total'] = number_format($quotation->grand_total, cache()->get('general_setting')->decimal);
+                $nestedData['grand_total'] = number_format($quotation->grand_total, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
                 if($quotation->quotation_status == 1){
                     $nestedData['status'] = '<div class="badge badge-danger">'.__('db.Pending').'</div>';
                 }
@@ -3943,11 +3925,11 @@ class ReportController extends Controller
                     else
                         $unitCode = '';
                     if($index)
-                        $nestedData['product'] .= '<br>'.$product_return->product_name.' ('.number_format($product_return->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] .= '<br>'.$product_return->product_name.' ('.number_format($product_return->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                     else
-                        $nestedData['product'] = $product_return->product_name.' ('.number_format($product_return->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] = $product_return->product_name.' ('.number_format($product_return->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                 }
-                $nestedData['grand_total'] = number_format($sale->grand_total, cache()->get('general_setting')->decimal);
+                $nestedData['grand_total'] = number_format($sale->grand_total, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
                 $data[] = $nestedData;
             }
         }
@@ -4063,13 +4045,13 @@ class ReportController extends Controller
                     else
                         $unitCode = '';
                     if($index)
-                        $nestedData['product'] .= '<br>'.$product_sale->product_name.' ('.number_format($product_sale->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] .= '<br>'.$product_sale->product_name.' ('.number_format($product_sale->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                     else
-                        $nestedData['product'] = $product_sale->product_name.' ('.number_format($product_sale->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] = $product_sale->product_name.' ('.number_format($product_sale->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                 }
-                $nestedData['grand_total'] = number_format($sale->grand_total, cache()->get('general_setting')->decimal);
-                $nestedData['paid'] = number_format($sale->paid_amount, cache()->get('general_setting')->decimal);
-                $nestedData['due'] = number_format($sale->grand_total - $sale->paid_amount, cache()->get('general_setting')->decimal);
+                $nestedData['grand_total'] = number_format($sale->grand_total, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
+                $nestedData['paid'] = number_format($sale->paid_amount, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
+                $nestedData['due'] = number_format($sale->grand_total - $sale->paid_amount, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
                 if($sale->sale_status == 1){
                     $nestedData['status'] = '<div class="badge badge-success">'.__('db.Completed').'</div>';
                     $sale_status = __('db.Completed');
@@ -4168,7 +4150,7 @@ class ReportController extends Controller
                 $nestedData['reference_no'] = $payment->payment_reference;
                 $nestedData['sale_reference'] = $payment->sale_reference;
                 $nestedData['customer'] = $payment->customer_name;
-                $nestedData['amount'] = number_format($payment->amount, cache()->get('general_setting')->decimal);
+                $nestedData['amount'] = number_format($payment->amount, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
                 $nestedData['paying_method'] = $payment->paying_method;
                 $data[] = $nestedData;
             }
@@ -4274,11 +4256,11 @@ class ReportController extends Controller
                     else
                         $unitCode = '';
                     if($index)
-                        $nestedData['product'] .= '<br>'.$product_return->product_name.' ('.number_format($product_return->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] .= '<br>'.$product_return->product_name.' ('.number_format($product_return->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                     else
-                        $nestedData['product'] = $product_return->product_name.' ('.number_format($product_return->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] = $product_return->product_name.' ('.number_format($product_return->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                 }
-                $nestedData['grand_total'] = number_format($quotation->grand_total, cache()->get('general_setting')->decimal);
+                $nestedData['grand_total'] = number_format($quotation->grand_total, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
                 if($quotation->quotation_status == 1){
                     $nestedData['status'] = '<div class="badge badge-danger">'.__('db.Pending').'</div>';
                 }
@@ -4383,11 +4365,11 @@ class ReportController extends Controller
                     else
                         $unitCode = '';
                     if($index)
-                        $nestedData['product'] .= '<br>'.$product_return->product_name.' ('.number_format($product_return->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] .= '<br>'.$product_return->product_name.' ('.number_format($product_return->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                     else
-                        $nestedData['product'] = $product_return->product_name.' ('.number_format($product_return->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] = $product_return->product_name.' ('.number_format($product_return->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                 }
-                $nestedData['grand_total'] = number_format($sale->grand_total, cache()->get('general_setting')->decimal);
+                $nestedData['grand_total'] = number_format($sale->grand_total, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
                 $data[] = $nestedData;
             }
         }
@@ -4536,13 +4518,13 @@ class ReportController extends Controller
                     else
                         $unitCode = '';
                     if($index)
-                        $nestedData['product'] .= '<br>'.$product_purchase->product_name.' ('.number_format($product_purchase->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] .= '<br>'.$product_purchase->product_name.' ('.number_format($product_purchase->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                     else
-                        $nestedData['product'] = $product_purchase->product_name.' ('.number_format($product_purchase->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] = $product_purchase->product_name.' ('.number_format($product_purchase->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                 }
-                $nestedData['grand_total'] = number_format($purchase->grand_total, cache()->get('general_setting')->decimal);
-                $nestedData['paid'] = number_format($purchase->paid_amount, cache()->get('general_setting')->decimal);
-                $nestedData['balance'] = number_format($purchase->grand_total - $purchase->paid_amount, cache()->get('general_setting')->decimal);
+                $nestedData['grand_total'] = number_format($purchase->grand_total, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
+                $nestedData['paid'] = number_format($purchase->paid_amount, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
+                $nestedData['balance'] = number_format($purchase->grand_total - $purchase->paid_amount, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
                 if($purchase->status == 1){
                     $nestedData['status'] = '<div class="badge badge-success">'.__('db.Completed').'</div>';
                     $status = __('db.Completed');
@@ -4638,7 +4620,7 @@ class ReportController extends Controller
                 $nestedData['date'] = date(config('date_format'), strtotime($payment->created_at));
                 $nestedData['reference_no'] = $payment->payment_reference;
                 $nestedData['purchase_reference'] = $payment->purchase_reference;
-                $nestedData['amount'] = number_format($payment->amount, cache()->get('general_setting')->decimal);
+                $nestedData['amount'] = number_format($payment->amount, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
                 $nestedData['paying_method'] = $payment->paying_method;
                 $data[] = $nestedData;
             }
@@ -4736,11 +4718,11 @@ class ReportController extends Controller
                     else
                         $unitCode = '';
                     if($index)
-                        $nestedData['product'] .= '<br>'.$product_return->product_name.' ('.number_format($product_return->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] .= '<br>'.$product_return->product_name.' ('.number_format($product_return->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                     else
-                        $nestedData['product'] = $product_return->product_name.' ('.number_format($product_return->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] = $product_return->product_name.' ('.number_format($product_return->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                 }
-                $nestedData['grand_total'] = number_format($return->grand_total, cache()->get('general_setting')->decimal);
+                $nestedData['grand_total'] = number_format($return->grand_total, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
                 $data[] = $nestedData;
             }
         }
@@ -4839,11 +4821,11 @@ class ReportController extends Controller
                     else
                         $unitCode = '';
                     if($index)
-                        $nestedData['product'] .= '<br>'.$product_return->product_name.' ('.number_format($product_return->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] .= '<br>'.$product_return->product_name.' ('.number_format($product_return->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                     else
-                        $nestedData['product'] = $product_return->product_name.' ('.number_format($product_return->qty, cache()->get('general_setting')->decimal).' '.$unitCode.')';
+                        $nestedData['product'] = $product_return->product_name.' ('.number_format($product_return->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
                 }
-                $nestedData['grand_total'] = number_format($quotation->grand_total, cache()->get('general_setting')->decimal);
+                $nestedData['grand_total'] = number_format($quotation->grand_total, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
                 if($quotation->quotation_status == 1){
                     $nestedData['status'] = '<div class="badge badge-danger">'.__('db.Pending').'</div>';
                 }
@@ -4967,10 +4949,10 @@ class ReportController extends Controller
                 'date' => date(config('date_format'), strtotime($sale->created_at)),
                 'reference_no' => $sale->reference_no,
                 'customer' => $sale->customer_name . ' (' . $sale->customer_phone_number . ')',
-                'grand_total' => number_format($sale->grand_total, cache()->get('general_setting')->decimal),
-                'returned_amount' => number_format($returned_amount, cache()->get('general_setting')->decimal),
-                'paid' => number_format($sale->paid_amount ?? 0, cache()->get('general_setting')->decimal),
-                'due' => number_format(($sale->grand_total - $returned_amount - ($sale->paid_amount ?? 0)), cache()->get('general_setting')->decimal),
+                'grand_total' => number_format($sale->grand_total, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal),
+                'returned_amount' => number_format($returned_amount, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal),
+                'paid' => number_format($sale->paid_amount ?? 0, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal),
+                'due' => number_format(($sale->grand_total - $returned_amount - ($sale->paid_amount ?? 0)), cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal),
             ];
         }
 
@@ -4991,8 +4973,8 @@ class ReportController extends Controller
         $end_date = $data['end_date'];
         $q = Purchase::where('payment_status', 1)
             ->whereNull('deleted_at')
-            ->whereDate('updated_at', '>=' , $start_date)
-            ->whereDate('updated_at', '<=' , $end_date);
+            ->whereDate('created_at', '>=' , $start_date)
+            ->whereDate('created_at', '<=' , $end_date);
         if($request->supplier_id) {
             $supplier_id = $request->supplier_id;
             $q = $q->where('supplier_id', $request->supplier_id);

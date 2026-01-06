@@ -16,24 +16,24 @@ class LanguagesTableSeeder extends Seeder
     public function run()
     {
 
-        if (DB::table('languages')->count() > 0) {
+        if (DB::connection('master')->table('languages')->count() > 0) {
 
-            $lang = DB::table('languages')->orderBy('id')->get(); // Fetch all languages ordered by ID
+            $lang = DB::connection('master')->table('languages')->orderBy('id')->get(); // Fetch all languages ordered by ID
 
             $first = $lang->first(); // Get the first record from the collection
             $default = $lang->where('is_default', 1)->first(); // Check if there's already a default language
 
             if (!$default && $first) {
                 // Set all is_default = 0
-                DB::table('languages')->update(['is_default' => 0]);
+                DB::connection('master')->table('languages')->update(['is_default' => 0]);
 
                 // Set is_default = 1 for the first row
-                DB::table('languages')->where('id', $first->id)->update(['is_default' => 1]);
+                DB::connection('master')->table('languages')->where('id', $first->id)->update(['is_default' => 1]);
             }
 
         }else{
 
-            DB::table('languages')->insert(array (
+            DB::connection('master')->table('languages')->insert(array (
                 0 =>
                 array (
                     'id' => 1,

@@ -68,7 +68,7 @@ return [
     */
     'database' => [
 
-        'connection' => '',
+        'connection' => 'tenant',
 
         'languages_table' => 'languages',
 

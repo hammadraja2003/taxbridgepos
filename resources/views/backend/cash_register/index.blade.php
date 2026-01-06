@@ -24,7 +24,7 @@
                 @foreach($lims_cash_register_all as $key=>$cash_register)
                 <tr data-id="{{$cash_register->id}}">
                     <td>{{$key}}</td>
-                    <td>{{ $cash_register->user->name }}</td>
+                    <td>{{ $users[$cash_register->user_id]->name ?? 'N/A' }}</td>
                     <td>{{ $cash_register->warehouse->name }}</td>
                     <td>{{ $cash_register->cash_in_hand }}</td>
                     <td>{{ $cash_register->closing_balance }}</td>

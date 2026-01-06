@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class IncomeCategory extends Model
 {
-    use HasFactory;
-
+    use HasFactory; 
+    protected $connection = 'tenant';       
     protected $fillable =[
         "code", "name", "is_active"
     ];

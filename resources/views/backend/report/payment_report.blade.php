@@ -63,7 +63,7 @@
                 <?php
                     $sale = DB::table('sales')->find($payment->sale_id);
                     $purchase = DB::table('purchases')->find($payment->purchase_id);
-                    $user = DB::table('users')->find($payment->user_id);
+                    $user = DB::connection('master')->table('users')->find($payment->user_id);
                 ?>
                 <tr>
                     <td></td>

@@ -46,28 +46,35 @@
 
     <div id="ledger-summery" class="row mt-3 text-center d-none">
 
-        <div class="col-md-3">
+        <div class="col-md-2">
             <div class="p-2 border rounded bg-light">
                 <strong>Opening Balance</strong><br>
                 <h5>{{ number_format($opening_balance, 2) }}</h5>
             </div>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-2">
             <div class="p-2 border rounded bg-light">
                 <strong>Total Purchase</strong><br>
                 <h5>{{ number_format($total_purchase, 2) }}</h5>
             </div>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-2">
+            <div class="p-2 border rounded bg-light">
+                <strong>Total Return</strong><br>
+                <h5>{{ number_format($total_return, 2) }}</h5>
+            </div>
+        </div>
+
+        <div class="col-md-2">
             <div class="p-2 border rounded bg-light">
                 <strong>Total Paid</strong><br>
                 <h5>{{ number_format($total_paid, 2) }}</h5>
             </div>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-2">
             <div class="p-2 border rounded bg-light">
                 <strong>Balance Due</strong><br>
                 <h5 class="text-danger">{{ number_format($balance_due, 2) }}</h5>
@@ -196,7 +203,7 @@
                 { data: 'credit' },
                 { data: 'balance' }
             ],
-            order: [[0, 'desc']],
+            order: [[0, 'asc']],
             responsive: true,
         });
         

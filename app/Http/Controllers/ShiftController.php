@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Shift;
 use App\Models\HrmSetting;
 use Illuminate\Validation\Rule;
-use Spatie\Permission\Models\Role;
+use App\Models\Roles as Role;
 use Auth;
 use Carbon\Carbon;
 
