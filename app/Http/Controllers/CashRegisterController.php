@@ -15,7 +15,7 @@ class CashRegisterController extends Controller
 {
 	// public function index()
 	// {
-	// 	if(Auth::user()->role_id <= 2) {
+	// 	if(Auth::user()->role_type <= 2) {
 	// 		$lims_cash_register_all = CashRegister::with('user', 'warehouse')->get();
 	// 		return view('backend.cash_register.index', compact('lims_cash_register_all'));
 	// 	}
@@ -25,7 +25,7 @@ class CashRegisterController extends Controller
 
 	public function index()
 	{
-		if (Auth::user()->role_id <= 2) {
+		if (Auth::user()->role_type <= 2) {
 
 			$lims_cash_register_all = CashRegister::with('warehouse')->get();
 

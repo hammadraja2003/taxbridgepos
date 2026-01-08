@@ -101,7 +101,7 @@
                                         </div>
                                     </div>
                                     @foreach($custom_fields as $field)
-                                        @if(!$field->is_admin || \Auth::user()->role_id == 1)
+                                        @if(!$field->is_admin || \Auth::user()->role_type == 1)
                                             <div class="{{'col-md-'.$field->grid_value}}">
                                                 <div class="form-group">
                                                     <label>{{$field->name}}</label>

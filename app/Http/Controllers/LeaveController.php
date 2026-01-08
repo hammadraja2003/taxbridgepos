@@ -45,7 +45,7 @@ class LeaveController extends Controller
             'approver_id' => Auth::id()
         ]);
 
-        return redirect()->back()->with('message', __('db.Leave request added successfully'));
+        return redirect()->back()->with('message', 'Leave request added successfully');
     }
 
     public function update(Request $request, $id)
@@ -77,14 +77,14 @@ class LeaveController extends Controller
 
         }
 
-        return redirect()->back()->with('message', __('db.Leave updated successfully'));
+        return redirect()->back()->with('message', 'Leave updated successfully');
     }
 
     public function destroy($id)
     {
         $leave = Leave::findOrFail($id);
         $leave->delete();
-        return redirect()->back()->with('message', __('db.Leave deleted successfully'));
+        return redirect()->back()->with('message', 'Leave deleted successfully');
     }
 
     // Bulk delete via AJAX
@@ -92,6 +92,6 @@ class LeaveController extends Controller
     {
         $ids = $request->leaveIdArray;
         Leave::whereIn('id', $ids)->delete();
-        return response()->json(['message' => __('db.Selected leaves deleted successfully')]);
+        return response()->json(['message' => 'Selected leaves deleted successfully']);
     }
 }

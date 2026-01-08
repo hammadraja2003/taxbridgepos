@@ -66,7 +66,7 @@
                     <th>{{ __('db.category') }}</th>
                     <th>{{ __('db.imei_numbers') }}</th>
 
-                    @if (auth()->user()->role_id < 3)
+                    @if (auth()->user()->role_type < 3)
                         <th>{{ __('db.Purchased Amount') }}</th>
                         <th>{{ __('db.Purchased') }} {{ __('db.qty') }}</th>
                     @endif
@@ -76,7 +76,7 @@
                     <th>Returned Amount</th>
                     <th>Returned Qty</th>
 
-                    @if (auth()->user()->role_id < 3)
+                    @if (auth()->user()->role_type < 3)
                         <th>Purchase Returned Amount</th>
                         <th>Purchase Returned Qty</th>
                     @endif
@@ -84,7 +84,7 @@
                     <th>{{ __('db.profit') }}</th>
                     <th>{{ __('db.In Stock') }}</th>
 
-                    @if (auth()->user()->role_id < 3)
+                    @if (auth()->user()->role_type < 3)
                         <th>{{ __('db.Stock Worth') . '(' . __('db.Price') . '/' . __('db.Cost') . ')' }}</th>
                     @endif
                 </tr>
@@ -97,7 +97,7 @@
                     <th>{{ __('db.Total') }}</th>
                     <th></th>
 
-                    @if (auth()->user()->role_id < 3)
+                    @if (auth()->user()->role_type < 3)
                         <th></th>
                         <th></th>
                     @endif
@@ -107,7 +107,7 @@
                     <th></th>
                     <th></th>
 
-                    @if (auth()->user()->role_id < 3)
+                    @if (auth()->user()->role_type < 3)
                         <th></th>
                         <th></th>
                     @endif
@@ -115,7 +115,7 @@
                     <th></th>
                     <th></th>
 
-                    @if (auth()->user()->role_id < 3)
+                    @if (auth()->user()->role_type < 3)
                         <th></th>
                     @endif
                 </tr>
@@ -156,7 +156,7 @@
     var warehouse_id = $(".product-report-filter select[name=warehouse_id]").val();
     var category_id = $(".product-report-filter select[name=category_id]").val();
 
-    var userRole = @json(auth()->user()->role_id);
+    var userRole = @json(auth()->user()->role_type);
     var columns = [
         { data: "key" },
         { data: "name" },

@@ -10,6 +10,7 @@ use App\Models\Product_Warehouse;
 use App\Models\Tax;
 use App\Models\Unit;
 use App\Models\Warehouse;
+use App\Models\GeneralSetting;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -45,6 +46,7 @@ class RecipeController extends Controller
             if(empty($all_permission))
                 $all_permission[] = 'dummy text';
             $role_id = $role->id;
+            $role_type = $role->role_type;
             $numberOfProduct = DB::table('products')->where('is_active', true)->count();
             $custom_fields = CustomField::where([
                                 ['belongs_to', 'product'],
@@ -54,7 +56,7 @@ class RecipeController extends Controller
             foreach($custom_fields as $fieldName) {
                 $field_name[] = str_replace(" ", "_", strtolower($fieldName));
             }
-            return view('manufacturing::recipe.index', compact('warehouse_id','all_permission', 'role_id', 'numberOfProduct', 'custom_fields', 'field_name','lims_warehouse_list'));
+            return view('manufacturing::recipe.index', compact('warehouse_id','all_permission', 'role_id', 'role_type', 'numberOfProduct', 'custom_fields', 'field_name','lims_warehouse_list'));
         }
         else
             return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));

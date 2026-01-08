@@ -23,7 +23,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4 mt-3 @if (\Auth::user()->role_id > 2) {{ 'd-none' }} @endif">
+                    <div class="col-md-4 mt-3 @if (\Auth::user()->role_type > 2) {{ 'd-none' }} @endif">
                         <div class="form-group row">
                             <label class="d-tc mt-2"><strong>{{ __('db.Choose Warehouse') }}</strong> &nbsp;</label>
                             <div class="d-tc">
@@ -97,7 +97,7 @@
                     {!! Form::open(['route' => ['expenses.update', 1], 'method' => 'put', 'files' => true]) !!}
                     <?php
                     $lims_expense_category_list = DB::table('expense_categories')->where('is_active', true)->get();
-                    if (Auth::user()->role_id > 2) {
+                    if (Auth::user()->role_type > 2) {
                         $lims_warehouse_list = DB::table('warehouses')
                             ->where([['is_active', true], ['id', Auth::user()->warehouse_id]])
                             ->get();

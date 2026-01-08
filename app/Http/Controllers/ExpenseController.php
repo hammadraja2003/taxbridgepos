@@ -104,7 +104,7 @@ class ExpenseController extends Controller
                 ->offset($start)
                 ->limit($limit)
                 ->orderBy($order, $dir);
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $expenses =  $q->select('expenses.*')
                                 ->where('expenses.user_id', Auth::id())
                                 ->orwhere([
@@ -114,7 +114,7 @@ class ExpenseController extends Controller
                                 ->get();
                 $totalFiltered = $q->where('expenses.user_id', Auth::id())->count();
             }
-            elseif(Auth::user()->role_id > 2 && config('staff_access') == 'warehouse') {
+            elseif(Auth::user()->role_type > 2 && config('staff_access') == 'warehouse') {
                 $expenses =  $q->select('expenses.*')
                                 ->where('expenses.user_id', Auth::id())
                                 ->orwhere([

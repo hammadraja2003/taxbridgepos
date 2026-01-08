@@ -324,7 +324,7 @@
           <li class="nav-item"><a target="_blank" href="{{'https://'.env('CENTRAL_DOMAIN').'/contact-for-renewal?id='.$subdomain}}" data-toggle="tooltip" title="{{ __('Renew Subscription') }}"><i class="dripicons-clockwise"></i></a></li>
           @endif
           <li class="nav-item d-none d-lg-block"><a id="btnFullscreen" data-toggle="tooltip" title="{{ __('Full Screen') }}"><i class="dripicons-expand"></i></a></li>
-          @if(\Auth::user()->role_id <= 2) <li class="nav-item"><a href="{{route('cashRegister.index') }}" data-toggle="tooltip" title="{{ __('Cash Register List') }}"><i class="dripicons-archive"></i></a></li>
+          @if(\Auth::user()->role_type <= 2) <li class="nav-item"><a href="{{route('cashRegister.index') }}" data-toggle="tooltip" title="{{ __('Cash Register List') }}"><i class="dripicons-archive"></i></a></li>
             @endif
             
             @php
@@ -417,7 +417,7 @@
                 <li>
                   <a href="{{url('my-transactions/'.date('Y').'/'.date('m'))}}"><i class="dripicons-swap"></i> {{ __('db.My Transaction') }}</a>
                 </li>
-                @if(Auth::user()->role_id != 5)
+                @if(Auth::user()->role_type != 4)
                 <li>
                   <a href="{{url('holidays/my-holiday/'.date('Y').'/'.date('m'))}}"><i class="dripicons-vibrate"></i> {{ __('db.My Holiday') }}</a>
                 </li>
@@ -610,7 +610,7 @@
             {!! Form::open(['route' => 'expenses.store', 'method' => 'post','files' => true]) !!}
             <?php
             $lims_expense_category_list = DB::table('expense_categories')->where('is_active', true)->get();
-            if (Auth::user()->role_id > 2)
+            if (Auth::user()->role_type > 2)
               $lims_warehouse_list = DB::table('warehouses')->where([
                 ['is_active', true],
                 ['id', Auth::user()->warehouse_id]
@@ -723,7 +723,7 @@
             {!! Form::open(['route' => 'incomes.store', 'method' => 'post']) !!}
             <?php
             $lims_income_category_list = DB::table('income_categories')->where('is_active', true)->get();
-            if (Auth::user()->role_id > 2)
+            if (Auth::user()->role_type > 2)
               $lims_warehouse_list = DB::table('warehouses')->where([
                 ['is_active', true],
                 ['id', Auth::user()->warehouse_id]

@@ -93,7 +93,7 @@
                         </tbody>
                     </table>
                 </div>
-                @if($role_id <= 2)
+                @if($role_type <= 2)
                 <div class="col-md-5 mt-2" id="product-variant-warehouse-section">
                     <h5>{{__('db.Warehouse quantity of product variants')}}</h5>
                     <table class="table table-bordered table-hover product-variant-warehouse-list">
@@ -167,7 +167,7 @@
     var slidertext;
     var product_id = [];
     var all_permission = <?php echo json_encode($all_permission) ?>;
-    var role_id = <?php echo json_encode($role_id) ?>;
+    var role_type = <?php echo json_encode($role_type) ?>;
     var user_verified = <?php echo json_encode(env('USER_VERIFIED')) ?>;
     var logoUrl = <?php echo json_encode(url('logo', $general_setting->site_logo)) ?>;
     var warehouse_id = <?php echo json_encode($warehouse_id); ?>;
@@ -314,7 +314,7 @@
                 });
                 $("#product-variant-section").removeClass('d-none');
             }
-            if(role_id <= 2) {
+            if(role_type <= 2) {
                  const routeTemplate = @json(route('product.warehouse', ['id' => '__ID__']));
                  const url = routeTemplate.replace('__ID__', product[12]);
                 $.get(url + product[12], function(data) {

@@ -95,7 +95,7 @@ class IncomeController extends Controller
                 ->offset($start)
                 ->limit($limit)
                 ->orderBy($order,$dir);
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $incomes =  $q->select('incomes.*')
                                 ->with('warehouse', 'incomeCategory')
                                 ->where('incomes.user_id', Auth::id())
@@ -106,7 +106,7 @@ class IncomeController extends Controller
                                 ->get();
                 $totalFiltered = $q->where('incomes.user_id', Auth::id())->count();
             }
-            elseif(Auth::user()->role_id > 2 && config('staff_access') == 'warehouse') {
+            elseif(Auth::user()->role_type > 2 && config('staff_access') == 'warehouse') {
                 $incomes =  $q->select('incomes.*')
                                 ->with('warehouse', 'incomeCategory')
                                 ->where('incomes.user_id', Auth::id())

@@ -22,7 +22,7 @@
                         <input type="hidden" name="ending_date" value="{{$ending_date}}" />
                     </div>
                 </div>
-                <div class="col-md-3 @if(\Auth::user()->role_id > 2){{'d-none'}}@endif">
+                <div class="col-md-3 @if(\Auth::user()->role_type > 2){{'d-none'}}@endif">
                     <div class="form-group">
                         <label><strong>{{__('db.Warehouse')}}</strong></label>
                         <select id="warehouse_id" name="warehouse_id" class="selectpicker form-control" data-live-search="true" data-live-search-style="begins" >

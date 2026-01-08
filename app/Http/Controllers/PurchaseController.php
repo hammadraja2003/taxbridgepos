@@ -112,7 +112,7 @@ class PurchaseController extends Controller
         $role = Role::find(Auth::user()->role_id);
         if($role->hasPermissionTo('purchases-add')){
             $lims_supplier_list = Supplier::where('is_active', true)->get();
-            if(Auth::user()->role_id > 2) {
+            if(Auth::user()->role_type > 2) {
                 $lims_warehouse_list = Warehouse::where([
                     ['is_active', true],
                     ['id', Auth::user()->warehouse_id]
@@ -748,7 +748,7 @@ class PurchaseController extends Controller
             }
 
             // ✅ ACCESS CONTROL
-            if (Auth::user()->role_id > 2) {
+            if (Auth::user()->role_type > 2) {
                 if (config('staff_access') == 'own') {
                     $q->where('purchases.user_id', Auth::id());
                 } elseif (config('staff_access') == 'warehouse') {
@@ -2293,9 +2293,9 @@ class PurchaseController extends Controller
                 ->whereDate('sales.created_at', '<=', $request->input('ending_date'))
                 ->select('sales.id', 'sales.*','payments.paying_method');
 
-        if(Auth::user()->role_id > 2 && config('staff_access') == 'own')
+        if(Auth::user()->role_type > 2 && config('staff_access') == 'own')
             $q = $q->where('sales.user_id', Auth::id());
-        elseif(Auth::user()->role_id > 2 && config('staff_access') == 'warehouse')
+        elseif(Auth::user()->role_type > 2 && config('staff_access') == 'warehouse')
             $q = $q->where('sales.warehouse_id', Auth::user()->warehouse_id);
         if($sale_status)
             $q = $q->where('sales.sale_status', $sale_status);
@@ -2331,9 +2331,9 @@ class PurchaseController extends Controller
                 ->whereDate('sales.created_at', '>=' ,$request->input('starting_date'))
                 ->whereDate('sales.created_at', '<=' ,$request->input('ending_date'));
 
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own')
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own')
                 $q = $q->where('sales.user_id', Auth::id());
-            elseif(Auth::user()->role_id > 2 && config('staff_access') == 'warehouse')
+            elseif(Auth::user()->role_type > 2 && config('staff_access') == 'warehouse')
                 $q = $q->where('sales.warehouse_id', Auth::user()->warehouse_id);
             if($warehouse_id)
                 $q = $q->where('sales.warehouse_id', $warehouse_id);
@@ -2373,7 +2373,7 @@ class PurchaseController extends Controller
                 ->offset($start)
                 ->limit($limit)
                 ->orderBy($order,$dir);
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $q = $q->select('sales.*')
                         ->with('biller', 'customer', 'warehouse', 'user')
                         ->where('sales.user_id', Auth::id())
@@ -2404,7 +2404,7 @@ class PurchaseController extends Controller
                         ]);
                 }
             }
-            elseif(Auth::user()->role_id > 2 && config('staff_access') == 'warehouse') {
+            elseif(Auth::user()->role_type > 2 && config('staff_access') == 'warehouse') {
                 $q = $q->select('sales.*')
                         ->with('biller', 'customer', 'warehouse', 'user')
                         ->where('sales.user_id', Auth::id())

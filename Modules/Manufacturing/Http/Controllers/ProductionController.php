@@ -127,9 +127,9 @@ class ProductionController extends Controller
                     });
 
                 // Role based access control
-                if (Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+                if (Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                     $q->where('productions.user_id', Auth::id());
-                } elseif (Auth::user()->role_id > 2 && config('staff_access') == 'warehouse') {
+                } elseif (Auth::user()->role_type > 2 && config('staff_access') == 'warehouse') {
                     $q->where('productions.warehouse_id', Auth::user()->warehouse_id);
                 }
 
@@ -197,7 +197,7 @@ class ProductionController extends Controller
 
     public function create()
     {
-        if(Auth::user()->role_id > 2) {
+        if(Auth::user()->role_type > 2) {
             $lims_warehouse_list = Warehouse::where([
                 ['is_active', true],
                 ['id', Auth::user()->warehouse_id]

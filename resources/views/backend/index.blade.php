@@ -34,7 +34,7 @@
                 $lims_warehouse_list = App\Models\Warehouse::where('is_active', true)->get();
             @endphp
 
-            @if (!config('database.connections.saleprosaas_landlord') && \Auth::user()->role_id <= 2)
+            @if (!config('database.connections.saleprosaas_landlord') && \Auth::user()->role_type <= 2)
                 @if (isset($versionUpgradeData['alert_version_upgrade_enable']) &&
                         $versionUpgradeData['alert_version_upgrade_enable'] == true)
                     <div id="alertSection" class="alert not-slide alert-primary alert-dismissible fade show" role="alert">
@@ -54,7 +54,7 @@
                     <h3 style="font-size:1em">{{ __('db.welcome') }} <span>{{ Auth::user()->name }}</span></h3>
                 </div>
                 @if (in_array('restaurant', explode(',', $general_setting->modules)))
-                    @if (Auth::user()->role_id > 2 && isset(Auth::user()->service_staff))
+                    @if (Auth::user()->role_type > 2 && isset(Auth::user()->service_staff))
                         @php
                             $cooked = DB::table('sales')
                                 ->where('waiter_id', Auth::user()->id)
@@ -63,7 +63,7 @@
                                 ->where('sales.created_at', '>=', now()->subDay())
                                 ->count();
                         @endphp
-                    @elseif(Auth::user()->role_id <= 2)
+                    @elseif(Auth::user()->role_type <= 2)
                         @php
                             $cooked = DB::table('sales')
                                 ->where('sale_status', 6)
@@ -90,7 +90,7 @@
                         <div class="btn-group" role="group" style="max-width:180px">
                             <div class="d-flex align-items-center">
                                 <i class="dripicons-location text-primary"></i>
-                                @if (\Auth::user()->role_id <= 2)
+                                @if (\Auth::user()->role_type <= 2)
                                 <select name="warehouse_id" class="selectpicker" id="warehouse_btn" data-live-search="true"
                                     data-live-search-style="begins">
                                     <option value="0"> {{ __('db.All Warehouse') }}

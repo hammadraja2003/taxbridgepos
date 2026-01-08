@@ -24,7 +24,7 @@ class AdjustmentController extends Controller
     {
         $role = Role::find(Auth::user()->role_id);
         if( $role->hasPermissionTo('adjustment') ) {
-            /*if(Auth::user()->role_id > 2 && config('staff_access') == 'own')
+            /*if(Auth::user()->role_type > 2 && config('staff_access') == 'own')
                 $lims_adjustment_all = Adjustment::orderBy('id', 'desc')->where('user_id', Auth::id())->get();
             else*/
                 $lims_adjustment_all = Adjustment::orderBy('id', 'desc')->get();

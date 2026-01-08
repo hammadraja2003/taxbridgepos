@@ -18,7 +18,7 @@ class HasPermanentDeletePermission
     {
         $user = Auth::user();
         
-        if ($user->role_id == 1 || $user->role_id == 2) {
+        if ($user->role_type == 1 || $user->role_type == 2) {
             return $next($request);
         }
 

@@ -439,7 +439,7 @@
                     ])->first();
               ?>
 
-              @if(Auth::user()->role_id != 5)
+              @if(Auth::user()->role_type != 4)
               <li class=""><a href="#hrm" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-user-group"></i><span>HRM</span></a>
                 <ul id="hrm" class="collapse list-unstyled ">
                   @if($department_active)
@@ -938,7 +938,7 @@
                 <li class="nav-item"><a class="dropdown-item btn-pos btn-sm" href="{{route('sale.pos')}}"><i class="dripicons-shopping-bag"></i><span> POS</span></a></li>
                 @endif
                 <li class="nav-item"><a id="btnFullscreen" data-toggle="tooltip" title="{{__('db.Full Screen')}}"><i class="dripicons-expand"></i></a></li>
-                @if(\Auth::user()->role_id <= 2)
+                @if(\Auth::user()->role_type <= 2)
                   <li class="nav-item"><a href="{{route('cashRegister.index')}}" data-toggle="tooltip" title="{{__('db.Cash Register List')}}"><i class="dripicons-archive"></i></a></li>
                 @endif
                 @if($product_qty_alert_active)
@@ -1004,7 +1004,7 @@
                       <li>
                         <a href="{{url('my-transactions/'.date('Y').'/'.date('m'))}}"><i class="dripicons-swap"></i> {{__('db.My Transaction')}}</a>
                       </li>
-                      @if(Auth::user()->role_id != 5)
+                      @if(Auth::user()->role_type != 4)
                       <li>
                         <a href="{{url('holidays/my-holiday/'.date('Y').'/'.date('m'))}}"><i class="dripicons-vibrate"></i> {{__('db.My Holiday')}}</a>
                       </li>
@@ -1087,7 +1087,7 @@
                     {!! Form::open(['route' => 'expenses.store', 'method' => 'post']) !!}
                     <?php
                       $lims_expense_category_list = DB::table('expense_categories')->where('is_active', true)->get();
-                      if(Auth::user()->role_id > 2)
+                      if(Auth::user()->role_type > 2)
                         $lims_warehouse_list = DB::table('warehouses')->where([
                           ['is_active', true],
                           ['id', Auth::user()->warehouse_id]

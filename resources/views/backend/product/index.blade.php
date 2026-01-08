@@ -36,7 +36,7 @@
         <div class="card mt-3 mb-2">
             <div class="card-body" id="filter-card" style="display: none;">
                 <div class="row">
-                    <div class="col-md-3 @if(\Auth::user()->role_id > 2){{'d-none'}}@endif">
+                    <div class="col-md-3 @if(\Auth::user()->role_type > 2){{'d-none'}}@endif">
                         <div class="form-group top-fields">
                             <label>{{__('db.Warehouse')}}</label>
                             <select id="warehouse_id" name="warehouse_id" class="selectpicker form-control" data-live-search="true" data-live-search-style="begins" >
@@ -144,7 +144,7 @@
                     <th>{{__('db.Quantity')}}</th>
                     <th>{{__('db.Unit')}}</th>
                     <th>{{__('db.Price')}}</th>
-                    @if($role_id <= 2)
+                    @if($role_type <= 2)
                         <th>{{__('db.Cost')}}</th>
                         <th>{{__('db.Stock Worth') . '(' . __('db.Price') . '/' . __('db.Cost') . ')'}}</th>
                     @endif
@@ -204,7 +204,7 @@
             <div class="row">
                 <div class="col-md-5" id="slider-content"></div>
                 <div class="col-md-5 offset-1" id="product-content"></div>
-                @if($role_id <= 2)
+                @if($role_type <= 2)
                 <div class="col-md-12 mt-2" id="product-warehouse-section">
                     <h5>{{__('db.Warehouse Quantity')}}</h5>
                     <table class="table table-bordered table-hover product-warehouse-list">
@@ -224,7 +224,7 @@
                         </tbody>
                     </table>
                 </div>
-                @if($role_id <= 2)
+                @if($role_type <= 2)
                 <div class="col-md-5 mt-2" id="product-variant-warehouse-section">
                     <h5>{{__('db.Warehouse quantity of product variants')}}</h5>
                     <table class="table table-bordered table-hover product-variant-warehouse-list">
@@ -283,9 +283,9 @@
         return false;
     }
 
-    var role_id = <?php echo json_encode($role_id) ?>;
+    var role_type = <?php echo json_encode($role_type) ?>;
     var columns = [{"data": "key"},{"data": "name"},{"data": "code"},{"data": "brand"},{"data": "category"},{"data": "qty"},{"data": "unit"},{"data": "price"}];
-    if(role_id <= 2) {
+    if(role_type <= 2) {
         columns.push({"data": "cost"});
         columns.push({"data": "stock_worth"});
     }
@@ -368,7 +368,7 @@
             '</p><p>{{__("db.category")}}: '+product[4]+
             '</p><p>{{__("db.Quantity")}}: '+product[17]+
             '</p><p>{{__("db.Unit")}}: '+product[5]+
-            (role_id < 3 ? '</p><p>{{__("db.Cost")}}: '+product[6] : '') +
+            (role_type < 3 ? '</p><p>{{__("db.Cost")}}: '+product[6] : '') +
             '</p><p>{{__("db.Price")}}: '+product[7]+
             '</p><p>{{__("db.Tax")}}: '+product[8]+
             '</p><p>{{__("db.Tax Method")}} : '+product[9]+
@@ -473,7 +473,7 @@
                 });
                 $("#product-variant-section").removeClass('d-none');
             }
-            if(role_id <= 2) {
+            if(role_type <= 2) {
                 $.get('products/product_warehouse/' + product[12], function(data) {
                     // console.log(data);
                     if(data.product_warehouse[0].length != 0) {
@@ -738,7 +738,7 @@
             'columnDefs': [
                 {
                     "orderable": false,
-                    'targets': role_id <= 2 ? [0, 10] : [0, 8],
+                    'targets': role_type <= 2 ? [0, 10] : [0, 8],
                 },
                 {
                     'render': function(data, type, row, meta){

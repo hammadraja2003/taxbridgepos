@@ -115,9 +115,9 @@ class TransferController extends Controller
         $to_warehouse_id = $request->input('to_warehouse_id');
         $q = Transfer::whereDate('created_at', '>=' ,$request->input('starting_date'))
                      ->whereDate('created_at', '<=' ,$request->input('ending_date'));
-        if(Auth::user()->role_id > 2 && config('staff_access') == 'own')
+        if(Auth::user()->role_type > 2 && config('staff_access') == 'own')
             $q = $q->where('user_id', Auth::id());
-        elseif(Auth::user()->role_id > 2 && config('staff_access') == 'warehouse')
+        elseif(Auth::user()->role_type > 2 && config('staff_access') == 'warehouse')
             $q = $q->where('from_warehouse_id', Auth::user()->warehouse_id)->orWhere('to_warehouse_id', Auth::user()->warehouse_id);
         if($from_warehouse_id)
             $q = $q->where('from_warehouse_id', $from_warehouse_id);
@@ -141,9 +141,9 @@ class TransferController extends Controller
                 ->offset($start)
                 ->limit($limit)
                 ->orderBy($order, $dir);
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own')
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own')
                 $q = $q->where('user_id', Auth::id());
-            elseif(Auth::user()->role_id > 2 && config('staff_access') == 'warehouse')
+            elseif(Auth::user()->role_type > 2 && config('staff_access') == 'warehouse')
                 $q = $q->where('from_warehouse_id', Auth::user()->warehouse_id)->orWhere('to_warehouse_id', Auth::user()->warehouse_id);
             if($from_warehouse_id)
                 $q = $q->where('from_warehouse_id', $from_warehouse_id);
@@ -159,7 +159,7 @@ class TransferController extends Controller
                 ->offset($start)
                 ->limit($limit)
                 ->orderBy($order,$dir);
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $transfers =  $q->select('transfers.*')
                                 ->with('fromWarehouse', 'toWarehouse', 'user')
                                 ->where('transfers.user_id', Auth::id())
@@ -170,7 +170,7 @@ class TransferController extends Controller
                                 ->get();
                 $totalFiltered = $q->count();
             }
-            elseif(Auth::user()->role_id > 2 && config('staff_access') == 'warehouse') {
+            elseif(Auth::user()->role_type > 2 && config('staff_access') == 'warehouse') {
                 $transfers =  $q->select('transfers.*')
                                 ->with('fromWarehouse', 'toWarehouse', 'user')
                                 ->where('transfers.user_id', Auth::id())
@@ -246,7 +246,7 @@ class TransferController extends Controller
                     </li>';
                 }
 
-                if (auth()->user()->role_id < 3 && $transfer->status == 2) {
+                if (auth()->user()->role_type < 3 && $transfer->status == 2) {
                     $nestedData['options'] .= '<li>
                         ' . \Form::open([
                             'route' => ['transfers.changeStatus', $transfer->id],
@@ -534,7 +534,8 @@ class TransferController extends Controller
                                         ->select('product_warehouse.*', 'products.name', 'products.code', 'products.type', 'products.product_list', 'products.qty_list', 'products.is_embeded')
                                         ->get();
         //return $lims_product_warehouse_data;
-        config()->set('database.connections.mysql.strict', false);
+        $connection = config('database.default');
+        config()->set("database.connections.{$connection}.strict", false);
         \DB::reconnect(); //important as the existing connection if any would be in strict mode
 
         $query = Product::join('product_warehouse', 'products.id', '=', 'product_warehouse.product_id');
@@ -559,9 +560,7 @@ class TransferController extends Controller
         ->groupBy('product_warehouse.product_id')
         ->get();
 
-        //now changing back the strict ON
-        config()->set('database.connections.mysql.strict', true);
-        \DB::reconnect();
+
 
         $query = Product::join('product_warehouse', 'products.id', '=', 'product_warehouse.product_id');
         if(config('without_stock') == 'no') {
@@ -593,6 +592,10 @@ class TransferController extends Controller
         ->select('product_warehouse.*', 'products.is_embeded')
         ->groupBy('product_warehouse.product_id')
         ->get();
+
+        //now changing back the strict ON
+        config()->set("database.connections.{$connection}.strict", true);
+        \DB::reconnect();
 
         $product_code = [];
         $product_name = [];

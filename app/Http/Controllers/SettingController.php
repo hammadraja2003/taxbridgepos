@@ -41,7 +41,7 @@ class SettingController extends Controller
 
     public function emptyDatabase()
     {
-        // if(!env('USER_VERIFIED'))
+        if(!env('USER_VERIFIED'))
             return redirect()->back()->with('not_permitted', __('db.This feature is disable for demo!'));
 
         // Clear cached queries
@@ -66,10 +66,9 @@ class SettingController extends Controller
 
         $tables = DB::select('SHOW TABLES');
 
-        if(!config('database.connections.saleprosaas_landlord'))
-            $database_name = env('DB_DATABASE');
-        else
-            $database_name = env('DB_PREFIX').$this->getTenantId();
+       
+        $connection = config('database.connections.tenant');
+        $database_name = $connection['database'];
 
         $str = 'Tables_in_'.$database_name;
 
@@ -78,11 +77,10 @@ class SettingController extends Controller
 
         foreach ($tables as $table) {
             if(!in_array($table->$str, [
-                'accounts','general_settings','hrm_settings','languages','migrations','password_resets',
-                'permissions','pos_setting','roles','role_has_permissions','users','currencies',
-                'reward_point_settings','ecommerce_settings','external_services','translations','invoice_settings'
+                'accounts','hrm_settings','languages','migrations','password_resets',
+                'pos_setting','currencies','reward_point_settings','ecommerce_settings','external_services','translations','invoice_settings','units'
             ])) {
-                DB::table($table->$str)->truncate();
+               DB::table($table->$str)->truncate();
             }
         }
 
@@ -100,7 +98,7 @@ class SettingController extends Controller
             ->orderBy('activity_logs.id', 'desc')
             ->select('activity_logs.*', 'users.name as user_name');
 
-        if (auth()->user()->role_id > 2) {
+        if (auth()->user()->role_type > 2) {
             $query->where('activity_logs.user_id', auth()->id());
         }
 

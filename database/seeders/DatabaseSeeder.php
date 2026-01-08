@@ -13,14 +13,5 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(Database\Seeders\Tenant\TenantDatabaseSeeder::class);
 
-        if (Schema::hasTable('general_settings')) {
-            $general_setting = DB::table('general_settings')->select('modules')->first();
-
-
-            if (in_array('restaurant', explode(',', $general_setting->modules))) {
-                $this->call(\Modules\Restaurant\Database\Seeders\RestaurantDatabaseSeeder::class);
-                $this->call(\Modules\Restaurant\Database\Seeders\RestaurantProductSeeder::class);
-            }
-        }
     }
 }

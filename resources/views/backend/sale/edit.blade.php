@@ -15,7 +15,7 @@
 <x-error-message key="not_permitted" />
 <x-error-message key="error" />
 
-<?php $authUser = Auth::user()->role_id; ?>
+<?php $authUser = Auth::user()->role_type; ?>
 
 <section id="pos-layout" class="forms hidden-print">
     <div class="container-fluid">
@@ -181,7 +181,7 @@
                                                         <br>
                                                         <span>{{$product_data->code}}</span>
 
-                                                        @if(auth()->user()->role_id == 1 || auth()->user()->role_id == 2)
+                                                        @if(auth()->user()->role_type == 1 || auth()->user()->role_type == 2)
                                                         @php
                                                             if ($product_data->type == 'combo') {
                                                                 $product_list = explode(",", $product_data->product_list); // child products
@@ -405,7 +405,7 @@
                                     </div>
                                     @foreach($custom_fields as $field)
                                         <?php $field_name = str_replace(' ', '_', strtolower($field->name)); ?>
-                                        @if(!$field->is_admin || \Auth::user()->role_id == 1)
+                                        @if(!$field->is_admin || \Auth::user()->role_type == 1)
                                             <div class="{{'col-md-'.$field->grid_value}}">
                                                 <div class="form-group">
                                                     <label>{{$field->name}}</label>
@@ -916,7 +916,7 @@ var rowindex;
 var customer_group_rate;
 var row_product_price;
 var pos;
-var role_id = <?php echo json_encode(Auth::user()->role_id)?>;
+var role_type = <?php echo json_encode(Auth::user()->role_type)?>;
 
 var warehouse_id = $('#warehouse_id').val();
 

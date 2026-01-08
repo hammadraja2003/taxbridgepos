@@ -29,7 +29,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3 mt-3 @if(\Auth::user()->role_id > 2){{'d-none'}}@endif">
+                <div class="col-md-3 mt-3 @if(\Auth::user()->role_type > 2){{'d-none'}}@endif">
                     <div class="form-group top-fields">
                         <label class="">{{__('db.From Warehouse')}} &nbsp;</label>
                         <div class="">
@@ -46,7 +46,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3 mt-3 @if(\Auth::user()->role_id > 2){{'d-none'}}@endif">
+                <div class="col-md-3 mt-3 @if(\Auth::user()->role_type > 2){{'d-none'}}@endif">
                     <div class="form-group top-fields">
                         <label class="">{{__('db.To Warehouse')}} &nbsp;</label>
                         <div class="">

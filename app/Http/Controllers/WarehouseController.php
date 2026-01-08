@@ -139,7 +139,7 @@ class WarehouseController extends Controller
 
     public function warehouseAll()
     {
-        if(Auth::user()->role_id > 2)
+        if(Auth::user()->role_type > 2)
             $lims_warehouse_list = DB::table('warehouses')->where([
             ['is_active', true],
             ['id', Auth::user()->warehouse_id]

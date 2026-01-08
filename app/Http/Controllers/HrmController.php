@@ -36,7 +36,7 @@ class HRMController extends Controller
             $general_setting = getGeneralSetting();
 
 
-            if(Auth::user()->role_id > 2 && $general_setting->staff_access == 'own')
+            if(Auth::user()->role_type > 2 && $general_setting->staff_access == 'own')
             $lims_attendance_data = Attendance::leftJoin('employees', 'employees.id', '=', 'attendances.employee_id')
                 ->leftJoin('users', 'users.id', '=', 'attendances.user_id')
                 ->orderBy('attendances.date', 'desc')

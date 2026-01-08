@@ -72,12 +72,12 @@ class ReturnPurchaseController extends Controller
 
         $warehouse_id = $request->input('warehouse_id');
 
-        if(Auth::user()->role_id > 2 && config('staff_access') == 'own')
+        if(Auth::user()->role_type > 2 && config('staff_access') == 'own')
             $totalData = ReturnPurchase::where('user_id', Auth::id())
                         ->whereDate('created_at', '>=' ,$request->input('starting_date'))
                         ->whereDate('created_at', '<=' ,$request->input('ending_date'))
                         ->count();
-        elseif(Auth::user()->role_id > 2 && config('staff_access') == 'warehouse')
+        elseif(Auth::user()->role_type > 2 && config('staff_access') == 'warehouse')
             $totalData = ReturnPurchase::where('warehouse_id', Auth::user()->warehouse_id)
                         ->whereDate('created_at', '>=' ,$request->input('starting_date'))
                         ->whereDate('created_at', '<=' ,$request->input('ending_date'))
@@ -107,9 +107,9 @@ class ReturnPurchaseController extends Controller
                 ->offset($start)
                 ->limit($limit)
                 ->orderBy($order, $dir);
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own')
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own')
                 $q = $q->where('user_id', Auth::id());
-            elseif(Auth::user()->role_id > 2 && config('staff_access') == 'warehouse')
+            elseif(Auth::user()->role_type > 2 && config('staff_access') == 'warehouse')
                 $q = $q->where('warehouse_id', Auth::user()->warehouse_id);
             elseif($warehouse_id != 0)
                 $q = $q->where('warehouse_id', $warehouse_id);
@@ -123,7 +123,7 @@ class ReturnPurchaseController extends Controller
                 ->offset($start)
                 ->limit($limit)
                 ->orderBy($order,$dir);
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $returnss =  $q->select('return_purchases.*')
                             ->with('supplier', 'warehouse', 'user')
                             ->where('return_purchases.user_id', Auth::id())
@@ -148,7 +148,7 @@ class ReturnPurchaseController extends Controller
                                 ])
                                 ->count();
             }
-            elseif(Auth::user()->role_id > 2 && config('staff_access') == 'warehouse') {
+            elseif(Auth::user()->role_type > 2 && config('staff_access') == 'warehouse') {
                 $returnss =  $q->select('return_purchases.*')
                             ->with('supplier', 'warehouse', 'user')
                             ->where('return_purchases.user_id', Auth::id())

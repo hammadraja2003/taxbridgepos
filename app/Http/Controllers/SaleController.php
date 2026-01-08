@@ -223,9 +223,9 @@ class SaleController extends Controller
                     ->whereDate('sales.created_at', '<=', $request->input('ending_date'));
 
         // Apply Access Control
-        if (Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+        if (Auth::user()->role_type > 2 && config('staff_access') == 'own') {
             $qBase = $qBase->where('sales.user_id', Auth::id());
-        } elseif (Auth::user()->role_id > 2 && config('staff_access') == 'warehouse') {
+        } elseif (Auth::user()->role_type > 2 && config('staff_access') == 'warehouse') {
             $qBase = $qBase->where('sales.warehouse_id', Auth::user()->warehouse_id);
         }
 
@@ -270,9 +270,9 @@ class SaleController extends Controller
                 ->whereDate('sales.created_at', '<=', $request->input('ending_date'));
 
             // Reapply Access Control
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $query = $query->where('sales.user_id', Auth::id());
-            } elseif(Auth::user()->role_id > 2 && config('staff_access') == 'warehouse') {
+            } elseif(Auth::user()->role_type > 2 && config('staff_access') == 'warehouse') {
                 $query = $query->where('sales.warehouse_id', Auth::user()->warehouse_id);
             }
 
@@ -349,7 +349,7 @@ class SaleController extends Controller
             }
 
             // ✅ ACCESS CONTROL
-            if (Auth::user()->role_id > 2) {
+            if (Auth::user()->role_type > 2) {
                 if (config('staff_access') == 'own') {
                     $q->where('sales.user_id', Auth::id());
                 } elseif (config('staff_access') == 'warehouse') {
@@ -632,7 +632,7 @@ class SaleController extends Controller
         $role = Role::find(Auth::user()->role_id);
         if($role->hasPermissionTo('sales-add')) {
             $lims_customer_list = Customer::where('is_active', true)->get();
-            if(Auth::user()->role_id > 2) {
+            if(Auth::user()->role_type > 2) {
                 $lims_warehouse_list = Warehouse::where([
                     ['is_active', true],
                     ['id', Auth::user()->warehouse_id]
@@ -2096,7 +2096,7 @@ class SaleController extends Controller
             cache()->put('tenant_'.session('bus_config_id').'_general_setting', $general_setting, 60 * 60 * 24);
         }
         if(in_array('restaurant',explode(',',$general_setting->modules))){
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $recent_sale = Sale::join('customers', 'sales.customer_id', '=', 'customers.id')->select('sales.id','sales.reference_no','sales.customer_id','sales.grand_total','sales.created_at','customers.name')->where([
                     ['sales.sale_status', 1],
                     ['sales.user_id', Auth::id()]
@@ -2116,7 +2116,7 @@ class SaleController extends Controller
             }
         }
         else {
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $recent_sale = Sale::join('customers', 'sales.customer_id', '=', 'customers.id')->select('sales.id','sales.reference_no','sales.customer_id','sales.grand_total','sales.created_at','customers.name')->where([
                     ['sales.sale_status', 1],
                     ['sales.user_id', Auth::id()]
@@ -2132,7 +2132,7 @@ class SaleController extends Controller
 
     public function recentDraft()
     {
-        if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+        if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
             $recent_draft = Sale::join('customers', 'sales.customer_id', '=', 'customers.id')->select('sales.id','sales.reference_no','sales.customer_id','sales.grand_total','sales.created_at','customers.name')->where([
                 ['sales.sale_status', 3],
                 ['sales.user_id', Auth::id()]
@@ -3681,8 +3681,7 @@ class SaleController extends Controller
                     new InvoiceTaxAmount(number_format((float)($lims_sale_data->total_tax+$lims_sale_data->order_tax), 4, '.', '')) // invoice tax amount
                     // TODO :: Support others tags
                 ])->toBase64();
-            }
-            else {
+            }else {
                 $qrText = $lims_sale_data->reference_no;
             }
             if(is_null($lims_sale_data->exchange_rate))
@@ -5625,6 +5624,4 @@ class SaleController extends Controller
 
         return response()->json(['data' => $sales]);
     }
-
-
 }

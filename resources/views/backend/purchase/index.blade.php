@@ -20,7 +20,7 @@
         @can('purchases-import')
             <a href="{{url('purchases/purchase_by_csv')}}" class="btn btn-primary btn-icon"><i class="dripicons-copy"></i> {{__('db.Import Purchase')}}</a>
         @endcan
-        @if (auth()->user()->role_id <= 2)
+        @if (auth()->user()->role_type <= 2)
             <a href="{{url('purchases/deleted_data')}}" class="btn btn-secondary btn-icon"><i class="dripicons-trash"></i> {{__('Deleted Purchases')}}</a>
         @endif
         <button type="button" class="btn btn-warning btn-icon" id="toggle-filter">
@@ -37,7 +37,7 @@
                             <input type="hidden" name="ending_date" value="{{$ending_date}}" />
                         </div>
                     </div>
-                    <div class="col-md-3 @if(\Auth::user()->role_id > 2){{'d-none'}}@endif">
+                    <div class="col-md-3 @if(\Auth::user()->role_type > 2){{'d-none'}}@endif">
                         <div class="form-group top-fields">
                             <label>{{__('db.Warehouse')}}</label>
                             <select id="warehouse_id" name="warehouse_id" class="selectpicker form-control" data-live-search="true" data-live-search-style="begins" >

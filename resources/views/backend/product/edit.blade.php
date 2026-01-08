@@ -256,7 +256,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div id="cost" class="col-md-4 @if(Auth::user()->role_id > 2) d-none @endif">
+                                <div id="cost" class="col-md-4 @if(Auth::user()->role_type > 2) d-none @endif">
                                     <div class="form-group">
                                         <label>{{__('db.Product Cost')}} * </label>
                                         <input type="number" name="cost" value="{{$lims_product_data->cost}}" required class="form-control product_cost" step="any">
@@ -369,7 +369,7 @@
 
                                 @foreach($custom_fields as $field)
                                     <?php $field_name = str_replace(' ', '_', strtolower($field->name)); ?>
-                                    @if(!$field->is_admin || \Auth::user()->role_id == 1)
+                                    @if(!$field->is_admin || \Auth::user()->role_type == 1)
                                         <div class="{{'col-md-'.$field->grid_value}}">
                                             <div class="form-group">
                                                 <label>{{$field->name}}</label>

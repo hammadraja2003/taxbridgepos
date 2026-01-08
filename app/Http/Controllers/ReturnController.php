@@ -79,12 +79,12 @@ class ReturnController extends Controller
 
         $warehouse_id = $request->input('warehouse_id');
 
-        if(Auth::user()->role_id > 2 && config('staff_access') == 'own')
+        if(Auth::user()->role_type > 2 && config('staff_access') == 'own')
             $totalData = Returns::where('user_id', Auth::id())
                         ->whereDate('created_at', '>=' ,$request->input('starting_date'))
                         ->whereDate('created_at', '<=' ,$request->input('ending_date'))
                         ->count();
-        elseif(Auth::user()->role_id > 2 && config('staff_access') == 'warehouse')
+        elseif(Auth::user()->role_type > 2 && config('staff_access') == 'warehouse')
             $totalData = Returns::where('warehouse_id', Auth::user()->warehouse_id)
                         ->whereDate('created_at', '>=' ,$request->input('starting_date'))
                         ->whereDate('created_at', '<=' ,$request->input('ending_date'))
@@ -114,9 +114,9 @@ class ReturnController extends Controller
                 ->offset($start)
                 ->limit($limit)
                 ->orderBy($order, $dir);
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own')
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own')
                 $q = $q->where('user_id', Auth::id());
-            elseif(Auth::user()->role_id > 2 && config('staff_access') == 'warehouse')
+            elseif(Auth::user()->role_type > 2 && config('staff_access') == 'warehouse')
                 $q->where('warehouse_id', Auth::user()->warehouse_id);
             elseif($warehouse_id != 0)
                 $q = $q->where('warehouse_id', $warehouse_id);
@@ -131,7 +131,7 @@ class ReturnController extends Controller
                 ->offset($start)
                 ->limit($limit)
                 ->orderBy($order,$dir);
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $returnss =  $q->select('returns.*')
                             ->with('biller', 'customer', 'warehouse', 'user')
                             ->where('returns.user_id', Auth::id())
@@ -171,7 +171,7 @@ class ReturnController extends Controller
                                 ])
                                 ->count();
             }
-            elseif(Auth::user()->role_id > 2 && config('staff_access') == 'warehouse') {
+            elseif(Auth::user()->role_type > 2 && config('staff_access') == 'warehouse') {
                 $returnss =  $q->select('returns.*')
                             ->with('biller', 'customer', 'warehouse', 'user')
                             ->where('returns.user_id', Auth::id())

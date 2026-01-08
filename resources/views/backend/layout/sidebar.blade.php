@@ -443,7 +443,7 @@
                     <a href="#setting" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-gear"></i><span>{{__('db.settings')}}</span></a>
                     
                     <ul id="setting" class="collapse list-unstyled ">
-                        @if(\Auth::user()->role_id <= 2)
+                        @if(\Auth::user()->role_type <= 2)
                             <li id="printer-menu"><a href="{{route('printers.index')}}">{{__('db.Receipt Printers')}}</a></li>
                         @endif
                         @can ('invoice_setting')
@@ -475,7 +475,7 @@
                         @can('warehouse')
                             <li id="warehouse-menu"><a href="{{route('warehouse.index')}}">{{__('db.Warehouse')}}</a></li>
                         @endcan
-                        @if(\Auth::user()->role_id <= 2)
+                        @if(\Auth::user()->role_type <= 2)
                             <li id="table-menu"><a href="{{route('tables.index')}}">{{__('db.Tables')}}</a></li>
                         @endif
                         @can('customer_group')
@@ -541,7 +541,7 @@
             @endif
 
             @can ('addons')
-                @if(\Auth::user()->role_id != 5)
+                @if(\Auth::user()->role_type != 4)
                     <!-- @if(!config('database.connections.saleprosaas_landlord'))
                         <li><a href="{{url('addon-list')}}" id="addon-list"> <i class="dripicons-flag"></i><span>{{__('db.Addons')}}</span></a></li>
                     @endif -->

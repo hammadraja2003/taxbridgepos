@@ -106,7 +106,7 @@ class HomeController extends Controller
 
         $general_setting = getGeneralSetting();
         if($general_setting && in_array('restaurant', explode(',', $general_setting->modules))) {
-            if(Auth::user()->role_id > 2 && isset(Auth::user()->kitchen_id)){
+            if(Auth::user()->role_type > 2 && isset(Auth::user()->kitchen_id)){
 
                 $result = (new \Modules\Restaurant\Http\Controllers\KitchenController)->dashboard();
 
@@ -114,7 +114,7 @@ class HomeController extends Controller
             }
         }
 
-        if(Auth::user()->role_id == 5) {
+        if(Auth::user()->role_type == 4) {
             $customer = Customer::select('id', 'points')->where('user_id', Auth::id())->first();
             $lims_sale_data = Sale::with('warehouse')
                                 ->whereNull('deleted_at')
@@ -144,7 +144,7 @@ class HomeController extends Controller
         $yearly_sale_amount = [];
 
         $general_setting = getGeneralSetting();
-        if(Auth::user()->role_id > 2 && $general_setting && $general_setting->staff_access == 'own')
+        if(Auth::user()->role_type > 2 && $general_setting && $general_setting->staff_access == 'own')
         {
             $product_sale_data = Sale::join('product_sales', 'sales.id','=', 'product_sales.sale_id')
                 ->select(DB::raw('product_sales.product_id, product_sales.product_batch_id, product_sales.sale_unit_id, sum(product_sales.qty) as sold_qty, sum(product_sales.return_qty) as return_qty, sum(product_sales.total) as sold_amount'))
@@ -239,7 +239,7 @@ class HomeController extends Controller
             $end_date = date("Y-m", $start).'-'.date('t', mktime(0, 0, 0, date("m", $start), 1, date("Y", $start)));
 
             $general_setting = getGeneralSetting();
-            if(Auth::user()->role_id > 2 && $general_setting && $general_setting->staff_access == 'own') {
+            if(Auth::user()->role_type > 2 && $general_setting && $general_setting->staff_access == 'own') {
                 $recieved_amount = DB::table('payments')->whereNotNull('sale_id')->whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->where('user_id', Auth::id())->sum(DB::raw('amount / exchange_rate'));
                 $sent_amount = DB::table('payments')->whereNotNull('purchase_id')->whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->where('user_id', Auth::id())->sum(DB::raw('amount / exchange_rate'));
                 $return_amount = Returns::whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->where('user_id', Auth::id())->sum(DB::raw('grand_total / exchange_rate'));
@@ -270,7 +270,7 @@ class HomeController extends Controller
             $start_date = date("Y").'-'.date('m', $start).'-'.'01';
             $end_date = date("Y").'-'.date('m', $start).'-'.date('t', mktime(0, 0, 0, date("m", $start), 1, date("Y", $start)));
             $general_setting = getGeneralSetting();
-            if(Auth::user()->role_id > 2 && $general_setting && $general_setting->staff_access == 'own') {
+            if(Auth::user()->role_type > 2 && $general_setting && $general_setting->staff_access == 'own') {
                 $sale_amount = Sale::whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->where('user_id', Auth::id())->whereNull('deleted_at')->sum(DB::raw('grand_total / exchange_rate'));
                 $purchase_amount = Purchase::whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->where('user_id', Auth::id())->whereNull('deleted_at')->sum(DB::raw('grand_total / exchange_rate'));
             }
@@ -286,7 +286,7 @@ class HomeController extends Controller
         config()->set('database.connections.mysql.strict', true);
         DB::reconnect();
         //fetching data for auto updates
-        if(!config('database.connections.saleprosaas_landlord') && Auth::user()->role_id <= 2) {
+        if(!config('database.connections.saleprosaas_landlord') && Auth::user()->role_type <= 2) {
             $versionUpgradeData = [];
             $versionUpgradeData = $this->versionUpgradeInfo;
         }
@@ -417,7 +417,7 @@ class HomeController extends Controller
     public function recentSale()
     {
         $general_setting = getGeneralSetting();
-        if(Auth::user()->role_id > 2 && $general_setting && $general_setting->staff_access == 'own')
+        if(Auth::user()->role_type > 2 && $general_setting && $general_setting->staff_access == 'own')
         {
             $recent_sale = Sale::join('customers', 'customers.id', '=', 'sales.customer_id')
                             ->select('sales.id','sales.reference_no','sales.sale_status','sales.created_at','sales.grand_total','sales.exchange_rate','sales.user_id','customers.name')
@@ -448,7 +448,7 @@ class HomeController extends Controller
     public function recentPurchase()
     {
         $general_setting = getGeneralSetting();
-        if(Auth::user()->role_id > 2 && $general_setting && $general_setting->staff_access == 'own')
+        if(Auth::user()->role_type > 2 && $general_setting && $general_setting->staff_access == 'own')
         {
             $recent_purchase = Purchase::leftJoin('suppliers', 'suppliers.id', '=', 'purchases.supplier_id')->select('purchases.id','purchases.reference_no','purchases.status','purchases.created_at','purchases.grand_total','purchases.exchange_rate','purchases.user_id','suppliers.name')->orderBy('id', 'desc')->where('purchases.user_id', Auth::id())->whereNull('purchases.deleted_at')->whereNULL('purchases.purchase_type')->take(5)->get();
             return response()->json($recent_purchase);
@@ -463,7 +463,7 @@ class HomeController extends Controller
     public function recentQuotation()
     {
         $general_setting = getGeneralSetting();
-        if(Auth::user()->role_id > 2 && $general_setting && $general_setting->staff_access == 'own')
+        if(Auth::user()->role_type > 2 && $general_setting && $general_setting->staff_access == 'own')
         {
             $recent_quotation = Quotation::join('customers', 'customers.id', '=', 'quotations.customer_id')->select('quotations.id','quotations.reference_no','quotations.quotation_status','quotations.created_at','quotations.grand_total','quotations.user_id','customers.name')->orderBy('id', 'desc')->where('quotations.user_id', Auth::id())->take(5)->get();
             return response()->json($recent_quotation);
@@ -478,7 +478,7 @@ class HomeController extends Controller
     public function recentPayment()
     {
         $general_setting = getGeneralSetting();
-        if(Auth::user()->role_id > 2 && $general_setting && $general_setting->staff_access == 'own')
+        if(Auth::user()->role_type > 2 && $general_setting && $general_setting->staff_access == 'own')
         {
             $recent_payment = Payment::select('id','payment_reference','amount','exchange_rate','paying_method','created_at','user_id')->orderBy('id', 'desc')->where('user_id', Auth::id())->take(5)->get();
             return response()->json($recent_payment);
@@ -493,7 +493,7 @@ class HomeController extends Controller
     public function dashboardFilter($start_date, $end_date, $warehouse_id)
     {
         $general_setting = getGeneralSetting();
-        if(Auth::user()->role_id > 2 && $general_setting && $general_setting->staff_access == 'own') {
+        if(Auth::user()->role_type > 2 && $general_setting && $general_setting->staff_access == 'own') {
             config()->set('database.connections.mysql.strict', false);
             DB::reconnect();
 

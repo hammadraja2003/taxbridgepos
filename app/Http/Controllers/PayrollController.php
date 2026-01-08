@@ -42,7 +42,7 @@ class PayrollController extends Controller
         // Fetch payrolls with employee info, leaves, attendance, and work duration
         $lims_payroll_all = Payroll::with('employee')
             ->orderBy('id', 'desc')
-            ->when(Auth::user()->role_id > 2 && $general_setting->staff_access == 'own', function($query){
+            ->when(Auth::user()->role_type > 2 && $general_setting->staff_access == 'own', function($query){
                 $query->where('user_id', Auth::id());
             })
             ->get()

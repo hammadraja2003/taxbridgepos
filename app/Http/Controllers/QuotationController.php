@@ -64,7 +64,7 @@ class QuotationController extends Controller
 
             $lims_warehouse_list = Warehouse::where('is_active', true)->get();
 
-            /*if(Auth::user()->role_id > 2 && config('staff_access') == 'own')
+            /*if(Auth::user()->role_type > 2 && config('staff_access') == 'own')
                 $lims_quotation_all = Quotation::with('biller', 'customer', 'supplier', 'user')->orderBy('id', 'desc')->where('user_id', Auth::id())->get();
             else
                 $lims_quotation_all = Quotation::with('biller', 'customer', 'supplier', 'user')->orderBy('id', 'desc')->get();*/
@@ -84,13 +84,13 @@ class QuotationController extends Controller
         );
 
         $warehouse_id = $request->input('warehouse_id');
-        if(Auth::user()->role_id > 2 && config('staff_access') == 'own')
+        if(Auth::user()->role_type > 2 && config('staff_access') == 'own')
             $totalData = Quotation::where('user_id', Auth::id())
                         ->whereDate('created_at', '>=' ,$request->input('starting_date'))
                         ->whereDate('created_at', '<=' ,$request->input('ending_date'))
                         ->count();
         //check staff access
-        elseif(Auth::user()->role_id > 2 && config('staff_access') == 'warehouse')
+        elseif(Auth::user()->role_type > 2 && config('staff_access') == 'warehouse')
             $totalData = Quotation::where('warehouse_id', Auth::user()->warehouse_id)
             ->whereDate('created_at', '>=' ,$request->input('starting_date'))
             ->whereDate('created_at', '<=' ,$request->input('ending_date'))
@@ -120,7 +120,7 @@ class QuotationController extends Controller
         $order = $columns[$request->input('order.0.column')];
         $dir = $request->input('order.0.dir');
         if(empty($request->input('search.value'))) {
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own')
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own')
                 $quotations = Quotation::with('biller', 'customer', 'supplier', 'user')->offset($start)
                             ->where('user_id', Auth::id())
                             ->whereDate('created_at', '>=' ,$request->input('starting_date'))
@@ -128,7 +128,7 @@ class QuotationController extends Controller
                             ->limit($limit)
                             ->orderBy($order, $dir)
                             ->get();
-            elseif(Auth::user()->role_id > 2 && config('staff_access') == 'warehouse')
+            elseif(Auth::user()->role_type > 2 && config('staff_access') == 'warehouse')
                 $quotations = Quotation::with('biller', 'customer', 'supplier', 'user')->offset($start)
                             ->where('warehouse_id', Auth::user()->warehouse_id)
                             ->whereDate('created_at', '>=' ,$request->input('starting_date'))
@@ -155,7 +155,7 @@ class QuotationController extends Controller
         else
         {
             $search = $request->input('search.value');
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $quotations =  Quotation::select('quotations.*')
                             ->with('biller', 'customer', 'supplier', 'user')
                             ->join('billers', 'quotations.biller_id', '=', 'billers.id')
@@ -206,7 +206,7 @@ class QuotationController extends Controller
                             ])
                             ->count();
             }
-            elseif(Auth::user()->role_id > 2 && config('staff_access') == 'warehouse') {
+            elseif(Auth::user()->role_type > 2 && config('staff_access') == 'warehouse') {
                 $quotations =  Quotation::select('quotations.*')
                             ->with('biller', 'customer', 'supplier', 'user')
                             ->join('billers', 'quotations.biller_id', '=', 'billers.id')

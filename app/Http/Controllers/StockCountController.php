@@ -24,7 +24,7 @@ class StockCountController extends Controller
             $lims_brand_list = Brand::where('is_active', true)->get();
             $lims_category_list = Category::where('is_active', true)->get();
             $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
-            if(Auth::user()->role_id > 2 && $general_setting->staff_access == 'own')
+            if(Auth::user()->role_type > 2 && $general_setting->staff_access == 'own')
                 $lims_stock_count_all = StockCount::orderBy('id', 'desc')->where('user_id', Auth::id())->get();
             else
                 $lims_stock_count_all = StockCount::orderBy('id', 'desc')->get();

@@ -329,7 +329,7 @@
                                         ['role_id', Auth::user()->role_id]
                                     ])->first();
 
-                                    $authUser = Auth::user()->role_id;
+                                    $authUser = Auth::user()->role_type;
                                     ?>
                                     @if($pos_setting_permission_active)
                                     <li><a href="{{route('setting.pos')}}" title="{{__('db.POS Setting')}}"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg> {{__('db.POS Setting')}}</a> </li>
@@ -342,7 +342,7 @@
                                     <li>
                                         <a href="{{url('my-transactions/'.date('Y').'/'.date('m'))}}"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg> {{__('db.My Transaction')}}</a>
                                     </li>
-                                    @if(Auth::user()->role_id != 5)
+                                    @if(Auth::user()->role_type != 4)
                                     <li>
                                         <a href="{{url('holidays/my-holiday/'.date('Y').'/'.date('m'))}}">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Z" /></svg> {{__('db.My Holiday')}}</a>
@@ -485,7 +485,7 @@
                                 <div class="form-group top-fields">
                                     <label>{{__('db.date')}}</label>
                                     <div class="input-group">
-                                        @if(Auth::user()->role_id > 2)
+                                        @if(Auth::user()->role_type > 2)
                                         <input type="text" name="created_at" class="form-control" value="{{date($general_setting->date_format,strtotime('now'))}}"  readonly  />
                                         @else
                                         <input type="text" name="created_at" class="form-control date" value="{{date($general_setting->date_format,strtotime('now'))}}"  />
@@ -701,7 +701,7 @@
                                     </div>
                                 </div>
                                 @foreach($custom_fields as $field)
-                                @if(!$field->is_admin || \Auth::user()->role_id == 1)
+                                @if(!$field->is_admin || \Auth::user()->role_type == 1)
                                 <div class="{{'col-md-'.$field->grid_value}}">
                                     <div class="form-group">
                                         <label>{{$field->name}}</label>
@@ -767,7 +767,7 @@
                     <div class="col-12 pl-0 pr-0">
                         <div class="search-box form-group mb-2">
                             <div class="input-group pos">
-                                <input style="border: 1px solid #7c5cc4;" type="text" name="product_code_name" id="product-search-input" placeholder="Scan/Search product by name/code/IMEI" class="form-control" autofocus />
+                                <input style="border: 1px solid #7c5cc4;" type="text" name="product_code_name" id="product-search-input" placeholder="Scan/Search product by name/code/IMEI (at least 3 characters)" class="form-control" autofocus />
                                 <button type="button" class="btn btn-primary" onclick="barcode()"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-upc" viewBox="0 0 16 16"><path d="M3 4.5a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0z"/></svg></button>
                             </div>
                             <div id="product-results-container">
@@ -1615,7 +1615,7 @@
         {!! Form::open(['route' => 'expenses.store', 'method' => 'post']) !!}
         <?php
         $lims_expense_category_list = DB::table('expense_categories')->where('is_active', true)->get();
-        if (Auth::user()->role_id > 2)
+        if (Auth::user()->role_type > 2)
             $lims_warehouse_list = DB::table('warehouses')->where([
             ['is_active', true],
             ['id', Auth::user()->warehouse_id]
@@ -2286,7 +2286,7 @@
     var row_product_price;
     var pos;
     var keyboard_active = <?php echo json_encode($keybord_active); ?>;
-    var role_id = <?php echo json_encode(\Auth::user()->role_id) ?>;
+    var role_type = <?php echo json_encode(\Auth::user()->role_type) ?>;
     var warehouse_id = $('#warehouse_id').val();
     var coupon_list = <?php echo json_encode($lims_coupon_list) ?>;
     var currency = <?php echo json_encode($currency) ?>;
@@ -2440,7 +2440,7 @@
                     $("#register-details-btn").addClass('d-none');
                     $('#cash-register-modal select[name=warehouse_id]').val(warehouse_id);
 
-                    if(role_id <= 2)
+                    if(role_type <= 2)
                         $("#cash-register-modal .warehouse-section").removeClass('d-none');
                     else
                         $("#cash-register-modal .warehouse-section").addClass('d-none');

@@ -15,7 +15,7 @@
 <x-error-message key="not_permitted" />
 <x-error-message key="error" />
 
-<?php $authUser = Auth::user()->role_id; ?>
+<?php $authUser = Auth::user()->role_type; ?>
 
 <section id="pos-layout" class="forms hidden-print">
     <div class="container-fluid">
@@ -227,7 +227,7 @@
                                         <label>{{__('db.Select Product')}}</label>
                                         <div class="search-box form-group mb-2" style="position:relative">
                                             <div class="input-group pos">
-                                                <input style="border: 1px solid #7c5cc4;" type="text" name="product_code_name" id="product-search-input" placeholder="Scan/Search product by name/code/IMEI" class="form-control" autofocus />
+                                                <input style="border: 1px solid #7c5cc4;" type="text" name="product_code_name" id="product-search-input" placeholder="Scan/Search product by name/code/IMEI (at least 3 characters)" class="form-control" autofocus />
                                                 <button type="button" class="btn btn-primary" onclick="barcode()"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-upc" viewBox="0 0 16 16"><path d="M3 4.5a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0z"/></svg></button>
                                             </div>
                                             <div id="product-results-container">
@@ -354,7 +354,7 @@
                                         </div>
                                     </div>
                                     @foreach($custom_fields as $field)
-                                        @if(!$field->is_admin || \Auth::user()->role_id == 1)
+                                        @if(!$field->is_admin || \Auth::user()->role_type == 1)
                                             <div class="{{'col-md-'.$field->grid_value}}">
                                                 <div class="form-group">
                                                     <label>{{$field->name}}</label>
@@ -857,7 +857,7 @@
                             let productHtml = '';
                             let displayStock = '';
 
-                            if(authUser > 2) {
+                            if(role_type > 2) {
                                 displayStock = '';
                             } else {
                                 displayStock = ` | ${product.qty} {{ __('db.In Stock') }} `;
@@ -1210,7 +1210,7 @@ var rowindex;
 var customer_group_rate;
 var row_product_price;
 var pos;
-var role_id = <?php echo json_encode(Auth::user()->role_id)?>;
+var role_type = <?php echo json_encode(Auth::user()->role_type)?>;
 
 var warehouse_id = $('#warehouse_id').val();
 
@@ -1403,6 +1403,38 @@ $('#warehouse_id').on('change', function() {
         isCashRegisterAvailable(warehouse_id);
         $('#featured-filter').trigger('click');
     });
+
+    function isCashRegisterAvailable(warehouse_id) {
+        $.ajax({
+            url: '{{url("cash-register/check-availability")}}/'+warehouse_id,
+            type: "GET",
+            success:function(data) {
+                if(data == 'false') {
+                    //$("#pos-layout").addClass('d-none');
+                    $("#register-details-btn").addClass('d-none');
+                    $('#cash-register-modal select[name=warehouse_id]').val(warehouse_id);
+
+                    if(role_type <= 2)
+                        $("#cash-register-modal .warehouse-section").removeClass('d-none');
+                    else
+                        $("#cash-register-modal .warehouse-section").addClass('d-none');
+
+                    $('#cash-register-modal').modal({
+                        backdrop: 'static',
+                        keyboard: false // Optional: Prevents closing with the Escape key as well
+                    });
+
+                    $('.selectpicker').selectpicker('refresh');
+                    $("#cash-register-modal").modal('show');
+                }
+                else{
+                    $("#register-details-btn").removeClass('d-none');
+                    $("#register-details-btn").data('id', data);
+                    $('input[name="cash_register"]').val(data);
+                }
+            }
+        });
+    }
 
     $('#customer_id').on('change', function() {
         var customer_id = $(this).val();

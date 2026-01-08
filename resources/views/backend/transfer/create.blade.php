@@ -31,7 +31,7 @@
                                                 data-live-search="true" data-live-search-style="begins" 
                                                 id="from-warehouse-id" title="Select warehouse...">
                                                 @foreach($lims_warehouse_list as $warehouse)
-                                                    @if(auth()->user()->role_id > 2)
+                                                    @if(auth()->user()->role_type > 2)
                                                         @if(auth()->user()->warehouse_id == $warehouse->id)
                                                             <option value="{{ $warehouse->id }}" selected>{{ $warehouse->name }}</option>
                                                         @endif
@@ -59,11 +59,11 @@
                                         <div class="form-group">
                                             <label>{{__("db.status")}}</label>
                                             <select name="status" class="form-control selectpicker">
-                                                @if (auth()->user()->role_id < 3)
+                                                @if (auth()->user()->role_type < 3)
                                                     <option value="1">{{__('db.Completed')}}</option>
                                                 @endif
                                                 <option value="2">{{__('db.Pending')}}</option>
-                                                @if (auth()->user()->role_id < 3)
+                                                @if (auth()->user()->role_type < 3)
                                                     <option value="3">{{__('db.Sent')}}</option>
                                                 @endif
                                             </select>

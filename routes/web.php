@@ -597,7 +597,7 @@ Route::group(['middleware' => ['auth', 'settenantconnection', 'common', 'active'
     });
     Route::resource('user', UserController::class);
 
-
+    //working
     Route::controller(SettingController::class)->group(function () {
         Route::prefix('setting')->group(function () {
             Route::get('activity-log', 'activityLog')->name('setting.activityLog');
@@ -620,7 +620,7 @@ Route::group(['middleware' => ['auth', 'settenantconnection', 'common', 'active'
             Route::post('sms_setting_store', 'smsSettingStore')->name('setting.smsStore');
             Route::get('pos_setting', 'posSetting')->name('setting.pos');
             Route::post('pos_setting_store', 'posSettingStore')->name('setting.posStore');
-            Route::get('empty-database', 'emptyDatabase')->name('setting.emptyDatabase');
+            Route::get('empty-database', 'emptyDatabase')->name('setting.emptyDatabase')->middleware(['settenantconnection']);
 
          });
         Route::get('backup', 'backup')->name('setting.backup');

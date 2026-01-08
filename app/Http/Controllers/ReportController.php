@@ -1946,7 +1946,7 @@ class ReportController extends Controller
         $start = $request->input('start');
         $order = 'sales.'.$columns[$request->input('order.0.column')];
         $dir = $request->input('order.0.dir');
-        $q = $q->select('sales.id', 'sales.reference_no', 'sales.grand_total', 'sales.paid_amount', 'sales.sale_status', 'sales.created_at', 'customers.name as customer')
+        $q = $q->select('sales.id', 'sales.reference_no', 'sales.grand_total', 'sales.paid_amount', 'sales.sale_status', 'sales.created_at', 'customers.name as customer_name', 'customers.phone_number as customer_phone_number')
             ->offset($start)
             ->limit($limit)
             ->orderBy($order, $dir);
@@ -1957,7 +1957,7 @@ class ReportController extends Controller
         {
             $search = $request->input('search.value');
             $q = $q->whereDate('sales.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))));
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $sales =  $q->orwhere([
                                 ['sales.reference_no', 'LIKE', "%{$search}%"],
                                 ['sales.user_id', Auth::id()]
@@ -1991,7 +1991,27 @@ class ReportController extends Controller
                 $nestedData['key'] = $key;
                 $nestedData['date'] = date(config('date_format'), strtotime($sale->created_at));
                 $nestedData['reference_no'] = $sale->reference_no;
-                $nestedData['customer'] = $sale->customer_name . ' (' . $sale->customer_phone_number . ')';
+                // $nestedData['customer'] = $sale->customer_name . ' (' . $sale->customer_phone_number . ')';
+                                $nestedData['customer'] = $sale->customer_name . ' (' . $sale->customer_phone_number . ')';
+                $product_sale_data = DB::table('sales')->join('product_sales', 'sales.id', '=', 'product_sales.sale_id')
+                                    ->join('products', 'product_sales.product_id', '=', 'products.id')
+                                    ->whereNull('sales.deleted_at')
+                                    ->where('sales.id', $sale->id)
+                                    ->select('products.name as product_name', 'product_sales.qty', 'product_sales.sale_unit_id')
+                                    ->get();
+                $nestedData['product'] = '';
+                foreach ($product_sale_data as $index => $product_sale) {
+                    if($product_sale->sale_unit_id) {
+                        $unit_data = DB::table('units')->select('unit_code')->find($product_sale->sale_unit_id);
+                        $unitCode = $unit_data->unit_code;
+                    }
+                    else
+                        $unitCode = '';
+                    if($index)
+                        $nestedData['product'] .= '<br>'.$product_sale->product_name.' ('.number_format($product_sale->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
+                    else
+                        $nestedData['product'] = $product_sale->product_name.' ('.number_format($product_sale->qty, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal).' '.$unitCode.')';
+                }
                 $nestedData['grand_total'] = number_format($sale->grand_total, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
                 $nestedData['paid'] = number_format($sale->paid_amount, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
                 $nestedData['due'] = number_format($sale->grand_total - $sale->paid_amount, cache()->get('tenant_'.session('bus_config_id').'_general_setting')->decimal);
@@ -2055,7 +2075,7 @@ class ReportController extends Controller
         {
             $search = $request->input('search.value');
             $q = $q->whereDate('purchases.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))));
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $purchases =  $q->orwhere([
                                 ['purchases.reference_no', 'LIKE', "%{$search}%"],
                                 ['purchases.user_id', Auth::id()]
@@ -2177,7 +2197,7 @@ class ReportController extends Controller
         {
             $search = $request->input('search.value');
             $q = $q->whereDate('quotations.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))));
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $quotations =  $q->orwhere([
                                 ['quotations.reference_no', 'LIKE', "%{$search}%"],
                                 ['quotations.user_id', Auth::id()]
@@ -2289,7 +2309,7 @@ class ReportController extends Controller
         {
             $search = $request->input('search.value');
             $q = $q->whereDate('returns.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))));
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $returns =  $q->orwhere([
                                 ['returns.reference_no', 'LIKE', "%{$search}%"],
                                 ['returns.user_id', Auth::id()]
@@ -2390,7 +2410,7 @@ class ReportController extends Controller
         {
             $search = $request->input('search.value');
             $q = $q->whereDate('expenses.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))));
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $expenses =  $q->orwhere([
                                 ['expenses.reference_no', 'LIKE', "%{$search}%"],
                                 ['expenses.user_id', Auth::id()]
@@ -2497,7 +2517,7 @@ class ReportController extends Controller
         {
             $search = $request->input('search.value');
             $q = $q->whereDate('sales.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))));
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $sales =  $q->orwhere([
                                 ['sales.reference_no', 'LIKE', "%{$search}%"],
                                 ['sales.user_id', Auth::id()]
@@ -2615,7 +2635,7 @@ class ReportController extends Controller
         {
             $search = $request->input('search.value');
             $q = $q->whereDate('quotations.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))));
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $quotations =  $q->orwhere([
                                 ['quotations.reference_no', 'LIKE', "%{$search}%"],
                                 ['quotations.user_id', Auth::id()]
@@ -2723,7 +2743,7 @@ class ReportController extends Controller
         {
             $search = $request->input('search.value');
             $q = $q->whereDate('payments.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))));
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $payments =  $q->orwhere([
                                 ['payments.payment_reference', 'LIKE', "%{$search}%"],
                                 ['payments.user_id', Auth::id()]
@@ -2808,7 +2828,7 @@ class ReportController extends Controller
         {
             $search = $request->input('search.value');
             $q = $q->whereDate('sales.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))));
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $sales =  $q->orwhere([
                                 ['sales.reference_no', 'LIKE', "%{$search}%"],
                                 ['sales.user_id', Auth::id()]
@@ -2925,7 +2945,7 @@ class ReportController extends Controller
         {
             $search = $request->input('search.value');
             $q = $q->whereDate('purchases.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))));
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $purchases =  $q->orwhere([
                                 ['purchases.reference_no', 'LIKE', "%{$search}%"],
                                 ['purchases.user_id', Auth::id()]
@@ -3047,7 +3067,7 @@ class ReportController extends Controller
         {
             $search = $request->input('search.value');
             $q = $q->whereDate('quotations.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))));
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $quotations =  $q->orwhere([
                                 ['quotations.reference_no', 'LIKE', "%{$search}%"],
                                 ['quotations.user_id', Auth::id()]
@@ -3155,7 +3175,7 @@ class ReportController extends Controller
         {
             $search = $request->input('search.value');
             $q = $q->whereDate('transfers.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))));
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $transfers =  $q->orwhere([
                                 ['transfers.reference_no', 'LIKE', "%{$search}%"],
                                 ['transfers.user_id', Auth::id()]
@@ -3270,7 +3290,7 @@ class ReportController extends Controller
         {
             $search = $request->input('search.value');
             $q = $q->whereDate('payments.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))));
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $payments =  $q->orwhere([
                                 ['payments.payment_reference', 'LIKE', "%{$search}%"],
                                 ['payments.user_id', Auth::id()]
@@ -3353,7 +3373,7 @@ class ReportController extends Controller
         {
             $search = $request->input('search.value');
             $q = $q->whereDate('payrolls.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))));
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $payrolls =  $q->orwhere([
                                 ['payrolls.reference_no', 'LIKE', "%{$search}%"],
                                 ['payrolls.user_id', Auth::id()]
@@ -3443,7 +3463,7 @@ class ReportController extends Controller
         {
             $search = $request->input('search.value');
             $q = $q->whereDate('expenses.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))));
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $expenses =  $q->orwhere([
                                 ['expenses.reference_no', 'LIKE', "%{$search}%"],
                                 ['expenses.user_id', Auth::id()]
@@ -3545,7 +3565,7 @@ class ReportController extends Controller
         {
             $search = $request->input('search.value');
             $q = $q->whereDate('sales.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))));
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $sales =  $q->orwhere([
                                 ['sales.reference_no', 'LIKE', "%{$search}%"],
                                 ['sales.user_id', Auth::id()]
@@ -3607,7 +3627,7 @@ class ReportController extends Controller
                     ->where('sales.id', $sale->id)
                     ->whereDate('sales.created_at', '>=' , $request->input('start_date'))
                     ->whereDate('sales.created_at', '<=' , $request->input('end_date'))
-                    ->groupBy('product_sales.product_id', 'product_sales.product_batch_id')
+                    ->groupBy('product_sales.product_id', 'product_sales.product_batch_id', 'product_sales.sale_unit_id')
                     ->get();
                 config()->set('database.connections.mysql.strict', true);
                 DB::reconnect();
@@ -3677,7 +3697,7 @@ class ReportController extends Controller
         {
             $search = $request->input('search.value');
             $q = $q->whereDate('payments.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))));
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $payments =  $q->orwhere([
                                 ['payments.payment_reference', 'LIKE', "%{$search}%"],
                                 ['payments.user_id', Auth::id()]
@@ -3763,7 +3783,7 @@ class ReportController extends Controller
         {
             $search = $request->input('search.value');
             $q = $q->whereDate('quotations.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))));
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $quotations =  $q->orwhere([
                                 ['quotations.reference_no', 'LIKE', "%{$search}%"],
                                 ['quotations.user_id', Auth::id()]
@@ -3876,7 +3896,7 @@ class ReportController extends Controller
         {
             $search = $request->input('search.value');
             $q = $q->whereDate('returns.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))));
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $returns =  $q->orwhere([
                                 ['returns.reference_no', 'LIKE', "%{$search}%"],
                                 ['returns.user_id', Auth::id()]
@@ -3995,7 +4015,7 @@ class ReportController extends Controller
         {
             $search = $request->input('search.value');
             $q = $q->whereDate('sales.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))));
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $sales =  $q->orwhere([
                                 ['sales.reference_no', 'LIKE', "%{$search}%"],
                                 ['sales.user_id', Auth::id()]
@@ -4114,7 +4134,7 @@ class ReportController extends Controller
         {
             $search = $request->input('search.value');
             $q = $q->whereDate('payments.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))));
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $payments =  $q->orwhere([
                                 ['payments.payment_reference', 'LIKE', "%{$search}%"],
                                 ['payments.user_id', Auth::id()]
@@ -4202,7 +4222,7 @@ class ReportController extends Controller
         {
             $search = $request->input('search.value');
             $q = $q->whereDate('quotations.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))));
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $quotations =  $q->orwhere([
                                 ['quotations.reference_no', 'LIKE', "%{$search}%"],
                                 ['quotations.user_id', Auth::id()]
@@ -4316,7 +4336,7 @@ class ReportController extends Controller
         {
             $search = $request->input('search.value');
             $q = $q->whereDate('returns.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))));
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $returns =  $q->orwhere([
                                 ['returns.reference_no', 'LIKE', "%{$search}%"],
                                 ['returns.user_id', Auth::id()]
@@ -4469,7 +4489,7 @@ class ReportController extends Controller
         {
             $search = $request->input('search.value');
             $q = $q->whereDate('purchases.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))));
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $purchases =  $q->orwhere([
                                 ['purchases.reference_no', 'LIKE', "%{$search}%"],
                                 ['purchases.user_id', Auth::id()]
@@ -4585,7 +4605,7 @@ class ReportController extends Controller
         {
             $search = $request->input('search.value');
             $q = $q->whereDate('payments.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))));
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $payments =  $q->orwhere([
                                 ['payments.payment_reference', 'LIKE', "%{$search}%"],
                                 ['payments.user_id', Auth::id()]
@@ -4670,7 +4690,7 @@ class ReportController extends Controller
         {
             $search = $request->input('search.value');
             $q = $q->whereDate('return_purchases.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))));
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $return_purchases =  $q->orwhere([
                                 ['return_purchases.reference_no', 'LIKE', "%{$search}%"],
                                 ['return_purchases.user_id', Auth::id()]
@@ -4772,7 +4792,7 @@ class ReportController extends Controller
         {
             $search = $request->input('search.value');
             $q = $q->whereDate('quotations.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))));
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $quotations =  $q->orwhere([
                                 ['quotations.reference_no', 'LIKE', "%{$search}%"],
                                 ['quotations.user_id', Auth::id()]
@@ -4911,7 +4931,7 @@ class ReportController extends Controller
                     ->orWhere('customers.phone_number', 'LIKE', "%{$search}%");
             });
 
-            if (Auth::user()->role_id > 2 && config('staff_access') === 'own') {
+            if (Auth::user()->role_type > 2 && config('staff_access') === 'own') {
                 $filteredDataQuery->where('sales.user_id', Auth::id());
             }
         }

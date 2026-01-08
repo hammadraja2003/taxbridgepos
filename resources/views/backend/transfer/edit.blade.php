@@ -27,7 +27,7 @@
                                             <label>{{__("db.status")}}</label>
                                             <input type="hidden" name="status_hidden" value="{{ $lims_transfer_data->status }}">
                                             <select name="status" class="form-control selectpicker">
-                                                @if (auth()->user()->role_id < 3)
+                                                @if (auth()->user()->role_type < 3)
                                                     <option value="1" {{ $lims_transfer_data->status == 1 ? 'selected' : '' }}>
                                                         {{ __('db.Completed') }}
                                                     </option>
@@ -265,7 +265,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                @if($lims_transfer_data->status == 1 && auth()->user()->role_id > 2)
+                                @if($lims_transfer_data->status == 1 && auth()->user()->role_type > 2)
                                     <p id="completed-message" class="text-center text-white bg-danger p-2 rounded">
                                         <strong>This transfer is Completed. If you need, please contact the Admin for updates!</strong>
                                     </p>

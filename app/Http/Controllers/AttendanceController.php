@@ -27,7 +27,7 @@ class AttendanceController extends Controller
             $lims_warehouse_list = Warehouse::where('is_active', true)->get();
             $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
             
-            if(Auth::user()->role_id > 2 && $general_setting->staff_access == 'own')
+            if(Auth::user()->role_type > 2 && $general_setting->staff_access == 'own')
             $lims_attendance_data = Attendance::leftJoin('employees', 'employees.id', '=', 'attendances.employee_id')
                 ->leftJoin($master_database.'.users', $master_database.'.users.id', '=', 'attendances.user_id')
                 ->orderBy('attendances.date', 'desc')

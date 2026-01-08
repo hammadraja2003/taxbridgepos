@@ -118,13 +118,6 @@ trait TenantInfo
                 'permission_ids' => '136,'
             ];
         }
-        if(file_exists(base_path('Modules/Restaurant'))){
-            $features['restaurant'] = [
-                'name' => 'Restaurant',
-                'default' => false,
-                'permission_ids' => '136,'
-            ];
-        }
 
         return $features;
     }

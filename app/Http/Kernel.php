@@ -71,8 +71,6 @@ class Kernel extends HttpKernel
         'common' => \App\Http\Middleware\Common::class,
         'active' => \App\Http\Middleware\Active::class,
         'superadminauth' => \App\Http\Middleware\SuperAdminAuth::class,
-        'customerauth' => \Modules\Ecommerce\Http\Middleware\CustomerAuth::class,
-        'customerauth0' => \Modules\Restaurant\Http\Middleware\CustomerAuth::class,
         'cors' => \App\Http\Middleware\Cors::class,
         'checkSmsBalance' => \App\Http\Middleware\CheckSmsBalance::class,
         'validate_mobile_token' => \App\Http\Middleware\ValidateMobileToken::class,

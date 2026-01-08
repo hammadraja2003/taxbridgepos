@@ -83,6 +83,7 @@ class ProductController extends Controller
             if(empty($all_permission))
                 $all_permission[] = 'dummy text';
             $role_id = $role->id;
+            $role_type = $role->role_type;
             $numberOfProduct = DB::table('products')->where('is_active', true)->count();
             $custom_fields = CustomField::where([
                                 ['belongs_to', 'product'],
@@ -92,7 +93,7 @@ class ProductController extends Controller
             foreach($custom_fields as $fieldName) {
                 $field_name[] = str_replace(" ", "_", strtolower($fieldName));
             }
-            return view('backend.product.index', compact('warehouse_id', 'product_type', 'brand_id', 'category_id', 'unit_id', 'tax_id', 'imeiorvariant', 'stock_filter', 'all_permission', 'role_id', 'numberOfProduct', 'custom_fields', 'field_name','lims_warehouse_list', 'lims_brand_list', 'lims_category_list', 'lims_unit_list', 'lims_tax_list'));
+            return view('backend.product.index', compact('warehouse_id', 'product_type', 'brand_id', 'category_id', 'unit_id', 'tax_id', 'imeiorvariant', 'stock_filter', 'all_permission', 'role_id', 'role_type', 'numberOfProduct', 'custom_fields', 'field_name','lims_warehouse_list', 'lims_brand_list', 'lims_category_list', 'lims_unit_list', 'lims_tax_list'));
         }
         else
             return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
@@ -317,7 +318,7 @@ class ProductController extends Controller
 
             if (config('currency_position') == 'prefix') {
                 $stock_worth_price = config('currency').' '.($nestedData['qty'] * $product->price);
-                if(Auth::user()->role_id <= 2)
+                if(Auth::user()->role_type <= 2)
                     $stock_worth_cost = config('currency').' '.($nestedData['qty'] * $product->cost);
                 else
                     $stock_worth_cost = '****';
@@ -325,7 +326,7 @@ class ProductController extends Controller
                 $nestedData['stock_worth'] = $stock_worth_price.' / '.$stock_worth_cost;
             } else {
                 $stock_worth_price = ($nestedData['qty'] * $product->price).' '.config('currency');
-                if(Auth::user()->role_id <= 2)
+                if(Auth::user()->role_type <= 2)
                     $stock_worth_cost = ($nestedData['qty'] * $product->cost).' '.config('currency');
                 else
                     $stock_worth_cost = '****';
@@ -801,7 +802,7 @@ class ProductController extends Controller
             ->whereDate('sales.created_at', '<=' ,$request->input('ending_date'));
         if($warehouse_id)
             $q = $q->where('warehouse_id', $warehouse_id);
-        if(Auth::user()->role_id > 2 && config('staff_access') == 'own')
+        if(Auth::user()->role_type > 2 && config('staff_access') == 'own')
             $q = $q->where('sales.user_id', Auth::id());
 
         $totalData = $q->count();
@@ -827,7 +828,7 @@ class ProductController extends Controller
         {
             $search = $request->input('search.value');
             $q = $q->whereDate('sales.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))));
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $sales =  $q->orwhere([
                                 ['sales.reference_no', 'LIKE', "%{$search}%"],
                                 ['sales.user_id', Auth::id()]
@@ -892,7 +893,7 @@ class ProductController extends Controller
             ->whereDate('purchases.created_at', '<=' ,$request->input('ending_date'));
         if($warehouse_id)
             $q = $q->where('warehouse_id', $warehouse_id);
-        if(Auth::user()->role_id > 2 && config('staff_access') == 'own')
+        if(Auth::user()->role_type > 2 && config('staff_access') == 'own')
             $q = $q->where('purchases.user_id', Auth::id());
 
         $totalData = $q->count();
@@ -917,7 +918,7 @@ class ProductController extends Controller
         {
             $search = $request->input('search.value');
             $q = $q->whereDate('purchases.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))));
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $purchases =  $q->select('purchases.id', 'purchases.reference_no', 'purchases.created_at', 'purchases.supplier_id', 'suppliers.name as supplier_name', 'suppliers.phone_number as supplier_number', 'warehouses.name as warehouse_name', 'product_purchases.qty', 'product_purchases.purchase_unit_id', 'product_purchases.total')
                             ->orwhere([
                                 ['purchases.reference_no', 'LIKE', "%{$search}%"],
@@ -985,7 +986,7 @@ class ProductController extends Controller
             ->whereDate('returns.created_at', '<=' ,$request->input('ending_date'));
         if($warehouse_id)
             $q = $q->where('warehouse_id', $warehouse_id);
-        if(Auth::user()->role_id > 2 && config('staff_access') == 'own')
+        if(Auth::user()->role_type > 2 && config('staff_access') == 'own')
             $q = $q->where('returns.user_id', Auth::id());
 
         $totalData = $q->count();
@@ -1010,7 +1011,7 @@ class ProductController extends Controller
         {
             $search = $request->input('search.value');
             $q = $q->whereDate('returns.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))));
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $returnss =  $q->select('returns.id', 'returns.reference_no', 'returns.created_at', 'customers.name as customer_name', 'customers.phone_number as customer_number', 'warehouses.name as warehouse_name', 'product_returns.qty', 'product_returns.sale_unit_id', 'product_returns.total')
                             ->orwhere([
                                 ['returns.reference_no', 'LIKE', "%{$search}%"],
@@ -1077,7 +1078,7 @@ class ProductController extends Controller
             ->whereDate('return_purchases.created_at', '<=' ,$request->input('ending_date'));
         if($warehouse_id)
             $q = $q->where('warehouse_id', $warehouse_id);
-        if(Auth::user()->role_id > 2 && config('staff_access') == 'own')
+        if(Auth::user()->role_type > 2 && config('staff_access') == 'own')
             $q = $q->where('return_purchases.user_id', Auth::id());
 
         $totalData = $q->count();
@@ -1104,7 +1105,7 @@ class ProductController extends Controller
             $search = $request->input('search.value');
             $q = $q->whereDate('return_purchases.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))));
 
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own') {
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
                 $return_purchases =  $q->orwhere([
                                         ['return_purchases.reference_no', 'LIKE', "%{$search}%"],
                                         ['return_purchases.user_id', Auth::id()]
@@ -1156,7 +1157,7 @@ class ProductController extends Controller
 
     public function variantData($id)
     {
-        if(Auth::user()->role_id > 2) {
+        if(Auth::user()->role_type > 2) {
             return ProductVariant::join('variants', 'product_variants.variant_id', '=', 'variants.id')
                 ->join('product_warehouse', function($join) {
                     $join->on('product_variants.product_id', '=', 'product_warehouse.product_id');

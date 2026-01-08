@@ -29,7 +29,7 @@ class DeliveryController extends Controller
     {
         $role = Role::find(Auth::user()->role_id);
         if($role->hasPermissionTo('delivery')) {
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own')
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own')
                 $lims_delivery_all = Delivery::orderBy('id', 'desc')->where('user_id', Auth::id())->get();
             else
                 $lims_delivery_all = Delivery::orderBy('id', 'desc')->get();
@@ -48,7 +48,7 @@ class DeliveryController extends Controller
             1 => 'reference_no'
         );
         if($role->hasPermissionTo('delivery')) {
-            if(Auth::user()->role_id > 2 && config('staff_access') == 'own')
+            if(Auth::user()->role_type > 2 && config('staff_access') == 'own')
                 $lims_delivery_all = Delivery::orderBy('id', 'desc')->where('user_id', Auth::id())->get();
             else
                 $lims_delivery_all = Delivery::orderBy('id', 'desc')->get();
