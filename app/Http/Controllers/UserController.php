@@ -62,23 +62,24 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
+        $connection = getConnectionName(\App\Models\Roles::class);
         $this->validate($request, [
             'name' => [
                 'max:255',
-                    Rule::unique('users')->where(function ($query) {
+                    Rule::unique($connection.'.users')->where(function ($query) {
                     return $query->where('is_deleted', false);
                 }),
             ],
             'email' => [
                 'email',
                 'max:255',
-                    Rule::unique('users')->where(function ($query) {
+                    Rule::unique($connection.'.users')->where(function ($query) {
                     return $query->where('is_deleted', false);
                 }),
             ],
         ]);
-
-        if($request->role_id == 5) {
+        $role = Role::find($request->role_id);
+        if($role->role_type == 4) {
             $this->validate($request, [
                 'phone_number' => [
                     'max:255',
@@ -106,7 +107,7 @@ class UserController extends Controller
         $data['password'] = bcrypt($data['password']);
         $data['phone'] = $data['phone_number'];
         $user_data = User::create($data);
-        if($data['role_id'] == 5) {
+        if($role->role_type == 4) {
             $data['user_id'] = $user_data->id;
             $data['name'] = $data['customer_name'];
             $data['phone_number'] = $data['phone'];
@@ -134,18 +135,20 @@ class UserController extends Controller
     {
         if(!env('USER_VERIFIED'))
             return redirect()->back()->with('not_permitted', __('db.This feature is disable for demo!'));
+        $connection = getConnectionName(\App\Models\Roles::class);
+        $role = Role::find($request->role_id);
 
         $this->validate($request, [
             'name' => [
                 'max:255',
-                Rule::unique('users')->ignore($id)->where(function ($query) {
+                Rule::unique($connection.'.users')->ignore($id)->where(function ($query) {
                     return $query->where('is_deleted', false);
                 }),
             ],
             'email' => [
                 'email',
                 'max:255',
-                    Rule::unique('users')->ignore($id)->where(function ($query) {
+                    Rule::unique($connection.'.users')->ignore($id)->where(function ($query) {
                     return $query->where('is_deleted', false);
                 }),
             ],
@@ -257,11 +260,20 @@ class UserController extends Controller
 
     public function notificationUsers()
     {
-        $notification_users = DB::connection('master')->table('users')->where([
-            ['is_active', true],
-            ['id', '!=', \Auth::user()->id],
-            ['role_id', '!=', '5']
-        ])->get();
+        // $notification_users = DB::connection('master')->table('users')->where([
+        //     ['is_active', true],
+        //     ['id', '!=', \Auth::user()->id],
+        //     ['role_id', '!=', '5']
+        // ])->get();
+        $notification_users = DB::connection('master')
+        ->table('users')
+        ->join('roles', 'roles.id', '=', 'users.role_id')
+        ->where('users.is_active', true)
+        ->where('users.id', '!=', Auth::user()->id)
+        ->where('roles.role_type', '!=', 4)
+        ->select('users.*') 
+        ->get();
+
 
         $html = '';
         foreach($notification_users as $user){

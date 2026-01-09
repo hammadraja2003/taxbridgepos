@@ -101,7 +101,7 @@ class StoreCustomerRequest extends BaseFormRequest
         if ($this->user == true) {
             $this->merge([
                 'phone' => $this->input('phone_number'),
-                'role_id' => 5,
+                // 'role_id' => 5,
                 'is_active' => true,
                 'is_deleted' => false,
                 'password' => bcrypt($this->input('password')),

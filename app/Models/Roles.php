@@ -10,6 +10,6 @@ class Roles extends SpatieRole
     protected $table = 'roles';
 
     protected $fillable =[
-        "name", "description", "guard_name", "is_active" ,"bus_config_id"
+        "name", "description", "guard_name", "is_active" ,"bus_config_id" ,"role_type"
     ];
 }

@@ -90,6 +90,7 @@ class RegisterController extends Controller
     protected function create(array $data)
     {
         $data['is_active'] = false;
+        $role = Role::find($data['role_id']);
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
@@ -103,7 +104,7 @@ class RegisterController extends Controller
             'password' => bcrypt($data['password']),
         ]);
 
-        if($data['role_id'] == 5) {
+        if($role->role_type == 4) {
             $data['name'] = $data['customer_name'];
             $data['user_id'] = $user->id;
             $data['is_active'] = true;

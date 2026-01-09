@@ -40,8 +40,9 @@ class StoreUserRequest extends FormRequest
             ],
             'role_id' => ['required', 'integer'],
         ];
+        $role = Role::find($this->input('role_id'));
 
-        if ($this->input('role_id') == 5) {
+        if ($role->role_type == 4) {
             $rules['phone_number'] = [
                 'required',
                 'max:255',

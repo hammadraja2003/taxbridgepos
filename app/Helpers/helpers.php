@@ -136,3 +136,52 @@ if (!function_exists('getProductTypeDropdown')) {
         return $html;
     }
 }
+if (!function_exists('getRoleTypeDropdown')) {
+
+    function getRoleTypeDropdown(
+        $name,
+        $class = 'form-control selectpicker',
+        $id = '',
+        $required = false,
+        $selectedValue = null
+    ) {
+        $types = [
+            1 => 'admin',
+            2 => 'owner',
+            3 => 'staff',
+            4 => 'customer'
+        ];
+
+        $requiredAttr = $required ? 'required' : '';
+        $idAttr = $id ? "id=\"{$id}\"" : '';
+
+        $html = "<select name=\"{$name}\" class=\"{$class}\" {$idAttr} {$requiredAttr}>";
+
+        foreach ($types as $key => $value) {
+            $selected = ((string)$key === (string)trim($selectedValue)) ? 'selected' : '';
+            $label = ucfirst($value);
+
+            $html .= "<option value=\"{$key}\" {$selected}>{$label}</option>";
+        }
+
+        $html .= "</select>";
+
+        return $html;
+    }
+}
+if (!function_exists('getRoleType')) {
+
+    function getRoleType(
+        $role_type
+    ) {
+        $types = [
+            1 => 'admin',
+            2 => 'owner',
+            3 => 'staff',
+            4 => 'customer'
+
+        ];
+
+        return $types[$role_type];
+    }
+}

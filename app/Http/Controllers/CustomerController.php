@@ -587,7 +587,7 @@ class CustomerController extends Controller
         if($customer_data['pos'])
             return $customerInfo;
         else
-            return redirect('customer')->with('create_message', $message);
+            return redirect('customer')->with('create_message', 'Customer created successfully');
     }
 
     public function show($id)

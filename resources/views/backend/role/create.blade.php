@@ -15,6 +15,7 @@
                 <tr>
                     <th class="not-exported" style="width: 3%;"></th>
                     <th>{{__('db.name')}}</th>
+                    <th>{{__('db.Role Type')}}</th>
                     <th>{{__('db.Description')}}</th>
                     <th class="not-exported text-right" style="width: 10%;">{{__('db.action')}}</th>
                 </tr>
@@ -24,6 +25,7 @@
                 <tr>
                     <td style="width: 3%;">{{$key}}</td>
                     <td>{{ $role->name }}</td>
+                    <td>{{ getRoleType($role->role_type) }}</td>
                     <td>{{ $role->description }}</td>
                     <td class="text-right" style="width: 10%;">
                         <div class="btn-group">
@@ -73,6 +75,10 @@
                     {{Form::text('name',null,array('required' => 'required', 'class' => 'form-control'))}}
                     </div>
                     <div class="form-group">
+                    <label>{{__('db.Role Type')}} *</label>
+                    {!! getRoleTypeDropdown('role_type', 'form-control selectpicker', 'role_type' , true) !!}
+                    </div>
+                    <div class="form-group">
                         <label>{{__('db.Description')}}</label>
                         {{Form::textarea('description',null,array('rows'=> 5, 'class' => 'form-control'))}}
                     </div>
@@ -102,6 +108,10 @@
 		                <label>{{__('db.name')}} *</label>
 		                {{Form::text('name',null,array('required' => 'required', 'class' => 'form-control'))}}
 		            </div>
+                    <div class="form-group">
+                        <label>{{__('db.Role Type')}} * </label>
+                        {!! getRoleTypeDropdown('role_type', 'form-control', 'role_type' , true) !!}
+                    </div>
 		            <div class="form-group">
 		                <label>{{__('db.Description')}}</label>
 		                {{Form::textarea('description',null,array('rows'=> 5, 'class' => 'form-control'))}}
@@ -135,12 +145,13 @@
         var url = "role/"
         var id = $(this).data('id').toString();
         url = url.concat(id).concat("/edit");
-
         $.get(url, function(data) {
             $("input[name='name']").val(data['name']);
+            $("select[name='role_type']").val(String(data.role_type)).trigger('change');
             $("textarea[name='description']").val(data['description']);
             $("input[name='role_id']").val(data['id']);
         });
+
     });
 
     $.ajaxSetup({

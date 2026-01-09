@@ -37,6 +37,7 @@ class RoleController extends Controller
         $data = $request->all();
         $bus_config_id = session('bus_config_id');
         $data['bus_config_id'] = $bus_config_id;
+        $data['role_type'] = $request->role_type;
         Roles::create($data);
         return redirect('role')->with('message', __('db.Data inserted successfully'));
     }
