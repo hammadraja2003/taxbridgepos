@@ -24,6 +24,9 @@
                 <div class="card">
                     <div class="card-header d-flex align-items-center">
                         <h4>{{__('db.Update Sale')}}</h4>
+                        <div class="ml-auto">
+                            <a href="{{ route('sales.index') }}" class="btn btn-primary btn-sm">{{__('db.Back')}}</a>
+                        </div>
                     </div>
                     <div class="card-body">
                         <p class="italic"><small>{{__('db.The field labels marked with * are required input fields')}}.</small></p>

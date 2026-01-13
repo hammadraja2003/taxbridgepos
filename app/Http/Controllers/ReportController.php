@@ -2465,7 +2465,7 @@ class ReportController extends Controller
         $user_id = $data['user_id'];
         $start_date = $data['start_date'];
         $end_date = $data['end_date'];
-        $lims_user_list = User::where('is_active', true)->get();
+        $lims_user_list = User::where('is_active', true)->where('bus_config_id', session('bus_config_id'))->get();
         return view('backend.report.user_report', compact('user_id', 'start_date', 'end_date', 'lims_user_list'));
     }
 

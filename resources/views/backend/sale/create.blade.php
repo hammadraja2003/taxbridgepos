@@ -235,6 +235,7 @@
                                             </div>
                                             <div id="no-results-message" style="background-color: #f5f6f7;color: #666; margin-top: 5px;padding: 3px 5px; display: none;">No results found</div>
                                         </div>
+                                        <span class="not-found" style="color: red; display: none;">Product not found</span>
                                     </div>
                                 </div>
                                 <div class="row mt-5">

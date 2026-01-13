@@ -20,6 +20,7 @@ use App\Models\RewardPoint;
 use App\Mail\CustomerCreate;
 use App\Mail\SupplierCreate;
 use App\Models\CashRegister;
+use App\Models\Returns;
 use App\Models\DiscountPlan;
 use Illuminate\Http\Request;
 use App\Mail\CustomerDeposit;
@@ -604,14 +605,18 @@ class CustomerController extends Controller
         ->whereNull('sales.deleted_at')
         ->sum('payments.amount');
 
+        $return = Returns::where('customer_id', $id)->get();
+        $returnAmount = $return ? $return->sum('grand_total') : 0;
 
-        $balance_due = ($opening_balance + $total_sales) - $total_paid;
+
+        $balance_due = ($opening_balance + $total_sales) - ($total_paid + $returnAmount);
 
 
         return view('backend.customer.view', [
             'lims_customer_data' => $customer,
             'opening_balance' => $opening_balance,
             'total_sales' => $total_sales,
+            'returnAmount' => $returnAmount,
             'total_paid' => $total_paid,
             'balance_due' => $balance_due,
         ]);
@@ -621,7 +626,7 @@ class CustomerController extends Controller
     {
         $opening_balance = Customer::where('id', $id)->get()->map(function ($s) {
             return [
-                'date' => $s->created_at->format('Y-m-d'),
+                'date' => $s->created_at->format('Y-m-d h:i:s A'),
                 'type' => 'Opening Balance',
                 'reference' => $s->reference_no,
                 'debit' => floatval($s->opening_balance),
@@ -630,11 +635,20 @@ class CustomerController extends Controller
         });
         $sales = Sale::where('customer_id', $id)->get()->map(function ($s) {
             return [
-                'date' => $s->created_at->format('Y-m-d'),
+                'date' => $s->created_at->format('Y-m-d h:i:s A'),
                 'type' => 'Sale',
                 'reference' => $s->reference_no,
                 'debit' => floatval($s->grand_total),
                 'credit' => 0,
+            ];
+        });
+        $returns = Returns::where('customer_id', $id)->get()->map(function ($s) {
+            return [
+                'date' => $s->created_at->format('Y-m-d h:i:s A'),
+                'type' => 'Return',
+                'reference' => $s->reference_no,
+                'debit' => 0,
+                'credit' => floatval($s->grand_total),
             ];
         });
 
@@ -662,7 +676,7 @@ class CustomerController extends Controller
                 ];
             });
 
-        $ledger = $opening_balance->merge($sales)->merge($payments)->sortBy('date')->values()->toArray();
+        $ledger = $opening_balance->merge($sales)->merge($returns)->merge($payments)->sortBy('date')->values()->toArray();
 
         $balance = 0;
         foreach ($ledger as $key => $row) {

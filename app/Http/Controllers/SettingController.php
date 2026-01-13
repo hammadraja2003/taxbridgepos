@@ -78,7 +78,7 @@ class SettingController extends Controller
         foreach ($tables as $table) {
             if(!in_array($table->$str, [
                 'accounts','hrm_settings','languages','migrations','password_resets',
-                'pos_setting','currencies','reward_point_settings','ecommerce_settings','external_services','translations','invoice_settings','units'
+                'pos_setting','currencies','reward_point_settings','ecommerce_settings','external_services','translations','invoice_settings','units','taxes'
             ])) {
                DB::table($table->$str)->truncate();
             }

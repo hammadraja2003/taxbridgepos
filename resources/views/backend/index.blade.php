@@ -135,7 +135,7 @@
                     <div class="col-md-12 form-group">
                         <div class="row">
                             <!-- Count item widget-->
-                            <!-- <div class="col-sm-3">
+                            <div class="col-sm-3">
                                 <div class="wrapper count-title">
                                     <div class="icon">
                                          <i class="dripicons-cart" style="color: #863636"></i>
@@ -144,21 +144,21 @@
                                         <div class="count-number total_sale-data">
                                             {{ number_format((float) $total_sale, $general_setting->decimal, '.', '') }}</div>
                                         <div class="name">
-                                            <strong style="color: #863636">{{ __('db.Total Sale') }}
+                                            <strong>{{ __('db.Total Sale') }}
                                                 <x-info title="Grand Total - Shipping Cost = Total Sale" type="info" />
                                             </strong>
                                         </div>
                                     </div>
                                 </div>
-                            </div> -->
+                            </div>
                             <!-- Count item widget-->
                             <div class="col-sm-3">
                                 <div class="wrapper count-title">
-                                    <div class="icon"><i class="dripicons-graph-bar" style="color: #733686"></i></div>
+                                    <div class="icon"><i class="dripicons-graph-bar"></i></div>
                                     <div>
                                         <div class="count-number revenue-data">
                                             {{ number_format((float) $revenue, $general_setting->decimal, '.', '') }}</div>
-                                        <div class="name"><strong style="color: #733686">{{ __('db.revenue') }}
+                                        <div class="name"><strong>{{ __('db.revenue') }}
                                             <x-info title="(grand_total - shipping_cost) - Return +income  =  Revenue" type="info" />
                                             </strong></div>
                                     </div>
@@ -166,83 +166,86 @@
                             </div>
 
                             <!-- Count item widget invoice due-->
-                            <!-- <div class="col-sm-3">
+                            <div class="col-sm-3">
                                 <div class="wrapper count-title">
                                     <div class="icon">
-                                        <i class="dripicons-document" style="color: #0584a0"></i>
+                                        <i class="dripicons-document"></i>
                                     </div>
                                     <div>
                                         <div class="count-number invoice-due-data">
                                             {{ number_format((float) $invoice_due, $general_setting->decimal, '.', '') }}</div>
-                                        <div class="name"><strong style="color: #0584a0">{{ __('db.Invoice Due') }}
-                                                <x-info title="Graned Total - Paid Amount = Invoice Due" type="info" />
+                                        <div class="name"><strong>{{ __('db.Invoice Due') }}
+                                                <x-info title="Grand Total - Paid Amount = Invoice Due" type="info" />
                                             </strong></div>
                                     </div>
                                 </div>
-                            </div> -->
+                            </div>
                             <!-- Count item widget-->
                             <div class="col-sm-3">
                                 <div class="wrapper count-title">
-                                    <div class="icon"><i class="dripicons-return" style="color: #023143"></i></div>
+                                    <div class="icon"><i class="dripicons-return"></i></div>
                                     <div>
                                         <div class="count-number return-data">
                                             {{ number_format((float) $return, $general_setting->decimal, '.', '') }}</div>
-                                        <div class="name"><strong style="color: #023143">{{ __('db.Sale Return') }}
+                                        <div class="name"><strong>{{ __('db.Sale Return') }}
                                                 <x-info title="Total Sale Return Amount" type="info" /></strong></div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Count item widget-->
-                            <!-- <div class="col-sm-3">
+                            <div class="col-sm-3">
                                 <div class="wrapper count-title">
-                                    <div class="icon"><i class="dripicons-download" aria-hidden="true" style="color:#c60031; "></i></div>
+                                    <div class="icon"><i class="dripicons-download" aria-hidden="true"></i></div>
                                     <div>
                                         <div class="count-number total_purchase-data">
                                             {{ number_format((float) $purchase - $purchase_return, $general_setting->decimal, '.', '') }}
                                         </div>
-                                        <div class="name"><strong
-                                                style="color: #c60031">{{ __('db.Total Purchase') }}</strong></div>
+                                        <div class="name"><strong>{{ __('db.Total Purchase') }}
+                                            <x-info title="Total Purchase - Purchase Returns = Net Purchase" type="info" />
+                                        </strong></div>
                                     </div>
                                 </div>
-                            </div> -->
+                            </div>
 
-
-                            <!-- Count item widget-->
-                            <!-- <div class="col-sm-3">
-                                <div class="wrapper count-title">
-                                    <div class="icon"><i class="dripicons-warning" style="color: #bdbb39"></i></div>
-                                    <div>
-                                        <div class="count-number purchase_due-data">
-                                            {{ number_format((float) $purchase_due, $general_setting->decimal, '.', '') }}
-                                        </div>
-                                        <div class="name"><strong
-                                                style="color: #bdbb39">{{ __('db.Purchase Due') }}</strong></div>
-                                    </div>
-                                </div>
-                            </div> -->
 
                             <!-- Count item widget-->
                             <div class="col-sm-3">
                                 <div class="wrapper count-title">
-                                    <div class="icon"><i class="dripicons-return" style="color: #00c689"></i></div>
+                                    <div class="icon"><i class="dripicons-warning"></i></div>
+                                    <div>
+                                        <div class="count-number purchase_due-data">
+                                            {{ number_format((float) $purchase_due, $general_setting->decimal, '.', '') }}
+                                        </div>
+                                        <div class="name"><strong>{{ __('db.Purchase Due') }}
+                                            <x-info title="Grand Total - Paid Amount = Purchase Due" type="info" />
+                                        </strong></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Count item widget-->
+                            <div class="col-sm-3">
+                                <div class="wrapper count-title">
+                                    <div class="icon"><i class="dripicons-return"></i></div>
                                     <div>
                                         <div class="count-number purchase_return-data">
                                             {{ number_format((float) $purchase_return, $general_setting->decimal, '.', '') }}
                                         </div>
-                                        <div class="name"><strong
-                                                style="color: #00c689">{{ __('db.Purchase Return') }}</strong></div>
+                                        <div class="name"><strong>{{ __('db.Purchase Return') }}
+                                            <x-info title="Total Purchase Return Amount" type="info" />
+                                        </strong></div>
                                     </div>
                                 </div>
                             </div>
                             <!-- Count item widget-->
                             <div class="col-sm-3">
                                 <div class="wrapper count-title">
-                                    <div class="icon"><i class="dripicons-trophy" style="color: #297ff9"></i></div>
+                                    <div class="icon"><i class="dripicons-trophy"></i></div>
                                     <div>
                                         <div class="count-number profit-data">
                                             {{ number_format((float) $profit, $general_setting->decimal, '.', '') }}</div>
-                                        <div class="name"><strong style="color: #297ff9">{{ __('db.profit') }} <x-info title="Revenue + Purchase Return - Product Cost - Expense" type="info" /></strong>
+                                        <div class="name"><strong>{{ __('db.profit') }} <x-info title="Revenue + Purchase Return - Product Cost - Expense" type="info" /></strong>
                                         </div>
                                     </div>
                                 </div>
@@ -256,8 +259,21 @@
                 @if ($cash_flow)
                     <div class="col-md-7 mt-4">
                         <div class="card line-chart-example">
-                            <div class="card-header d-flex align-items-center">
+                            <div class="card-header d-flex align-items-center justify-content-between">
                                 <h4>{{ __('db.Cash Flow') }}</h4>
+                                <i class="dripicons-information" style="cursor: pointer; color: #007bff; font-size: 20px;" 
+                                data-toggle="tooltip" data-placement="left" data-html="true"
+                                title="<div style='text-align: left;'>
+                                    <strong>Payment Received:</strong><br>
+                                    - Payments from Sales<br>
+                                    - Purchase Returns<br><br>
+                                    <strong>Payment Sent:</strong><br>
+                                    - Payments for Purchases<br>
+                                    - Sale Returns<br>
+                                    - Expenses<br>
+                                    - Payroll
+                                </div>">
+                                </i>
                             </div>
                             <div class="card-body">
                                 <canvas id="cashFlow" data-color = "{{ $color }}"
@@ -305,10 +321,15 @@
                                 <h4>{{ __('db.yearly report') }}</h4>
                             </div>
                             <div class="card-body">
-                                <canvas id="saleChart" data-sale_chart_value = "{{ json_encode($yearly_sale_amount) }}"
+                                <canvas id="saleChart" 
+                                    data-sale_chart_value = "{{ json_encode($yearly_sale_amount) }}"
                                     data-purchase_chart_value = "{{ json_encode($yearly_purchase_amount) }}"
-                                    data-label1="{{ __('db.Purchased Amount') }}"
-                                    data-label2="{{ __('db.Sold Amount') }}"></canvas>
+                                    data-sale_return_chart_value = "{{ json_encode($yearly_sale_return_amount) }}"
+                                    data-purchase_return_chart_value = "{{ json_encode($yearly_purchase_return_amount) }}"
+                                    data-label1="{{ __('db.Purchase') }}"
+                                    data-label2="{{ __('db.Sale') }}"
+                                    data-label3="{{ __('db.Sale Return') }}"
+                                    data-label4="{{ __('db.Purchase Return') }}"></canvas>
                             </div>
                         </div>
                     </div>
@@ -402,7 +423,9 @@
                                                 <th>{{ __('db.date') }}</th>
                                                 <th>{{ __('db.reference') }}</th>
                                                 <th>{{ __('db.Amount') }}</th>
-                                                <th>{{ __('db.Paid By') }}</th>
+                                                <th>{{ __('db.Payment Method') }}</th>
+                                                <th>{{ __('db.Party Name') }}</th>
+                                                <th>{{ __('db.Payment Type') }}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -508,7 +531,7 @@
                             url + '/' + images[0] +
                             '" width="30" height="25" class="ml-3 mr-3"> ' + item
                             .product_name + ' [' + item.product_code + ']</div></td><td>' +
-                            (item.total_price / item.exchange_rate).toFixed({{ $general_setting->decimal }}) + '</td></tr>');
+                            (item.total_price).toFixed({{ $general_setting->decimal }}) + '</td></tr>');
                     })
                 }
             });
@@ -575,9 +598,15 @@
                         } else if (item.sale_status == 2) {
                             var status =
                                 '<div class="badge badge-danger">{{ __('db.Pending') }}</div>';
-                        } else {
-                            var status =
+                        } else if (item.sale_status == 3) {
+                             var status =
                                 '<div class="badge badge-warning">{{ __('db.Draft') }}</div>';
+                        } else if(item.sale_status == 4) {
+                                var status =
+                                '<div class="badge badge-danger">{{ __('db.Returned') }}</div>';
+                        } else if(item.sale_status == 5) {
+                                var status =
+                                '<div class="badge badge-danger">{{ __('db.Processing') }}</div>';
                         }
                         $('#recent-sale').find('tbody').append('<tr><td>' + sale_date +
                             '</td><td>' + item.reference_no + '</td><td>' + item.name +
@@ -657,7 +686,7 @@
                         $('#recent-payment').find('tbody').append('<tr><td>' + payment_date +
                             '</td><td>' + item.payment_reference + '</td><td>' + (item.amount/item.exchange_rate)
                             .toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") +
-                            '</td><td>' + item.paying_method + '</td></tr>');
+                            '</td><td>' + item.paying_method + '</td><td>' + item.party_name + '</td><td>' + item.payment_type + '</td></tr>');
                     })
                 }
             });

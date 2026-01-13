@@ -267,9 +267,10 @@ nav.navbar a.menu-btn {
 .brand-big {
     display: block;
     text-align: center;
+    background-color: #ffffff;
 }
 .side-navbar {
-    padding-left: 0.5rem;
+    /* padding-left: 0.5rem; */
 }
 .side-navbar.hide {
     left: -50px;
@@ -835,7 +836,7 @@ button {
 }
 @media (min-width: 768px) {
     .container-fluid {
-        padding: 0 1.5rem;
+        /* padding: 0 1.5rem; */
     }
     .dashboard-counts strong,
     .updates strong {
@@ -1936,7 +1937,8 @@ a > code {
     border-bottom: 1px solid #3b4253;
 }
 .dataTable thead {
-    background-color: #f7f7f7;
+    background-color: #5579a4;
+    color: white;
 }
 .dataTable tfoot {
     background-color: #f7f7f7;

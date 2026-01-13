@@ -112,13 +112,164 @@ $(document).ready(function () {
         });
     }
 
+    // var SALECHART = $("#saleChart");
+
+    // if (SALECHART.length > 0) {
+    //     var yearly_sale_amount = SALECHART.data("sale_chart_value");
+    //     var yearly_purchase_amount = SALECHART.data("purchase_chart_value");
+    //     var label1 = SALECHART.data("label1");
+    //     var label2 = SALECHART.data("label2");
+    //     var saleChart = new Chart(SALECHART, {
+    //         type: "bar",
+    //         data: {
+    //             labels: [
+    //                 "January",
+    //                 "February",
+    //                 "March",
+    //                 "April",
+    //                 "May",
+    //                 "June",
+    //                 "July",
+    //                 "August",
+    //                 "September",
+    //                 "October",
+    //                 "November",
+    //                 "December",
+    //             ],
+    //             datasets: [
+    //                 {
+    //                     label: label1,
+    //                     backgroundColor: [
+    //                         brandPrimaryRgba,
+    //                         brandPrimaryRgba,
+    //                         brandPrimaryRgba,
+    //                         brandPrimaryRgba,
+    //                         brandPrimaryRgba,
+    //                         brandPrimaryRgba,
+    //                         brandPrimaryRgba,
+    //                         brandPrimaryRgba,
+    //                         brandPrimaryRgba,
+    //                         brandPrimaryRgba,
+    //                         brandPrimaryRgba,
+    //                         brandPrimaryRgba,
+    //                         brandPrimaryRgba,
+    //                     ],
+    //                     borderColor: [
+    //                         brandPrimary,
+    //                         brandPrimary,
+    //                         brandPrimary,
+    //                         brandPrimary,
+    //                         brandPrimary,
+    //                         brandPrimary,
+    //                         brandPrimary,
+    //                         brandPrimary,
+    //                         brandPrimary,
+    //                         brandPrimary,
+    //                         brandPrimary,
+    //                         brandPrimary,
+    //                         brandPrimary,
+    //                     ],
+    //                     borderWidth: 1,
+    //                     data: [
+    //                         yearly_purchase_amount[0],
+    //                         yearly_purchase_amount[1],
+    //                         yearly_purchase_amount[2],
+    //                         yearly_purchase_amount[3],
+    //                         yearly_purchase_amount[4],
+    //                         yearly_purchase_amount[5],
+    //                         yearly_purchase_amount[6],
+    //                         yearly_purchase_amount[7],
+    //                         yearly_purchase_amount[8],
+    //                         yearly_purchase_amount[9],
+    //                         yearly_purchase_amount[10],
+    //                         yearly_purchase_amount[11],
+    //                         0,
+    //                     ],
+    //                 },
+    //                 {
+    //                     label: label2,
+    //                     backgroundColor: [
+    //                         "rgba(255, 137, 82, 1)",
+    //                         "rgba(255, 137, 82, 1)",
+    //                         "rgba(255, 137, 82, 1)",
+    //                         "rgba(255, 137, 82, 1)",
+    //                         "rgba(255, 137, 82, 1)",
+    //                         "rgba(255, 137, 82, 1)",
+    //                         "rgba(255, 137, 82, 1)",
+    //                         "rgba(255, 137, 82, 1)",
+    //                         "rgba(255, 137, 82, 1)",
+    //                         "rgba(255, 137, 82, 1)",
+    //                         "rgba(255, 137, 82, 1)",
+    //                         "rgba(255, 137, 82, 1)",
+    //                         "rgba(255, 137, 82, 1)",
+    //                     ],
+    //                     borderColor: [
+    //                         "rgba(255, 137, 82, 1)",
+    //                         "rgba(255, 137, 82, 1)",
+    //                         "rgba(255, 137, 82, 1)",
+    //                         "rgba(255, 137, 82, 1)",
+    //                         "rgba(255, 137, 82, 1)",
+    //                         "rgba(255, 137, 82, 1)",
+    //                         "rgba(255, 137, 82, 1)",
+    //                         "rgba(255, 137, 82, 1)",
+    //                         "rgba(255, 137, 82, 1)",
+    //                         "rgba(255, 137, 82, 1)",
+    //                         "rgba(255, 137, 82, 1)",
+    //                         "rgba(255, 137, 82, 1)",
+    //                         "rgba(255, 137, 82, 1)",
+    //                     ],
+    //                     borderWidth: 1,
+    //                     data: [
+    //                         yearly_sale_amount[0],
+    //                         yearly_sale_amount[1],
+    //                         yearly_sale_amount[2],
+    //                         yearly_sale_amount[3],
+    //                         yearly_sale_amount[4],
+    //                         yearly_sale_amount[5],
+    //                         yearly_sale_amount[6],
+    //                         yearly_sale_amount[7],
+    //                         yearly_sale_amount[8],
+    //                         yearly_sale_amount[9],
+    //                         yearly_sale_amount[10],
+    //                         yearly_sale_amount[11],
+    //                         0,
+    //                     ],
+    //                 },
+    //             ],
+    //         },
+    //     });
+    // }
+
     var SALECHART = $("#saleChart");
 
     if (SALECHART.length > 0) {
         var yearly_sale_amount = SALECHART.data("sale_chart_value");
         var yearly_purchase_amount = SALECHART.data("purchase_chart_value");
+        var yearly_sale_return_amount = SALECHART.data(
+            "sale_return_chart_value"
+        );
+        var yearly_purchase_return_amount = SALECHART.data(
+            "purchase_return_chart_value"
+        );
         var label1 = SALECHART.data("label1");
         var label2 = SALECHART.data("label2");
+        var label3 = SALECHART.data("label3");
+        var label4 = SALECHART.data("label4");
+
+        // Define colors once - change here to update all bars
+        // ----- Colors -----
+        var purchaseColor = "#023143";
+        var purchaseBorder = "#021820";
+
+        var saleColor = "#ff8952";
+        var saleBorder = "#ed5914";
+
+        var saleReturnColor = "#39e930";
+        var saleReturnBorder = "#17b10f";
+
+        var purchaseReturnColor = "#D62728";
+        var purchaseReturnBorder = "#991b1c";
+
         var saleChart = new Chart(SALECHART, {
             type: "bar",
             data: {
@@ -138,37 +289,9 @@ $(document).ready(function () {
                 ],
                 datasets: [
                     {
-                        label: label1,
-                        backgroundColor: [
-                            brandPrimaryRgba,
-                            brandPrimaryRgba,
-                            brandPrimaryRgba,
-                            brandPrimaryRgba,
-                            brandPrimaryRgba,
-                            brandPrimaryRgba,
-                            brandPrimaryRgba,
-                            brandPrimaryRgba,
-                            brandPrimaryRgba,
-                            brandPrimaryRgba,
-                            brandPrimaryRgba,
-                            brandPrimaryRgba,
-                            brandPrimaryRgba,
-                        ],
-                        borderColor: [
-                            brandPrimary,
-                            brandPrimary,
-                            brandPrimary,
-                            brandPrimary,
-                            brandPrimary,
-                            brandPrimary,
-                            brandPrimary,
-                            brandPrimary,
-                            brandPrimary,
-                            brandPrimary,
-                            brandPrimary,
-                            brandPrimary,
-                            brandPrimary,
-                        ],
+                        label: label1, // Purchase
+                        backgroundColor: purchaseColor,
+                        borderColor: purchaseBorder,
                         borderWidth: 1,
                         data: [
                             yearly_purchase_amount[0],
@@ -183,41 +306,12 @@ $(document).ready(function () {
                             yearly_purchase_amount[9],
                             yearly_purchase_amount[10],
                             yearly_purchase_amount[11],
-                            0,
                         ],
                     },
                     {
-                        label: label2,
-                        backgroundColor: [
-                            "rgba(255, 137, 82, 1)",
-                            "rgba(255, 137, 82, 1)",
-                            "rgba(255, 137, 82, 1)",
-                            "rgba(255, 137, 82, 1)",
-                            "rgba(255, 137, 82, 1)",
-                            "rgba(255, 137, 82, 1)",
-                            "rgba(255, 137, 82, 1)",
-                            "rgba(255, 137, 82, 1)",
-                            "rgba(255, 137, 82, 1)",
-                            "rgba(255, 137, 82, 1)",
-                            "rgba(255, 137, 82, 1)",
-                            "rgba(255, 137, 82, 1)",
-                            "rgba(255, 137, 82, 1)",
-                        ],
-                        borderColor: [
-                            "rgba(255, 137, 82, 1)",
-                            "rgba(255, 137, 82, 1)",
-                            "rgba(255, 137, 82, 1)",
-                            "rgba(255, 137, 82, 1)",
-                            "rgba(255, 137, 82, 1)",
-                            "rgba(255, 137, 82, 1)",
-                            "rgba(255, 137, 82, 1)",
-                            "rgba(255, 137, 82, 1)",
-                            "rgba(255, 137, 82, 1)",
-                            "rgba(255, 137, 82, 1)",
-                            "rgba(255, 137, 82, 1)",
-                            "rgba(255, 137, 82, 1)",
-                            "rgba(255, 137, 82, 1)",
-                        ],
+                        label: label2, // Sale
+                        backgroundColor: saleColor,
+                        borderColor: saleBorder,
                         borderWidth: 1,
                         data: [
                             yearly_sale_amount[0],
@@ -232,10 +326,62 @@ $(document).ready(function () {
                             yearly_sale_amount[9],
                             yearly_sale_amount[10],
                             yearly_sale_amount[11],
-                            0,
+                        ],
+                    },
+                    {
+                        label: label3, // Sale Return
+                        backgroundColor: saleReturnColor,
+                        borderColor: saleReturnBorder,
+                        borderWidth: 1,
+                        data: [
+                            yearly_sale_return_amount[0],
+                            yearly_sale_return_amount[1],
+                            yearly_sale_return_amount[2],
+                            yearly_sale_return_amount[3],
+                            yearly_sale_return_amount[4],
+                            yearly_sale_return_amount[5],
+                            yearly_sale_return_amount[6],
+                            yearly_sale_return_amount[7],
+                            yearly_sale_return_amount[8],
+                            yearly_sale_return_amount[9],
+                            yearly_sale_return_amount[10],
+                            yearly_sale_return_amount[11],
+                        ],
+                    },
+                    {
+                        label: label4, // Purchase Return
+                        backgroundColor: purchaseReturnColor,
+                        borderColor: purchaseReturnBorder,
+                        borderWidth: 1,
+                        data: [
+                            yearly_purchase_return_amount[0],
+                            yearly_purchase_return_amount[1],
+                            yearly_purchase_return_amount[2],
+                            yearly_purchase_return_amount[3],
+                            yearly_purchase_return_amount[4],
+                            yearly_purchase_return_amount[5],
+                            yearly_purchase_return_amount[6],
+                            yearly_purchase_return_amount[7],
+                            yearly_purchase_return_amount[8],
+                            yearly_purchase_return_amount[9],
+                            yearly_purchase_return_amount[10],
+                            yearly_purchase_return_amount[11],
                         ],
                     },
                 ],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                scales: {
+                    yAxes: [
+                        {
+                            ticks: {
+                                beginAtZero: true,
+                            },
+                        },
+                    ],
+                },
             },
         });
     }
@@ -322,6 +468,16 @@ $(document).ready(function () {
         var label1 = TRANSACTIONCHART.data("label1");
         var label2 = TRANSACTIONCHART.data("label2");
         var label3 = TRANSACTIONCHART.data("label3");
+
+        // Define colors once - change here to update all segments
+        // ----- Transaction Chart Colors -----
+        var transactionPurchaseColor = "#023143"; // Purchase (Dark Blue) - matches your purchase color
+        var transactionRevenueColor = "#ff8952"; // Revenue (Orange) - matches your sale color
+        var transactionExpenseColor = "#D62728"; // Expense (Red) - matches your purchase return color
+        var transactionPurchaseHover = "rgba(2, 49, 67, 0.8)";
+        var transactionRevenueHover = "rgba(255, 137, 82, 0.8)";
+        var transactionExpenseHover = "rgba(214, 39, 40, 0.8)";
+
         var myTransactionChart = new Chart(TRANSACTIONCHART, {
             type: "doughnut",
             data: {
@@ -330,17 +486,21 @@ $(document).ready(function () {
                     {
                         data: [purchase, revenue, expense],
                         borderWidth: [1, 1, 1],
-                        backgroundColor: [brandPrimary, "#023143", "#858c85"],
+                        backgroundColor: [
+                            transactionPurchaseColor,
+                            transactionRevenueColor,
+                            transactionExpenseColor,
+                        ],
                         hoverBackgroundColor: [
-                            brandPrimaryRgba,
-                            "rgba(2, 49, 67, 0.8)",
-                            "rgb(133, 140, 133, 0.8)",
+                            transactionPurchaseHover,
+                            transactionRevenueHover,
+                            transactionExpenseHover,
                         ],
                         hoverBorderWidth: [4, 4, 4],
                         hoverBorderColor: [
-                            brandPrimaryRgba,
-                            "rgba(2, 49, 67, 0.8)",
-                            "rgb(133, 140, 133, 0.8)",
+                            transactionPurchaseHover,
+                            transactionRevenueHover,
+                            transactionExpenseHover,
                         ],
                     },
                 ],

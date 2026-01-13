@@ -241,7 +241,7 @@
                 </li>
             @endcan
 
-            @if(in_array('manufacturing',explode(',',$general_setting->modules)))
+            <!-- @if(in_array('manufacturing',explode(',',$general_setting->modules)))
                 <li>
                     <a href="#manufacturing" aria-expanded="false" data-toggle="collapse"> <i class="fa fa-industry"></i><span>{{__('db.Manufacturing')}}</span></a>
 
@@ -251,10 +251,10 @@
                         <li id="production-create-menu"><a href="{{route('recipes.index')}}">{{__('db.Recipe')}}</a></li>
                     </ul>
                 </li>
-            @endif
+            @endif -->
 
 
-            <li><a href="#whatsapp" aria-expanded="false" data-toggle="collapse"><i class="dripicons-message"></i><span>{{ __('db.whatsapp') }}</span></a>
+            <!-- <li><a href="#whatsapp" aria-expanded="false" data-toggle="collapse"><i class="dripicons-message"></i><span>{{ __('db.whatsapp') }}</span></a>
                 <ul id="whatsapp" class="collapse list-unstyled">
                     <li id="whatsapp-settings-menu">
                         <a href="{{ route('whatsapp.settings') }}">{{ __('db.whatsapp_settings') }}</a>
@@ -266,7 +266,7 @@
                         <a href="{{ route('whatsapp.send.page') }}">{{ __('db.send_message') }}</a>
                     </li>
                 </ul>
-            </li>
+            </li> -->
 
             @can('sidebar_reports')
                 <li>
@@ -526,25 +526,11 @@
                         @endcan
                     </ul>
                 </li>
-            {{--@endcan--}}
-
-            @if(config('database.connections.saleprosaas_landlord'))
-                @php
-                    tenancy()->central(function () use (&$disable_tenant_support_tickets) {
-                        $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
-                        $disable_tenant_support_tickets = $general_setting->disable_tenant_support_tickets;
-                    });
-                @endphp
-                @if($disable_tenant_support_tickets)
-                    <li><a href="{{route('tickets.index')}}"><i class="dripicons-ticket"></i> {{__('db.support_tickets')}}</a></li>
-                @endif
-            @endif
-
-            @can ('addons')
+            <!-- @can ('addons')
                 @if(\Auth::user()->role_type != 4)
-                    <!-- @if(!config('database.connections.saleprosaas_landlord'))
-                        <li><a href="{{url('addon-list')}}" id="addon-list"> <i class="dripicons-flag"></i><span>{{__('db.Addons')}}</span></a></li>
-                    @endif -->
+               
+                    <li><a href="{{url('addon-list')}}" id="addon-list"> <i class="dripicons-flag"></i><span>{{__('db.Addons')}}</span></a></li>
+                  
                     @if (in_array('woocommerce',explode(',',$general_setting->modules)))
                         <li><a href="{{route('woocommerce.index')}}"> <i class="fa fa-wordpress"></i><span>WooCommerce</span></a></li>
                     @endif
@@ -563,5 +549,5 @@
                         @include('restaurant::backend.layout.sidebar-menu')
                     @endif
                 @endif
-            @endcan
+            @endcan -->
         </ul>

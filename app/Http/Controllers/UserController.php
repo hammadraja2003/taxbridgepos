@@ -31,8 +31,8 @@ class UserController extends Controller
             $permissions = Role::findByName($role->name)->permissions;
             foreach ($permissions as $permission)
                 $all_permission[] = $permission->name;
-            $lims_user_list = User::where('is_deleted', false)->get();
-            $numberOfUserAccount = User::where('is_active', true)->count();
+            $lims_user_list = User::where('is_deleted', false)->where('bus_config_id', session('bus_config_id'))->get();
+            $numberOfUserAccount = User::where('is_active', true)->where('bus_config_id', session('bus_config_id'))->count();
             return view('backend.user.index', compact('lims_user_list', 'all_permission', 'numberOfUserAccount'));
         }
         else
@@ -47,7 +47,7 @@ class UserController extends Controller
             $lims_biller_list = Biller::where('is_active', true)->get();
             $lims_warehouse_list = Warehouse::where('is_active', true)->get();
             $lims_customer_group_list = CustomerGroup::where('is_active', true)->get();
-            $numberOfUserAccount = User::where('is_active', true)->count();
+            $numberOfUserAccount = User::where('is_active', true)->where('bus_config_id', session('bus_config_id'))->count();
             return view('backend.user.create', compact('lims_role_list', 'lims_biller_list', 'lims_warehouse_list', 'lims_customer_group_list', 'numberOfUserAccount'));
         }
         else
@@ -106,6 +106,7 @@ class UserController extends Controller
         $data['is_deleted'] = false;
         $data['password'] = bcrypt($data['password']);
         $data['phone'] = $data['phone_number'];
+        $data['bus_config_id'] = session('bus_config_id'); 
         $user_data = User::create($data);
         if($role->role_type == 4) {
             $data['user_id'] = $user_data->id;
@@ -121,7 +122,7 @@ class UserController extends Controller
     {
         $role = Role::find(Auth::user()->role_id);
         if($role->hasPermissionTo('users-edit')){
-            $lims_user_data = User::find($id);
+            $lims_user_data = User::where('id', $id)->where('bus_config_id', session('bus_config_id'))->firstOrFail();  
             $lims_role_list = Roles::where('is_active', true)->get();
             $lims_biller_list = Biller::where('is_active', true)->get();
             $lims_warehouse_list = Warehouse::where('is_active', true)->get();
@@ -159,7 +160,9 @@ class UserController extends Controller
             $input['is_active'] = false;
         if(!empty($request['password']))
             $input['password'] = bcrypt($request['password']);
-        $lims_user_data = User::find($id);
+        // $lims_user_data = User::find($id);
+        // $lims_user_data->update($input);
+        $lims_user_data = User::where('id', $id)->where('bus_config_id', session('bus_config_id'))->firstOrFail();
         $lims_user_data->update($input);
 
         $key_prefix = 'tenant_' . session('bus_config_id') . '_';
@@ -172,7 +175,7 @@ class UserController extends Controller
         if(!env('USER_VERIFIED'))
             return redirect()->back()->with('not_permitted', __('db.This feature is disable for demo!'));
         
-        $user = User::find($request->id);
+        $user = User::where('id', $request->id)->where('bus_config_id', session('bus_config_id'))->first();
 
         if ($user) {
             $user->is_active = $request->is_active;
@@ -192,7 +195,7 @@ class UserController extends Controller
 
     public function profile($id)
     {
-        $lims_user_data = User::find($id);
+        $lims_user_data = User::where('id', $id)->where('bus_config_id', session('bus_config_id'))->firstOrFail();
         return view('backend.user.profile', compact('lims_user_data'));
     }
 
@@ -202,7 +205,7 @@ class UserController extends Controller
             return redirect()->back()->with('not_permitted', __('db.This feature is disable for demo!'));
 
         $input = $request->all();
-        $lims_user_data = User::find($id);
+        $lims_user_data = User::where('id', $id)->where('bus_config_id', session('bus_config_id'))->firstOrFail();
         $lims_user_data->update($input);
         return redirect()->back()->with('message3', __('db.Data updated successfullly'));
     }
@@ -213,7 +216,7 @@ class UserController extends Controller
             return redirect()->back()->with('not_permitted', __('db.This feature is disable for demo!'));
 
         $input = $request->all();
-        $lims_user_data = User::find($id);
+        $lims_user_data = User::where('id', $id)->where('bus_config_id', session('bus_config_id'))->firstOrFail();
         if($input['new_pass'] != $input['confirm_pass'])
             return redirect("user/" .  "profile/" . $id )->with('message2', __("db.Please Confirm your new password"));
 
@@ -233,7 +236,7 @@ class UserController extends Controller
         $user_id = $request['userIdArray'];
         
         foreach ($user_id as $id) {
-            $lims_user_data = User::find($id);
+            $lims_user_data = User::where('id', $id)->where('bus_config_id', session('bus_config_id'))->first();
             $lims_user_data->is_deleted = true;
             $lims_user_data->is_active = false;
             $lims_user_data->save();
@@ -246,7 +249,7 @@ class UserController extends Controller
         if(!env('USER_VERIFIED'))
             return redirect()->back()->with('not_permitted', __('db.This feature is disable for demo!'));
 
-        $lims_user_data = User::find($id);
+        $lims_user_data = User::where('id', $id)->where('bus_config_id', session('bus_config_id'))->firstOrFail();
         $lims_user_data->is_deleted = true;
         $lims_user_data->is_active = false;
         $lims_user_data->save();
@@ -270,6 +273,7 @@ class UserController extends Controller
         ->join('roles', 'roles.id', '=', 'users.role_id')
         ->where('users.is_active', true)
         ->where('users.id', '!=', Auth::user()->id)
+        ->where('users.bus_config_id', session('bus_config_id'))
         ->where('roles.role_type', '!=', 4)
         ->select('users.*') 
         ->get();
@@ -285,7 +289,7 @@ class UserController extends Controller
 
     public function allUsers()
     {
-        $lims_user_list = DB::connection('master')->table('users')->where('is_active', true)->get();
+        $lims_user_list = DB::connection('master')->table('users')->where('is_active', true)->where('bus_config_id', session('bus_config_id'))->get();
 
         $html = '';
         foreach($lims_user_list as $user){

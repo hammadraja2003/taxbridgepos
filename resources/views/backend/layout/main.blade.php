@@ -201,11 +201,9 @@
   <div class="page">
     <!-- navbar-->
     @if(Route::current()->getName() != 'sale.pos')
-    <header class="container-fluid">
+    <header class="container-fluid app-header">
       <nav class="navbar">
         <a id="toggle-btn" href="#" class="menu-btn"><i class="fa fa-bars"> </i></a>
-
-
 
         <div class="d-flex align-items-center gap-3 mb-3">
           <h5 class="mb-0 fw-semibold">
@@ -215,7 +213,6 @@
              DB: {{ $business_config->db_name ?? '—' }}
           </h5>
       </div>
-
 
         <ul class="nav-menu list-unstyled d-flex flex-md-row align-items-md-center">
           <div class="dropdown">
@@ -319,10 +316,7 @@
           @if($sale_add_permission_active)
           <li class="nav-item"><a class="btn-pos btn-sm" href="{{route('sale.pos') }}"><i class="dripicons-shopping-bag"></i><span> POS</span></a></li>
           @endif
-          <li class="nav-item d-none d-lg-block"><a id="switch-theme" data-toggle="tooltip" title="{{ __('Switch Theme') }}"><i class="dripicons-brightness-max"></i></a></li>
-          @if(config('database.connections.saleprosaas_landlord'))
-          <li class="nav-item"><a target="_blank" href="{{'https://'.env('CENTRAL_DOMAIN').'/contact-for-renewal?id='.$subdomain}}" data-toggle="tooltip" title="{{ __('Renew Subscription') }}"><i class="dripicons-clockwise"></i></a></li>
-          @endif
+          <!-- <li class="nav-item d-none d-lg-block"><a id="switch-theme" data-toggle="tooltip" title="{{ __('Switch Theme') }}"><i class="dripicons-brightness-max"></i></a></li> -->
           <li class="nav-item d-none d-lg-block"><a id="btnFullscreen" data-toggle="tooltip" title="{{ __('Full Screen') }}"><i class="dripicons-expand"></i></a></li>
           @if(\Auth::user()->role_type <= 2) <li class="nav-item"><a href="{{route('cashRegister.index') }}" data-toggle="tooltip" title="{{ __('Cash Register List') }}"><i class="dripicons-archive"></i></a></li>
             @endif
@@ -384,7 +378,7 @@
 
                 </ul>
             </li>
-            <li class="nav-item">
+            <!-- <li class="nav-item">
               <a rel="nofollow" title="{{ __('db.language') }}" data-toggle="tooltip" class="nav-link dropdown-item"><i class="dripicons-web"></i></a>
               <ul class="right-sidebar">
                 @foreach ($languages as $language)
@@ -401,7 +395,7 @@
                   @endif
                 @endif
               </ul>
-            </li>
+            </li> -->
             <li class="nav-item">
               <a rel="nofollow" data-toggle="tooltip" class="nav-link dropdown-item"><i class="dripicons-user"></i> <span>{{ucfirst(Auth::user()->name)}}</span> <i class="fa fa-angle-down"></i>
               </a>
@@ -414,13 +408,13 @@
                   <a href="{{route('setting.general') }}"><i class="dripicons-gear"></i> {{ __('db.settings') }}</a>
                 </li>
                 @endif
-                <li>
+                <!-- <li>
                   <a href="{{url('my-transactions/'.date('Y').'/'.date('m'))}}"><i class="dripicons-swap"></i> {{ __('db.My Transaction') }}</a>
-                </li>
+                </li> -->
                 @if(Auth::user()->role_type != 4)
-                <li>
+                <!-- <li>
                   <a href="{{url('holidays/my-holiday/'.date('Y').'/'.date('m'))}}"><i class="dripicons-vibrate"></i> {{ __('db.My Holiday') }}</a>
-                </li>
+                </li> -->
                 @endif
                 @if($empty_database_permission_active)
                 <li>
@@ -443,7 +437,7 @@
     </header>
     @endif
     <!-- @include('includes.session_message') -->
-    <div style="display:none" id="content" class="animate-bottom">
+    <div style="display:none;background: #f8f9fa" id="content" class="animate-bottom">
       @yield('content')
     </div>
 
@@ -970,6 +964,7 @@
             <?php
             $lims_user_list = \App\Models\User::where([
               ['is_active', true],
+              ['bus_config_id' , session('bus_config_id')],
               ['id', '!=', \Auth::user()->id]
             ])->get();  
             ?>
@@ -1470,6 +1465,33 @@
         });
     });
 </script>
+
+    <script>
+      // Automatically activate sidebar menu based on current URL
+      $(document).ready(function() {
+          var currentUrl = window.location.href;
+          
+          // Loop through each sidebar link
+          $('nav.side-navbar a').each(function() {
+              var linkUrl = $(this).attr('href');
+              
+              // precise match or matching path
+              if (linkUrl === currentUrl || (linkUrl && currentUrl.startsWith(linkUrl) && linkUrl !== '{{url("/dashboard")}}' && linkUrl !== '/')) {
+                  
+                  // Add active class to the link's parent li
+                  $(this).parent().addClass('active');
+
+                  // If it's a submenu item
+                  if ($(this).closest('ul').hasClass('collapse')) {
+                      // Expand the parent ul
+                      $(this).closest('ul').addClass('show');
+                      // Mark the parent dropdown as active and expanded
+                      $(this).closest('ul').siblings('a').attr('aria-expanded', 'true');
+                  }
+              }
+          });
+      });
+    </script>
 </body>
 
 </html>

@@ -208,7 +208,8 @@ class HomeController extends Controller
             
             $total_sale = $sale_query->sum(DB::raw('(grand_total - shipping_cost) / exchange_rate'));
             
-            $invoice_due = Sale::whereDate('created_at', '>=' , $start_date)->where('user_id', Auth::id())->whereDate('created_at', '<=' , $end_date)->whereNull('deleted_at')->sum(DB::raw('(grand_total - paid_amount) / exchange_rate'));
+            // $invoice_due = Sale::whereDate('created_at', '>=' , $start_date)->where('user_id', Auth::id())->whereDate('created_at', '<=' , $end_date)->whereNull('deleted_at')->sum(DB::raw('(grand_total - paid_amount) / exchange_rate'));
+            $invoice_due = Sale::whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->whereNull('deleted_at')->sum(DB::raw('(grand_total - paid_amount) / exchange_rate'));
             
             $expense = Expense::whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->sum('amount');
             
@@ -262,24 +263,60 @@ class HomeController extends Controller
             $month[] = date("F", strtotime($start_date));
             $start = strtotime("+1 month", $start);
         }
+        // // yearly report
+        // $start = strtotime(date("Y") .'-01-01');
+        // $end = strtotime(date("Y") .'-12-31');
+        // while($start < $end)
+        // {
+        //     $start_date = date("Y").'-'.date('m', $start).'-'.'01';
+        //     $end_date = date("Y").'-'.date('m', $start).'-'.date('t', mktime(0, 0, 0, date("m", $start), 1, date("Y", $start)));
+        //     $general_setting = getGeneralSetting();
+        //     if(Auth::user()->role_type > 2 && $general_setting && $general_setting->staff_access == 'own') {
+        //         $sale_amount = Sale::whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->where('user_id', Auth::id())->whereNull('deleted_at')->sum(DB::raw('grand_total / exchange_rate'));
+        //         $purchase_amount = Purchase::whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->where('user_id', Auth::id())->whereNull('deleted_at')->sum(DB::raw('grand_total / exchange_rate'));
+        //     }
+        //     else{
+        //         $sale_amount = Sale::whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->whereNull('deleted_at')->sum(DB::raw('grand_total / exchange_rate'));
+        //         $purchase_amount = Purchase::whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->whereNull('deleted_at')->sum(DB::raw('grand_total / exchange_rate'));
+        //     }
+        //     $yearly_sale_amount[] = number_format((float)$sale_amount, config('decimal'), '.', '');
+        //     $yearly_purchase_amount[] = number_format((float)$purchase_amount, config('decimal'), '.', '');
+        //     $start = strtotime("+1 month", $start);
+        // }
         // yearly report
         $start = strtotime(date("Y") .'-01-01');
         $end = strtotime(date("Y") .'-12-31');
+
+        // Initialize arrays for 4 datasets
+        $yearly_sale_amount = [];
+        $yearly_purchase_amount = [];
+        $yearly_sale_return_amount = [];
+        $yearly_purchase_return_amount = [];
+
         while($start < $end)
         {
             $start_date = date("Y").'-'.date('m', $start).'-'.'01';
             $end_date = date("Y").'-'.date('m', $start).'-'.date('t', mktime(0, 0, 0, date("m", $start), 1, date("Y", $start)));
             $general_setting = getGeneralSetting();
+            
             if(Auth::user()->role_type > 2 && $general_setting && $general_setting->staff_access == 'own') {
                 $sale_amount = Sale::whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->where('user_id', Auth::id())->whereNull('deleted_at')->sum(DB::raw('grand_total / exchange_rate'));
                 $purchase_amount = Purchase::whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->where('user_id', Auth::id())->whereNull('deleted_at')->sum(DB::raw('grand_total / exchange_rate'));
+                $sale_return_amount = Returns::whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->where('user_id', Auth::id())->sum(DB::raw('grand_total / exchange_rate'));
+                $purchase_return_amount = ReturnPurchase::whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->where('user_id', Auth::id())->sum(DB::raw('grand_total / exchange_rate'));
             }
             else{
                 $sale_amount = Sale::whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->whereNull('deleted_at')->sum(DB::raw('grand_total / exchange_rate'));
                 $purchase_amount = Purchase::whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->whereNull('deleted_at')->sum(DB::raw('grand_total / exchange_rate'));
+                $sale_return_amount = Returns::whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->sum(DB::raw('grand_total / exchange_rate'));
+                $purchase_return_amount = ReturnPurchase::whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->sum(DB::raw('grand_total / exchange_rate'));
             }
+            
             $yearly_sale_amount[] = number_format((float)$sale_amount, config('decimal'), '.', '');
             $yearly_purchase_amount[] = number_format((float)$purchase_amount, config('decimal'), '.', '');
+            $yearly_sale_return_amount[] = number_format((float)$sale_return_amount, config('decimal'), '.', '');
+            $yearly_purchase_return_amount[] = number_format((float)$purchase_return_amount, config('decimal'), '.', '');
+            
             $start = strtotime("+1 month", $start);
         }
         //making strict mode true for this query
@@ -294,7 +331,8 @@ class HomeController extends Controller
             $versionUpgradeData = [];
         }
 
-        return view('backend.index', compact('revenue','purchase_due','total_sale','invoice_due', 'purchase', 'expense', 'return', 'purchase_return', 'profit', 'payment_recieved', 'payment_sent', 'month', 'yearly_sale_amount', 'yearly_purchase_amount', 'versionUpgradeData'));
+        // return view('backend.index', compact('revenue','purchase_due','total_sale','invoice_due', 'purchase', 'expense', 'return', 'purchase_return', 'profit', 'payment_recieved', 'payment_sent', 'month', 'yearly_sale_amount', 'yearly_purchase_amount', 'versionUpgradeData'));
+        return view('backend.index', compact('revenue','purchase_due','total_sale','invoice_due', 'purchase', 'expense', 'return', 'purchase_return', 'profit', 'payment_recieved', 'payment_sent', 'month', 'yearly_sale_amount', 'yearly_purchase_amount', 'yearly_sale_return_amount', 'yearly_purchase_return_amount', 'versionUpgradeData'));
     }
 
     public function newVersionReleasePage()
@@ -477,15 +515,87 @@ class HomeController extends Controller
 
     public function recentPayment()
     {
+        // $general_setting = getGeneralSetting();
+        // if(Auth::user()->role_type > 2 && $general_setting && $general_setting->staff_access == 'own')
+        // {
+        //     $recent_payment = Payment::select('id','payment_reference','amount','exchange_rate','paying_method','created_at','user_id')->orderBy('id', 'desc')->where('user_id', Auth::id())->take(5)->get();
+        //     return response()->json($recent_payment);
+        // }
+        // else
+        // {
+        //     $recent_payment = Payment::select('id','payment_reference','amount','exchange_rate','paying_method','created_at')->orderBy('id', 'desc')->take(5)->get();
+        //     return response()->json($recent_payment);
+        // }
+
         $general_setting = getGeneralSetting();
-        if(Auth::user()->role_type > 2 && $general_setting && $general_setting->staff_access == 'own')
+
+        if (Auth::user()->role_type > 2 && $general_setting && $general_setting->staff_access == 'own')
         {
-            $recent_payment = Payment::select('id','payment_reference','amount','exchange_rate','paying_method','created_at','user_id')->orderBy('id', 'desc')->where('user_id', Auth::id())->take(5)->get();
+            // Only show logged-in user's payments
+            $recent_payment = DB::table('payments')
+                ->leftJoin('purchases', 'purchases.id', '=', 'payments.purchase_id')
+                ->leftJoin('suppliers', 'suppliers.id', '=', 'purchases.supplier_id')
+                ->leftJoin('sales', 'sales.id', '=', 'payments.sale_id')
+                ->leftJoin('customers', 'customers.id', '=', 'sales.customer_id')
+                ->select(
+                    'payments.id',
+                    'payments.payment_reference',
+                    'payments.amount',
+                    'payments.exchange_rate',
+                    'payments.paying_method',
+                    'payments.created_at',
+                    'payments.user_id',
+
+                    // Identify payment type
+                    DB::raw("
+                        CASE 
+                            WHEN payments.purchase_id IS NOT NULL THEN 'purchase'
+                            WHEN payments.sale_id IS NOT NULL THEN 'sale'
+                            ELSE 'other'
+                        END AS payment_type
+                    "),
+
+                    // Party Name (Customer or Supplier)
+                    DB::raw("COALESCE(customers.name, suppliers.name) AS party_name"),
+
+                    // Related Reference (Sale Ref or Purchase Ref)
+                    DB::raw("COALESCE(sales.reference_no, purchases.reference_no) AS related_reference")
+                )
+                ->where('payments.user_id', Auth::id())
+                ->orderBy('payments.id', 'desc')
+                ->take(5)
+                ->get();
+
             return response()->json($recent_payment);
-        }
-        else
-        {
-            $recent_payment = Payment::select('id','payment_reference','amount','exchange_rate','paying_method','created_at')->orderBy('id', 'desc')->take(5)->get();
+        }else{
+            // Show latest payments for all users
+            $recent_payment = DB::table('payments')
+                ->leftJoin('purchases', 'purchases.id', '=', 'payments.purchase_id')
+                ->leftJoin('suppliers', 'suppliers.id', '=', 'purchases.supplier_id')
+                ->leftJoin('sales', 'sales.id', '=', 'payments.sale_id')
+                ->leftJoin('customers', 'customers.id', '=', 'sales.customer_id')
+                ->select(
+                    'payments.id',
+                    'payments.payment_reference',
+                    'payments.amount',
+                    'payments.exchange_rate',
+                    'payments.paying_method',
+                    'payments.created_at',
+
+                    DB::raw("
+                        CASE 
+                            WHEN payments.purchase_id IS NOT NULL THEN 'purchase'
+                            WHEN payments.sale_id IS NOT NULL THEN 'sale'
+                            ELSE 'other'
+                        END AS payment_type
+                    "),
+                    DB::raw("COALESCE(customers.name, suppliers.name) AS party_name"),
+                    DB::raw("COALESCE(sales.reference_no, purchases.reference_no) AS related_reference")
+                )
+                ->orderBy('payments.id', 'desc')
+                ->take(5)
+                ->get();
+
             return response()->json($recent_payment);
         }
     }

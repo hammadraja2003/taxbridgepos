@@ -12,6 +12,8 @@ use Stancl\Tenancy\Events\TenancyBootstrapped;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\Log;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -41,54 +43,6 @@ class AppServiceProvider extends ServiceProvider
             return;
         }
 
-        // $translationLogic = function () {
-        //     try {
-        //         if (!DB::connection()->getDatabaseName()) {
-        //             return;
-        //         }
-        //     } catch (\Exception $e) {
-        //         // Skip logic if DB connection fails
-        //         return;
-        //     }
-
-        //     try {
-        //         // if (isset($_COOKIE['language'])) {
-        //         //     App::setLocale($_COOKIE['language']);
-        //         // } elseif (Schema::hasTable('languages')) {
-        //         //     $language = DB::table('languages')->where('is_default', true)->first();
-        //         //     App::setLocale($language->language ?? 'en');
-        //         // } else {
-        //         //     App::setLocale('en');
-        //         // }
-        //         // In app/Providers/AppServiceProvider.php inside $translationLogic
-
-        //         if (isset($_COOKIE['language'])) {
-        //             App::setLocale($_COOKIE['language']);
-        //         } else {
-        //             // Use the Model so it respects '$connection = 'tenant''
-        //             // This will attempt to connect to the Tenant DB.
-        //             // If the connection is not ready, it will be caught by the catch block below.
-        //             $language = \App\Models\Language::where('is_default', true)->first();
-        //             App::setLocale($language->language ?? 'en');
-        //         }
-
-        //         if (Schema::hasTable('translations')) {
-        //             $currentLocale = App::getLocale();
-
-        //             $translations = Cache::rememberForever("translations_{$currentLocale}", function () use ($currentLocale) {
-        //                 return \App\Models\Translation::getTrnaslactionsByLocale($currentLocale);
-        //             });
-
-        //             if (!empty($translations)) {
-        //                 app('translator')->addLines($translations, $currentLocale);
-        //             }
-        //         }
-        //     } catch (\Exception $e) {
-        //         // Optional: log the error
-        //         // Log::error($e->getMessage());
-        //     }
-        // };
-
         $permissionLogic = function () {
             Blade::if('can', function ($permission) {
                 $user = Auth::user();
@@ -110,47 +64,32 @@ class AppServiceProvider extends ServiceProvider
                 return in_array($permission, $permissions);
             });
         };
+        $permissionLogic();
 
-        // if (config('database.connections.saleprosaas_landlord')) {
-        //     ///new code for superadmin//
-        //     if (!app()->bound('tenancy')) {
-        //         $locale = null;
-        //         if (config('database.connections.mysql.database') && Schema::hasTable('languages')) {
-        //             // Fallback to default language
-        //             $default_language = DB::table('languages')->where('is_default', true)->first();
-        //             $locale = $default_language->code ?? 'en';
-        //         } else {
-        //             $locale = 'en';
-        //         }
+        //only check environment is local
+        if (App::environment('local')) {
+            // Log missing translations
+            Lang::handleMissingKeysUsing(function ($key, $replacements, $locale) {
+                // Check if the key already exists in the database
+                $exists = DB::table('translations')->where('key', $key)->exists();
 
-        //         // Finally, set the app locale
-        //         App::setLocale($locale);
+                if (!$exists) {
+                    // Log only if key doesn't exist in DB
+                    Log::warning("Missing translation key (not in DB): {$key}");
 
-        //         // Check if language file exists
-        //         $langFile = resource_path("lang/{$locale}.php");
-        //         if (!file_exists($langFile)) {
-        //             $langFile = resource_path("lang/master.php");
-        //         }
+                    // OPTIONAL: insert into DB if you want to keep track automatically
+                    /*
+                    DB::table('translations')->insertOrIgnore([
+                        'key' => $key,
+                        'php_code' => $key,
+                        'locale' => $locale, // optional
+                    ]);
+                    */
+                }
 
-        //         $transData = include $langFile; // loads the array
-        //         $translations = [];
-        //         foreach ($transData as $group => $items) {
-        //             foreach ($items as $key => $value) {
-        //                 $translations["{$group}.{$key}"] = $value;
-        //             }
-        //         }
-        //         // Merge translations into Laravel's translator
-        //         app('translator')->addLines($translations, $locale);
-        //     }
-        //     ///new code for superadmin//
-
-        //     Event::listen(TenancyBootstrapped::class, function () use ($translationLogic, $permissionLogic) {
-        //         $translationLogic();
-        //         $permissionLogic();
-        //     });
-        // } else {
-            // $translationLogic();
-            $permissionLogic();
-        // }
+                // Return key so app doesn't crash
+                return $key;
+            });
+        }
     }
 }

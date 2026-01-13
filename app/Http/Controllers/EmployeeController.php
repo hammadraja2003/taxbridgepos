@@ -59,7 +59,7 @@ class EmployeeController extends Controller
             $lims_designation_list = Designation::active()->get();
 
             $numberOfEmployee = Employee::where('is_active', true)->count();
-            $numberOfUserAccount = User::where('is_active', true)->count();
+            $numberOfUserAccount = User::where('is_active', true)->where('bus_config_id', session('bus_config_id'))->count();
 
             $general_setting = \App\Models\GeneralSetting::first();
             if(in_array('project', explode(',', $general_setting->modules))){

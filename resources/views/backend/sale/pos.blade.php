@@ -25,7 +25,7 @@
     .pos-page [class=row] {margin-left:-10px;margin-right:-10px}
     .pos-page [class*=col-] {padding: 0 10px}
     .pos-page #myTable [class*=col-] {padding: .5rem}
-    .pos-page #myTable tr th {background: #d6deff;color:#303030}
+    .pos-page #myTable tr th {background: #5579a4;color:#fff}
     .product-btns{margin:0 -5px}
     .edit-product{white-space: break-spaces;font-size:13px;font-weight:500;text-align:left;padding:0 0!important}
     .edit-product i{color:#00cec9}
@@ -109,7 +109,7 @@
     nav.navbar a.menu-btn {display: flex;justify-content: center;align-items: center;}
     nav.navbar a {align-items: center;display: flex;}
     .right-sidebar li a svg{margin-right: 10px}
-    .nav-menu svg {width: 20px;height: 20px; stroke: #7c5cc4;vertical-align: middle}
+    .nav-menu svg {width: 20px;height: 20px; stroke: #5579a4;vertical-align: middle}
     .btn svg {vertical-align: middle; width: 16px}
     button.close svg {vertical-align: middle; width: 26px}
     .bootstrap-select.btn-group > .dropdown-toggle{height: 37px}
@@ -426,12 +426,9 @@
                 </div>
                 <div id="collapseProducts" class="">
                     <div class="d-flex justify-content-between product-btns">
-
-                        <button class="btn btn-block btn-primary mt-0 ml-1 mr-1" id="category-filter">{{__('db.category')}}</button>
-
-                        <button class="btn btn-block btn-info mt-0 ml-1 mr-1" id="brand-filter">{{__('db.Brand')}}</button>
-
-                        <button class="btn btn-block btn-danger mt-0 ml-1 mr-1" id="featured-filter">{{__('db.Featured')}}</button>
+                        <button class="btn btn-block btn-primary mt-0 ml-0 mr-0" style="border-radius:0px;border-right:1px solid white;" id="category-filter">{{__('db.category')}}</button>
+                        <button class="btn btn-block btn-primary mt-0 ml-0 mr-0" style="border-radius:0px;border-right:1px solid white;" id="brand-filter">{{__('db.Brand')}}</button>
+                        <button class="btn btn-block btn-primary mt-0 ml-0 mr-0" style="border-radius:0px;border-right:1px solid white;" id="featured-filter">{{__('db.Featured')}}</button>
                     </div>
                 </div>
                 <div class="row">
@@ -767,7 +764,7 @@
                     <div class="col-12 pl-0 pr-0">
                         <div class="search-box form-group mb-2">
                             <div class="input-group pos">
-                                <input style="border: 1px solid #7c5cc4;" type="text" name="product_code_name" id="product-search-input" placeholder="Scan/Search product by name/code/IMEI (at least 3 characters)" class="form-control" autofocus />
+                                <input style="border: 1px solid #7c5cc4;margin-right: 10px;" type="text" name="product_code_name" id="product-search-input" placeholder="Scan/Search product by name/code/IMEI (at least 3 characters)" class="form-control" autofocus />
                                 <button type="button" class="btn btn-primary" onclick="barcode()"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-upc" viewBox="0 0 16 16"><path d="M3 4.5a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0z"/></svg></button>
                             </div>
                             <div id="product-results-container">

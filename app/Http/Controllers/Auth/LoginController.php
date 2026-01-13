@@ -42,7 +42,7 @@ class LoginController extends Controller
         else
             $theme = 'light';
 
-        $numberOfUserAccount = \App\Models\User::where('is_active', true)->count();
+        $numberOfUserAccount = \App\Models\User::where('is_active', true)->where('bus_config_id', session('bus_config_id'))->count();
         return view('backend.auth.login', compact('theme', 'numberOfUserAccount'));
     }
 

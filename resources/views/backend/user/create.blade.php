@@ -93,7 +93,7 @@
                                         <label>{{__('db.Role')}} *</strong></label>
                                         <select name="role_id" required class="selectpicker form-control" data-live-search="true" data-live-search-style="begins" title="Select Role...">
                                           @foreach($lims_role_list as $role)
-                                              <option value="{{$role->id}}">{{$role->name}}</option>
+                                              <option value="{{$role->id}}" data-role-type="{{$role->role_type}}">{{$role->name}}</option>
                                           @endforeach
                                         </select>
                                     </div>
@@ -189,7 +189,10 @@
     });
 
     $('select[name="role_id"]').on('change', function() {
-        if($(this).val() == 5) {
+        var roleType = $('select[name="role_id"] option:selected').data('role-type');
+        console.log(roleType);
+    
+        if(roleType == 4) {
             $('#biller-id').hide(300);
             $('#warehouseId').hide(300);
             $('.customer-section').show(300);
@@ -197,7 +200,7 @@
             $('select[name="warehouse_id"]').prop('required',false);
             $('select[name="biller_id"]').prop('required',false);
         }
-        else if($(this).val() > 2 && $(this).val() != 5) {
+        else if(roleType > 2 && roleType != 4) {
             $('select[name="warehouse_id"]').prop('required',true);
             $('select[name="biller_id"]').prop('required',true);
             $('#biller-id').show(300);

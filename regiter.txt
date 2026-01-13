@@ -1,0 +1,18 @@
+Sale Status
+1 = Completed
+2 = Pending
+3 = Draft
+4 = Returned
+5 = Processing
+6 = Cooked
+7 = Served
+
+Payment Status
+1 = Pending
+2 = Due
+3 = Partial
+4 = Paid
+
+Quotation_status
+1 = Pending
+2 = Sent

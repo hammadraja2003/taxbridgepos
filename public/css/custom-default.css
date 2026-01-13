@@ -16,6 +16,12 @@
     --border-color-dark: #3b4253;
     --text-color-dark: #d0d2d6;
     --text-color-light: #5e5873;
+
+    --pdf-button-bg-color: #17a2b8;
+    --excel-button-bg-color: #4470c7;
+    --csv-button-bg-color: #58c230;
+    --print-button-bg-color: #2196f3;
+    --delete-button-bg-color: #dc3545;
 }
 
 .details-note,
@@ -596,7 +602,7 @@ nav.navbar .nav-item {
 .dt-buttons .buttons-delete {
     line-height: 1;
 }
-.dt-buttons button {
+.dt-buttons {
     padding: 0.25rem 0.75rem;
 }
 .dt-button-collection.dropdown-menu {
@@ -609,19 +615,24 @@ nav.navbar .nav-item {
     line-height: 30px;
 }
 .buttons-pdf {
-    background: #ff7588;
+    background: var(--pdf-button-bg-color);
     border: none;
 }
 .buttons-csv {
-    background: #ffc107;
+    background: var(--csv-button-bg-color);
     border: none;
 }
+.buttons-excel {
+    background: var(--excel-button-bg-color);
+    border: none;
+    padding: 6px 10px !important;
+}
 .buttons-print {
-    background: #2196f3;
+    background: var(--print-button-bg-color);
     border: none;
 }
 .buttons-delete {
-    background: #eb543a;
+    background: var(--delete-button-bg-color);
     border: none;
 }
 .buttons-collection {
@@ -867,11 +878,11 @@ div.has-error > .form-text {
     line-height: 2;
 }
 .payment-amount {
-    background-color: #d6deff;
+    background-color: #5579a4;
     text-align: center;
 }
 .payment-amount h2 {
-    color: var(--primary-color);
+    color: #fff;
     font-size: 1.5rem;
     line-height: 2;
     margin-bottom: 0;
@@ -1040,4 +1051,33 @@ div.has-error > .form-text {
 }
 .ui-helper-hidden-accessible {
     display: none;
+}
+
+/* Siderbar Custom CSS */
+div#mCSB_1 {
+    background: #5579a4;
+}
+.side-navbar li a {
+    color: white;
+}
+.side-navbar li a i {
+    color: white !important;
+}
+.side-navbar li a:focus,
+.side-navbar li a[aria-expanded="true"],
+.side-navbar li.active > a {
+    color: #fff !important;
+}
+.side-navbar .collapse li a {
+    color: var(--primary-color) !important;
+}
+.side-navbar .collapse .active {
+    background: #5579a4 !important;
+    border-radius: 10px;
+}
+.side-navbar .collapse .active > a {
+    color: #fff !important;
+}
+.app-header {
+    box-shadow: 4px 1px 15px #ddd;
 }

@@ -50,28 +50,34 @@
 
     <div id="ledger-summery" class="row mt-3 text-center d-none">
 
-        <div class="col-md-3">
+        <div class="col-md-2">
             <div class="p-2 border rounded bg-light">
                 <strong>Opening Balance</strong><br>
                 <h5>{{ number_format($opening_balance, 2) }}</h5>
             </div>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-2">
             <div class="p-2 border rounded bg-light">
                 <strong>Total Sales</strong><br>
                 <h5>{{ number_format($total_sales, 2) }}</h5>
             </div>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-2">
             <div class="p-2 border rounded bg-light">
                 <strong>Total Paid</strong><br>
                 <h5>{{ number_format($total_paid, 2) }}</h5>
             </div>
         </div>
+        <div class="col-md-2">
+            <div class="p-2 border rounded bg-light">
+                <strong>Total Return</strong><br>
+                <h5>{{ number_format($returnAmount, 2) }}</h5>
+            </div>
+        </div>
 
-        <div class="col-md-3">
+        <div class="col-md-2">
             <div class="p-2 border rounded bg-light">
                 <strong>Balance Due</strong><br>
                 <h5 class="text-danger">{{ number_format($balance_due, 2) }}</h5>
@@ -233,10 +239,10 @@ $(function () {
                         <a href="javascript:void(0)" class="btn btn-sm btn-info view-sale" data-id="${data}">
                             <i class="dripicons-preview"></i>
                         </a>
-                        <a href="/sales/${data}/edit" class="btn btn-sm btn-warning">
-                            <i class="dripicons-document-edit"></i>
-                        </a>
                     `;
+                    // <a href="/sales/${data}/edit" class="btn btn-sm btn-warning">
+                    //         <i class="dripicons-document-edit"></i>
+                    //     </a>
                 },
                 orderable: false,
                 searchable: false

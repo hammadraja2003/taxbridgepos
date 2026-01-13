@@ -235,7 +235,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>{{__('db.Daily Sale Objective')}}</strong></label> <i class="dripicons-question" data-toggle="tooltip" title="{{__('db.Minimum qty which must be sold in a day If not, you will be notified on dashboard But you have to set up the cron job properly for that contact support in that regard')}}"></i>
+                                        <label>{{__('db.Daily Sale Objective')}}</strong></label> <i class="dripicons-question" data-toggle="tooltip" title="Minimum qty which must be sold in a day If not, you will be notified on dashboard But you have to set up the cron job properly for that contact support in that regard"></i>
                                         <input type="number" name="daily_sale_objective" class="form-control" step="any">
                                     </div>
                                 </div>

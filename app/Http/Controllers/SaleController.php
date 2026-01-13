@@ -3036,49 +3036,139 @@ class SaleController extends Controller
                     $old_product_qty = $old_product_qty * $lims_sale_unit_data->operation_value;
                 else
                     $old_product_qty = $old_product_qty / $lims_sale_unit_data->operation_value;
+                // if($product_sale_data->variant_id) {
+                //     $lims_product_variant_data = ProductVariant::select('id', 'qty')->FindExactProduct($product_sale_data->product_id, $product_sale_data->variant_id)->first();
+                //     $lims_product_warehouse_data = Product_Warehouse::FindProductWithVariant($product_sale_data->product_id, $product_sale_data->variant_id, $lims_sale_data->warehouse_id)
+                //     ->first();
+                //     $old_product_variant_id[$key] = $lims_product_variant_data->id;
+                //     $lims_product_variant_data->qty += $old_product_qty;
+                //     $lims_product_variant_data->save();
+                // }
                 if($product_sale_data->variant_id) {
                     $lims_product_variant_data = ProductVariant::select('id', 'qty')->FindExactProduct($product_sale_data->product_id, $product_sale_data->variant_id)->first();
+                    
+                    if(!$lims_product_variant_data) {
+                        \Log::warning("Product variant not found when restoring old sale. Product ID: {$product_sale_data->product_id}, Variant ID: {$product_sale_data->variant_id}");
+                        continue; // Skip this product
+                    }
+                    
                     $lims_product_warehouse_data = Product_Warehouse::FindProductWithVariant($product_sale_data->product_id, $product_sale_data->variant_id, $lims_sale_data->warehouse_id)
                     ->first();
+                    
+                    if(!$lims_product_warehouse_data) {
+                        \Log::warning("Product warehouse not found for variant when restoring old sale. Product ID: {$product_sale_data->product_id}, Variant ID: {$product_sale_data->variant_id}, Warehouse ID: {$lims_sale_data->warehouse_id}");
+                        continue; // Skip this product
+                    }
+                    
                     $old_product_variant_id[$key] = $lims_product_variant_data->id;
                     $lims_product_variant_data->qty += $old_product_qty;
                     $lims_product_variant_data->save();
                 }
+                // elseif($product_sale_data->product_batch_id) {
+                //     $lims_product_warehouse_data = Product_Warehouse::where([
+                //         ['product_id', $product_sale_data->product_id],
+                //         ['product_batch_id', $product_sale_data->product_batch_id],
+                //         ['warehouse_id', $lims_sale_data->warehouse_id]
+                //     ])->first();
+
+                //     $product_batch_data = ProductBatch::find($product_sale_data->product_batch_id);
+                //     $product_batch_data->qty += $old_product_qty;
+                //     $product_batch_data->save();
+                // }
                 elseif($product_sale_data->product_batch_id) {
                     $lims_product_warehouse_data = Product_Warehouse::where([
                         ['product_id', $product_sale_data->product_id],
                         ['product_batch_id', $product_sale_data->product_batch_id],
                         ['warehouse_id', $lims_sale_data->warehouse_id]
                     ])->first();
+                    
+                    if(!$lims_product_warehouse_data) {
+                        \Log::warning("Product warehouse not found for batch when restoring old sale. Product ID: {$product_sale_data->product_id}, Batch ID: {$product_sale_data->product_batch_id}, Warehouse ID: {$lims_sale_data->warehouse_id}");
+                        continue; // Skip this product
+                    }
 
                     $product_batch_data = ProductBatch::find($product_sale_data->product_batch_id);
+                    
+                    if(!$product_batch_data) {
+                        \Log::warning("Product batch not found when restoring old sale. Batch ID: {$product_sale_data->product_batch_id}");
+                        continue; // Skip this product
+                    }
+                    
                     $product_batch_data->qty += $old_product_qty;
                     $product_batch_data->save();
                 }
-                else
+                // else
+                //     $lims_product_warehouse_data = Product_Warehouse::FindProductWithoutVariant($product_sale_data->product_id, $lims_sale_data->warehouse_id)
+                //     ->first();
+                // $lims_product_data->qty += $old_product_qty;
+                // $lims_product_warehouse_data->qty += $old_product_qty;
+                else {
                     $lims_product_warehouse_data = Product_Warehouse::FindProductWithoutVariant($product_sale_data->product_id, $lims_sale_data->warehouse_id)
                     ->first();
+                    
+                    if(!$lims_product_warehouse_data) {
+                        \Log::warning("Product warehouse not found when restoring old sale. Product ID: {$product_sale_data->product_id}, Warehouse ID: {$lims_sale_data->warehouse_id}");
+                        continue; // Skip this product
+                    }
+                }
+
                 $lims_product_data->qty += $old_product_qty;
+
+                if(!$lims_product_warehouse_data) {
+                    \Log::warning("Product warehouse data is null at line 3062 for product ID: {$product_sale_data->product_id}");
+                    continue; // Skip to next product
+                }
+
                 $lims_product_warehouse_data->qty += $old_product_qty;
 
                 //returning imei number if exist
+                // if($product_sale_data->imei_number && !str_contains($product_sale_data->imei_number, "null")) {
+                // // if(!str_contains($product_sale_data->imei_number, "null")) {
+                //     if($lims_product_warehouse_data->imei_number)
+                //         $lims_product_warehouse_data->imei_number .= ',' . $product_sale_data->imei_number;
+                //     else
+                //         $lims_product_warehouse_data->imei_number = $product_sale_data->imei_number;
+                // }
+                //returning imei number if exist
                 if($product_sale_data->imei_number && !str_contains($product_sale_data->imei_number, "null")) {
-                // if(!str_contains($product_sale_data->imei_number, "null")) {
-                    if($lims_product_warehouse_data->imei_number)
-                        $lims_product_warehouse_data->imei_number .= ',' . $product_sale_data->imei_number;
-                    else
-                        $lims_product_warehouse_data->imei_number = $product_sale_data->imei_number;
+                    if($lims_product_warehouse_data) {
+                        if($lims_product_warehouse_data->imei_number)
+                            $lims_product_warehouse_data->imei_number .= ',' . $product_sale_data->imei_number;
+                        else
+                            $lims_product_warehouse_data->imei_number = $product_sale_data->imei_number;
+                    }
                 }
 
+                // $lims_product_data->save();
+                // $lims_product_warehouse_data->save();
                 $lims_product_data->save();
-                $lims_product_warehouse_data->save();
+
+                if($lims_product_warehouse_data) {
+                    $lims_product_warehouse_data->save();
+                } else {
+                    \Log::warning("Product warehouse data is null, skipping save when restoring old sale for product ID: {$product_sale_data->product_id}");
+                }
             }
+            // else {
+            //     if($product_sale_data->variant_id) {
+            //         $lims_product_variant_data = ProductVariant::select('id', 'qty')->FindExactProduct($product_sale_data->product_id, $product_sale_data->variant_id)->first();
+            //         $lims_product_warehouse_data = Product_Warehouse::FindProductWithVariant($product_sale_data->product_id, $product_sale_data->variant_id, $lims_sale_data->warehouse_id)
+            //         ->first();
+            //         $old_product_variant_id[$key] = $lims_product_variant_data->id;
+            //     }
+            // }
             else {
                 if($product_sale_data->variant_id) {
                     $lims_product_variant_data = ProductVariant::select('id', 'qty')->FindExactProduct($product_sale_data->product_id, $product_sale_data->variant_id)->first();
-                    $lims_product_warehouse_data = Product_Warehouse::FindProductWithVariant($product_sale_data->product_id, $product_sale_data->variant_id, $lims_sale_data->warehouse_id)
-                    ->first();
-                    $old_product_variant_id[$key] = $lims_product_variant_data->id;
+                    
+                    if($lims_product_variant_data) {
+                        $lims_product_warehouse_data = Product_Warehouse::FindProductWithVariant($product_sale_data->product_id, $product_sale_data->variant_id, $lims_sale_data->warehouse_id)
+                        ->first();
+                        
+                        if($lims_product_variant_data) {
+                            $old_product_variant_id[$key] = $lims_product_variant_data->id;
+                        }
+                    }
                 }
             }
 
@@ -3140,15 +3230,34 @@ class SaleController extends Controller
             if($sale_unit[$key] != 'n/a') {
                 $lims_sale_unit_data = Unit::where('unit_name', $sale_unit[$key])->first();
                 $sale_unit_id = $lims_sale_unit_data->id;
+                // if($lims_product_data->is_variant) {
+                //     $lims_product_variant_data = ProductVariant::select('id', 'variant_id', 'qty')->FindExactProductWithCode($pro_id, $product_code[$key])->first();
+                //     $lims_product_warehouse_data = Product_Warehouse::FindProductWithVariant($pro_id, $lims_product_variant_data->variant_id, $data['warehouse_id'])
+                //     ->first();
+                //     $product_sale['variant_id'] = $lims_product_variant_data->variant_id;
+                //     $product_variant_id[$key] = $lims_product_variant_data->id;
+                // }
                 if($lims_product_data->is_variant) {
                     $lims_product_variant_data = ProductVariant::select('id', 'variant_id', 'qty')->FindExactProductWithCode($pro_id, $product_code[$key])->first();
+                    
+                    if(!$lims_product_variant_data) {
+                        throw new \Exception("Product variant not found for product code: {$product_code[$key]}");
+                    }
+                    
                     $lims_product_warehouse_data = Product_Warehouse::FindProductWithVariant($pro_id, $lims_product_variant_data->variant_id, $data['warehouse_id'])
                     ->first();
+                    
+                    if(!$lims_product_warehouse_data) {
+                        throw new \Exception("Product warehouse record not found for variant product ID: {$pro_id}, warehouse ID: {$data['warehouse_id']}");
+                    }
+                    
                     $product_sale['variant_id'] = $lims_product_variant_data->variant_id;
                     $product_variant_id[$key] = $lims_product_variant_data->id;
                 }
                 else {
                     $product_variant_id[$key] = Null;
+                    // Initialize $lims_product_warehouse_data for non-variant products
+                    $lims_product_warehouse_data = null;
                 }
 
                 if($data['sale_status'] == 1) {
@@ -3165,40 +3274,95 @@ class SaleController extends Controller
                         $lims_product_variant_data->qty -= $new_product_qty;
                         $lims_product_variant_data->save();
                     }
+                    // elseif($product_batch_id != null && isset($product_batch_id[$key])) {
+                    //     $lims_product_warehouse_data = Product_Warehouse::where([
+                    //         ['product_id', $pro_id],
+                    //         ['product_batch_id', $product_batch_id[$key] ],
+                    //         ['warehouse_id', $data['warehouse_id'] ]
+                    //     ])->first();
+
+                    //     $product_batch_data = ProductBatch::find($product_batch_id[$key]);
+                    //     $product_batch_data->qty -= $new_product_qty;
+                    //     $product_batch_data->save();
+                    // }
                     elseif($product_batch_id != null && isset($product_batch_id[$key])) {
                         $lims_product_warehouse_data = Product_Warehouse::where([
                             ['product_id', $pro_id],
                             ['product_batch_id', $product_batch_id[$key] ],
                             ['warehouse_id', $data['warehouse_id'] ]
                         ])->first();
+                        
+                        if(!$lims_product_warehouse_data) {
+                            throw new \Exception("Product warehouse record not found for batch product ID: {$pro_id}, batch ID: {$product_batch_id[$key]}, warehouse ID: {$data['warehouse_id']}");
+                        }
 
                         $product_batch_data = ProductBatch::find($product_batch_id[$key]);
+                        
+                        if(!$product_batch_data) {
+                            throw new \Exception("Product batch not found for batch ID: {$product_batch_id[$key]}");
+                        }
+                        
                         $product_batch_data->qty -= $new_product_qty;
                         $product_batch_data->save();
                     }
+                    // else {
+                    //     $lims_product_warehouse_data = Product_Warehouse::FindProductWithoutVariant($pro_id, $data['warehouse_id'])
+                    //     ->first();
+                    // }
                     else {
                         $lims_product_warehouse_data = Product_Warehouse::FindProductWithoutVariant($pro_id, $data['warehouse_id'])
                         ->first();
+                        
+                        if(!$lims_product_warehouse_data) {
+                            throw new \Exception("Product warehouse record not found for product ID: {$pro_id}, warehouse ID: {$data['warehouse_id']}");
+                        }
                     }
+                    // $lims_product_data->qty -= $new_product_qty;
+                    // $lims_product_warehouse_data->qty -= $new_product_qty;
                     $lims_product_data->qty -= $new_product_qty;
+
+                    if(!$lims_product_warehouse_data) {
+                        throw new \Exception("Product warehouse data is null at line 3184 for product ID: {$pro_id}");
+                    }
+
                     $lims_product_warehouse_data->qty -= $new_product_qty;
 
                     //deduct imei number if available
+                    // if($imei_number[$key] && !str_contains($imei_number[$key], "null")) {
+                    // // if(!str_contains($imei_number[$key], "null")) {
+                    //     $imei_numbers = explode(",", $imei_number[$key]);
+                    //     $all_imei_numbers = explode(",", $lims_product_warehouse_data->imei_number);
+                    //     foreach ($imei_numbers as $number) {
+                    //         if (($j = array_search($number, $all_imei_numbers)) !== false) {
+                    //             unset($all_imei_numbers[$j]);
+                    //         }
+                    //     }
+                    //     $lims_product_warehouse_data->imei_number = implode(",", $all_imei_numbers);
+                    //     $lims_product_warehouse_data->save();
+                    // }
                     if($imei_number[$key] && !str_contains($imei_number[$key], "null")) {
-                    // if(!str_contains($imei_number[$key], "null")) {
-                        $imei_numbers = explode(",", $imei_number[$key]);
-                        $all_imei_numbers = explode(",", $lims_product_warehouse_data->imei_number);
-                        foreach ($imei_numbers as $number) {
-                            if (($j = array_search($number, $all_imei_numbers)) !== false) {
-                                unset($all_imei_numbers[$j]);
+                        if($lims_product_warehouse_data && $lims_product_warehouse_data->imei_number) {
+                            $imei_numbers = explode(",", $imei_number[$key]);
+                            $all_imei_numbers = explode(",", $lims_product_warehouse_data->imei_number);
+                            foreach ($imei_numbers as $number) {
+                                if (($j = array_search($number, $all_imei_numbers)) !== false) {
+                                    unset($all_imei_numbers[$j]);
+                                }
                             }
+                            $lims_product_warehouse_data->imei_number = implode(",", $all_imei_numbers);
+                            $lims_product_warehouse_data->save();
                         }
-                        $lims_product_warehouse_data->imei_number = implode(",", $all_imei_numbers);
-                        $lims_product_warehouse_data->save();
                     }
 
+                    // $lims_product_data->save();
+                    // $lims_product_warehouse_data->save();
                     $lims_product_data->save();
-                    $lims_product_warehouse_data->save();
+
+                    if($lims_product_warehouse_data) {
+                        $lims_product_warehouse_data->save();
+                    } else {
+                        \Log::warning("Product warehouse data is null, skipping save for product ID: {$pro_id}");
+                    }
                 }
             }
             else
@@ -5327,7 +5491,7 @@ class SaleController extends Controller
         // ------------------------------------------
         // FAST PREFIX SEARCH ON PRODUCT CODE
         // ------------------------------------------
-        $byCode = Product::leftJoin('product_warehouse', function($j) use ($warehouse_id){
+        $byCode = Product::Join('product_warehouse', function($j) use ($warehouse_id){
                 $j->on('products.id','=','product_warehouse.product_id')
                 ->where('product_warehouse.warehouse_id',$warehouse_id);
             })
@@ -5352,7 +5516,7 @@ class SaleController extends Controller
 
         if ($byCode->isEmpty()) {
 
-            $byName = Product::leftJoin('product_warehouse', function($j) use ($warehouse_id){
+            $byName = Product::Join('product_warehouse', function($j) use ($warehouse_id){
                     $j->on('products.id','=','product_warehouse.product_id')
                     ->where('product_warehouse.warehouse_id',$warehouse_id);
                 })
@@ -5583,12 +5747,26 @@ class SaleController extends Controller
     }
 
     public function customerSales($customer_id) {
+          $return = Returns::where('customer_id', $customer_id)->get();
+            $returnAmount = $return ? $return->sum('grand_total') : 0;
         $sales = Sale::with('customer')
             ->where('customer_id', $customer_id)
             ->latest()
             ->get()
-            ->map(function ($sale) {
+            ->map(function ($sale, $returnAmount) {
                 $saleStatus = match($sale->sale_status) {
+                    1 => 'Completed',
+                    2 => 'Pending',
+                    3 => 'Draft',
+                    4 => 'Returned',
+                    5 => 'Processing',
+                    6 => 'Cooked',
+                    7 => 'Served',
+                    default => 'N/A'
+                };
+
+                // $paymentStatus = $sale->paid_amount >= $sale->grand_total ? 'Paid' : ($sale->paid_amount > 0 ? 'Partial' : 'Due');
+                $paymentStatus = match($sale->payment_status) {
                     1 => 'Pending',
                     2 => 'Due',
                     3 => 'Partial',
@@ -5596,9 +5774,7 @@ class SaleController extends Controller
                     default => 'N/A'
                 };
 
-                $paymentStatus = $sale->paid_amount >= $sale->grand_total ? 'Paid' : ($sale->paid_amount > 0 ? 'Partial' : 'Due');
-
-                $paymentDue = number_format($sale->grand_total - $sale->paid_amount, 2);
+                $paymentDue = number_format($sale->grand_total - $sale->paid_amount - $returnAmount, 2);
 
                 $warehouseName = $sale->warehouse_id ? optional(Warehouse::find($sale->warehouse_id))->name : '-';
                 $customer = $sale->customer;
@@ -5612,6 +5788,7 @@ class SaleController extends Controller
                     'payment_status' => $paymentStatus,
                     'grand_total' => number_format($sale->grand_total, 2),
                     'paid_amount' => number_format($sale->paid_amount, 2),
+                    'return_amount' => number_format($returnAmount, 2),
                     'payment_due' => $paymentDue,
                     'note' => $sale->note,
                     'currency' => $sale->currency ?? null,
@@ -5621,6 +5798,8 @@ class SaleController extends Controller
                     'customer_address' => $customer->address ?? '-',
                 ];
             });
+          
+       
 
         return response()->json(['data' => $sales]);
     }

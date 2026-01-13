@@ -56,7 +56,7 @@ class RegisterController extends Controller
         $lims_customer_group_list = CustomerGroup::where('is_active', true)->get();
         $lims_biller_list = Biller::where('is_active', true)->get();
         $lims_warehouse_list = Warehouse::where('is_active', true)->get();
-        $numberOfUserAccount = User::where('is_active', true)->count();
+        $numberOfUserAccount = User::where('is_active', true)->where('bus_config_id', session('bus_config_id'))->count();
         return view('backend.auth.register', compact('lims_role_list', 'lims_customer_group_list', 'lims_biller_list', 'lims_warehouse_list', 'numberOfUserAccount'));
     }
 
