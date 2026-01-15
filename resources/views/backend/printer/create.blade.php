@@ -7,7 +7,7 @@
 
     <section>
         <div class="container-fluid">
-            <a href="#" data-toggle="modal" data-target="#createModal" class="btn btn-info add-printer-btn"><i
+            <a href="#" data-toggle="modal" data-target="#createModal" class="btn btn-primary add-printer-btn"><i
                     class="dripicons-plus"></i> {{ __('db.Add Printer') }}</a>
         </div>
         <div class="table-responsive">

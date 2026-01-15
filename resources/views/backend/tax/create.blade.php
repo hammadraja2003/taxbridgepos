@@ -7,7 +7,7 @@
 
 <section>
     <div class="container-fluid">
-        <a href="#" data-toggle="modal" data-target="#createModal" class="btn btn-info"><i class="dripicons-plus"></i> {{__('db.Add Tax')}}</a>
+        <a href="#" data-toggle="modal" data-target="#createModal" class="btn btn-primary"><i class="dripicons-plus"></i> {{__('db.Add Tax')}}</a>
         <a href="#" data-toggle="modal" data-target="#importTax" class="btn btn-primary"><i class="dripicons-copy"></i> {{__('db.Import Tax')}}</a>
     </div>
     <div class="table-responsive">

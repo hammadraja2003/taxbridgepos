@@ -7,7 +7,7 @@
 
 <section>
     <div class="container-fluid">
-        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#createModal"><i class="dripicons-plus"></i> {{__('db.Add Shift')}}</button>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createModal"><i class="dripicons-plus"></i> {{__('db.Add Shift')}}</button>
     </div>
     <div class="table-responsive">
         <table id="shift-table" class="table">

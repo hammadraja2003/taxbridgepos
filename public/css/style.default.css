@@ -87,7 +87,6 @@ nav.navbar .brand-text strong {
     -webkit-transition: width 0.3s linear;
     width: calc(100% - 230px);
     min-height: 100vh;
-    padding-bottom: 50px;
 }
 .page.active {
     margin-left: 0;
@@ -676,7 +675,6 @@ h6 {
 footer.main-footer {
     position: absolute;
     width: 100%;
-    bottom: 0;
     padding: 15px 0;
     text-align: center;
 }
@@ -1937,8 +1935,7 @@ a > code {
     border-bottom: 1px solid #3b4253;
 }
 .dataTable thead {
-    background-color: #5579a4;
-    color: white;
+    background-color: #5579a44f;
 }
 .dataTable tfoot {
     background-color: #f7f7f7;

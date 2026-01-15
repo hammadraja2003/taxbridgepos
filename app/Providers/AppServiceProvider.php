@@ -67,29 +67,29 @@ class AppServiceProvider extends ServiceProvider
         $permissionLogic();
 
         //only check environment is local
-        if (App::environment('local')) {
-            // Log missing translations
-            Lang::handleMissingKeysUsing(function ($key, $replacements, $locale) {
-                // Check if the key already exists in the database
-                $exists = DB::table('translations')->where('key', $key)->exists();
+        // if (App::environment('local')) {
+        //     // Log missing translations
+        //     Lang::handleMissingKeysUsing(function ($key, $replacements, $locale) {
+        //         // Check if the key already exists in the database
+        //         $exists = DB::table('translations')->where('key', $key)->exists();
 
-                if (!$exists) {
-                    // Log only if key doesn't exist in DB
-                    Log::warning("Missing translation key (not in DB): {$key}");
+        //         if (!$exists) {
+        //             // Log only if key doesn't exist in DB
+        //             Log::warning("Missing translation key (not in DB): {$key}");
 
-                    // OPTIONAL: insert into DB if you want to keep track automatically
-                    /*
-                    DB::table('translations')->insertOrIgnore([
-                        'key' => $key,
-                        'php_code' => $key,
-                        'locale' => $locale, // optional
-                    ]);
-                    */
-                }
+        //             // OPTIONAL: insert into DB if you want to keep track automatically
+        //             /*
+        //             DB::table('translations')->insertOrIgnore([
+        //                 'key' => $key,
+        //                 'php_code' => $key,
+        //                 'locale' => $locale, // optional
+        //             ]);
+        //             */
+        //         }
 
-                // Return key so app doesn't crash
-                return $key;
-            });
-        }
+        //         // Return key so app doesn't crash
+        //         return $key;
+        //     });
+        // }
     }
 }

@@ -6,7 +6,7 @@
 <section>
     <div class="container-fluid">
         @can('suppliers-add')
-            <a href="{{route('supplier.create')}}" class="btn btn-info"><i class="dripicons-plus"></i> {{__('db.Add Supplier')}}</a>
+            <a href="{{route('supplier.create')}}" class="btn btn-primary"><i class="dripicons-plus"></i> {{__('db.Add Supplier')}}</a>
         @endcan
         @can('suppliers-import')
             <a href="#" data-toggle="modal" data-target="#importSupplier" class="btn btn-primary"><i class="dripicons-copy"></i> {{__('db.Import Supplier')}}</a>

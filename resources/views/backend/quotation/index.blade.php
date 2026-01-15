@@ -49,7 +49,7 @@
             {!! Form::close() !!}
         </div>
         @if(in_array("quotes-add", $all_permission))
-            <a href="{{route('quotations.create')}}" class="btn btn-info"><i class="dripicons-plus"></i> {{__('db.Add Quotation')}}</a>&nbsp;
+            <a href="{{route('quotations.create')}}" class="btn btn-primary"><i class="dripicons-plus"></i> {{__('db.Add Quotation')}}</a>&nbsp;
         @endif
     </div>
     <div class="table-responsive">

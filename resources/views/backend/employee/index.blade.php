@@ -9,7 +9,7 @@
     <section>
         @if (in_array('employees-add', $all_permission))
             <div class="container-fluid">
-                <a href="{{ route('employees.create') }}" class="btn btn-info"><i class="dripicons-plus"></i>
+                <a href="{{ route('employees.create') }}" class="btn btn-primary"><i class="dripicons-plus"></i>
                     {{ __('db.Add Employee') }}</a>
             </div>
         @endif

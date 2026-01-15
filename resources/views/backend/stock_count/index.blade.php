@@ -5,7 +5,7 @@
 
 <section>
     <div class="container-fluid">
-        <button class="btn btn-info" data-toggle="modal" data-target="#createModal"><i class="dripicons-plus"></i> {{__('db.Count Stock')}} </button>
+        <button class="btn btn-primary" data-toggle="modal" data-target="#createModal"><i class="dripicons-plus"></i> {{__('db.Count Stock')}} </button>
     </div>
     <div class="table-responsive">
         <table id="stock-count-table" class="table stock-count-list">

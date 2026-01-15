@@ -180,6 +180,9 @@
 
   <!-- Custom CSS from general settings -->
   {!! $general_setting->custom_css !!}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
 </head>
 
 <body class="@if($theme == 'dark')dark-mode dripicons-brightness-low @endif  @if(Route::current()->getName() == 'sale.pos') pos-page @endif" onload="myFunction()">
@@ -422,10 +425,7 @@
                 </li>
                 @endif
                 <li>
-                  <a href="{{ route('logout') }}" onclick="event.preventDefault();
-                                        document.getElementById('logout-form').submit();"><i class="dripicons-power"></i>
-                    {{ __('db.logout') }}
-                  </a>
+                  <a href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();"><i class="dripicons-power"></i>{{ __('db.logout') }}</a>
                   <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                     @csrf
                   </form>
@@ -437,26 +437,9 @@
     </header>
     @endif
     <!-- @include('includes.session_message') -->
-    <div style="display:none;background: #f8f9fa" id="content" class="animate-bottom">
+    <div style="display:none;background: #f8f9fa;"  id="content" class="animate-bottom">
       @yield('content')
     </div>
-
-    <footer class="main-footer">
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-sm-12">
-            <p>
-                &copy; {{ date('Y') }} <strong>{{ __('Developed') }} {{ __('By') }}</strong> 
-                <a href="https://taxbridge.pk/" target="_blank" class="external">
-                    TaxBridge
-                </a>. 
-                All rights reserved.  | V {{env('VERSION') }}
-            </p>
-          </div>
-        </div>
-      </div>
-    </footer>
-
     <!-- notification modal -->
     <div id="notification-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" class="modal fade text-left">
       <div role="document" class="modal-dialog">
@@ -521,7 +504,7 @@
             <p class="italic"><small>{{ __('The field labels marked with * are required input fields') }}.</small></p>
             <div class="row">
               <div class="col-md-6 form-group">
-                <label>{{ __('name') }} *</label>
+                <label>{{ __('db.Name') }} *</label>
                 {{Form::text('name',null,array('required' => 'required', 'class' => 'form-control', 'placeholder' => __('db.Type category name')))}}
                 <x-validation-error fieldName="name" />
               </div>
@@ -540,13 +523,6 @@
                 </select>
                 <x-validation-error fieldName="parent_id" />
               </div>
-              @if (\Schema::hasColumn('categories', 'woocommerce_category_id'))
-              <div class="col-md-6 form-group mt-4">
-                <input class="mt-3" name="is_sync_disable" type="checkbox" id="is_sync_disable" value="1">&nbsp; {{ __('Disable Woocommerce Sync') }}
-                <x-validation-error fieldName="is_sync_disable" />
-              </div>
-              @endif
-
               @if(in_array('ecommerce',explode(',',$general_setting->modules)))
               <div class="col-md-12 mt-3">
                 <h6><strong>{{ __('For Website') }}</strong></h6>
@@ -1134,6 +1110,30 @@
     </div>
     <!-- end supplier modal -->
   </div>
+
+  <footer class="main-footer">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-12">
+          <p>
+              &copy; {{ date('Y') }} <strong>Secured by</strong> 
+              <a href="https://secureism.com/" target="_blank" class="external">
+                  Secureism
+              </a>. 
+              All rights reserved.  | V {{env('VERSION') }}
+          </p>
+          <p>
+              <a href="https://secureism.com/privacy-policy" target="_blank" class="external">
+                  Privacy Policy
+              </a>
+              <a href="https://taxbridge.pk/terms-of-use/" target="_blank" class="external">
+                  Terms & Conditions
+              </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </footer>
   @if(!config('database.connections.saleprosaas_landlord'))
   <script type="text/javascript" src="<?php echo asset('vendor/jquery/jquery.min.js') ?>"></script>
   <script type="text/javascript" src="<?php echo asset('vendor/jquery/jquery-ui.min.js') ?>"></script>
@@ -1470,28 +1470,41 @@
       // Automatically activate sidebar menu based on current URL
       $(document).ready(function() {
           var currentUrl = window.location.href;
-          
-          // Loop through each sidebar link
+          var validLinks = [];
+
           $('nav.side-navbar a').each(function() {
               var linkUrl = $(this).attr('href');
-              
               // precise match or matching path
-              if (linkUrl === currentUrl || (linkUrl && currentUrl.startsWith(linkUrl) && linkUrl !== '{{url("/dashboard")}}' && linkUrl !== '/')) {
-                  
-                  // Add active class to the link's parent li
-                  $(this).parent().addClass('active');
-
-                  // If it's a submenu item
-                  if ($(this).closest('ul').hasClass('collapse')) {
-                      // Expand the parent ul
-                      $(this).closest('ul').addClass('show');
-                      // Mark the parent dropdown as active and expanded
-                      $(this).closest('ul').siblings('a').attr('aria-expanded', 'true');
-                  }
+              if (linkUrl && linkUrl !== '#' && (linkUrl === currentUrl || (currentUrl.startsWith(linkUrl) && linkUrl !== '{{url("/dashboard")}}' && linkUrl !== '/'))) {
+                  validLinks.push({
+                      element: $(this),
+                      length: linkUrl.length
+                  });
               }
           });
+
+          // Sort by length descending to find the most specific match
+          validLinks.sort(function(a, b) {
+              return b.length - a.length;
+          });
+
+          if (validLinks.length > 0) {
+              var activeLink = validLinks[0].element;
+              
+              // Add active class to the link's parent li
+              activeLink.parent().addClass('active');
+
+              // If it's a submenu item
+              if (activeLink.closest('ul').hasClass('collapse')) {
+                  // Expand the parent ul
+                  activeLink.closest('ul').addClass('show');
+                  // Mark the parent dropdown as active and expanded
+                  activeLink.closest('ul').siblings('a').attr('aria-expanded', 'true');
+              }
+          }
       });
     </script>
+   
 </body>
 
 </html>

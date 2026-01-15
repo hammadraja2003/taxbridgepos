@@ -14,6 +14,8 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
+    public const HOME = '/dashboard';
+    
     // protected $namespace = 'App\Http\Controllers';
 
     /**
@@ -35,11 +37,23 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function map()
     {
-        $this->mapApiRoutes();
+        // $this->mapApiRoutes();
 
         $this->mapWebRoutes();
 
-        //
+        $this->mapAdminRoutes();
+    }
+
+    /**
+     * Define the "admin" routes for the application.
+     *
+     * @return void
+     */
+    protected function mapAdminRoutes()
+    {
+        Route::middleware('web')
+             ->namespace($this->namespace)
+             ->group(base_path('routes/admin.php'));
     }
 
     /**

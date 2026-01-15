@@ -6,7 +6,7 @@
 
 <section>
     <div class="container-fluid">
-        <button class="btn btn-info" data-toggle="modal" data-target="#gift_card-modal"><i class="dripicons-plus"></i> {{__('db.Add Gift Card')}}</button>
+        <button class="btn btn-primary" data-toggle="modal" data-target="#gift_card-modal"><i class="dripicons-plus"></i> {{__('db.Add Gift Card')}}</button>
     </div>
     <div class="table-responsive">
         <table id="gift_card-table" class="table">

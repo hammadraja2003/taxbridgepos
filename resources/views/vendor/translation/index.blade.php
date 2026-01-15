@@ -75,8 +75,8 @@
             </div>
         </div>
 
-        <table class="table table-bordered">
-            <thead class="table-secondary">
+        <table class="table table-bordered dataTable">
+            <thead>
                 <tr>
                     <th class="col-3">Key</th>
                     <th class="col-7">Value</th>

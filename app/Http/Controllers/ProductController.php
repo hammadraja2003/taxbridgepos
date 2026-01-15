@@ -1170,6 +1170,7 @@ class ProductController extends Controller
                 ])
                 ->orderBy('product_variants.position')
                 ->get();
+                
         }
         else {
             return ProductVariant::join('variants', 'product_variants.variant_id', '=', 'variants.id')
@@ -1179,6 +1180,7 @@ class ProductController extends Controller
                 ->get();
         }
     }
+    
 
     public function edit($id)
     {

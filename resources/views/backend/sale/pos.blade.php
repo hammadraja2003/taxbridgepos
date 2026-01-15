@@ -381,7 +381,7 @@
                                 @if($category->image)
                                 <img src="{{url('images/category', $category->image)}}" />
                                 @else
-                                <img src="{{url('/images/product/zummXD2dvAtI.png')}}" />
+                                <img src="{{url('/images/zummXD2dvAtI.png')}}" />
                                 @endif
                                 <p class="text-center">{{$category->name}}</p>
                             </div>
@@ -403,7 +403,7 @@
                                 @if($brand->image)
                                 <img src="{{url('images/brand',$brand->image)}}" />
                                 @else
-                                <img src="{{url('/images/product/zummXD2dvAtI.png')}}" />
+                                <img src="{{url('/images/zummXD2dvAtI.png')}}" />
                                 @endif
                                 <p class="text-center">{{$brand->title}}</p>
                             </div>
@@ -1031,7 +1031,7 @@
                                             </div>
                                         </div>
                                         <div class="row add-more-row mt-2">
-                                            <div class="col-md-12 text-center"><button class="btn btn-info add-more">+ {{__('db.Add More Payment')}}</button></div>
+                                            <div class="col-md-12 text-center"><button class="btn btn-primary add-more">+ {{__('db.Add More Payment')}}</button></div>
                                         </div>
                                         <div id="payment_receiver_id" class="row">
                                             <div class="col-md-12 mt-1">
@@ -2596,6 +2596,7 @@
                 customer_id: $('#customer_id').val()
             };
             //data += '?'+$('#customer_id').val()+'?'+(parseFloat(pre_qty) + 1);
+
             $.ajax({
                 type: 'GET',
                 async: false,
@@ -5504,6 +5505,5 @@
     /*-------------End Customer Display-----------*/
 
 </script>
-
 
 @endpush

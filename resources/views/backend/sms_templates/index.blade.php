@@ -8,7 +8,7 @@
                 <h3 class="text-center">{{__('db.SMS Template List')}}</h3>
             </div>
         </div>
-        <button class="btn btn-info" data-toggle="modal" data-target="#smstemplates-modal"><i class="dripicons-plus"></i> {{__('db.Add Template')}}</button>
+        <button class="btn btn-primary" data-toggle="modal" data-target="#smstemplates-modal"><i class="dripicons-plus"></i> {{__('db.Add Template')}}</button>
     </div>
 
     <div class="table-responsive">

@@ -5,7 +5,7 @@
 
 <section>
     <div class="container-fluid">
-        {{-- <button class="btn btn-info" data-toggle="modal" data-target="#createModal"><i class="dripicons-plus"></i>
+        {{-- <button class="btn btn-primary" data-toggle="modal" data-target="#createModal"><i class="dripicons-plus"></i>
             {{ __('db.Add Payroll') }} </button> --}}
 
         <!-- Add Multiple Payroll Button -->
@@ -188,7 +188,7 @@
                                             data-commission="{{ $amountArray['commission'] ?? 0 }}"
                                             data-prev="{{ $amountArray['previous'] ?? 0 }}" data-toggle="modal"
                                             data-target="#editModal">
-                                            <i class="dripicons-document-edit"></i> {{ __('db.Edit') }}
+                                            <i class="dripicons-document-edit"></i> {{ __('db.edit') }}
                                         </button>
                                     </li>
 
@@ -222,7 +222,7 @@
                                     {{ Form::open(['route' => ['payroll.destroy', $payroll->id], 'method' => 'DELETE']) }}
                                     <li>
                                         <button type="submit" class="btn btn-link" onclick="return confirmDelete()">
-                                            <i class="dripicons-trash"></i> {{ __('db.Delete') }}
+                                            <i class="dripicons-trash"></i> {{ __('db.delete') }}
                                         </button>
                                     </li>
                                     {{ Form::close() }}

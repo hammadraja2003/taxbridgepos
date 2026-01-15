@@ -588,13 +588,13 @@
                                     </div>
                                     @endif
                                     <div class="col-md-12 form-group">
-                                        <button type="button" class="btn btn-info add-more-variant"><i class="dripicons-plus"></i> {{__('db.Add More Variant')}}</button>
+                                        <button type="button" class="btn btn-primary add-more-variant"><i class="dripicons-plus"></i> {{__('db.Add More Variant')}}</button>
                                     </div>
                                     <div class="table-responsive ml-2">
                                         <table id="variant-table" class="table table-hover variant-list">
                                             <thead>
                                                 <tr>
-                                                    <th>{{__('db.name')}}</th>
+                                                    <th>{{__('db.Name')}}</th>
                                                     <th>{{__('db.Item Code')}}</th>
                                                     <th>{{__('db.Additional Cost')}}</th>
                                                     <th>{{__('db.Additional Price')}}</th>
@@ -639,11 +639,11 @@
                                         </div>
                                     </div>
                                 </div>
-                                @if (\Schema::hasColumn('products', 'woocommerce_product_id'))
+                                <!-- @if (\Schema::hasColumn('products', 'woocommerce_product_id'))
                                 <div class="col-md-12 mt-3">
                                     <h5><input name="is_sync_disable" {{$lims_product_data->is_sync_disable==1 ? 'checked':''}} type="checkbox" id="is_sync_disable" value="1">&nbsp; {{__('db.Disable Woocommerce Sync')}}</h5>
                                 </div>
-                                @endif
+                                @endif -->
                                 @if(in_array('ecommerce',explode(',',$general_setting->modules)) || in_array('restaurant',explode(',',$general_setting->modules)))
                                 <div class="col-md-12 mt-3">
                                     <h5><input name="is_online" type="checkbox" id="is_online" value="1" {{$lims_product_data->is_online==1 ? 'checked':''}}>&nbsp; {{__('db.Sell Online')}}</h5>

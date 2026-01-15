@@ -17,7 +17,7 @@
     <div class="container-fluid">
         
         @can('products-add')
-            <a href="{{route('products.create')}}" class="btn btn-info add-product-btn btn-icon"><i class="dripicons-plus"></i> {{__('db.add_product')}}</a>
+            <a href="{{route('products.create')}}" class="btn btn-primary add-product-btn btn-icon"><i class="dripicons-plus"></i> {{__('db.add_product')}}</a>
         @endcan
         @can('products-import')
             <a href="#" data-toggle="modal" data-target="#importProduct" class="btn btn-primary add-product-btn btn-icon"><i class="dripicons-copy"></i> {{__('db.import_product')}}</a>
@@ -215,7 +215,7 @@
                     </table>
                 </div>
                 @endif
-                <div class="col-md-7 mt-2" id="product-variant-section">
+                <div class="col-md-12 mt-2" id="product-variant-section">
                     <h5>{{__('db.Product Variant Information')}}</h5>
                     <table class="table table-bordered table-hover product-variant-list">
                         <thead>
@@ -225,7 +225,7 @@
                     </table>
                 </div>
                 @if($role_type <= 2)
-                <div class="col-md-5 mt-2" id="product-variant-warehouse-section">
+                <div class="col-md-12 mt-2" id="product-variant-warehouse-section">
                     <h5>{{__('db.Warehouse quantity of product variants')}}</h5>
                     <table class="table table-bordered table-hover product-variant-warehouse-list">
                         <thead>
@@ -392,7 +392,7 @@
             }
         }
         else {
-            slidertext = '<img src="images/product/zummXD2dvAtI.png" height="300" width="100%">';
+            slidertext = '<img src="{{url('/images/zummXD2dvAtI.png')}}" height="300" width="100%">';
         }
         $("#combo-header").text('');
         $("table.item-list thead").remove();
@@ -444,12 +444,17 @@
         }
         if(product[0] == 'standard' || product[0] == 'combo') {
             if(product[19]) {
+                debugger;
                 $.get('products/variant-data/' + product[12], function(variantData) {
+                    debugger;
                     var newHead = $("<thead>");
                     var newBody = $("<tbody>");
                     var newRow = $("<tr>");
                     newRow.append('<th>{{__("db.Variant")}}</th><th>{{__("db.Item Code")}}</th><th>{{__("db.Additional Cost")}}</th><th>{{__("db.Additional Price")}}</th><th>{{__("db.Qty")}}</th>');
                     newHead.append(newRow);
+
+                    console.log(variantData);
+
                     $.each(variantData, function(i) {
                         var newRow = $("<tr>");
                         var cols = '';

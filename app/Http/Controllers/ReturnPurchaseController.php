@@ -606,7 +606,7 @@ class ReturnPurchaseController extends Controller
                 });
             }
             catch(\Exception $e){
-                $message = 'Return created successfully. Please setup your <a href="setting/mail_setting">mail setting</a> to send mail.';
+                $message = 'Return created successfully. Please setup your mail setting to send mail.';
             }
         }
         return redirect('return-purchase')->with('message', $message);

@@ -6,7 +6,7 @@
 
 <section>
     <div class="container-fluid">
-        <a href="{{route('qty_adjustment.create')}}" class="btn btn-info"><i class="dripicons-plus"></i> {{__('db.Add Adjustment')}}</a>
+        <a href="{{route('qty_adjustment.create')}}" class="btn btn-primary"><i class="dripicons-plus"></i> {{__('db.Add Adjustment')}}</a>
     </div>
     <div class="table-responsive">
         <table id="adjustment-table" class="table purchase-list">
@@ -58,10 +58,10 @@
                             <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{__('db.action')}}<span class="caret"></span><span class="sr-only">Toggle Dropdown</span>
                             </button>
                             <ul class="dropdown-menu edit-options dropdown-menu-right dropdown-default" user="menu">
-                                <li>
+                                <!-- <li>
                                     <a href="{{ route('qty_adjustment.edit', $adjustment->id) }}" class="btn btn-link"><i class="dripicons-document-edit"></i> {{__('db.edit')}}</a>
                                 </li>
-                                <li class="divider"></li>
+                                <li class="divider"></li> -->
                                 {{ Form::open(['route' => ['qty_adjustment.destroy', $adjustment->id], 'method' => 'DELETE'] ) }}
                                 <li>
                                     <button type="submit" class="btn btn-link" onclick="return confirmDelete()"><i class="dripicons-trash"></i> {{__('db.delete')}}</button>

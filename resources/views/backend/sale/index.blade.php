@@ -14,7 +14,7 @@
 <section>
     <div class="container-fluid">
         @can('sales-add')
-            <a href="{{route('sales.create')}}" class="btn btn-info add-sale-btn btn-icon"><i class="dripicons-plus"></i> {{__('db.Add Sale')}}</a>&nbsp;
+            <a href="{{route('sales.create')}}" class="btn btn-primary add-sale-btn btn-icon"><i class="dripicons-plus"></i> {{__('db.Add Sale')}}</a>&nbsp;
         @endcan
         @can('sales-import')
             <a href="{{url('sales/sale_by_csv')}}" class="btn btn-primary add-sale-btn btn-icon"><i class="dripicons-copy"></i> {{__('db.Import Sale')}}</a>

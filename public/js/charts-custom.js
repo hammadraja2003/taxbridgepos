@@ -258,8 +258,8 @@ $(document).ready(function () {
 
         // Define colors once - change here to update all bars
         // ----- Colors -----
-        var purchaseColor = "#023143";
-        var purchaseBorder = "#021820";
+        var purchaseColor = "#5579a4";
+        var purchaseBorder = "#193353ff";
 
         var saleColor = "#ff8952";
         var saleBorder = "#ed5914";
@@ -471,12 +471,12 @@ $(document).ready(function () {
 
         // Define colors once - change here to update all segments
         // ----- Transaction Chart Colors -----
-        var transactionPurchaseColor = "#023143"; // Purchase (Dark Blue) - matches your purchase color
-        var transactionRevenueColor = "#ff8952"; // Revenue (Orange) - matches your sale color
-        var transactionExpenseColor = "#D62728"; // Expense (Red) - matches your purchase return color
-        var transactionPurchaseHover = "rgba(2, 49, 67, 0.8)";
-        var transactionRevenueHover = "rgba(255, 137, 82, 0.8)";
-        var transactionExpenseHover = "rgba(214, 39, 40, 0.8)";
+        var transactionPurchaseColor = "#5579a4"; // Purchase (Dark Blue) - matches your purchase color
+        var transactionRevenueColor = "#52ff9d"; // Revenue (Orange) - matches your sale color
+        var transactionExpenseColor = "#ed4242ff"; // Expense (Red) - matches your purchase return color
+        var transactionPurchaseHover = "#183860ff";
+        var transactionRevenueHover = "#17b25a";
+        var transactionExpenseHover = "#aa1919ff";
 
         var myTransactionChart = new Chart(TRANSACTIONCHART, {
             type: "doughnut",

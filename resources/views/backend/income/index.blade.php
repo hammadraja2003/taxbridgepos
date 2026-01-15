@@ -49,7 +49,7 @@
             {!! Form::close() !!}
         </div>
         @if(in_array("incomes-add", $all_permission))
-            <button class="btn btn-info" data-toggle="modal" data-target="#income-modal"><i class="dripicons-plus"></i> {{__('db.Add Income')}}</button>
+            <button class="btn btn-primary" data-toggle="modal" data-target="#income-modal"><i class="dripicons-plus"></i> {{__('db.Add Income')}}</button>
         @endif
     </div>
     <div class="table-responsive">

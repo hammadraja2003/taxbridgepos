@@ -138,7 +138,7 @@
                             <div class="col-sm-3">
                                 <div class="wrapper count-title">
                                     <div class="icon">
-                                         <i class="dripicons-cart" style="color: #863636"></i>
+                                         <i class="dripicons-cart"></i>
                                     </div>
                                     <div>
                                         <div class="count-number total_sale-data">
@@ -282,7 +282,7 @@
                                     data-sent = "{{ json_encode($payment_sent) }}"
                                     data-month = "{{ json_encode($month) }}"
                                     data-label1="{{ __('db.Payment Recieved') }}"
-                                    data-label2="{{ __('db.Payment Sent') }}"></canvas>
+                                    data-label2="{{ __('db.Payment Sent') }}" width="100" height="55"></canvas>
                             </div>
                         </div>
                     </div>
@@ -301,7 +301,7 @@
                                     data-color_rgba = "{{ $color_rgba }}" data-revenue={{ $revenue }}
                                     data-purchase={{ $purchase }} data-expense={{ $expense }}
                                     data-label1="{{ __('db.Purchase') }}" data-label2="{{ __('db.revenue') }}"
-                                    data-label3="{{ __('db.Expense') }}" width="100" height="95"> </canvas>
+                                    data-label3="{{ __('db.Expense') }}" width="100" height="55"> </canvas>
                             </div>
                         </div>
                     </div>
@@ -329,7 +329,7 @@
                                     data-label1="{{ __('db.Purchase') }}"
                                     data-label2="{{ __('db.Sale') }}"
                                     data-label3="{{ __('db.Sale Return') }}"
-                                    data-label4="{{ __('db.Purchase Return') }}"></canvas>
+                                    data-label4="{{ __('db.Purchase Return') }}" height="55"></canvas>
                             </div>
                         </div>
                     </div>

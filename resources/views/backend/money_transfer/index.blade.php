@@ -5,7 +5,7 @@
 
 <section>
     <div class="container-fluid">
-        <button class="btn btn-info" data-toggle="modal" data-target="#create-money-transfer-modal"><i class="dripicons-plus"></i> {{__('db.Add Money Transfer')}}</button>
+        <button class="btn btn-primary" data-toggle="modal" data-target="#create-money-transfer-modal"><i class="dripicons-plus"></i> {{__('db.Add Money Transfer')}}</button>
     </div>
     <div class="table-responsive">
         <table id="money-transfer-table" class="table">

@@ -475,6 +475,7 @@ th span.number-in-words {
 .table td {
     border-bottom: 1px solid #ebe9f1;
     align-items: center;
+    padding: 5px 5px 5px 10px;
 }
 .dark-mode .table td {
     border-color: #3b4253 !important;
@@ -867,7 +868,7 @@ div.has-error > .form-text {
     background-color: rgba(255, 255, 255, 0.4);
 }
 .modal-header .close {
-    color: #666;
+    color: #ffffff;
 }
 .modal-content {
     border: none;
@@ -1080,4 +1081,16 @@ div#mCSB_1 {
 }
 .app-header {
     box-shadow: 4px 1px 15px #ddd;
+    background: white;
+}
+.modal-header {
+    padding: 0.1rem 0.1rem 0.1rem 1rem !important;
+    background-color: #5579a4 !important;
+    color: white !important;
+}
+canvas#cashFlow {
+    height: 318px !important;
+}
+.page {
+    background: #f8f9fa;
 }

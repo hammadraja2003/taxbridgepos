@@ -5,7 +5,7 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
 // use App\Http\Controllers\DemoAutoUpdateController;
 use App\Http\Controllers\Api\RegisterController;
-use App\Http\Controllers\Api\LoginController;
+// use App\Http\Controllers\Api\LoginController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\CategoryController;
@@ -85,14 +85,14 @@ if (config('database.connections.saleprosaas_landlord')) {
 // });
 
 Route::group(['middleware' => $middleware], function () {
-    Route::post('/check', [LoginController::class, 'checkLicense']);
+    // Route::post('/check', [LoginController::class, 'checkLicense']);
     Route::get('/offline-api-map', [RouteMapController::class, 'index']);
 
     Route::middleware('validate_mobile_token')->group(function () {
         Route::get('/get-registration-form-data', [RegisterController::class, 'getRegistrationFormData']);
 
         Route::post('/register', [RegisterController::class, 'register']);
-        Route::post('/login', [LoginController::class, 'login']);
+        // Route::post('/login', [LoginController::class, 'login']);
 
         Route::controller(HomeController::class)->middleware('auth:sanctum')->group(function () {
             Route::get('/get-user', 'getUser');

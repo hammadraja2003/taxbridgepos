@@ -2,6 +2,8 @@
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 if (!function_exists('normalize_to_sql_datetime')) {
     function normalize_to_sql_datetime($input, $useCurrentTime = false)
@@ -183,5 +185,39 @@ if (!function_exists('getRoleType')) {
         ];
 
         return $types[$role_type];
+    }
+}
+if (!function_exists('businessLogo')) {
+    function businessLogo()
+    {
+        $config = getBusinessConfig();
+        $disk = env('FILESYSTEM_DISK', config('filesystems.default', 'uploads'));
+        if ($config && $config->bus_logo) {
+            try {
+                if ($disk === 's3') {
+                    return Storage::disk($disk)->temporaryUrl($config->bus_logo, now()->addMinutes(5));
+                } else {
+                    return Storage::disk($disk)->url($config->bus_logo);
+                }
+            } catch (\Throwable $e) {
+                \Log::error('Error fetching business logo', [
+                    'error' => $e->getMessage(),
+                    'path'  => $config->bus_logo,
+                    'disk'  => $disk,
+                ]);
+            }
+        }
+        return asset('assets/images/logo/tax-bridge.svg');
+    }
+}
+
+if (!function_exists('getBusinessConfig')) {
+    function getBusinessConfig()
+    {
+        $tenantId = Auth::check() ? Auth::user()->bus_config_id : session('bus_config_id');
+        if (!$tenantId) {
+            return null;
+        }
+        return BusinessConfiguration::where('bus_config_id', $tenantId)->first();
     }
 }

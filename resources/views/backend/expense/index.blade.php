@@ -50,7 +50,7 @@
                 {!! Form::close() !!}
             </div>
             @if (in_array('expenses-add', $all_permission))
-                <button class="btn btn-info" data-toggle="modal" data-target="#expense-modal"><i class="dripicons-plus"></i>
+                <button class="btn btn-primary" data-toggle="modal" data-target="#expense-modal"><i class="dripicons-plus"></i>
                     {{ __('db.Add Expense') }}</button>
             @endif
         </div>

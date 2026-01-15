@@ -386,6 +386,6 @@ class CategoryController extends Controller
         $lims_category_data->save();
         $key_prefix = 'tenant_' . session('bus_config_id') . '_';
         $this->cacheForget($key_prefix.'category_list');
-        return redirect('category')->with('not_permitted', __('db.Category deleted successfully'));
+        return redirect('category')->with('message', __('db.Category deleted successfully'));
     }
 }

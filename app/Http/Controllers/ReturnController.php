@@ -556,7 +556,7 @@ class ReturnController extends Controller
                     Mail::to($mail_data['email'])->send(new ReturnDetails($mail_data));
                 }
                 catch(\Exception $e){
-                    $message = 'Return created successfully. Please setup your <a href="setting/mail_setting">mail setting</a> to send mail.';
+                    $message = 'Return created successfully. Please setup your mail setting to send mail.';
                 }
             }
             DB::commit();

@@ -7,7 +7,7 @@
 
     <section>
         <div class="container-fluid">
-            <button class="btn btn-info" data-toggle="modal" data-target="#createModal"><i class="dripicons-plus"></i>
+            <button class="btn btn-primary" data-toggle="modal" data-target="#createModal"><i class="dripicons-plus"></i>
                 {{ __('db.Add Brand') }} </button>&nbsp;
             <button class="btn btn-primary" data-toggle="modal" data-target="#importBrand"><i class="dripicons-copy"></i>
                 {{ __('db.Import Brand') }}</button>

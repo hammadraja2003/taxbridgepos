@@ -15,7 +15,7 @@
                       {{Form::text('unit_code',null,array('required' => 'required', 'class' => 'form-control'))}}
                       </div>
                       <div class="form-group">
-                          <label>{{__('db.name')}} *</label>
+                          <label>{{__('db.Name')}} *</label>
                           {{Form::text('unit_name',null,array('required' => 'required', 'class' => 'form-control'))}}
                       </div>
                       <div class="form-group">

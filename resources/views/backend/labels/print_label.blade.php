@@ -85,6 +85,7 @@
                 </span>
                 @endif
                 {{-- Barcode --}}
+                
                 <img style="max-width:90% !important;height: {{$barcode_details->height*0.24}}in !important; display: block;" src="data:image/png;base64,{{DNS1D::getBarcodePNG($page_product['sub_sku'], $page_product['barcode_type'], 1,30, array(0, 0, 0), false)}}">
 
                 <span style="font-size: 10px !important">
@@ -100,4 +101,3 @@
     @endif
     @endforeach
 </table>
-

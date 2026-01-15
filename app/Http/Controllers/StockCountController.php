@@ -117,10 +117,27 @@ class StockCountController extends Controller
         while( !feof($file_handle) ) {
             $current_line = fgetcsv($file_handle);
             if( $current_line && $i > 0){
-                $product_data = Product::select('id','code','cost','qty')->where('code', $current_line[1])->first();
-                if(!$product_data) {
-                    $product_data = Product::select('id','code','cost','qty')->where('code', 'LIKE', "%{$current_line[1]}%")->first();
-                }
+                // $product_data = Product::select('id','code','cost','qty')->where('code', $current_line[1])->first();
+                $product_data = Product::leftJoin('product_variants', function($join) {
+                        $join->on('products.id', '=', 'product_variants.product_id');
+                    })
+                    ->select(
+                        'products.id as product_id',
+                        \DB::raw('CASE WHEN products.is_variant = 1 AND product_variants.item_code IS NOT NULL THEN product_variants.item_code ELSE products.code END as code'),
+                        'products.cost',
+                        'products.qty'
+                    )
+                    ->where(function($query) use ($current_line) {
+                        $query->where('products.code', $current_line[1])
+                            ->orWhere('product_variants.item_code', $current_line[1])
+                            ->orWhere('products.code', 'LIKE', "%{$current_line[1]}%")
+                            ->orWhere('product_variants.item_code', 'LIKE', "%{$current_line[1]}%");
+                    })
+                    ->first();
+
+                // if(!$product_data) {
+                //     $product_data = Product::select('id','code','cost','qty')->where('code', 'LIKE', "%{$current_line[1]}%")->first();
+                // }
                 if($product_data) {
                     $product[] = $current_line[0].' ['.$product_data->code.']';
                     $expected[] = $product_data->qty;

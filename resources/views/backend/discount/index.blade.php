@@ -5,7 +5,7 @@
 
 <section>
     <div class="container-fluid">
-        <a href="{{route('discounts.create')}}" class="btn btn-info"><i class="dripicons-plus"></i> {{__('db.Create Discount')}}</a>&nbsp;
+        <a href="{{route('discounts.create')}}" class="btn btn-primary"><i class="dripicons-plus"></i> {{__('db.Create Discount')}}</a>&nbsp;
     </div>
     <div class="table-responsive">
         <table id="discount-table" class="table">

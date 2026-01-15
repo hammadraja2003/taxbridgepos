@@ -9,20 +9,16 @@
 @section('content')
     <!-- @include('includes.session_message') -->
     
-    <div class="container mt-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>{{ __('db.Invoice Settings') }}</h2>
+<section>
+    <div class="container-fluid">
+        <div class="text-right"> <!-- Or just plain div if we want it left aligned like others which seem to default left -->
+            <a class="btn btn-primary" href="{{ route('settings.invoice.create') }}"> <i class="dripicons-plus"></i> {{ __('db.Add New Invoice Setting') }}</a>
         </div>
+    </div>
 
-        <div class=" mb-3 ">
-            <a class="btn btn-primary float-end" href="{{ route('settings.invoice.create') }}"> <i class="dripicons-plus"></i>
-                {{ __('db.Add New Invoice Setting') }}</a>
-        </div>
-
-
-
-        <table class="table table-bordered">
-            <thead class="table-secondary">
+    <div class="table-responsive">
+        <table class="table table-bordered dataTable">
+            <thead>
                 <tr>
                     <th class="col-3">{{ __('db.Template Name') }}</th>
                     <th class="col-2">{{ __('db.Size') }}</th>
@@ -70,6 +66,7 @@
             </tbody>
         </table>
     </div>
+</section>
 @endsection
 
 @push('scripts')

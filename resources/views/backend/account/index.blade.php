@@ -6,7 +6,7 @@
 
 <section>
     <div class="container-fluid">
-        <button class="btn btn-info" data-toggle="modal" data-target="#account-modal"><i class="dripicons-plus"></i> {{__('db.Add Account')}}</button>
+        <button class="btn btn-primary" data-toggle="modal" data-target="#account-modal"><i class="dripicons-plus"></i> {{__('db.Add Account')}}</button>
     </div>
     <div class="table-responsive">
         <table id="account-table" class="table">

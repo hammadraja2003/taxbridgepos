@@ -3,7 +3,7 @@
 
             @can('sidebar_product')
                 <li>
-                    <a href="#product" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-list"></i><span>{{__('db.product')}}</span><span></a>
+                    <a href="#product" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-list"></i><span>{{__('db.product')}}</span></a>
 
                     <ul id="product" class="collapse list-unstyled ">
                         @can('categories-index')
@@ -24,12 +24,12 @@
                         @can('print_barcode')
                             <li id="printBarcode-menu"><a href="{{route('product.printBarcode')}}">{{__('db.print_barcode')}}</a></li>
                         @endcan
+                        @can('stock_count')
+                            <li id="stock-count-menu"><a href="{{route('stock-count.index')}}">{{__('db.Stock Count')}}</a></li>
+                        @endcan
                         @can('adjustment')
                             <li id="adjustment-list-menu"><a href="{{route('qty_adjustment.index')}}">{{__('db.Adjustment List')}}</a></li>
                             <li id="adjustment-create-menu"><a href="{{route('qty_adjustment.create')}}">{{__('db.Add Adjustment')}}</a></li>
-                        @endcan
-                        @can('stock_count')
-                            <li id="stock-count-menu"><a href="{{route('stock-count.index')}}">{{__('db.Stock Count')}}</a></li>
                         @endcan
                     </ul>
                 </li>
@@ -95,7 +95,7 @@
 
             @can('sidebar_quotation')
                 <li>
-                    <a href="#quotation" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-document"></i><span>{{__('db.Quotation')}}</span><span></a>
+                    <a href="#quotation" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-document"></i><span>{{__('db.Quotation')}}</span></a>
                     
                     <ul id="quotation" class="collapse list-unstyled ">
                         @can('quotes-index')
@@ -211,7 +211,7 @@
                             <li id="dept-menu"><a href="{{route('departments.index')}}">{{__('db.Department')}}</a></li>
                         @endcan
                         @can('designations')
-                            <li id="designations-menu"><a href="{{route('designations.index')}}">{{__('db.Designation')}}</a>
+                            <li id="designations-menu"><a href="{{route('designations.index')}}">{{__('db.Designation')}}</a></li>
                         @endcan
                         @can('shift')
                             <li id="shift-menu"><a href="{{route('shift.index')}}">{{__('db.Shift')}}</a></li>
@@ -229,10 +229,10 @@
                             <li id="overtime-menu"><a href="{{route('overtime.index')}}">{{__('db.Overtime')}}</a></li>
                         @endcan
                         @can('leave-type')
-                            <li id="overtime-menu"><a href="{{route('leave-type.index')}}">{{__('db.Leave Type')}}</a></li>
+                            <li id="leave-type-menu"><a href="{{route('leave-type.index')}}">{{__('db.Leave Type')}}</a></li>
                         @endcan
                         @can('leave')
-                            <li id="overtime-menu"><a href="{{route('leave.index')}}">{{__('db.Leaves')}}</a></li>
+                            <li id="leave-menu"><a href="{{route('leave.index')}}">{{__('db.Leaves')}}</a></li>
                         @endcan
                         @can('payroll')
                             <li id="payroll-menu"><a href="{{route('payroll.index')}}">{{__('db.Payroll')}}</a></li>
@@ -550,4 +550,11 @@
                     @endif
                 @endif
             @endcan -->
+
+             <li id="logout-menu">
+                  <a href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();"><i class="dripicons-power"></i>{{ __('db.logout') }}</a>
+                  <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                    @csrf
+                  </form>
+                </li>
         </ul>

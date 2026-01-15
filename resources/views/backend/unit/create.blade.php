@@ -7,7 +7,7 @@
 
 <section>
     <div class="container-fluid">
-        <a href="#" data-toggle="modal" data-target="#createUnitModal" class="btn btn-info"><i class="dripicons-plus"></i> {{__('db.Add Unit')}}</a>&nbsp;
+        <a href="#" data-toggle="modal" data-target="#createUnitModal" class="btn btn-primary"><i class="dripicons-plus"></i> {{__('db.Add Unit')}}</a>&nbsp;
         <a href="#" data-toggle="modal" data-target="#importUnit" class="btn btn-primary"><i class="dripicons-copy"></i> {{__('db.Import Unit')}}</a>
     </div>
     <div class="table-responsive">
@@ -16,7 +16,7 @@
                 <tr>
                     <th class="not-exported"></th>
                     <th>{{__('db.Code')}}</th>
-                    <th>{{__('db.name')}}</th>
+                    <th>{{__('db.Name')}}</th>
                     <th>{{__('db.Base Unit')}}</th>
                     <th>{{__('db.Operator')}}</th>
                     <th>{{__('db.Operation Value')}}</th>
@@ -92,7 +92,7 @@
                 {{Form::text('unit_code',null,array('required' => 'required', 'class' => 'form-control'))}}
                 </div>
                 <div class="form-group">
-                    <label>{{__('db.name')}} *</label>
+                    <label>{{__('db.Name')}} *</label>
                     {{Form::text('unit_name',null,array('required' => 'required', 'class' => 'form-control'))}}
                 </div>
                 <div class="form-group">

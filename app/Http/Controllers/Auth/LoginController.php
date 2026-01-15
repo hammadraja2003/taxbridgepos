@@ -87,7 +87,7 @@ class LoginController extends Controller
                 return redirect()->route('login')->with('delete_message', 'Unable to configure tenant. Please contact administrator.');
             }
 
-            return redirect()->intended('/dashboard')->with('message', 'User Login Successful');
+            return redirect()->intended('/dashboard');
         }
 
         // --- Invalid credentials ---

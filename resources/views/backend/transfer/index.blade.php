@@ -72,7 +72,7 @@
         </div>
         
         @can('transfers-add')
-            <a href="{{route('transfers.create')}}" class="btn btn-info"><i class="dripicons-plus"></i> {{__('db.Add Transfer')}}</a>&nbsp;
+            <a href="{{route('transfers.create')}}" class="btn btn-primary"><i class="dripicons-plus"></i> {{__('db.Add Transfer')}}</a>&nbsp;
         @endcan
     </div>
     <div class="table-responsive">

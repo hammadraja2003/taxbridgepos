@@ -9,7 +9,7 @@
 <section>
     <div class="container-fluid">
         @if(in_array("products-add", $all_permission))
-            <a href="{{route('recipes.create')}}" class="btn btn-info add-product-btn"><i class="dripicons-plus"></i> {{__('db.add_recipes')}}</a>
+            <a href="{{route('recipes.create')}}" class="btn btn-primary add-product-btn"><i class="dripicons-plus"></i> {{__('db.add_recipes')}}</a>
 
         @endif
         @if( in_array("products-edit", $all_permission) && in_array('ecommerce',explode(',',$general_setting->modules)) )
@@ -60,7 +60,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label> {{__('db.Sample File')}}</label>
-                        <a href="sample_file/sample_products.csv" class="btn btn-info btn-block btn-md"><i class="dripicons-download"></i>  {{__('db.Download')}}</a>
+                        <a href="sample_file/sample_products.csv" class="btn btn-primary btn-block btn-md"><i class="dripicons-download"></i>  {{__('db.Download')}}</a>
                     </div>
                 </div>
            </div>
@@ -236,7 +236,7 @@
             }
         }
         else {
-            slidertext = '<img src="images/product/zummXD2dvAtI.png" height="300" width="100%">';
+            slidertext = '<img src="images/zummXD2dvAtI.png" height="300" width="100%">';
         }
         $("#recipe-header").text('');
         $("table.item-list thead").remove();

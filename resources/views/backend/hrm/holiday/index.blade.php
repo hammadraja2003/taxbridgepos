@@ -5,7 +5,7 @@
 
 <section>
     <div class="container-fluid mb-2">
-        <button class="btn btn-info" data-toggle="modal" data-target="#createModal">
+        <button class="btn btn-primary" data-toggle="modal" data-target="#createModal">
             <i class="dripicons-plus"></i> {{__('db.Add Holiday')}}
         </button>
     </div>

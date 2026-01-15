@@ -2,7 +2,7 @@
 @section('content')
 <section>
     <div class="container-fluid">
-        <a href="{{route('barcodes.create')}}" class="btn btn-info add-sale-btn"><i class="dripicons-plus"></i> {{__('db.Add New Setting')}}</a>&nbsp;
+        <a href="{{route('barcodes.create')}}" class="btn btn-primary add-sale-btn"><i class="dripicons-plus"></i> {{__('db.Add New Setting')}}</a>&nbsp;
     </div>
     <div class="table-responsive">
         <table id="barcode-table" class="table" style="width: 100%">

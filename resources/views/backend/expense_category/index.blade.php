@@ -6,7 +6,7 @@
 
 <section>
     <div class="container-fluid">
-        <button class="btn btn-info" data-toggle="modal" data-target="#createModal"><i class="dripicons-plus"></i> {{__('db.Add Expense Category')}}</button>&nbsp;
+        <button class="btn btn-primary" data-toggle="modal" data-target="#createModal"><i class="dripicons-plus"></i> {{__('db.Add Expense Category')}}</button>&nbsp;
         <button class="btn btn-primary" data-toggle="modal" data-target="#importExpenseCategory"><i class="dripicons-copy"></i> {{__('db.Import Expense Category')}}</button>
     </div>
     <div class="table-responsive">

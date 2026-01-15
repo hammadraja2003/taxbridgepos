@@ -6,7 +6,7 @@
 
     <section>
         <div class="container-fluid mb-3">
-            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#createModal">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createModal">
                 <i class="dripicons-plus"></i> {{ __('db.Add Leave') }}
             </button>
         </div>

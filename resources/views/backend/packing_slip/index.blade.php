@@ -10,11 +10,11 @@
         <form action="{{route('challan.create')}}" method="POST" id="challan-form">
             @csrf
             <input type="hidden" name="packing_slip_id">
-            <button id="create-challan-btn" type="submit" class="btn btn-info"><i class="fa fa-plus"></i> Create Challan</button>
+            <button id="create-challan-btn" type="submit" class="btn btn-primary"><i class="fa fa-plus"></i> Create Challan</button>
         </form>
     </div>
     <div class="table-responsive">
-        <table id="packing-slip-table" class="table table-striped">
+        <table id="packing-slip-table" class="table table-striped table-bordered">
             <thead>
                 <tr>
                     <th class="not-exported"></th>

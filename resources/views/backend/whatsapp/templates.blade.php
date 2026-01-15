@@ -6,7 +6,7 @@
     <section>
         @if (!empty($asset_id))
         <div class="container-fluid">
-            <a href="https://business.facebook.com/latest/whatsapp_manager/message_templates?asset_id={{ $asset_id }}" target="_blank" class="btn btn-info">
+            <a href="https://business.facebook.com/latest/whatsapp_manager/message_templates?asset_id={{ $asset_id }}" target="_blank" class="btn btn-primary">
             <i class="dripicons-plus"></i> {{ __('db.manage_template') }}</a>
         </div>
         @endif

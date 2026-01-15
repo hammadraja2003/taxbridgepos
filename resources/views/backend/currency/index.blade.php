@@ -7,7 +7,7 @@
 
 <section>
     <div class="container-fluid">
-        <button class="btn btn-info" data-toggle="modal" data-target="#createModal"><i class="dripicons-plus"></i> {{__('db.Add Currency')}} </button>&nbsp;
+        <button class="btn btn-primary" data-toggle="modal" data-target="#createModal"><i class="dripicons-plus"></i> {{__('db.Add Currency')}} </button>&nbsp;
     </div>
     <div class="table-responsive">
         <table id="currency-table" class="table">

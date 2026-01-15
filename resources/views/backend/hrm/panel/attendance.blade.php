@@ -8,7 +8,7 @@
 
         <!-- Buttons -->
         <div class="mb-3 d-flex">
-            <button class="btn btn-info mr-2" data-toggle="modal" data-target="#createModal">
+            <button class="btn btn-primary mr-2" data-toggle="modal" data-target="#createModal">
                 <i class="dripicons-plus"></i> {{ __('db.Add Attendance') }}
             </button>
 
@@ -293,4 +293,3 @@
     } );
 </script>
 @endpush
-

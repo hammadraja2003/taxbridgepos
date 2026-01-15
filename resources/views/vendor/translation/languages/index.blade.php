@@ -61,8 +61,8 @@
             </div>
         </div>
 
-        <table class="table table-bordered">
-            <thead class="table-secondary">
+        <table class="table table-bordered dataTable">
+            <thead>
                 <tr>
                     <th class="col-2">Locale</th>
                     <th class="col-5">Name</th>

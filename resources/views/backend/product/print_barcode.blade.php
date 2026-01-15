@@ -237,9 +237,6 @@
                 success: function(responseData) {
                     data = responseData[0];
                     var flag = 1;
-
-                    //console.log(data[11]);
-
                     $(".product-code").each(function() {
                         if ($(this).text() == data[1]) {
                             alert('Duplicate input is not allowed!')
