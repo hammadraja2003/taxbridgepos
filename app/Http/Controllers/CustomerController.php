@@ -138,6 +138,17 @@ class CustomerController extends Controller
                 $nestedData['customer_details'] .= '<br>'.$customer->phone_number.'<br>'.$customer->address.'<br>'.$customer->city;
                 if($customer->country)
                     $nestedData['customer_details'] .= '<br>'.$customer->country;
+                // --- ADD THIS BLOCK ---
+                $nestedData['fbr_details'] = 'N/A';
+
+    
+                if($customer->is_fbr_customer == 1) {
+                    $status = $customer->is_fbr_registered == 1 ? 'Registered' : 'Unregistered';
+                    $nestedData['fbr_details'] = $status . '<br>';
+                    $nestedData['fbr_details'] .= $customer->customer_ntn_cnic . '<br>';
+                    $nestedData['fbr_details'] .= $customer->customer_province;
+                }
+                // ----------------------
 
                 $nestedData['discount_plan'] = '';
                 foreach($customer->discountPlans as $index => $discount_plan) {
@@ -461,6 +472,14 @@ class CustomerController extends Controller
                 }),
             ],
         ]);
+
+        if(isset($request->is_fbr_customer) && $request->is_fbr_customer == 1 && $request->is_fbr_registered == 1) {
+            $this->validate($request, [
+                'customer_ntn_cnic' => 'required',
+                'customer_province' => 'required',
+            ]);
+        }
+
         //validation for supplier if create both user and supplier
         // if(isset($request->both)) {
         //     $this->validate($request, [
@@ -522,6 +541,18 @@ class CustomerController extends Controller
         $mail_setting = MailSetting::latest()->first();
         if(!empty($mail_setting) && $customer_data['email'] != '' ) {
             $message = $this->mailAction($customer_data, $mail_setting, $request, $fullMessage);
+        }
+
+        if(isset($customer_data['is_fbr_customer']) && $customer_data['is_fbr_customer'] == 1) {
+            $customer_data['customer_ntn_cnic'] = $customer_data['customer_ntn_cnic'];
+            $customer_data['customer_province'] = $customer_data['customer_province'];
+            $customer_data['is_fbr_customer'] = 1;
+            $customer_data['is_fbr_registered'] = intval($customer_data['is_fbr_registered']);
+        }else{
+            $customer_data['customer_ntn_cnic'] = null;
+            $customer_data['customer_province'] = null;
+            $customer_data['is_fbr_customer'] = 0;
+            $customer_data['is_fbr_registered'] = intval($customer_data['is_fbr_registered']);
         }
 
         $lims_customer_data = Customer::create($customer_data);
@@ -711,6 +742,12 @@ class CustomerController extends Controller
                 }),
             ],
         ]);
+        if(isset($request->is_fbr_customer) && $request->is_fbr_customer == 1) {
+            $this->validate($request, [
+                'customer_ntn_cnic' => 'required',
+                'customer_province' => 'required',
+            ]);
+        }
 
         $input = $request->all();
         $lims_customer_data = Customer::find($id);
@@ -746,6 +783,18 @@ class CustomerController extends Controller
         }
 
         $input['name'] = $input['customer_name'];
+        
+         if(isset($input['is_fbr_customer']) && $input['is_fbr_customer'] == 1) {
+            $input['customer_ntn_cnic'] = $input['customer_ntn_cnic'];
+            $input['customer_province'] = $input['customer_province'];
+            $input['is_fbr_customer'] = 1;
+            $input['is_fbr_registered'] = intval($input['is_fbr_registered']);
+        }else{
+            $input['customer_ntn_cnic'] = null;
+            $input['customer_province'] = null;
+            $input['is_fbr_customer'] = 0;
+            $input['is_fbr_registered'] = 0;
+        }
         $lims_customer_data->update($input);
         //update custom field data
         $custom_field_data = [];

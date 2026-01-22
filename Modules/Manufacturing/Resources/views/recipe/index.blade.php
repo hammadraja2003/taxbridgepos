@@ -579,7 +579,7 @@
     if(all_permission.indexOf("products-delete") == -1)
         $('.buttons-delete').addClass('d-none');
 
-    $('select').selectpicker();
+    $('.select').selectpicker();
 
 </script>
 @endpush

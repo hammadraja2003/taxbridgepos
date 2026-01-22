@@ -33,16 +33,16 @@ class WarehouseController extends Controller
         ]);
         $input = $request->all();
         $input['is_active'] = true;
-
         $lims_warehouse_data = Warehouse::create($input);
-
-        $lims_product_data = Product::pluck('id');
-        foreach ($lims_product_data as $product) {
-            Product_Warehouse::create([
-                'product_id' => $product,
-                'warehouse_id' => $lims_warehouse_data->id,
-                'qty' => 0
-            ]);
+        if(isset($request->is_clone_product) && $request->is_clone_product == 'on'){
+            $lims_product_data = Product::pluck('id');
+            foreach ($lims_product_data as $product) {
+                Product_Warehouse::create([
+                    'product_id' => $product,
+                    'warehouse_id' => $lims_warehouse_data->id,
+                    'qty' => 0
+                ]);
+            }
         }
         $key_prefix = 'tenant_' . session('bus_config_id') . '_';   
         $this->cacheForget($key_prefix.'warehouse_list');

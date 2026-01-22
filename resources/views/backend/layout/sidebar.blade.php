@@ -61,12 +61,14 @@
                     <a href="#sale" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-cart"></i><span>{{__('db.Sale')}}</span></a>
 
                     <ul id="sale" class="collapse list-unstyled ">
+                        @can('sales-add')
+                            <li id="sale-create-menu"><a href="{{route('sales.create')}}">{{__('db.Add Sale')}}</a></li>
+                        @endcan
                         @can('sales-index')
                             <li id="sale-list-menu"><a href="{{route('sales.index')}}">{{__('db.Sale List')}}</a></li>
                         @endcan
                         @can('sales-add')
                             <li><a href="{{route('sale.pos')}}">POS</a></li>
-                            <li id="sale-create-menu"><a href="{{route('sales.create')}}">{{__('db.Add Sale')}}</a></li>
                         @endcan
                         @can('sales-import')
                             <li id="sale-import-menu"><a href="{{url('sales/sale_by_csv')}}">{{__('db.Import Sale By CSV')}}</a></li>
@@ -79,13 +81,12 @@
                             <li id="delivery-menu"><a href="{{route('delivery.index')}}">{{__('db.Delivery List')}}</a></li>
                         @endcan
                         @can('gift_card')
-                            <li id="gift-card-menu"><a href="{{route('gift_cards.index')}}">{{__('db.Gift Card List')}}</a> </li>
+                            <!-- <li id="gift-card-menu"><a href="{{route('gift_cards.index')}}">{{__('db.Gift Card List')}}</a> </li> -->
                         @endcan
                         @can('coupon')
                             <li id="coupon-menu"><a href="{{route('coupons.index')}}">{{__('db.Coupon List')}}</a> </li>
                         @endcan
-                            <li id="courier-menu"><a href="{{route('couriers.index')}}">{{__('db.Courier List')}}</a> </li>
-
+                        <!-- <li id="courier-menu"><a href="{{route('couriers.index')}}">{{__('db.Courier List')}}</a> </li> -->
                         @can('returns-index')
                             <li id="sale-return-menu"><a href="{{route('return-sale.index')}}">{{__('db.Sale Return')}}</a></li>
                         @endcan
@@ -443,15 +444,18 @@
                     <a href="#setting" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-gear"></i><span>{{__('db.settings')}}</span></a>
                     
                     <ul id="setting" class="collapse list-unstyled ">
+                        @can('general_setting')
+                            <li id="general-setting-menu"><a href="{{route('setting.general')}}">{{__('db.General Setting')}}</a></li>
+                        @endcan
                         @if(\Auth::user()->role_type <= 2)
-                            <li id="printer-menu"><a href="{{route('printers.index')}}">{{__('db.Receipt Printers')}}</a></li>
+                            <!-- <li id="printer-menu"><a href="{{route('printers.index')}}">{{__('db.Receipt Printers')}}</a></li> -->
                         @endif
                         @can ('invoice_setting')
                             <li id="invoice-menu"><a href="{{route('settings.invoice.index')}}">{{__('db.Invoice Settings')}}</a></li>
                         @endcan
                         @can('role_permission')
                             <li id="role-menu"><a href="{{route('role.index')}}">{{__('db.Role Permission')}}</a></li>
-                            <li><a href="{{route('smstemplates.index')}}">{{__('db.SMS Template')}}</a></li>
+                            <!-- <li><a href="{{route('smstemplates.index')}}">{{__('db.SMS Template')}}</a></li> -->
                         @endcan
                         @can('custom_field')
                             <li id="custom-field-list-menu"><a href="{{route('custom-fields.index')}}">{{__('db.Custom Field List')}}</a></li>
@@ -476,7 +480,7 @@
                             <li id="warehouse-menu"><a href="{{route('warehouse.index')}}">{{__('db.Warehouse')}}</a></li>
                         @endcan
                         @if(\Auth::user()->role_type <= 2)
-                            <li id="table-menu"><a href="{{route('tables.index')}}">{{__('db.Tables')}}</a></li>
+                            <!-- <li id="table-menu"><a href="{{route('tables.index')}}">{{__('db.Tables')}}</a></li> -->
                         @endif
                         @can('customer_group')
                             <li id="customer-group-menu"><a href="{{route('customer_group.index')}}">{{__('db.Customer Group')}}</a></li>
@@ -489,33 +493,30 @@
                         @endcan
                             <li id="user-menu"><a href="{{route('user.profile', ['id' => Auth::id()])}}">{{__('db.User Profile')}}</a></li>
                         @can('create_sms')
-                            <li id="create-sms-menu"><a href="{{route('setting.createSms')}}">{{__('db.Create SMS')}}</a></li>
+                            <!-- <li id="create-sms-menu"><a href="{{route('setting.createSms')}}">{{__('db.Create SMS')}}</a></li> -->
                         @endcan
                         @can('backup_database')
-                            <li><a href="{{route('setting.backup')}}">{{__('db.Backup Database')}}</a></li>
-                        @endcan
-                        @can('general_setting')
-                            <li id="general-setting-menu"><a href="{{route('setting.general')}}">{{__('db.General Setting')}}</a></li>
+                            <!-- <li><a href="{{route('setting.backup')}}">{{__('db.Backup Database')}}</a></li> -->
                         @endcan
                         @can('mail_setting')
-                            <li id="mail-setting-menu"><a href="{{route('setting.mail')}}">{{__('db.Mail Setting')}}</a></li>
+                            <!-- <li id="mail-setting-menu"><a href="{{route('setting.mail')}}">{{__('db.Mail Setting')}}</a></li> -->
                         @endcan
                         @can('reward_point_setting')
                             <li id="reward-point-setting-menu"><a href="{{route('setting.rewardPoint')}}">{{__('db.Reward Point Setting')}}</a></li>
                         @endcan
                         @can('sms_setting')
-                            <li id="sms-setting-menu"><a href="{{route('setting.sms')}}">{{__('db.SMS Setting')}}</a></li>
+                            <!-- <li id="sms-setting-menu"><a href="{{route('setting.sms')}}">{{__('db.SMS Setting')}}</a></li> -->
                         @endcan
 
                         @can('payment_gateway_setting')
-                            <li id="payment-gateway-setting-menu"><a href="{{route('setting.gateway')}}">{{__('db.Payment Gateways')}}</a></li>
+                            <!-- <li id="payment-gateway-setting-menu"><a href="{{route('setting.gateway')}}">{{__('db.Payment Gateways')}}</a></li> -->
                         @endcan
 
                         @can('pos_setting')
                             <li id="pos-setting-menu"><a href="{{route('setting.pos')}}">POS {{__('db.settings')}}</a></li>
                         @endcan
                         @can('hrm_setting')
-                            <li id="hrm-setting-menu"><a href="{{route('setting.hrm')}}"> {{__('db.HRM Setting')}}</a></li>
+                            <!-- <li id="hrm-setting-menu"><a href="{{route('setting.hrm')}}"> {{__('db.HRM Setting')}}</a></li> -->
                         @endcan
                         @can('barcode_setting')
                             <li id="barcode-setting-menu"><a href="{{route('barcodes.index')}}"> {{__('db.Barcode Settings')}}</a></li>

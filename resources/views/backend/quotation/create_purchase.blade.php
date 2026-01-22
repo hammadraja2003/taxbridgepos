@@ -183,12 +183,14 @@
                                                         <td><button type="button" class="ibtnDel btn btn-md btn-danger">{{__("db.delete")}}</button></td>
                                                         <input type="hidden" class="product-id" name="product_id[]" value="{{$product_data->id}}"/>
                                                         <input type="hidden" class="product-code" name="product_code[]" value="{{$product_data->code}}"/>
-                                                        <input type="hidden" class="product-cost" name="product_cost[]" value="{{ $product_cost}}"/>
+                                                        <!-- <input type="hidden" class="product-cost" name="product_cost[]" value="{{ $product_cost}}"/> -->
+                                                         <input type="hidden" class="product-cost" name="unit_cost[]" value="{{ $product_cost}}"/>
                                                         <input type="hidden" class="purchase-unit" name="purchase_unit[]" value="{{$unit_name}}"/>
                                                         <input type="hidden" class="purchase-unit-operator" value="{{$unit_operator}}"/>
                                                         <input type="hidden" class="purchase-unit-operation-value" value="{{$unit_operation_value}}"/>
                                                         <input type="hidden" class="net_unit_cost" name="net_unit_cost[]" value="{{$net_unit_cost}}" />
                                                         <input type="hidden" class="net_unit_margin" name="net_unit_margin[]" value="{{$product_data->profit_margin}}" />
+                                                        <input type="hidden" class="net_unit_margin_type" name="net_unit_margin_type[]" value="{{$product_data->profit_margin_type}}" />
                                                         <input type="hidden" class="net_unit_price" name="net_unit_price[]" value="{{$product_data->price}}" />
                                                         <input type="hidden" class="discount-value" name="discount[]" value="{{$product_quotation->discount}}" />
                                                         <input type="hidden" class="tax-rate" name="tax_rate[]" value="{{$product_quotation->tax_rate}}"/>
@@ -700,12 +702,15 @@ function productSearch(data){
                 cols += '<input type="hidden" class="purchase-unit" name="purchase_unit[]" value="' + temp_unit_name[0] + '"/>';
                 cols += '<input type="hidden" class="net_unit_cost" name="net_unit_cost[]" />';
                 cols += '<input type="hidden" class="net_unit_margin" name="net_unit_margin[]" />';
+                cols += '<input type="hidden" class="net_unit_margin_type" name="net_unit_margin_type[]" value="' + data['profit_margin_type'] + '"/>';
                 cols += '<input type="hidden" class="net_unit_price" name="net_unit_price[]" />';
                 cols += '<input type="hidden" class="discount-value" name="discount[]" />';
                 cols += '<input type="hidden" class="tax-rate" name="tax_rate[]" value="' + data[3] + '"/>';
                 cols += '<input type="hidden" class="tax-value" name="tax[]" />';
                 cols += '<input type="hidden" class="subtotal-value" name="subtotal[]" />';
                 cols += '<input type="hidden" class="imei-number" name="imei_number[]" />';
+                // Add this line inside the productSearch function
+                cols += '<input type="hidden" class="product-cost" name="unit_cost[]" value="' + data[2] + '"/>';
 
                 newRow.append(cols);
                 $("table.order-list tbody").prepend(newRow);

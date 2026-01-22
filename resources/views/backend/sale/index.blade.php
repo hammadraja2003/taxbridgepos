@@ -321,7 +321,7 @@
                         </div>
 
                         <?php
-                            $payment_methods = explode(',', $lims_pos_setting_data->payment_options);
+                        $payment_methods = explode(',', $lims_pos_setting_data->payment_options);
                         ?>
                         <div class="col-md-4">
                             <label>{{__('db.Paid By')}}</label>
@@ -408,8 +408,8 @@
                             @endphp
                             @foreach($lims_gift_card_list as $gift_card)
                             <?php
-                                $balance[$gift_card->id] = $gift_card->amount - $gift_card->expense;
-                                $expired_date[$gift_card->id] = $gift_card->expired_date;
+                            $balance[$gift_card->id] = $gift_card->amount - $gift_card->expense;
+                            $expired_date[$gift_card->id] = $gift_card->expired_date;
                             ?>
                                 <option value="{{$gift_card->id}}">{{$gift_card->card_no}}</option>
                             @endforeach
@@ -463,7 +463,7 @@
                             <p class="change ml-2">{{number_format(0, $general_setting->decimal, '.', '')}}</p>
                         </div>
                         <?php
-                            $payment_methods = explode(',', $lims_pos_setting_data->payment_options);
+                        $payment_methods = explode(',', $lims_pos_setting_data->payment_options);
                         ?>
                         <div class="col-md-4">
                             <label>{{__('db.Paid By')}}</label>
@@ -671,7 +671,7 @@
             localStorage.removeItem("message");
         }
 
-        numberOfInvoice = <?php echo json_encode($numberOfInvoice)?>;
+        numberOfInvoice = <?php echo json_encode($numberOfInvoice) ?>;
         $.ajax({
             type: 'GET',
             async: false,
@@ -741,7 +741,7 @@
     var payment_method = <?php echo json_encode($payment_method); ?>;
     var balance = <?php echo json_encode($balance) ?>;
     var expired_date = <?php echo json_encode($expired_date) ?>;
-    var current_date = <?php echo json_encode(date("Y-m-d")) ?>;
+    var current_date = <?php echo json_encode(date('Y-m-d')) ?>;
     var payment_date = [];
     var payment_reference = [];
     var paid_amount = [];
@@ -813,12 +813,14 @@
 
     $(document).on("click", "tr.sale-link td:not(:first-child, :nth-child(2))", function() {
         var sale = $(this).parent().data('sale');
-        saleDetails(sale);
+        var taxdetails = $(this).parent().data('taxdetails');
+        saleDetails(sale , taxdetails);
     });
 
     $(document).on("click", ".view", function(){
         var sale = $(this).parent().parent().parent().parent().parent().data('sale');
-        saleDetails(sale);
+        var taxdetails = $(this).parent().parent().parent().parent().parent().data('taxdetails');
+        saleDetails(sale , taxdetails);
     });
 
     $(document).on("click", ".gen-invoice", function(e){
@@ -1391,6 +1393,7 @@
         "createdRow": function( row, data, dataIndex ) {
             $(row).addClass('sale-link');
             $(row).attr('data-sale', data['sale']);
+            $(row).attr('data-taxdetails', data['taxdetails']);
         },
         "columns": columns,
         'language': {
@@ -1516,7 +1519,10 @@
 
     }
 
-    function saleDetails(sale){
+    function saleDetails(sale , taxdetails){
+        
+        var taxdetailsArr = taxdetails.split(",").map(item => item.trim());
+
         $("#sale-details input[name='sale_id']").val(sale[13]);
 
         var htmltext = '{{__("db.date")}}: '+sale[0]+
@@ -1637,6 +1643,33 @@
             cols += '<td>' + sale[17] + '(' + sale[18] + '%)' + '</td>';
             newRow.append(cols);
             newBody.append(newRow);
+
+            if(taxdetailsArr[0] > 0){
+                var newRow = $("<tr>");
+                cols = '';
+                cols += '<td colspan=9>{{__("db.Total Extra Tax")}}:</td>';
+                cols += '<td>' + taxdetailsArr[0] + '</td>';
+                newRow.append(cols);
+                newBody.append(newRow);
+            }
+
+            if(taxdetailsArr[1] > 0){
+                var newRow = $("<tr>");
+                cols = '';
+                cols += '<td colspan=9>{{__("db.Total Further Tax")}}:</td>';
+                cols += '<td>' + taxdetailsArr[1] + '</td>';
+                newRow.append(cols);
+                newBody.append(newRow);
+            }
+
+            if(taxdetailsArr[2] > 0){
+                var newRow = $("<tr>");
+                cols = '';
+                cols += '<td colspan=9>{{__("db.Total Further Tax")}}:</td>';
+                cols += '<td>' + taxdetailsArr[2] + '</td>';
+                newRow.append(cols);
+                newBody.append(newRow);
+             }
 
             var newRow = $("<tr>");
             cols = '';

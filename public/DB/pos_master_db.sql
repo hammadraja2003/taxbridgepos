@@ -87,7 +87,7 @@ CREATE TABLE `business_configurations` (
 
 LOCK TABLES `business_configurations` WRITE;
 /*!40000 ALTER TABLE `business_configurations` DISABLE KEYS */;
-INSERT INTO `business_configurations` VALUES (1,'Secureism Pvt Ltd','127.0.0.1','8923980','F3 Center of Technology, Zaraj Society, Islamabad Pakistan','PUNJAB','SECUREISM (PRIVATE) LIMITED','0010109016750017','0119999','03001234567','ZEESHAN QAMAR','PK44ABPA0010109016750017','ABPAPKKA','ABL CHAKLALA SCHEME 3 RAWALPINDI','0757','25a88e58a92bf1aa5e3261df0c7fcee4','2025-07-04 12:02:41','2025-12-15 07:44:37','tax_bridge_pos','root','Admin','sandbox','2ebe4443-4c22-341f-8f4e-aa4002fcffcb',NULL),(2,'Madina Cash & Carry','127.0.0.1','874587','Zarraj Society, Islamabad Pakistan','PUNJAB','MCC','0010454534017','0145454549','03001234567','ZEESHAN QAMAR','PK44ABPA0342234324016750017','ABPAHJJHA','UBL Zarraj','7847','25a88fsafsaf5e3261df0c7fcee4','2025-07-04 12:02:41','2025-12-15 07:44:37','madinacashandcarry','root','Admin','sandbox','2ebe4443-4c22-341f-8f4e-aa4002fcffcb',NULL);
+INSERT INTO `business_configurations` VALUES (1,'Secureism Pvt Ltd','127.0.0.1','8923980','F3 Center of Technology, Zaraj Society, Islamabad Pakistan','PUNJAB','SECUREISM (PRIVATE) LIMITED','0010109016750017','0119999','03001234567','ZEESHAN QAMAR','PK44ABPA0010109016750017','ABPAPKKA','ABL CHAKLALA SCHEME 3 RAWALPINDI','0757','25a88e58a92bf1aa5e3261df0c7fcee4','2025-07-04 12:02:41','2025-12-15 07:44:37','tax_bridge_pos','root','Admin','sandbox','2ebe4443-4c22-341f-8f4e-aa4002fcffcb',NULL);
 /*!40000 ALTER TABLE `business_configurations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -213,7 +213,7 @@ CREATE TABLE `business_scenarios` (
 
 LOCK TABLES `business_scenarios` WRITE;
 /*!40000 ALTER TABLE `business_scenarios` DISABLE KEYS */;
-INSERT INTO `business_scenarios` VALUES (16,1,18,'2025-10-07 11:04:00','2025-10-07 11:04:00'),(38,1,19,'2025-11-17 04:24:01','2025-11-17 04:24:01');
+INSERT INTO `business_scenarios` VALUES (16,1,1,'2025-10-07 11:04:00','2025-10-07 11:04:00'),(38,1,19,'2025-11-17 04:24:01','2025-11-17 04:24:01');
 /*!40000 ALTER TABLE `business_scenarios` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -291,6 +291,8 @@ CREATE TABLE `general_settings` (
   `disable_signup` int NOT NULL DEFAULT '0',
   `disable_forgot_password` int NOT NULL DEFAULT '0',
   `margin_type` int NOT NULL DEFAULT '0',
+  `default_fbr_scenario` int DEFAULT NULL,
+  `default_fbr_scenario_type` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_bus_config_id` (`bus_config_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -302,7 +304,7 @@ CREATE TABLE `general_settings` (
 
 LOCK TABLES `general_settings` WRITE;
 /*!40000 ALTER TABLE `general_settings` DISABLE KEYS */;
-INSERT INTO `general_settings` VALUES (1,1,'TaxBridgePOS','20260102113229.svg','20260102113426fav.ico',0,'4',NULL,NULL,'warehouse','no','d-m-Y','TaxBridge','standard',2,1,'default.css','manufacturing','2018-07-06 06:13:11','2026-01-06 12:50:30','prefix',NULL,'days','0',0,0,'Tax Bridge','98098007',1,'000000',NULL,0,0,10.00,'Asia/Karachi',NULL,NULL,NULL,NULL,1,1,0),(2,2,'Madina Cash & Carry','20251229044528.png',NULL,0,'4',NULL,NULL,'warehouse','no','d-m-Y','TaxBridge','standard',2,1,'default.css','manufacturing','2018-07-06 06:13:11','2025-12-29 11:45:28','prefix',NULL,'days','0',0,0,'MCC','444',1,'000000',NULL,0,0,25.00,'Asia/Karachi',NULL,NULL,NULL,NULL,0,0,0);
+INSERT INTO `general_settings` VALUES (1,1,'TaxBridgePOS','20260102113229.svg','20260102113426fav.ico',0,'4',NULL,NULL,'own','no','d-m-Y','TaxBridge','gst',2,1,'default.css','manufacturing','2018-07-06 06:13:11','2026-01-22 12:35:55','prefix',NULL,'days','0',0,0,'Tax Bridge','98098007',1,'',NULL,0,0,10.00,'Asia/Karachi',NULL,NULL,NULL,NULL,1,1,0,1,'Goods at standard rate (default)'),(2,2,'Madina Cash & Carry','20251229044528.png',NULL,0,'4',NULL,NULL,'warehouse','no','d-m-Y','TaxBridge','standard',2,1,'default.css','manufacturing','2018-07-06 06:13:11','2025-12-29 11:45:28','prefix',NULL,'days','0',0,0,'MCC','444',1,'000000',NULL,0,0,25.00,'Asia/Karachi',NULL,NULL,NULL,NULL,0,0,0,NULL,NULL);
 /*!40000 ALTER TABLE `general_settings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -496,7 +498,7 @@ CREATE TABLE `role_has_permissions` (
 
 LOCK TABLES `role_has_permissions` WRITE;
 /*!40000 ALTER TABLE `role_has_permissions` DISABLE KEYS */;
-INSERT INTO `role_has_permissions` VALUES (4,1),(5,1),(6,1),(7,1),(8,1),(9,1),(10,1),(11,1),(12,1),(13,1),(14,1),(15,1),(16,1),(17,1),(18,1),(19,1),(20,1),(21,1),(22,1),(23,1),(24,1),(25,1),(26,1),(27,1),(28,1),(29,1),(30,1),(31,1),(32,1),(33,1),(34,1),(35,1),(36,1),(37,1),(38,1),(39,1),(40,1),(41,1),(42,1),(43,1),(44,1),(45,1),(46,1),(47,1),(48,1),(49,1),(50,1),(51,1),(52,1),(53,1),(54,1),(55,1),(56,1),(57,1),(58,1),(59,1),(60,1),(61,1),(62,1),(63,1),(64,1),(65,1),(66,1),(67,1),(68,1),(69,1),(70,1),(71,1),(72,1),(73,1),(74,1),(75,1),(76,1),(77,1),(78,1),(79,1),(80,1),(81,1),(82,1),(83,1),(84,1),(85,1),(86,1),(87,1),(88,1),(89,1),(90,1),(91,1),(92,1),(93,1),(94,1),(95,1),(96,1),(97,1),(98,1),(99,1),(100,1),(101,1),(102,1),(103,1),(104,1),(105,1),(106,1),(107,1),(108,1),(109,1),(110,1),(111,1),(112,1),(113,1),(114,1),(115,1),(116,1),(117,1),(118,1),(119,1),(120,1),(121,1),(122,1),(123,1),(124,1),(125,1),(126,1),(127,1),(128,1),(129,1),(130,1),(131,1),(132,1),(133,1),(134,1),(135,1),(136,1),(137,1),(138,1),(139,1),(140,1),(141,1),(145,1),(146,1),(147,1),(148,1),(149,1),(150,1),(151,1),(152,1),(153,1),(154,1),(155,1),(156,1),(157,1),(158,1),(159,1),(160,1),(161,1),(162,1),(163,1),(164,1),(165,1),(166,1),(167,1),(168,1),(169,1),(170,1),(172,1),(173,1),(174,1),(175,1),(176,1),(177,1),(178,1),(179,1),(180,1),(181,1),(182,1),(4,2),(5,2),(6,2),(7,2),(8,2),(9,2),(10,2),(11,2),(12,2),(13,2),(14,2),(15,2),(16,2),(17,2),(18,2),(19,2),(20,2),(21,2),(22,2),(23,2),(24,2),(25,2),(26,2),(27,2),(28,2),(29,2),(30,2),(31,2),(32,2),(33,2),(34,2),(35,2),(36,2),(37,2),(38,2),(39,2),(40,2),(41,2),(42,2),(43,2),(44,2),(45,2),(46,2),(47,2),(48,2),(49,2),(50,2),(51,2),(52,2),(53,2),(54,2),(55,2),(56,2),(57,2),(58,2),(59,2),(60,2),(61,2),(62,2),(63,2),(64,2),(65,2),(66,2),(67,2),(68,2),(69,2),(70,2),(71,2),(72,2),(73,2),(74,2),(75,2),(76,2),(77,2),(78,2),(79,2),(80,2),(81,2),(82,2),(83,2),(84,2),(85,2),(86,2),(87,2),(88,2),(89,2),(90,2),(91,2),(92,2),(93,2),(94,2),(95,2),(96,2),(97,2),(98,2),(99,2),(100,2),(101,2),(102,2),(103,2),(104,2),(105,2),(106,2),(107,2),(108,2),(109,2),(110,2),(111,2),(112,2),(113,2),(114,2),(115,2),(116,2),(117,2),(118,2),(119,2),(120,2),(121,2),(122,2),(123,2),(124,2),(125,2),(126,2),(127,2),(128,2),(129,2),(130,2),(131,2),(132,2),(133,2),(134,2),(135,2),(136,2),(137,2),(138,2),(139,2),(141,2),(4,4),(6,4),(7,4),(8,4),(9,4),(12,4),(13,4),(14,4),(20,4),(21,4),(22,4),(24,4),(25,4),(28,4),(29,4),(55,4),(56,4),(57,4),(63,4),(64,4),(89,4),(106,4);
+INSERT INTO `role_has_permissions` VALUES (4,1),(5,1),(6,1),(7,1),(8,1),(9,1),(10,1),(11,1),(12,1),(13,1),(14,1),(15,1),(16,1),(17,1),(18,1),(19,1),(20,1),(21,1),(22,1),(23,1),(24,1),(25,1),(26,1),(27,1),(28,1),(29,1),(30,1),(31,1),(32,1),(33,1),(34,1),(35,1),(36,1),(37,1),(38,1),(39,1),(40,1),(41,1),(42,1),(43,1),(44,1),(45,1),(46,1),(47,1),(48,1),(49,1),(50,1),(51,1),(52,1),(53,1),(54,1),(55,1),(56,1),(57,1),(58,1),(59,1),(60,1),(61,1),(62,1),(63,1),(64,1),(65,1),(66,1),(67,1),(68,1),(69,1),(70,1),(71,1),(72,1),(73,1),(74,1),(75,1),(76,1),(77,1),(78,1),(79,1),(80,1),(81,1),(82,1),(83,1),(84,1),(85,1),(86,1),(87,1),(88,1),(89,1),(90,1),(91,1),(92,1),(93,1),(94,1),(95,1),(96,1),(97,1),(98,1),(99,1),(100,1),(101,1),(102,1),(103,1),(104,1),(105,1),(106,1),(107,1),(108,1),(109,1),(110,1),(111,1),(112,1),(113,1),(114,1),(115,1),(116,1),(117,1),(118,1),(119,1),(120,1),(121,1),(122,1),(123,1),(124,1),(125,1),(126,1),(127,1),(128,1),(129,1),(130,1),(131,1),(132,1),(133,1),(134,1),(135,1),(136,1),(137,1),(138,1),(139,1),(140,1),(141,1),(145,1),(146,1),(147,1),(148,1),(149,1),(150,1),(151,1),(152,1),(153,1),(154,1),(155,1),(156,1),(157,1),(158,1),(159,1),(160,1),(161,1),(162,1),(163,1),(164,1),(165,1),(166,1),(167,1),(168,1),(169,1),(170,1),(172,1),(173,1),(174,1),(175,1),(176,1),(177,1),(178,1),(179,1),(180,1),(181,1),(182,1),(4,2),(5,2),(6,2),(7,2),(8,2),(9,2),(10,2),(11,2),(12,2),(13,2),(14,2),(15,2),(16,2),(17,2),(18,2),(19,2),(20,2),(21,2),(22,2),(23,2),(24,2),(25,2),(26,2),(27,2),(28,2),(29,2),(30,2),(31,2),(32,2),(33,2),(34,2),(35,2),(36,2),(37,2),(38,2),(39,2),(40,2),(41,2),(42,2),(43,2),(44,2),(45,2),(46,2),(47,2),(48,2),(49,2),(50,2),(51,2),(52,2),(53,2),(54,2),(55,2),(56,2),(57,2),(58,2),(59,2),(60,2),(61,2),(62,2),(63,2),(64,2),(65,2),(66,2),(67,2),(68,2),(69,2),(70,2),(71,2),(72,2),(73,2),(74,2),(75,2),(76,2),(77,2),(78,2),(79,2),(80,2),(81,2),(82,2),(83,2),(84,2),(85,2),(86,2),(87,2),(88,2),(89,2),(90,2),(91,2),(92,2),(93,2),(94,2),(95,2),(96,2),(97,2),(98,2),(99,2),(100,2),(101,2),(102,2),(103,2),(104,2),(105,2),(106,2),(107,2),(108,2),(109,2),(110,2),(111,2),(112,2),(113,2),(114,2),(115,2),(116,2),(117,2),(118,2),(119,2),(120,2),(121,2),(122,2),(123,2),(124,2),(125,2),(126,2),(127,2),(128,2),(129,2),(130,2),(131,2),(132,2),(133,2),(134,2),(135,2),(136,2),(137,2),(138,2),(139,2),(141,2),(4,4),(6,4),(7,4),(8,4),(9,4),(12,4),(13,4),(14,4),(20,4),(21,4),(22,4),(24,4),(25,4),(28,4),(29,4),(55,4),(56,4),(57,4),(63,4),(64,4),(89,4),(106,4),(4,9),(5,9),(6,9),(7,9),(8,9),(9,9),(10,9),(11,9),(12,9),(13,9),(14,9),(15,9),(16,9),(17,9),(18,9),(19,9),(24,9),(25,9),(26,9),(27,9),(28,9),(29,9),(30,9),(31,9),(32,9),(33,9),(34,9),(35,9),(38,9),(41,9),(42,9),(43,9),(44,9),(46,9),(47,9),(48,9),(49,9),(50,9),(51,9),(52,9),(53,9),(59,9),(61,9),(63,9),(64,9),(65,9),(66,9),(82,9),(85,9),(86,9),(90,9),(91,9),(92,9),(93,9),(94,9),(95,9),(96,9),(98,9),(100,9),(103,9),(105,9),(106,9),(107,9),(108,9),(109,9),(110,9),(111,9),(112,9),(113,9),(114,9),(115,9),(116,9),(117,9),(118,9),(119,9),(120,9),(121,9),(122,9),(135,9),(138,9),(141,9),(151,9),(153,9),(154,9),(155,9),(156,9),(157,9),(160,9),(161,9),(162,9),(163,9),(169,9),(170,9);
 /*!40000 ALTER TABLE `role_has_permissions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -518,7 +520,7 @@ CREATE TABLE `roles` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -527,7 +529,7 @@ CREATE TABLE `roles` (
 
 LOCK TABLES `roles` WRITE;
 /*!40000 ALTER TABLE `roles` DISABLE KEYS */;
-INSERT INTO `roles` VALUES (1,'Admin','admin can access all data...','web',1,'1',1,'2018-06-01 23:46:44','2018-06-02 23:13:05'),(2,'Owner','Staff of shop','web',1,'2',1,'2018-10-22 02:38:13','2022-02-01 13:13:30'),(4,'staff','staff has specific acess...','web',1,'3',1,'2018-06-02 00:05:27','2022-02-01 13:13:04'),(5,'Customer','customer','web',1,'4',1,'2020-11-05 06:43:16','2026-01-09 05:15:51');
+INSERT INTO `roles` VALUES (1,'Admin','admin can access all data...','web',1,'1',1,'2018-06-01 23:46:44','2018-06-02 23:13:05'),(2,'Owner','Staff of shop','web',1,'2',1,'2018-10-22 02:38:13','2022-02-01 13:13:30'),(4,'staff','staff has specific acess...','web',1,'3',1,'2018-06-02 00:05:27','2022-02-01 13:13:04'),(5,'Customer','customer','web',1,'4',1,'2020-11-05 06:43:16','2026-01-09 05:15:51'),(9,'Sub Admin',NULL,'web',1,'3',1,'2026-01-13 11:07:18','2026-01-22 12:30:48');
 /*!40000 ALTER TABLE `roles` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -647,7 +649,7 @@ CREATE TABLE `users` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -656,7 +658,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'admin','admin@admin.com','$2y$10$D3NNYjFpxZ/7ve5fTVs.k.6cH5AfPyPC1JL7/G8NQoVcTPvt9nZoa','6MHyfgGY2TMkiRmwb3L7leHN6j0ZlKnXKZ68VktYhtqMJA1UeQ5A8lznL7jH','12112','TaxBridge',1,NULL,NULL,1,1,0,'2018-06-01 22:24:15','2026-01-01 10:48:48'),(50,'Hammad Ali','hammad.ali@f3technologies.eu','$2y$10$p.zK0AkgDiBJGVwqxkeLdehN8g9261PYaeaP2QMT/23MhYlNA8Nbm',NULL,'03005325195','Secureism Pvt Ltd',1,NULL,NULL,2,1,0,'2025-12-26 01:13:51','2025-12-26 01:13:51'),(51,'ahmedkhan','ahmedkhan@testing.com','$2y$10$5PGvZKkxTQmneVMe9qyGReBpZoFtOK5nFnVErVLtPRZ0iN7JAHP0W',NULL,'0354874874','Khan Traders',5,NULL,NULL,1,1,0,'2026-01-05 12:07:11','2026-01-05 12:07:11'),(52,'adeel123','adeel.ahmed@secureism.com','$2y$10$Xrvh.Rsw0jtnO486A8kxeexCSNS2hKJBuEyQfcapP4/XcgH8gs8ie',NULL,'03005487458','Siddique Traders',5,NULL,NULL,1,1,0,'2026-01-05 12:21:07','2026-01-05 12:21:07');
+INSERT INTO `users` VALUES (1,'Admin','admin@admin.com','$2y$10$D3NNYjFpxZ/7ve5fTVs.k.6cH5AfPyPC1JL7/G8NQoVcTPvt9nZoa','6vsuZOFVPW5p7RyrxZAopbpzCgBLqnSD3eqF5CaS2kMsClSmnMJl5etPufga','12112','TaxBridge',1,NULL,NULL,1,1,0,'2018-06-01 22:24:15','2026-01-14 07:16:15'),(51,'ahmedkhan','ahmedkhan@testing.com','$2y$10$5PGvZKkxTQmneVMe9qyGReBpZoFtOK5nFnVErVLtPRZ0iN7JAHP0W',NULL,'0354874874','Khan Traders',5,NULL,NULL,1,1,0,'2026-01-05 12:07:11','2026-01-05 12:07:11'),(52,'adeel123','adeel.ahmed@secureism.com','$2y$10$Xrvh.Rsw0jtnO486A8kxeexCSNS2hKJBuEyQfcapP4/XcgH8gs8ie',NULL,'03005487458','Siddique Traders',5,1,1,1,1,0,'2026-01-05 12:21:07','2026-01-14 07:12:35'),(53,'Hammad Ali','hammad.ali@f3technologies.eu','$2y$10$/OkkDRWh62tfMx22S31QX.HysehgXGg99hcGEWoqZnZMSDa57jr1q',NULL,'030012367748',NULL,9,NULL,NULL,1,1,0,'2026-01-13 12:19:17','2026-01-13 12:19:17');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -669,4 +671,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-01-09 16:38:21
+-- Dump completed on 2026-01-22 17:38:10

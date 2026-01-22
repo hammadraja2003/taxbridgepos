@@ -42,7 +42,7 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label>{{__('db.Company Name')}} </label>
+                                    <label>{{__('db.Company Name')}} <span class="asterisk-fbr">*</span> </label>
                                     <input type="text" name="company_name" value="{{$lims_customer_data->company_name}}" class="form-control">
                                 </div>
                             </div>
@@ -94,7 +94,7 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label>{{__('db.Address')}}</label>
+                                    <label>{{__('db.Address')}} <span class="asterisk-fbr">*</span></label>
                                     <input type="text" name="address" value="{{$lims_customer_data->address}}" class="form-control">
                                 </div>
                             </div>
@@ -212,6 +212,42 @@
                                     <input type="password" name="password" class="form-control">
                                 </div>
                             </div>
+                            
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <input type="checkbox" name="is_fbr_customer" value="1" {{ $lims_customer_data->is_fbr_customer ? 'checked' : '' }} />
+                                    <label>{{__('db.This Customer Belongs to FBR Invoicing')}}  <x-info title="If checked, customer will be used for fbr invoicing" type="info" /></label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 fbr-input">
+                                <div class="form-group">
+                                        <label>{{__('db.This Customer is FBR Registered')}}  <x-info title="If checked, customer will be used for fbr invoicing" type="info" /></label>
+                                        <select name="is_fbr_registered" class="form-control">
+                                            <option value="0" {{ $lims_customer_data->is_fbr_registered == 0 ? 'selected' : '' }}>{{__('db.Unregistered')}}</option>
+                                            <option value="1" {{ $lims_customer_data->is_fbr_registered == 1 ? 'selected' : '' }}>{{__('db.Registered')}}</option>
+                                        </select>   
+                                    </div>
+                                </div>
+                                <div class="col-md-4 fbr-input">
+                                    <div class="form-group">
+                                        <label>{{__('db.Customer NTN/CNIC')}} <span class="reg_fbr">*</span></label>
+                                        <input type="text" name="customer_ntn_cnic" value="{{ $lims_customer_data->customer_ntn_cnic }}" class="form-control">
+                                        @if($errors->has('customer_ntn_cnic'))
+                                    <span>
+                                        <strong>{{ $errors->first('customer_ntn_cnic') }}</strong>
+                                        </span>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="col-md-4 fbr-input">
+                                    <div class="form-group">
+                                        <label>{{__('db.Customer Province')}} <span class="reg_fbr">*</span></label>
+                                        <select name="customer_province" class="form-control">
+                                            {!! provinceOptions($lims_customer_data->customer_province) !!}
+                                        </select>
+                                    </div>
+                                </div>
+                        </div>
                             <div class="col-md-12">
                                 <div class="form-group mt-3">
                                     <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">
@@ -260,6 +296,26 @@
 
     $(".user-input").hide();
 
+   if ($("input[name='is_fbr_customer']").is(':checked')) {
+        $('.fbr-input').show();
+        $('.asterisk-fbr').show();
+        $('input[name="company_name"]').prop('required',true);
+        $('input[name="address"]').prop('required',true);
+        
+        // Handle inner conditional (Registered vs Unregistered)
+        if ($("select[name='is_fbr_registered']").val() == '1') {
+            $('input[name="customer_ntn_cnic"]').prop('required',true);
+            $('select[name="customer_province"]').prop('required',true);
+            $('.reg_fbr').show();
+        } else {
+            $('.reg_fbr').hide();
+        }
+    } else {
+        $(".fbr-input").hide();
+        $('.asterisk-fbr').hide();
+        $('.reg_fbr').hide();
+    }
+
     $('input[name="user"]').on('change', function() {
         if ($(this).is(':checked')) {
             $('.user-input').show(300);
@@ -273,7 +329,38 @@
         }
     });
 
+    $('input[name="is_fbr_customer"]').on('change', function() {
+        if ($(this).is(':checked')) {
+            $('.fbr-input').show(300);
+            $('input[name="customer_ntn_cnic"]').prop('required',true);
+            $('input[name="customer_province"]').prop('required',true);
+            $('input[name="company_name"]').prop('required',true);
+            $('input[name="address"]').prop('required',true);
+            $('.asterisk-fbr').show();
+        }
+        else{
+            $('.fbr-input').hide(300);
+            $('input[name="customer_ntn_cnic"]').prop('required',false);
+            $('input[name="customer_province"]').prop('required',false);
+            $('input[name="company_name"]').prop('required',false);
+            $('input[name="address"]').prop('required',false);
+            $('.asterisk-fbr').hide();
+        }
+    });
+
     var customer_group = $("input[name='customer_group']").val();
     $('select[name=customer_group_id]').val(customer_group);
+    $('[name="is_fbr_registered"]').on('change', function() {
+        if ($(this).val() == '1') {
+             $('input[name="customer_NTNCNIC"]').prop('required',true);
+            $('input[name="customer_province"]').prop('required',true);
+            $('.reg_fbr').show();
+        }
+        else{
+            $('input[name="customer_NTNCNIC"]').prop('required',false);
+            $('input[name="customer_province"]').prop('required',false);
+            $('.reg_fbr').hide();
+        }
+    });
 </script>
 @endpush

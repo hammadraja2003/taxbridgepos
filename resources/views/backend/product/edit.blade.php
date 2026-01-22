@@ -317,7 +317,7 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <input type="hidden" name="tax" value="{{$lims_product_data->tax_id}}">
-                                        <label>{{__('db.product')}} {{__('db.Tax')}} </label>
+                                        <label>{{__('db.Product Tax')}} <span class="text-danger d-none" id="tax-required">*</span></label>
                                         <select name="tax_id" class="form-control selectpicker">
                                             <option value="">No Tax</option>
                                             @foreach($lims_tax_list as $tax)
@@ -639,6 +639,69 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="col-md-12 mt-3">
+                                    <h5>
+                                        <input name="is_fbr_invoice_product" type="checkbox" id="is_fbr_invoice_product" value="1" 
+                                        {{ $lims_product_data->is_fbr_invoice_product ? 'checked' : '' }}>
+                                        &nbsp; {{__('db.This Product has FBR Invoice Attributes')}}
+                                    </h5>
+                                </div>
+
+                                <div class="col-md-12" id="fbr-section" style="{{ $lims_product_data->is_fbr_invoice_product ? '' : 'display:none;' }}">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>{{__('db.HS Code')}} *</label>
+                                                <input type="text" name="hs_code" class="form-control" value="{{$lims_product_data->hs_code}}" {{ $lims_product_data->is_fbr_invoice_product ? 'required' : '' }} />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>{{__('db.Fixed or Retail Price')}}</label>
+                                                <input type="number" name="fixed_notified_value_or_retail_price" class="form-control" step="any" value="{{$lims_product_data->fixed_notified_value_or_retail_price ?? 0}}" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>{{__('db.Sales Tax Withheld')}}</label>
+                                                <input type="number" name="sales_tax_withheld_at_source" class="form-control" step="any" value="{{$lims_product_data->sales_tax_withheld_at_source ?? 0}}" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>{{__('db.Extra Tax')}}</label>
+                                                <input type="number" name="extra_tax" class="form-control" step="any" value="{{$lims_product_data->extra_tax ?? 0}}" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>{{__('db.Further Tax')}}</label>
+                                                <input type="number" name="further_tax" class="form-control" step="any" value="{{$lims_product_data->further_tax ?? 0}}" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>{{__('db.FED Payable')}}</label>
+                                                <input type="number" name="fed_payable" class="form-control" step="any" value="{{$lims_product_data->fed_payable ?? 0}}" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>{{__('db.SRO Schedule No')}}</label>
+                                                <input type="text" name="sro_schedule_no" class="form-control" value="{{$lims_product_data->sro_schedule_no}}" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>{{__('db.SRO Item Serial No')}}</label>
+                                                <input type="text" name="sro_item_serial_no" class="form-control" value="{{$lims_product_data->sro_item_serial_no}}" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
                                 <!-- @if (\Schema::hasColumn('products', 'woocommerce_product_id'))
                                 <div class="col-md-12 mt-3">
                                     <h5><input name="is_sync_disable" {{$lims_product_data->is_sync_disable==1 ? 'checked':''}} type="checkbox" id="is_sync_disable" value="1">&nbsp; {{__('db.Disable Woocommerce Sync')}}</h5>
@@ -670,7 +733,7 @@
                                 @if(in_array('ecommerce',explode(',',$general_setting->modules)) || in_array('restaurant',explode(',',$general_setting->modules)))
                                 <div class="col-12 mt-3">
                                     <div class="form-group">
-                                        <label>{{__('db.Product Tags')}} </label>
+                                        <label>{{__('db.Product Tags')}} ></label>
                                         <input type="text" name="tags" class="form-control" value="{{$lims_product_data->tags}}">
                                         <span class="validation-msg" id="tags-error"></span>
                                     </div>
@@ -1824,6 +1887,31 @@
 
     $("input[name='is_diffPrice']").on("change", function () {
         diffPriceShowHide();
+    });
+
+     $("#is_fbr_invoice_product").on("change", function() {
+        if ($(this).is(':checked')) {
+            $("#fbr-section").show(300);
+            $("input[name='hs_code']").prop('required', true); // Make HS Code required
+             $("select[name='tax_id']").prop('required', true);
+            $("select[name='tax_id']").selectpicker('refresh');
+             // Show asterisk
+            $("#tax-required").removeClass('d-none');
+        } else {
+            $("#fbr-section").hide(300);
+
+            // Remove required
+            $("input[name='hs_code']").prop('required', false);
+            $("select[name='tax_id']").prop('required', false);
+            $("select[name='tax_id']").selectpicker('refresh');
+
+            // Hide asterisk
+            $("#tax-required").addClass('d-none');
+
+            // Reset values
+            $("#fbr-section input").val('');
+            $("select[name='tax_id']").selectpicker('val', '');
+        }
     });
 
     function variantShowHide() {

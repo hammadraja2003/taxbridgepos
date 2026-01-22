@@ -62,6 +62,17 @@
                                 </div>
                             </div>
                             <div class="row">
+                                 <div class="col-md-3">
+                                <div class="form-group">
+                                        <label>{{__('db.Default FBR Posting Setting')}} *</label>
+                                        @if($lims_pos_setting_data)
+                                        <input type="hidden" name="fbr_posting_hidden" value="{{$lims_pos_setting_data->fbr_posting}}">
+                                        @endif
+                                         {!! fbrPostDropdown('fbr_posting', $lims_pos_setting_data->fbr_posting, 'fbr_posting') !!}
+                                </div>
+                                </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-md-3 mt-2 mb-2">
                                     @if($lims_pos_setting_data && $lims_pos_setting_data->keybord_active)
                                     <input class="mt-2" type="checkbox" name="keybord_active" value="1" checked>

@@ -14,7 +14,7 @@
         </form>
     </div>
     <div class="table-responsive">
-        <table id="packing-slip-table" class="table table-striped table-bordered">
+        <table id="packing-slip-table" width="100%" class="table table-striped table-bordered">
             <thead>
                 <tr>
                     <th class="not-exported"></th>

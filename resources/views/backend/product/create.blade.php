@@ -1,20 +1,5 @@
 @extends('backend.layout.main')
 
-@if(in_array('ecommerce',explode(',',$general_setting->modules)) || in_array('restaurant',explode(',',$general_setting->modules)))
-@push('css')
-<style>
-.search_result, .search_result_addon {border:1px solid #e4e6fc;border-radius:5px;overflow-y: scroll;}
-.search_result > div, .search_result_addon > div, .selected_items > div, .selected_addons > div {border-top:1px solid #e4e6fc;cursor:pointer;display:flex;align-items:center;padding: 10px;position: relative;}
-.search_result > div > img, .search_result_addon > div > img, .selected_items > div > img, .selected_addons > div > img {margin-right: 10px;max-width: 40px;}
-.search_result > div h4, .search_result_addon > div h4, .selected_items > div h4, .selected_addons > div h4 {font-size: 0.9rem;}
-.search_result > div i,  .search_result_addon > div i, {color:#54b948;position:absolute;right:5px;top:30%}
-.search_result div:first-child, .search_result_addon div:first-child, {border-top:none}
-.selected_items .remove_item, .selected_addons .remove_item {position: absolute;right: 20px;top:20px};
-.delVarOption{display: flex;flex-direction: column;align-items: center;}
-</style>
-@endpush
-@endif
-
 @section('content')
 <section class="forms">
     <div class="container-fluid">
@@ -247,7 +232,8 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>{{__('db.Product Tax')}}</label>
+                                        <label>{{__('db.Product Tax')}} <span class="text-danger d-none" id="tax-required">*</span></label>
+
                                         <div class="input-group pos">
 
                                         <select name="tax_id" class="selectpicker form-control" style="width: 100px">
@@ -509,102 +495,75 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- @if (\Schema::hasColumn('products', 'woocommerce_product_id'))
-                                <div class="col-md-12 mt-3">
-                                    <h5><input name="is_sync_disable" type="checkbox" id="is_sync_disable" value="1">&nbsp; {{__('db.Disable Woocommerce Sync')}}</h5>
-                                </div>
-                                @endif -->
 
-                                @if(in_array('ecommerce',explode(',',$general_setting->modules)) || in_array('restaurant',explode(',',$general_setting->modules)))
-                                <div class="col-md-12 mt-3">
-                                    <h5><input name="is_online" type="checkbox" id="is_online" value="1" checked>&nbsp; {{__('db.Sell Online')}}</h5>
+                               <div class="col-md-12 mt-3">
+                                    <h5>
+                                        <input name="is_fbr_invoice_product" type="checkbox" id="is_fbr_invoice_product" value="1">
+                                        &nbsp; {{__('db.This Product has FBR Invoice Attributes')}}
+                                    </h5>
                                 </div>
-                                @endif
 
-                                @if(in_array('restaurant',explode(',',$general_setting->modules)))
-                                <div class="col-md-12 mt-3">
-                                    <h5><input name="is_addon" type="checkbox" id="is_addon" value="1">&nbsp; {{__('db.This is topping')}} <i class="dripicons-question" data-toggle="tooltip" title="{{__('db.Check this if the item is a topping or extra or add-on only to be served with a main course')}}"></i></h5>
-                                </div>
-                                @endif
-
-                                @if(in_array('ecommerce',explode(',',$general_setting->modules)))
-                                <div class="col-md-12 mt-3">
-                                    <h5><input name="in_stock" type="checkbox" id="in_stock" value="1" checked>&nbsp; {{__('db.In Stock')}}</h5>
-                                </div>
-                                <!-- <div class="col-md-12 mt-3 track_inventory" style="display:none">
-                                    <h5><input name="track_inventory" type="checkbox" id="track_inventory" value="0">&nbsp; {{__('db.Track Inventory')}}</h5>
-                                </div> -->
-                                @endif
-                            </div>
-                            @if(in_array('ecommerce',explode(',',$general_setting->modules)) || in_array('restaurant',explode(',',$general_setting->modules)))
-                            <div class="row">
-                                <div class="col-12 mt-3">
-                                    <div class="form-group">
-                                        <label>{{__('db.Product Tags')}}</strong> </label>
-                                        <input type="text" name="tags" class="form-control" value="">
-                                        <span class="validation-msg" id="tags-error"></span>
-                                    </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <br/>
-                                    <h6>For SEO</h6>
-                                    <br>
-                                </div>
-                                <div class="col-md-12 form-group">
-                                    <label>{{ __('Meta Title') }} *</label>
-                                    <input type="text" name="meta_title" class="form-control" value="">
-                                </div>
-                                <div class="col-md-12 form-group">
-                                    <label>{{ __('Meta Description') }} *</label>
-                                    <input type="text" name="meta_description" class="form-control" value="">
-                                </div>
-                                <div class="col-md-12 form-group related-section">
-                                    <label>{{__('db.Related Products')}}</label>
-                                    <input type="text" id="search_products" class="form-control">
-                                    <div class="search_result"></div>
-                                    <h4 class="mt-5 mb-3">Selected Items</h4>
-                                    <div class="selected_items"></div>
-                                    <textarea class="selected_ids hidden no-tiny" name="products"></textarea>
-                                </div>
-                            </div>
-                            @endif
-
-                            @if(in_array('restaurant',explode(',',$general_setting->modules)))
-                            <div class="row">
-                                <div class="col-md-12 form-group extra-section">
-                                    <label>{{__('db.Extras')}}</label>
-                                    <input type="text" id="search_addons" class="form-control">
-                                    <div class="search_result_addon"></div>
-                                    <h4 class="mt-5 mb-3">Selected Extras</h4>
-                                    <div class="selected_addons"></div>
-                                    <textarea class="selected_addon_ids hidden no-tiny" name="extras"></textarea>
-                                </div>
-                                <div class="col-md-4 col-6">
-                                    <div class="form-group top-fields">
-                                        <label>{{__('db.Kitchen')}}</label>
-                                        <div class="input-group pos">
-                                            <select id="kitchen_id" name="kitchen_id" class="selectpicker form-control" title="Select kitchen...">
-                                                @foreach($kitchen_list as $kitchen)
-                                                <option value="{{$kitchen->id}}">{{$kitchen->name}}</option>
-                                                @endforeach
-                                            </select>
+                                <div class="col-md-12" id="fbr-section" style="display:none;">
+                                    <div class="row">
+                                        <!-- HS Code -->
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>{{__('db.HS Code')}} *</label>
+                                                <input type="text" name="hs_code" class="form-control" />
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 col-6">
-                                    <div class="form-group top-fields">
-                                        <label>{{__('db.Menu Type')}}</label>
-                                        <div class="input-group pos">
-                                            <select required id="menu_type" name="menu_type[]" class="selectpicker form-control" multiple>
-                                                @foreach($menu_type_list as $menu_type)
-                                                <option value="{{$menu_type->id}}">{{$menu_type->name}}</option>
-                                                @endforeach
-                                            </select>
+                                        <!-- Fixed Notified Value -->
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>{{__('db.Fixed or Retail Price')}}</label>
+                                                <input type="number" name="fixed_notified_value_or_retail_price" class="form-control" step="any" value="0" />
+                                            </div>
+                                        </div>
+                                        <!-- Sales Tax Withheld -->
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>{{__('db.Sales Tax Withheld')}}</label>
+                                                <input type="number" name="sales_tax_withheld_at_source" class="form-control" step="any" value="0" />
+                                            </div>
+                                        </div>
+                                        <!-- Extra Tax -->
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>{{__('db.Extra Tax')}}</label>
+                                                <input type="number" name="extra_tax" class="form-control" step="any" value="0" />
+                                            </div>
+                                        </div>
+                                        <!-- Further Tax -->
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>{{__('db.Further Tax')}}</label>
+                                                <input type="number" name="further_tax" class="form-control" step="any" value="0" />
+                                            </div>
+                                        </div>
+                                        <!-- FED Payable -->
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>{{__('db.FED Payable')}}</label>
+                                                <input type="number" name="fed_payable" class="form-control" step="any" value="0" />
+                                            </div>
+                                        </div>
+                                        <!-- SRO Schedule No -->
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>{{__('db.SRO Schedule No')}}</label>
+                                                <input type="text" name="sro_schedule_no" class="form-control" />
+                                            </div>
+                                        </div>
+                                        <!-- SRO Item Serial No -->
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>{{__('db.SRO Item Serial No')}}</label>
+                                                <input type="text" name="sro_item_serial_no" class="form-control" />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            @endif
                             <div class="form-group mt-3">
                                 <button type="submit" id="submit-btn" class="btn btn-primary">{{__('db.add_product')}}</button>
                             </div>
@@ -634,22 +593,6 @@
                     {{-- {{Form::file('image', array('class' => 'form-control'))}} --}}
                     <input type="file" name="image" class="form-control">
                 </div>
-                @if(in_array('ecommerce',explode(',',$general_setting->modules)) || in_array('restaurant',explode(',',$general_setting->modules)))
-                <div class="row">
-                    <div class="col-md-12 mt-3">
-                        <h6><strong>{{ __('For SEO') }}</strong></h6>
-                        <hr>
-                    </div>
-                    <div class="col-md-12 form-group">
-                        <label>{{ __('Meta Title') }}</label>
-                        {{Form::text('page_title',null,array('class' => 'form-control', 'placeholder' => __('db.Meta Title')))}}
-                    </div>
-                    <div class="col-md-12 form-group">
-                        <label>{{ __('Meta Description') }}</label>
-                        {{Form::text('short_description',null,array('class' => 'form-control', 'placeholder' => __('db.Meta Description')))}}
-                    </div>
-                </div>
-                @endif
                 <div class="form-group">
                     <input type="hidden" name="ajax" value="1">
                     <button type="button" class="btn btn-primary brand-submit-btn">{{__('db.submit')}}</button>
@@ -711,106 +654,10 @@
         }
     })
 
-    @if(in_array('ecommerce',explode(',',$general_setting->modules)) || in_array('restaurant',explode(',',$general_setting->modules)))
-    $('#search_products').on('input', function() {
-        var item = $(this).val();
-        $('.search_result').html('<div class="d-block text-center"><div class="spinner-border text-secondary" role="status"><span class="sr-only">Loading...</span></div></div>');
-
-        if(item.length >= 3){
-            $.ajax({
-                type: "get",
-                url: "{{url('search')}}/" + item,
-                success: function(data) {
-                    $('.search_result').html('').css('height','200px');
-                    $.each(data,function(key, value){
-                        var image = value.image.split(',');
-                        $('.search_result').append('<div data-id="'+value.id+'"><img src="{{asset("images/product/small/")}}/'+image[0]+'"><h4>'+value.name+'</h4><i class="dripicons-checkmark d-none"></i></div>')
-                    })
-                }
-            })
-        } else if (item.length < 3) {
-            $('.search_result').html('');
-        }
-    });
-
-    $(document).on('click','.search_result div',function(){
-        $(this).find('i').removeClass('d-none');
-        var selected_item = '<div data-id="'+$(this).data('id')+'">'+$(this).html()+'<span class="remove_item"><i class="dripicons-cross"></i></span></div>';
-        if ($('.selected_ids').html().indexOf($(this).data('id')) === -1){
-            $('.selected_items').prepend(selected_item);
-            $('.selected_ids').append($(this).data('id')+',');
-            $('.selected_items .dripicons-checkmark').addClass('d-none');
-        }
-    });
-
-    $(document).on('click','.remove_item',function(){
-        var item = $(this).parent().remove();
-        var remove_id = $(this).parent().data('id');
-        var selected_ids = $('.selected_ids').html().replace(remove_id+',','');
-        $('.selected_ids').html(selected_ids);
-
-    });
-    @endif
-
-    @if(in_array('restaurant',explode(',',$general_setting->modules)))
-    $('#search_addons').on('input', function() {
-        var item = $(this).val();
-        $('.search_result_addon').html('<div class="d-block text-center"><div class="spinner-border text-secondary" role="status"><span class="sr-only">Loading...</span></div></div>');
-
-        if(item.length >= 3){
-            $.ajax({
-                type: "get",
-                url: "{{url('search')}}/" + item,
-                success: function(data) {
-                    $('.search_result_addon').html('').css('height','200px');
-                    $.each(data,function(key, value){
-                        var image = value.image.split(',');
-                        $('.search_result_addon').append('<div data-id="'+value.id+'"><img src="{{asset("images/product/small/")}}/'+image[0]+'"><h4>'+value.name+'</h4><i class="dripicons-checkmark d-none"></i></div>')
-                    })
-                }
-            })
-        } else if (item.length < 3) {
-            $('.search_result_addon').html('');
-        }
-    });
-
-    $(document).on('click','.search_result_addon div',function(){
-        $(this).find('i').removeClass('d-none');
-        var selected_addon = '<div data-id="'+$(this).data('id')+'">'+$(this).html()+'<span class="remove_item"><i class="dripicons-cross"></i></span></div>';
-        if ($('.selected_addon_ids').html().indexOf($(this).data('id')) === -1){
-            $('.selected_addons').prepend(selected_addon);
-            $('.selected_addon_ids').append($(this).data('id')+',');
-            $('.selected_addons .dripicons-checkmark').addClass('d-none');
-        }
-    });
-
-    $(document).on('click','.remove_item',function(){
-        var item = $(this).parent().remove();
-        var remove_addon_id = $(this).parent().data('id');
-        var selected_addon_ids = $('.selected_addon_ids').html().replace(remove_addon_id +',','');
-        $('.selected_addon_ids').html(selected_addon_ids);
-
-    });
-    @endif
-
     $("ul#product").siblings('a').attr('aria-expanded','true');
     $("ul#product").addClass("show");
     $("ul#product #product-create-menu").addClass("active");
 
-    @if(config('database.connections.saleprosaas_landlord'))
-        numberOfProduct = <?php echo json_encode($numberOfProduct)?>;
-        $.ajax({
-            type: 'GET',
-            async: false,
-            url: '{{route("package.fetchData", $general_setting->package_id)}}',
-            success: function(data) {
-                if(data['number_of_product'] > 0 && data['number_of_product'] <= numberOfProduct) {
-                    localStorage.setItem("message", "You don't have permission to create another product as you already exceed the limit! Subscribe to another package if you wants more!");
-                    location.href = "{{route('products.index')}}";
-                }
-            }
-        });
-    @endif
 
     $("#digital").hide();
     $("#combo").hide();
@@ -1326,7 +1173,7 @@
             $("select[name='unit_id']").prop('required',false);
             $("input[name='file']").prop('required',true);
             hide();
-            $("#profit_margin").hide(300);
+            // $("#profit_margin").hide(300);
             $("#stock-section").show(300);
             $("#combo").hide(300);
             $("#digital").hide(300);
@@ -1712,6 +1559,31 @@
             $("#promotion_price").hide(300);
             $("#start_date").hide(300);
             $("#last_date").hide(300);
+        }
+    });
+
+    $("#is_fbr_invoice_product").on("change", function() {
+        if ($(this).is(':checked')) {
+            $("#fbr-section").show(300);
+            $("input[name='hs_code']").prop('required', true); // Make HS Code required
+             $("select[name='tax_id']").prop('required', true);
+            $("select[name='tax_id']").selectpicker('refresh');
+             // Show asterisk
+            $("#tax-required").removeClass('d-none');
+        } else {
+            $("#fbr-section").hide(300);
+
+            // Remove required
+            $("input[name='hs_code']").prop('required', false);
+            $("select[name='tax_id']").prop('required', false);
+            $("select[name='tax_id']").selectpicker('refresh');
+
+            // Hide asterisk
+            $("#tax-required").addClass('d-none');
+
+            // Reset values
+            $("#fbr-section input").val('');
+            $("select[name='tax_id']").selectpicker('val', '');
         }
     });
 

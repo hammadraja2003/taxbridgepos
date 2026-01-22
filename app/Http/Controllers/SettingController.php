@@ -2,36 +2,37 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Account;
+use App\Models\Biller;
+use App\Models\Currency;
 use App\Models\Customer;
 use App\Models\CustomerGroup;
-use App\Models\Warehouse;
-use App\Models\Biller;
-use App\Models\Account;
-use App\Models\Currency;
 use App\Models\ExternalService;
-use App\Models\PosSetting;
-use App\Models\MailSetting;
 use App\Models\GeneralSetting;
 use App\Models\HrmSetting;
+use App\Models\MailSetting;
+use App\Models\PosSetting;
 use App\Models\RewardPointSetting;
-use App\Models\SmsTemplate;
-use App\Services\SmsService;
-use Session;
-use DB;
-use ZipArchive;
-use Twilio\Rest\Client;
-use Clickatell\Rest;
-use Clickatell\ClickatellException;
 use App\Models\Roles as Role;
+use App\Models\SmsTemplate;
+use App\Models\Warehouse;
+use App\Services\SmsService;
+use Clickatell\ClickatellException;
+use Clickatell\Rest;
+use Illuminate\Http\Request;
+use Twilio\Rest\Client;
 use Auth;
+use DB;
 use Mail;
+use Session;
+use ZipArchive;
 
 class SettingController extends Controller
 {
     use \App\Traits\CacheForget;
     use \App\Traits\TenantInfo;
     use \App\Traits\MailInfo;
+
     private $_smsService;
 
     public function __construct(SmsService $smsService)
@@ -41,46 +42,81 @@ class SettingController extends Controller
 
     public function emptyDatabase()
     {
-        if(!env('USER_VERIFIED'))
+        if (!env('USER_VERIFIED'))
             return redirect()->back()->with('not_permitted', __('db.This feature is disable for demo!'));
 
         // Clear cached queries
-        $key_prefix = 'tenant_' . session('bus_config_id') . '_';   
-        $this->cacheForget($key_prefix.'biller_list');
-        $this->cacheForget($key_prefix.'brand_list');
-        $this->cacheForget($key_prefix.'category_list');
-        $this->cacheForget($key_prefix.'coupon_list');
-        $this->cacheForget($key_prefix.'customer_list');
-        $this->cacheForget($key_prefix.'customer_group_list');
-        $this->cacheForget($key_prefix.'product_list');
-        $this->cacheForget($key_prefix.'product_list_with_variant');
-        $this->cacheForget($key_prefix.'warehouse_list');
-        $this->cacheForget($key_prefix.'tax_list');
-        $this->cacheForget($key_prefix.'currency');
-        $this->cacheForget($key_prefix.'general_setting');
-        $this->cacheForget($key_prefix.'pos_setting');
-        $this->cacheForget($key_prefix.'user_role');
-        $this->cacheForget($key_prefix.'permissions');
-        $this->cacheForget($key_prefix.'role_has_permissions');
-        $this->cacheForget($key_prefix.'role_has_permissions_list');
+        $key_prefix = 'tenant_' . session('bus_config_id') . '_';
+        $this->cacheForget($key_prefix . 'biller_list');
+        $this->cacheForget($key_prefix . 'brand_list');
+        $this->cacheForget($key_prefix . 'category_list');
+        $this->cacheForget($key_prefix . 'coupon_list');
+        $this->cacheForget($key_prefix . 'customer_list');
+        $this->cacheForget($key_prefix . 'customer_group_list');
+        $this->cacheForget($key_prefix . 'product_list');
+        $this->cacheForget($key_prefix . 'product_list_with_variant');
+        $this->cacheForget($key_prefix . 'warehouse_list');
+        $this->cacheForget($key_prefix . 'tax_list');
+        $this->cacheForget($key_prefix . 'currency');
+        $this->cacheForget($key_prefix . 'general_setting');
+        $this->cacheForget($key_prefix . 'pos_setting');
+        $this->cacheForget($key_prefix . 'user_role');
+        $this->cacheForget($key_prefix . 'permissions');
+        $this->cacheForget($key_prefix . 'role_has_permissions');
+        $this->cacheForget($key_prefix . 'role_has_permissions_list');
 
         $tables = DB::select('SHOW TABLES');
 
-       
         $connection = config('database.connections.tenant');
         $database_name = $connection['database'];
 
-        $str = 'Tables_in_'.$database_name;
+        $str = 'Tables_in_' . $database_name;
 
         // Disable FK checks
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
+        // foreach ($tables as $table) {
+        //     if(!in_array($table->$str, [
+        //         'accounts','hrm_settings','languages','migrations','password_resets',
+        //         'pos_setting','currencies','reward_point_settings','ecommerce_settings','external_services','translations','invoice_settings','units','taxes'
+        //     ])) {
+        //        DB::table($table->$str)->truncate();
+        //     }
+        // }
+
+        $protectedTables = [
+            'accounts', 'hrm_settings', 'languages', 'migrations', 'password_resets',
+            'pos_setting', 'currencies', 'reward_point_settings', 'ecommerce_settings',
+            'external_services', 'translations', 'invoice_settings', 'units', 'taxes'
+        ];
+
+        $tempTables = [
+            'categories',
+            'billers',
+            'coupons',
+            'customer_groups',
+            'customers',
+            'couriers',
+            'products',
+            'employees',
+            'expense_categories',
+            'income_categories',
+            'product_batches',
+            'products',
+            'variants',
+            'warehouses',
+        ];
+
         foreach ($tables as $table) {
-            if(!in_array($table->$str, [
-                'accounts','hrm_settings','languages','migrations','password_resets',
-                'pos_setting','currencies','reward_point_settings','ecommerce_settings','external_services','translations','invoice_settings','units','taxes'
-            ])) {
-               DB::table($table->$str)->truncate();
+            $tableName = $table->$str;
+
+            if (
+                !in_array($tableName, $protectedTables) &&
+                !in_array($tableName, $tempTables)
+            ) {
+                DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+                DB::table($tableName)->truncate();
+                DB::statement('SET FOREIGN_KEY_CHECKS=1;');
             }
         }
 
@@ -94,7 +130,7 @@ class SettingController extends Controller
     {
         $master_database = config('database.connections.master.database');
         $query = DB::table('activity_logs')
-            ->join($master_database.'.users', 'activity_logs.user_id', '=', 'users.id')
+            ->join($master_database . '.users', 'activity_logs.user_id', '=', 'users.id')
             ->orderBy('activity_logs.id', 'desc')
             ->select('activity_logs.*', 'users.name as user_name');
 
@@ -109,31 +145,31 @@ class SettingController extends Controller
 
     public function generalSetting()
     {
-        $bus_config_id = session()->get('bus_config_id');        
+        $bus_config_id = session()->get('bus_config_id');
         $lims_general_setting_data = GeneralSetting::where('bus_config_id', $bus_config_id)->first();
-        
+
         $lims_account_list = Account::where('is_active', true)->get();
-        $lims_currency_list = Currency::get();
+        $lims_currency_list = Currency::where('is_active', true)->get();
         $zones_array = array();
         $timestamp = time();
-        
-        if(!config('database.connections.saleprosaas_landlord')){
+
+        if (!config('database.connections.saleprosaas_landlord')) {
             $installUrl = config('app.url');
-        } else{
-            $installUrl = "https://" .$this->getTenantId().'.'.env('CENTRAL_DOMAIN');
+        } else {
+            $installUrl = 'https://' . $this->getTenantId() . '.' . env('CENTRAL_DOMAIN');
         }
 
-        foreach(timezone_identifiers_list() as $key => $zone) {
+        foreach (timezone_identifiers_list() as $key => $zone) {
             date_default_timezone_set($zone);
             $zones_array[$key]['zone'] = $zone;
             $zones_array[$key]['diff_from_GMT'] = 'UTC/GMT ' . date('P', $timestamp);
         }
-        return view('backend.setting.general_setting', compact('installUrl','lims_general_setting_data', 'lims_account_list', 'zones_array', 'lims_currency_list'));
+        return view('backend.setting.general_setting', compact('installUrl', 'lims_general_setting_data', 'lims_account_list', 'zones_array', 'lims_currency_list'));
     }
 
     public function generalSettingStore(Request $request)
     {
-        if(!env('USER_VERIFIED'))
+        if (!env('USER_VERIFIED'))
             return redirect()->back()->with('not_permitted', __('db.This feature is disable for demo!'));
 
         $this->validate($request, [
@@ -141,29 +177,28 @@ class SettingController extends Controller
         ]);
 
         $data = $request->except('site_logo');
-        
+
         // Get bus_config_id from session
         $bus_config_id = session()->get('bus_config_id');
-        
+
         // Find or create general setting for this business
         $general_setting = GeneralSetting::where('bus_config_id', $bus_config_id)->first();
-        
+
         if (!$general_setting) {
             $general_setting = new GeneralSetting();
             $general_setting->bus_config_id = $bus_config_id;
         }
-        
+
         $general_setting->site_title = $data['site_title'];
 
-        if(isset($data['is_rtl']))
+        if (isset($data['is_rtl']))
             $general_setting->is_rtl = true;
         else
             $general_setting->is_rtl = false;
 
-        if(isset($data['is_zatca'])) {
+        if (isset($data['is_zatca'])) {
             $general_setting->is_zatca = true;
-        }
-        else
+        } else
             $general_setting->is_zatca = false;
 
         $general_setting->company_name = $data['company_name'];
@@ -179,19 +214,21 @@ class SettingController extends Controller
         $general_setting->invoice_format = $data['invoice_format'];
         $general_setting->state = $data['state'];
         $general_setting->default_margin_value = $data['default_margin_value'];
-        $general_setting->app_key = $data['app_key'];
+        $general_setting->app_key = $data['app_key'] ?? '';
         $general_setting->font_css = $data['font_css'];
         $general_setting->pos_css = $data['pos_css'];
         $general_setting->auth_css = $data['auth_css'];
         $general_setting->custom_css = $data['custom_css'];
         $general_setting->expiry_alert_days = $data['expiry_alert_days'];
+        $general_setting->default_fbr_scenario = $data['default_fbr_scenario'];
+        $general_setting->default_fbr_scenario_type = $data['default_fbr_scenario_type'];
 
-        if(isset($data['disable_signup']))
+        if (isset($data['disable_signup']))
             $general_setting->disable_signup = true;
         else
             $general_setting->disable_signup = false;
 
-        if(isset($data['disable_forgot_password']))
+        if (isset($data['disable_forgot_password']))
             $general_setting->disable_forgot_password = true;
         else
             $general_setting->disable_forgot_password = false;
@@ -199,13 +236,13 @@ class SettingController extends Controller
         $general_setting->show_products_details_in_sales_table = $data['show_products_details_in_sales_table'];
         $general_setting->show_products_details_in_purchase_table = $data['show_products_details_in_purchase_table'];
         $general_setting->timezone = $request->timezone;
-        
+
         $logo = $request->site_logo;
         if ($logo) {
             $this->fileDelete('logo/', $general_setting->site_logo);
 
             $ext = pathinfo($logo->getClientOriginalName(), PATHINFO_EXTENSION);
-            $logoName = date("Ymdhis") . '.' . $ext;
+            $logoName = date('Ymdhis') . '.' . $ext;
             $logo->move(public_path('logo'), $logoName);
             $general_setting->site_logo = $logoName;
         }
@@ -215,13 +252,13 @@ class SettingController extends Controller
             $this->fileDelete('logo/', $general_setting->favicon);
 
             $ext = pathinfo($favicon->getClientOriginalName(), PATHINFO_EXTENSION);
-            $faviconName = date("Ymdhis") . 'fav.' . $ext;
+            $faviconName = date('Ymdhis') . 'fav.' . $ext;
             $favicon->move(public_path('logo'), $faviconName);
             $general_setting->favicon = $faviconName;
         }
 
         $general_setting->save();
-        
+
         // Clear cache for this specific business
         $key_prefix = 'tenant_' . session('bus_config_id') . '_';
         cache()->forget($key_prefix . 'general_setting');
@@ -254,38 +291,35 @@ class SettingController extends Controller
         return redirect()->back()->with('message', __('db.Reward point setting updated successfully'));
     }
 
-
     public function backup()
     {
-        if(!env('USER_VERIFIED'))
+        if (!env('USER_VERIFIED'))
             return redirect()->back()->with('not_permitted', __('db.This feature is disable for demo!'));
 
         // Database configuration
         $host = env('DB_HOST');
         $username = env('DB_USERNAME');
         $password = env('DB_PASSWORD');
-        if(!config('database.connections.saleprosaas_landlord'))
+        if (!config('database.connections.saleprosaas_landlord'))
             $database_name = env('DB_DATABASE');
         else
-            $database_name = env('DB_PREFIX').$this->getTenantId();
+            $database_name = env('DB_PREFIX') . $this->getTenantId();
 
         // Get connection object and set the charset
         $conn = mysqli_connect($host, $username, $password, $database_name);
-        $conn->set_charset("utf8");
-
+        $conn->set_charset('utf8');
 
         // Get All Table Names From the Database
         $tables = array();
-        $sql = "SHOW TABLES";
+        $sql = 'SHOW TABLES';
         $result = mysqli_query($conn, $sql);
 
         while ($row = mysqli_fetch_row($result)) {
             $tables[] = $row[0];
         }
 
-        $sqlScript = "";
+        $sqlScript = '';
         foreach ($tables as $table) {
-
             // Prepare SQLscript for creating table structure
             $query = "SHOW CREATE TABLE $table";
             $result = mysqli_query($conn, $query);
@@ -293,17 +327,16 @@ class SettingController extends Controller
 
             $sqlScript .= "\n\n" . $row[1] . ";\n\n";
 
-
             $query = "SELECT * FROM $table";
             $result = mysqli_query($conn, $query);
 
             $columnCount = mysqli_num_fields($result);
 
             // Prepare SQLscript for dumping data for each table
-            for ($i = 0; $i < $columnCount; $i ++) {
+            for ($i = 0; $i < $columnCount; $i++) {
                 while ($row = mysqli_fetch_row($result)) {
                     $sqlScript .= "INSERT INTO $table VALUES(";
-                    for ($j = 0; $j < $columnCount; $j ++) {
+                    for ($j = 0; $j < $columnCount; $j++) {
                         $row[$j] = $row[$j];
 
                         if (isset($row[$j])) {
@@ -322,11 +355,10 @@ class SettingController extends Controller
             $sqlScript .= "\n";
         }
 
-        if(!empty($sqlScript))
-        {
+        if (!empty($sqlScript)) {
             // Save the SQL script to a backup file
-            $backup_file_name = public_path().'/'.$database_name . '_backup_' . time() . '.sql';
-            //return $backup_file_name;
+            $backup_file_name = public_path() . '/' . $database_name . '_backup_' . time() . '.sql';
+            // return $backup_file_name;
             $fileHandler = fopen($backup_file_name, 'w+');
             $number_of_lines = fwrite($fileHandler, $sqlScript);
             fclose($fileHandler);
@@ -369,12 +401,12 @@ class SettingController extends Controller
 
     public function mailSettingStore(Request $request)
     {
-        if(!env('USER_VERIFIED'))
+        if (!env('USER_VERIFIED'))
             return redirect()->back()->with('not_permitted', __('db.This feature is disable for demo!'));
 
         $data = $request->all();
         $mail_setting = MailSetting::latest()->first();
-        if(!$mail_setting)
+        if (!$mail_setting)
             $mail_setting = new MailSetting;
         $mail_setting->driver = $data['driver'];
         $mail_setting->host = $data['host'];
@@ -390,8 +422,9 @@ class SettingController extends Controller
             $this->setMailInfo($mail_setting);
             // Send test mail to from_address
             Mail::raw(__('db.This is a test mail to confirm your SMTP settings are working.'), function ($message) use ($mail_setting) {
-                $message->to($mail_setting->from_address)
-                        ->subject(__('db.Test Mail'));
+                $message
+                    ->to($mail_setting->from_address)
+                    ->subject(__('db.Test Mail'));
             });
 
             return redirect()->back()->with(
@@ -415,72 +448,70 @@ class SettingController extends Controller
         $twilio = [];
         $clickatell = [];
 
-        foreach($settings as $setting)
-        {
-                if($setting->name == 'tonkra'){
-                    $tonkra['sms_id'] = $setting->id ?? '';
-                    $tonkra['active'] = $setting->active ?? '';
-                    $tonkra['details'] = json_decode($setting->details) ?? '';
-                }
+        foreach ($settings as $setting) {
+            if ($setting->name == 'tonkra') {
+                $tonkra['sms_id'] = $setting->id ?? '';
+                $tonkra['active'] = $setting->active ?? '';
+                $tonkra['details'] = json_decode($setting->details) ?? '';
+            }
 
-                if($setting->name == 'revesms'){
-                    $revesms['sms_id'] = $setting->id ?? '';
-                    $revesms['active'] = $setting->active ?? '';
-                    $revesms['details'] = json_decode($setting->details) ?? '';
-                }
+            if ($setting->name == 'revesms') {
+                $revesms['sms_id'] = $setting->id ?? '';
+                $revesms['active'] = $setting->active ?? '';
+                $revesms['details'] = json_decode($setting->details) ?? '';
+            }
 
-                if($setting->name == 'bdbulksms'){
-                    $bdbulksms['sms_id'] = $setting->id ?? '';
-                    $bdbulksms['active'] = $setting->active ?? '';
-                    $bdbulksms['details'] = json_decode($setting->details) ?? '';
-                }
+            if ($setting->name == 'bdbulksms') {
+                $bdbulksms['sms_id'] = $setting->id ?? '';
+                $bdbulksms['active'] = $setting->active ?? '';
+                $bdbulksms['details'] = json_decode($setting->details) ?? '';
+            }
 
-                if($setting->name == 'twilio'){
-                    $twilio['sms_id'] = $setting->id ?? '';
-                    $twilio['active'] = $setting->active ?? '';
-                    $twilio['details'] = json_decode($setting->details) ?? '';
-                }
+            if ($setting->name == 'twilio') {
+                $twilio['sms_id'] = $setting->id ?? '';
+                $twilio['active'] = $setting->active ?? '';
+                $twilio['details'] = json_decode($setting->details) ?? '';
+            }
 
-                if($setting->name == 'clickatell'){
-                    $clickatell['sms_id'] = $setting->id ?? '';
-                    $clickatell['active'] = $setting->active ?? '';
-                    $clickatell['details'] = json_decode($setting->details) ?? '';
-                }
-
+            if ($setting->name == 'clickatell') {
+                $clickatell['sms_id'] = $setting->id ?? '';
+                $clickatell['active'] = $setting->active ?? '';
+                $clickatell['details'] = json_decode($setting->details) ?? '';
+            }
         }
 
-        $tonkra['sms_id']       = $tonkra['sms_id'] ?? '';
-        $tonkra['active']       = $tonkra['active'] ?? '';
-        $tonkra['api_token']    = $tonkra['details']->api_token  ?? '';
-        $tonkra['recipent']     = $tonkra['details']->recipent  ?? '';
-        $tonkra['sender_id']    = $tonkra['details']->sender_id  ?? '';
+        $tonkra['sms_id'] = $tonkra['sms_id'] ?? '';
+        $tonkra['active'] = $tonkra['active'] ?? '';
+        $tonkra['api_token'] = $tonkra['details']->api_token ?? '';
+        $tonkra['recipent'] = $tonkra['details']->recipent ?? '';
+        $tonkra['sender_id'] = $tonkra['details']->sender_id ?? '';
 
-        $revesms['sms_id']      = $revesms['sms_id'] ?? '';
-        $revesms['active']      = $revesms['active'] ?? '';
-        $revesms['apikey']      = $revesms['details']->apikey  ?? '';
-        $revesms['secretkey']   = $revesms['details']->secretkey  ?? '';
-        $revesms['callerID']    = $revesms['details']->callerID  ?? '';
+        $revesms['sms_id'] = $revesms['sms_id'] ?? '';
+        $revesms['active'] = $revesms['active'] ?? '';
+        $revesms['apikey'] = $revesms['details']->apikey ?? '';
+        $revesms['secretkey'] = $revesms['details']->secretkey ?? '';
+        $revesms['callerID'] = $revesms['details']->callerID ?? '';
 
-        $bdbulksms['sms_id']    = $bdbulksms['sms_id'] ?? '';
-        $bdbulksms['active']    = $bdbulksms['active'] ?? '';
-        $bdbulksms['token']     = $bdbulksms['details']->token   ?? '';
+        $bdbulksms['sms_id'] = $bdbulksms['sms_id'] ?? '';
+        $bdbulksms['active'] = $bdbulksms['active'] ?? '';
+        $bdbulksms['token'] = $bdbulksms['details']->token ?? '';
 
-        $twilio['sms_id']       = $twilio['sms_id'] ?? '';
-        $twilio['active']       = $twilio['active'] ?? '';
-        $twilio['account_sid']  = $twilio['details']->account_sid  ?? '';
-        $twilio['auth_token']   = $twilio['details']->auth_token  ?? '';
-        $twilio['twilio_number']= $twilio['details']->twilio_number  ?? '';
+        $twilio['sms_id'] = $twilio['sms_id'] ?? '';
+        $twilio['active'] = $twilio['active'] ?? '';
+        $twilio['account_sid'] = $twilio['details']->account_sid ?? '';
+        $twilio['auth_token'] = $twilio['details']->auth_token ?? '';
+        $twilio['twilio_number'] = $twilio['details']->twilio_number ?? '';
 
-        $clickatell['sms_id']   = $clickatell['sms_id'] ?? '';
-        $clickatell['active']   = $clickatell['active'] ?? '';
-        $clickatell['api_key']  = $clickatell['details']->api_key ?? '';
+        $clickatell['sms_id'] = $clickatell['sms_id'] ?? '';
+        $clickatell['active'] = $clickatell['active'] ?? '';
+        $clickatell['api_key'] = $clickatell['details']->api_key ?? '';
 
-        return view('backend.setting.sms_setting',compact('tonkra','twilio','clickatell','revesms','bdbulksms'));
+        return view('backend.setting.sms_setting', compact('tonkra', 'twilio', 'clickatell', 'revesms', 'bdbulksms'));
     }
 
     public function smsSettingStore(Request $request)
     {
-        if(!env('USER_VERIFIED'))
+        if (!env('USER_VERIFIED'))
             return redirect()->back()->with('not_permitted', __('db.This feature is disable for demo!'));
 
         $data = $request->all();
@@ -492,49 +523,49 @@ class SettingController extends Controller
         $twilio = [];
         $clickatell = [];
 
-        if($data['gateway'] == 'revesms'){
-            $revesms['apikey'] = $data['apikey'] ;
-            $revesms['secretkey'] = $data['secretkey'] ;
+        if ($data['gateway'] == 'revesms') {
+            $revesms['apikey'] = $data['apikey'];
+            $revesms['secretkey'] = $data['secretkey'];
             $revesms['callerID'] = $data['callerID'];
             $data['details'] = json_encode($revesms);
         }
 
-        if($data['gateway'] == 'bdbulksms'){
-            $bdbulksms['token'] = $data['token'] ;
+        if ($data['gateway'] == 'bdbulksms') {
+            $bdbulksms['token'] = $data['token'];
             $data['details'] = json_encode($bdbulksms);
         }
 
-        if($data['gateway'] == 'twilio'){
-            $twilio['account_sid'] = $data['account_sid'] ;
-            $twilio['auth_token'] = $data['auth_token'] ;
-            $twilio['twilio_number'] = $data['twilio_number'] ;
+        if ($data['gateway'] == 'twilio') {
+            $twilio['account_sid'] = $data['account_sid'];
+            $twilio['auth_token'] = $data['auth_token'];
+            $twilio['twilio_number'] = $data['twilio_number'];
             $data['details'] = json_encode($twilio);
         }
 
-        if($data['gateway'] == 'tonkra'){
+        if ($data['gateway'] == 'tonkra') {
             $tonkra['api_token'] = $data['api_token'];
             $tonkra['sender_id'] = $data['sender_id'];
             $data['details'] = json_encode($tonkra);
         }
 
-        if($data['gateway'] == 'clickatell'){
+        if ($data['gateway'] == 'clickatell') {
             $clickatell['api_key'] = $data['api_key'];
             $data['details'] = json_encode($clickatell);
         }
         if (isset($data['active']) && $data['active'] == true) {
-            ExternalService::where('type','sms')
-                            ->where('active', true)
-                            ->update(['active' => false]);
+            ExternalService::where('type', 'sms')
+                ->where('active', true)
+                ->update(['active' => false]);
         }
         ExternalService::updateOrCreate(
             [
                 'name' => $data['gateway']
             ],
             [
-            'name' => $data['gateway'],
-            'type' => $data['type'],
-            'details' => $data['details'],
-            'active' => $data['active']
+                'name' => $data['gateway'],
+                'type' => $data['type'],
+                'details' => $data['details'],
+                'active' => $data['active']
             ]
         );
 
@@ -546,26 +577,25 @@ class SettingController extends Controller
         $lims_customer_list = Customer::where('is_active', true)->get();
         $smsTemplates = SmsTemplate::all();
         // dd($smsTemplates);
-        return view('backend.setting.create_sms', compact('lims_customer_list','smsTemplates'));
+        return view('backend.setting.create_sms', compact('lims_customer_list', 'smsTemplates'));
     }
 
     public function sendSms(Request $request)
     {
         $data = $request->all();
 
-        $smsProvider = ExternalService::where('active',true)->where('type','sms')->first();
+        $smsProvider = ExternalService::where('active', true)->where('type', 'sms')->first();
 
         $smsData['sms_provider_name'] = $smsProvider->name;
         $smsData['details'] = $smsProvider->details;
         $smsData['message'] = $data['message'];
         $smsData['recipent'] = $data['mobile'];
-        $numbers = explode(",", $data['mobile']);
+        $numbers = explode(',', $data['mobile']);
         $smsData['numbers'] = $numbers;
 
         $this->_smsService->initialize($smsData);
 
         return redirect()->back()->with('message', __('db.SMS sent successfully'));
-
     }
 
     public function processSmsData($templateId, $customerId, $referenceNo)
@@ -580,14 +610,15 @@ class SettingController extends Controller
 
         $smsData['message'] = $this->replacePlaceholders($template, $customerName, $referenceNo);
 
-        $smsProvider = ExternalService::where('active',true)->where('type','sms')->first();
+        $smsProvider = ExternalService::where('active', true)->where('type', 'sms')->first();
         $smsData['sms_provider_name'] = $smsProvider->name;
         $smsData['details'] = $smsProvider->details;
 
         return $smsData;
     }
 
-    public function replacePlaceholders($template, $customerName, $referenceNo) {
+    public function replacePlaceholders($template, $customerName, $referenceNo)
+    {
         // Check for the presence of the [customer] placeholder in the template
         if (strpos($template, '[customer]') !== false) {
             // Replace [customer] with the value of $customerName
@@ -612,9 +643,9 @@ class SettingController extends Controller
                 ->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
         }
 
-        $payment_gateways = DB::table('external_services')->where('type','payment')->get();
+        $payment_gateways = DB::table('external_services')->where('type', 'payment')->get();
 
-        return view ('backend.setting.payment-gateways', compact('payment_gateways'));
+        return view('backend.setting.payment-gateways', compact('payment_gateways'));
     }
 
     public function gatewayUpdate(Request $request)
@@ -638,15 +669,15 @@ class SettingController extends Controller
         $allModules = ['pos', 'ecommerce'];
 
         // Get inputs
-        $pgs = $request->input('pg_name', []); // Payment gateway names
-        $actives = $request->input('active', []); // Active status for each gateway
-        $moduleStatuses = $request->input('module_status', []); // Module status (multi-select)
+        $pgs = $request->input('pg_name', []);  // Payment gateway names
+        $actives = $request->input('active', []);  // Active status for each gateway
+        $moduleStatuses = $request->input('module_status', []);  // Module status (multi-select)
 
         foreach ($pgs as $index => $pg) {
             $gateway = $gateways->where('name', $pg)->first();
 
             if (!$gateway) {
-                continue; // Skip if gateway not found
+                continue;  // Skip if gateway not found
             }
 
             // Update the `details` field
@@ -655,14 +686,14 @@ class SettingController extends Controller
             $vals = [];
             foreach ($keys as $key) {
                 $para = $pg . '_' . str_replace(' ', '_', $key);
-                $val = $request->$para ?? ''; // Default to empty string if null
+                $val = $request->$para ?? '';  // Default to empty string if null
                 array_push($vals, $val);
             }
             $lines[1] = implode(',', $vals);
             $details = $lines[0] . ';' . $lines[1];
 
             // Update `module_status` field
-            $selectedModules = $moduleStatuses[$index] ?? []; // Selected modules for this gateway
+            $selectedModules = $moduleStatuses[$index] ?? [];  // Selected modules for this gateway
             $selectedModules = is_array($selectedModules) ? $selectedModules : [$selectedModules];
 
             // Create a status array with all modules
@@ -679,7 +710,7 @@ class SettingController extends Controller
                 ->update([
                     'details' => $details,
                     'module_status' => $moduleStatusJson,
-                    'active' => $actives[$index] ?? 1, // Default to active if not set
+                    'active' => $actives[$index] ?? 1,  // Default to active if not set
                 ]);
         }
 
@@ -703,8 +734,8 @@ class SettingController extends Controller
         $lims_hrm_setting_data->checkout = $data['checkout'];
         $lims_hrm_setting_data->save();
         return redirect()->back()->with('message', __('db.Data updated successfully'));
-
     }
+
     public function posSetting()
     {
         $lims_customer_list = Customer::where('is_active', true)->get();
@@ -712,17 +743,17 @@ class SettingController extends Controller
         $lims_biller_list = Biller::where('is_active', true)->get();
         $lims_pos_setting_data = PosSetting::latest()->first();
 
-        if($lims_pos_setting_data)
+        if ($lims_pos_setting_data)
             $options = explode(',', $lims_pos_setting_data->payment_options);
         else
             $options = [];
 
-        return view('backend.setting.pos_setting', compact('lims_customer_list', 'lims_warehouse_list', 'lims_biller_list', 'lims_pos_setting_data','options'));
+        return view('backend.setting.pos_setting', compact('lims_customer_list', 'lims_warehouse_list', 'lims_biller_list', 'lims_pos_setting_data', 'options'));
     }
 
     public function posSettingStore(Request $request)
     {
-        if(!env('USER_VERIFIED'))
+        if (!env('USER_VERIFIED'))
             return redirect()->back()->with('not_permitted', __('db.This feature is disable for demo!'));
 
         $data = $request->all();
@@ -731,7 +762,7 @@ class SettingController extends Controller
         if (isset($data['options'])) {
             // Remove duplicates from the input array
             $uniqueOptions = array_unique($data['options']);
-            //return $data['options'];
+            // return $data['options'];
 
             if (count($uniqueOptions) !== count($data['options'])) {
                 return redirect()->back()->with('not_permitted', __('db.Payment options must be unique'));
@@ -747,28 +778,29 @@ class SettingController extends Controller
         $pos_setting->customer_id = $data['customer_id'];
         $pos_setting->warehouse_id = $data['warehouse_id'];
         $pos_setting->biller_id = $data['biller_id'];
+        $pos_setting->fbr_posting = intval($data['fbr_posting']);
         $pos_setting->product_number = $data['product_number'];
         $pos_setting->payment_options = $options;
 
-        if(!isset($data['keybord_active']))
+        if (!isset($data['keybord_active']))
             $pos_setting->keybord_active = false;
         else
             $pos_setting->keybord_active = true;
-        if(!isset($data['is_table']))
+        if (!isset($data['is_table']))
             $pos_setting->is_table = false;
         else
             $pos_setting->is_table = true;
-        if(!isset($data['send_sms']))
+        if (!isset($data['send_sms']))
             $pos_setting->send_sms = false;
         else
             $pos_setting->send_sms = true;
 
-        if(!isset($data['cash_register']))
+        if (!isset($data['cash_register']))
             $pos_setting->cash_register = false;
         else
             $pos_setting->cash_register = true;
 
-        if(!isset($data['show_print_invoice']))
+        if (!isset($data['show_print_invoice']))
             $pos_setting->show_print_invoice = false;
         else
             $pos_setting->show_print_invoice = true;

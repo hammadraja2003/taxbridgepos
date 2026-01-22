@@ -16,6 +16,7 @@
                 <tr>
                     <th class="not-exported"></th>
                     <th>{{__('db.Warehouse')}}</th>
+                    <th>{{__('db.Warehouse Type')}}</th>
                     <th>{{__('db.Phone Number')}}</th>
                     <th>{{__('db.Email')}}</th>
                     <th>{{__('db.Address')}}</th>
@@ -42,6 +43,7 @@
                 <tr data-id="{{$warehouse->id}}">
                     <td>{{$key}}</td>
                     <td>{{ $warehouse->name }}</td>
+                    <td>{{ getWarehouseType($warehouse->warehouse_type)}}</td>
                     <td>{{ $warehouse->phone}}</td>
                     <td>{{ $warehouse->email}}</td>
                     <td>{{ $warehouse->address}}</td>
@@ -101,6 +103,14 @@
             <textarea required class="form-control" rows="3" name="address"></textarea>
           </div>
           <div class="form-group">
+            <label>{{__('db.Warehouse Type')}} *</label>
+            {!! warehouseTypeDropdown('warehouse_type', null, 'warehouse_type', 'form-control', true) !!}
+          </div>
+          <div class="form-group">
+              <input type="checkbox" name="is_clone_product" checked>
+              <label>{{__('db.Clone Product')}} <x-info title="If checked, all products will be cloned to this warehouse"/></label>
+          </div>
+          <div class="form-group">
             <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">
           </div>
       </div>
@@ -137,8 +147,13 @@
             <textarea class="form-control" rows="3" name="address" required></textarea>
           </div>
           <div class="form-group">
+            <label>{{__('db.Warehouse Type')}} *</label>
+            {!! warehouseTypeDropdown('warehouse_type', null, 'warehouse_type', 'form-control', true) !!}
+          </div>
+          <div class="form-group">
             <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">
           </div>
+          
       </div>
       {{ Form::close() }}
     </div>
@@ -229,7 +244,7 @@
                 $("#editModal input[name='email']").val(data['email']);
                 $("#editModal textarea[name='address']").val(data['address']);
                 $("#editModal input[name='warehouse_id']").val(data['id']);
-
+                $("#editModal select[name='warehouse_type']").val(data['warehouse_type']);
             });
         });
   });

@@ -10,7 +10,7 @@ class Customer extends Model
     protected $fillable =[
         "customer_group_id", "user_id", "name", "company_name",
         "email", "type", "phone_number", "wa_number", "tax_no", "address", "city",
-        "state", "postal_code", "country", "opening_balance", "credit_limit", "points", "deposit", "pay_term_no","pay_term_period", "expense", "wishlist", "is_active"
+        "state", "postal_code", "country", "opening_balance", "credit_limit", "points", "deposit", "pay_term_no","pay_term_period", "expense", "wishlist", "is_active", "customer_ntn_cnic","customer_province","is_fbr_customer","is_fbr_registered"
     ];
 
     public function customerGroup()

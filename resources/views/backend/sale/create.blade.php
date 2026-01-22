@@ -164,70 +164,13 @@
                                             </div>
                                         </div>
                                     </div>
-                                    @if(in_array('restaurant',explode(',',$general_setting->modules)))
-                                    <div class="col-md-3 col-6">
-                                        <div class="form-group top-fields">
-                                            <label>{{__('db.Service')}}</label>
-                                            @if(!empty($service_id))
-                                            <div class="input-group pos">
-                                                <select required id="service_id" name="service_id" class="selectpicker form-control" title="Select service...">
-                                                    <option value="1" @if($service_id == 1) selected @endif>{{__('db.Dine In')}}</option>
-                                                    <option value="2" @if($service_id == 2) selected @endif>{{__('db.Take Away')}}</option>
-                                                    <option value="3" @if($service_id == 3) selected @endif>{{__('db.Delivery')}}</option>
-                                                </select>
-                                            </div>
-                                            @else
-                                            <div class="input-group pos">
-                                                <select required id="service_id" name="service_id" class="selectpicker form-control" title="Select service...">
-                                                    <option value="1" selected>{{__('db.Dine In')}}</option>
-                                                    <option value="2">{{__('db.Take Away')}}</option>
-                                                    <option value="3">{{__('db.Delivery')}}</option>
-                                                </select>
-                                            </div>
-                                            @endif
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3 col-6">
-                                        <div class="form-group top-fields">
-                                            <label>{{__('db.table')}}</label>
-                                            <div class="input-group pos">
-                                                <select required id="table_id" name="table_id" class="selectpicker form-control" data-live-search="true" data-live-search-style="begins" title="Select table...">
-                                                    @foreach($lims_table_list as $table)
-                                                    <option value="{{$table->id}}" @if(!empty($table_id) && $table->id == $table_id) selected @endif>
-                                                        {{$table->name}} at {{$table->floor}} ( ðŸ‘¤ {{$table->number_of_person}})
-                                                    </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-3 col-6">
-                                        <div class="form-group top-fields">
-                                            <label>{{__('db.Waiter')}}</label>
-                                            <div class="input-group pos">
-                                                <select required id="waiter_id" name="waiter_id" class="selectpicker form-control" title="Select waiter...">
-                                                    @if(auth()->user()->service_staff == 1)
-                                                    <option value="{{auth()->user()->id}}" selected >{{auth()->user()->name}}</option>
-                                                    @else
-                                                        @foreach($waiter_list as $waiter)
-                                                        <option value="{{$waiter->id}}" @if(!empty($waiter_id) && $waiter->id == $waiter_id) selected @endif>
-                                                            {{$waiter->name}}
-                                                        </option>
-                                                        @endforeach
-                                                    @endif
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    @endif
                                 </div>
                                 <div class="row mt-3">
                                     <div class="col-md-12">
                                         <label>{{__('db.Select Product')}}</label>
                                         <div class="search-box form-group mb-2" style="position:relative">
                                             <div class="input-group pos">
-                                                <input style="border: 1px solid #7c5cc4;" type="text" name="product_code_name" id="product-search-input" placeholder="Scan/Search product by name/code/IMEI (at least 3 characters)" class="form-control" autofocus />
+                                                <input style="border: 1px solid #5579a4;" type="text" name="product_code_name" id="product-search-input" placeholder="Scan/Search product by name/code/IMEI (at least 3 characters)" class="form-control" autofocus />
                                                 <button type="button" class="btn btn-primary" onclick="barcode()"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-upc" viewBox="0 0 16 16"><path d="M3 4.5a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0z"/></svg></button>
                                             </div>
                                             <div id="product-results-container">
@@ -367,7 +310,7 @@
                                                         <textarea rows="5" name="{{str_replace(' ', '_', strtolower($field->name))}}" value="{{$field->default_value}}" class="form-control" @if($field->is_required){{'required'}}@endif></textarea>
                                                     @elseif($field->type == 'checkbox')
                                                         <br>
-                                                        <?php $option_values = explode(",", $field->option_value); ?>
+                                                        <?php $option_values = explode(',', $field->option_value); ?>
                                                         @foreach($option_values as $value)
                                                             <label>
                                                                 <input type="checkbox" name="{{str_replace(' ', '_', strtolower($field->name))}}[]" value="{{$value}}" @if($value == $field->default_value){{'checked'}}@endif @if($field->is_required){{'required'}}@endif> {{$value}}
@@ -376,7 +319,7 @@
                                                         @endforeach
                                                     @elseif($field->type == 'radio_button')
                                                         <br>
-                                                        <?php $option_values = explode(",", $field->option_value); ?>
+                                                        <?php $option_values = explode(',', $field->option_value); ?>
                                                         @foreach($option_values as $value)
                                                             <label class="radio-inline">
                                                                 <input type="radio" name="{{str_replace(' ', '_', strtolower($field->name))}}" value="{{$value}}" @if($value == $field->default_value){{'checked'}}@endif @if($field->is_required){{'required'}}@endif> {{$value}}
@@ -384,14 +327,14 @@
                                                             &nbsp;
                                                         @endforeach
                                                     @elseif($field->type == 'select')
-                                                        <?php $option_values = explode(",", $field->option_value); ?>
+                                                        <?php $option_values = explode(',', $field->option_value); ?>
                                                         <select class="form-control" name="{{str_replace(' ', '_', strtolower($field->name))}}" @if($field->is_required){{'required'}}@endif>
                                                             @foreach($option_values as $value)
                                                                 <option value="{{$value}}" @if($value == $field->default_value){{'selected'}}@endif>{{$value}}</option>
                                                             @endforeach
                                                         </select>
                                                     @elseif($field->type == 'multi_select')
-                                                        <?php $option_values = explode(",", $field->option_value); ?>
+                                                        <?php $option_values = explode(',', $field->option_value); ?>
                                                         <select class="form-control" name="{{str_replace(' ', '_', strtolower($field->name))}}[]" @if($field->is_required){{'required'}}@endif multiple>
                                                             @foreach($option_values as $value)
                                                                 <option value="{{$value}}" @if($value == $field->default_value){{'selected'}}@endif>{{$value}}</option>
@@ -410,9 +353,6 @@
                                             <select name="sale_status" class="form-control">
                                                 <option value="1">{{__('db.Completed')}}</option>
                                                 <option value="2">{{__('db.Pending')}}</option>
-                                                @if(in_array('restaurant',explode(',',$general_setting->modules)))
-                                                <option value="5" selected>{{__('db.Processing')}}</option>
-                                                @endif
                                             </select>
                                             <x-validation-error fieldName="sale_status" />
                                         </div>
@@ -429,8 +369,19 @@
                                             <x-validation-error fieldName="payment_status" />
                                         </div>
                                     </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>{{__('db.FBR Posting')}} * <x-info title="The FBR posting is automatically selected based on the POS settings. You can change it here temporarily for this invoice only. To change it permanently, update it in the POS settings." type="info" /></label>
+                                            @php
+                                                $pos_setting = \App\Models\PosSetting::first();
+                                                $fbr_posting_value = $pos_setting ? $pos_setting->fbr_posting : null;
+                                            @endphp
+                                            {!! fbrPostDropdown('fbr_posting', $fbr_posting_value, 'fbr_posting') !!}
+                                            <x-validation-error fieldName="fbr_posting" />
+                                        </div>
+                                    </div>
                                     <?php
-                                        $accountSelection = $role_has_permissions_list->where('name', 'account-selection')->first();
+                                    $accountSelection = $role_has_permissions_list->where('name', 'account-selection')->first();
                                     ?>
                                     @if ($accountSelection)
                                         <!-- New Account Selection Field -->
@@ -594,6 +545,15 @@
             <td><strong>{{__('db.Order Tax')}}</strong>
                 <span class="pull-right" id="order_tax">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
             </td>
+            <td><strong>{{__('db.Extra Tax')}}</strong>
+                <span class="pull-right" id="extra-tax">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
+            </td>
+            <td><strong>{{__('db.Further Tax')}}</strong>
+                <span class="pull-right" id="further-tax">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
+            </td>
+            <td><strong>{{__('db.Fed Tax')}}</strong>
+                <span class="pull-right" id="fed-tax">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
+            </td>
             <td><strong>{{__('db.Order Discount')}}</strong>
                 <span class="pull-right" id="order_discount">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
             </td>
@@ -603,6 +563,7 @@
             <td><strong>{{__('db.grand total')}}</strong>
                 <span class="pull-right" id="grand_total">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
             </td>
+            
         </table>
     </div>
 
@@ -638,12 +599,12 @@
                                 <input type="number" name="edit_unit_price" class="form-control numkey" step="any">
                             </div>
                             <?php
-                                $tax_name_all[] = 'No Tax';
-                                $tax_rate_all[] = 0;
-                                foreach($lims_tax_list as $tax) {
-                                    $tax_name_all[] = $tax->name;
-                                    $tax_rate_all[] = $tax->rate;
-                                }
+                            $tax_name_all[] = 'No Tax';
+                            $tax_rate_all[] = 0;
+                            foreach ($lims_tax_list as $tax) {
+                                $tax_name_all[] = $tax->name;
+                                $tax_rate_all[] = $tax->rate;
+                            }
                             ?>
                             <div class="col-md-4 form-group">
                                 <label>{{__('db.Tax Rate')}}</label>
@@ -851,10 +812,14 @@
                 url: '{{url("/sales/search")}}/' + warehouse_id + '/' + search,
                 type: 'GET',
                 success: function (data) {
+                    
                     $results.empty();
                     if (data.length > 0) {
                         $noResults.hide();
                         data.forEach(function (product) {
+
+
+                        console.log(product);
                             let productHtml = '';
                             let displayStock = '';
 
@@ -864,6 +829,25 @@
                                 displayStock = ` | ${product.qty} {{ __('db.In Stock') }} `;
                             }
 
+                            // 🔹 Prepare FBR data if product is FBR invoice product
+                            let fbrData = '';
+                            let fbrDisplay = '';
+                            if (product.is_fbr_invoice_product == 1 || product.is_fbr_invoice_product === '1') {
+                                fbrData = `
+                                    data-hs_code="${product.hs_code}"
+                                    data-fixed_notified_value="${product.fixed_notified_value_or_retail_price}"
+                                    data-sales_tax_withheld="${product.sales_tax_withheld_at_source}"
+                                    data-extra_tax="${product.extra_tax}"
+                                    data-further_tax="${product.further_tax}"
+                                    data-fed_payable="${product.fed_payable}"
+                                    data-sro_schedule_no="${product.sro_schedule_no}"
+                                    data-sro_item_serial_no="${product.sro_item_serial_no}"
+                                    data-is_fbr_invoice_product="${product.is_fbr_invoice_product}"
+                                `;
+                                fbrDisplay = ` [HS: ${product.hs_code}]`;
+                            }
+
+                         
                             var batch_id = product.product_batch_id ? product.product_batch_id : '';
 
                             if (product.is_imei == '1' || product.is_imei === 1 || product.is_imei === true) {
@@ -887,7 +871,8 @@
                                                                 data-imei="${product.imei_number}"
                                                                 data-embedded="${product.is_embeded}"
                                                                 data-batch="${batch_id}"
-                                                                data-price="${product.price}">
+                                                                data-price="${product.price}"
+                                                                data-fbr="${fbrData}">
                                             ${product.name} (${product.code}) | ${product.price} | IMEI: ${product.imei_number}
                                         </div>
                                     `;
@@ -906,8 +891,9 @@
                                                                             data-imei="${product.is_imei}"
                                                                             data-embedded="${product.is_embeded}"
                                                                             data-batch="${batch_id}"
-                                                                            data-price="${product.price}">
-                                            ${product.name} (${product.code}) - ${product.expired_date} | ${product.price} ${displayStock}
+                                                                            data-price="${product.price}"
+                                                                            data-fbr="${fbrData}>
+                                            ${product.name} (${product.code}) - ${product.expired_date} | ${product.price} ${displayStock} ${fbrDisplay}
                                         </div>
                                     `;
                                 }
@@ -918,8 +904,9 @@
                                                             data-imei="${product.is_imei}"
                                                             data-embedded="${product.is_embeded}"
                                                             data-batch="${batch_id}"
-                                                            data-price="${product.price}">
-                                        ${product.name} (${product.code}) | ${product.price} ${displayStock}
+                                                            data-price="${product.price}"
+                                                            data-fbr="${fbrData}>
+                                        ${product.name} (${product.code}) | ${product.price} ${displayStock} ${fbrDisplay}
                                     </div>
                                 `;
                             }
@@ -1093,7 +1080,7 @@
     $("ul#sale #sale-create-menu").addClass("active");
 
     @if(config('database.connections.saleprosaas_landlord'))
-        numberOfInvoice = <?php echo json_encode($numberOfInvoice)?>;
+        numberOfInvoice = <?php echo json_encode($numberOfInvoice) ?>;
         $.ajax({
             type: 'GET',
             async: false,
@@ -1211,7 +1198,7 @@ var rowindex;
 var customer_group_rate;
 var row_product_price;
 var pos;
-var role_type = <?php echo json_encode(Auth::user()->role_type)?>;
+var role_type = <?php echo json_encode(Auth::user()->role_type) ?>;
 
 var warehouse_id = $('#warehouse_id').val();
 
@@ -1284,6 +1271,7 @@ $("table.order-list tbody").on("click", ".ibtnDel", function(event) {
     if ($('#tbody-id tr').length < 1) {
         $('#installmentPlanBtn').attr('disabled', true);
     }
+    calculatefbrtaxes();
 });
 
 //Edit product
@@ -1477,11 +1465,6 @@ $(document).on('click', '.product-img', function() {
     var warehouse_id = $('#warehouse_id').val();
     var biller_id = $('#biller_id').val();
 
-    @if(in_array('restaurant',explode(',',$general_setting->modules)))
-    var table_id = $('#table_id').val();
-    var waiter_id = $('#waiter_id').val();
-    var service_id = $('#service_id').val();
-    @endif
 
     if(!customer_id)
         alert('Please select Customer!');
@@ -1489,14 +1472,6 @@ $(document).on('click', '.product-img', function() {
         alert('Please select Warehouse!');
     else if(!biller_id)
         alert('Please select Biller!');
-    @if(in_array('restaurant',explode(',',$general_setting->modules)))
-    else if(!table_id && service_id == 1){
-        alert('Please select Table!');
-    }
-    else if(!waiter_id && service_id == 1){
-        alert('Please select Waiter!');
-    }
-    @endif
     else{
         var data = $(this).data();
         productSearch(data);
@@ -1548,10 +1523,10 @@ function productSearch(data) {
                 data: product
             },
             success: function(data) {
-                if(data[23]) {
-                    data[15] = 1;
-                    pre_qty = 0;
-                }
+                // if(data[23]) {
+                //     data[15] = 1;
+                //     pre_qty = 0;
+                // }
                 if(pre_qty > 0 && data[21]) {
                     var old_batch = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.batch-no').val();
 
@@ -1608,7 +1583,12 @@ function addNewProduct(data){
                 stockDisplay = ` | {{ __('db.In Stock') }} : <span class="in-stock">` + data[19] + `</span>`;
             }
         }
-        cols += '<td class="product-title"><strong class="edit-product btn btn-link pl-0 pr-0" data-toggle="modal" data-target="#editModal">' + data[0] + ' <i class="dripicons-document-edit"></i></strong><br><span>' + data[1] + '</span>' + stockDisplay + ' <strong class="product-price d-md-none"></strong>';
+
+        $fbrdatadisplay = '';
+        if(data[23]) {
+            $fbrdatadisplay = '<br><small class="text-muted"><span>HS: ' + data[23] + '</span> | Extra Tax: <span class="extra-tax">' + data[26] + '</span> | Further: <span class="further-tax">' + data[27] + '</span> | Fed: <span class="fed-tax">' + data[28] + '</span></small>';
+        }
+        cols += '<td class="product-title"><strong class="edit-product btn btn-link pl-0 pr-0" data-toggle="modal" data-target="#editModal">' + data[0] + ' <i class="dripicons-document-edit"></i></strong><br><span>' + data[1] + '</span>' + stockDisplay + ' <strong class="product-price d-md-none"></strong>' + $fbrdatadisplay;
     }
 
     if(data[12]) {
@@ -1849,6 +1829,7 @@ function addNewProduct(data){
             return;
         }
     }
+    calculatefbrtaxes();
 }
 
 function populatePriceOption() {
@@ -2110,9 +2091,11 @@ function calculateRowProductData(quantity) {
     var topping_price = ($('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.topping-price').val() * quantity) || 0;
 
     $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.discount-value').val((product_discount[rowindex] * quantity).toFixed({{$general_setting->decimal}}));
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.discount').val((product_discount[rowindex] * quantity).toFixed({{$general_setting->decimal}}));
     $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax-rate').val(tax_rate[rowindex].toFixed({{$general_setting->decimal}}));
     $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_price').val(net_unit_price.toFixed({{$general_setting->decimal}}));
     $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax-value').val(tax.toFixed({{$general_setting->decimal}}));
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax').text(tax.toFixed({{$general_setting->decimal}}));
     $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.product-price').text(sub_total_unit.toFixed({{$general_setting->decimal}}));
     $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.sub-total').text((sub_total+topping_price).toFixed({{$general_setting->decimal}}));
     $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.subtotal-value').val((sub_total+topping_price).toFixed({{$general_setting->decimal}}));
@@ -2161,6 +2144,28 @@ function calculateTotal() {
     payment_amount();
 }
 
+function calculatefbrtaxes(){
+
+    var totalExtraTax = 0;
+    $(".extra-tax").each(function() {
+        totalExtraTax += parseFloat($(this).text());
+    });
+
+    var totalFurtherTax = 0;
+    $(".further-tax").each(function() {
+        totalFurtherTax += parseFloat($(this).text());
+    });
+
+    var totalFedTax = 0;
+    $(".fed-tax").each(function() {
+        totalFedTax += parseFloat($(this).text());
+    });
+
+   $('#extra-tax').text(totalExtraTax.toFixed({{$general_setting->decimal}}));
+   $('#further-tax').text(totalFurtherTax.toFixed({{$general_setting->decimal}}));
+   $('#fed-tax').text(totalFedTax.toFixed({{$general_setting->decimal}}));
+}
+
 function calculateGrandTotal() {
     var item = $('table.order-list tbody tr:last').index();
     if (item == -1) {
@@ -2198,7 +2203,24 @@ function calculateGrandTotal() {
 
     item = ++item + '(' + total_qty + ')';
     order_tax = (subtotal - order_discount) * (order_tax / 100);
+
+    var totalExtraTax = 0;
+    $(".extra-tax").each(function() {
+        totalExtraTax += parseFloat($(this).text());
+    });
+
+    var totalFurtherTax = 0;
+    $(".further-tax").each(function() {
+        totalFurtherTax += parseFloat($(this).text());
+    });
+
+    var totalFedTax = 0;
+    $(".fed-tax").each(function() {
+        totalFedTax += parseFloat($(this).text());
+    });
+    var total_extra_taxes = totalExtraTax + totalFurtherTax + totalFedTax;
     var grand_total = (subtotal + order_tax + shipping_cost) - order_discount;
+    grand_total += total_extra_taxes;
     $('input[name="grand_total"]').val(grand_total.toFixed({{$general_setting->decimal}}));
 
     if(!currencyChange)
@@ -2469,6 +2491,12 @@ $("#submit-button").on("click", function (e) {
 $(document).on('submit', '.payment-form', function(e) {
     let customer_type = $('#customer_id option:selected').data('type');
     let current_payment_status = parseInt($('select[name="payment_status"]').val());
+
+    let fbr_posting = $('#fbr_posting').val();
+    if(fbr_posting == ''){
+        alert('Please Select FBR Posting');
+        e.preventDefault();
+    }
 
     var rownumber = $('table.order-list tbody tr:last').index();
     $("table.order-list tbody .qty").each(function(index) {

@@ -183,19 +183,6 @@ class DeliveryController extends Controller
             $delivery_data[] = $lims_delivery_data->courier_id;
         }
         else{
-            if(in_array('ecommerce', explode(',',config('addons'))) || in_array('restaurant', explode(',',config('addons')))) {
-                $customer_sale = DB::table('sales')->join('customers', 'sales.customer_id', '=', 'customers.id')->where('sales.id', $id)->whereNull('sales.deleted_at')->select('sales.reference_no','customers.name', 'sales.shipping_address', 'sales.shipping_city', 'sales.shipping_country')->get();
-    
-                $delivery_data[] = 'dr-' . date("Ymd") . '-'. date("his");
-                $delivery_data[] = $customer_sale[0]->reference_no;
-                $delivery_data[] = '';
-                $delivery_data[] = '';
-                $delivery_data[] = '';
-                $delivery_data[] = $customer_sale[0]->name;
-                $delivery_data[] = $customer_sale[0]->shipping_address.' '.$customer_sale[0]->shipping_city.' '.$customer_sale[0]->shipping_country;
-                $delivery_data[] = '';
-            }else{
-            
                 $customer_sale = DB::table('sales')->join('customers', 'sales.customer_id', '=', 'customers.id')->where('sales.id', $id)->whereNull('sales.deleted_at')->select('sales.reference_no','customers.name', 'customers.address', 'customers.city', 'customers.country')->get();
     
                 $delivery_data[] = 'dr-' . date("Ymd") . '-'. date("his");
@@ -206,7 +193,7 @@ class DeliveryController extends Controller
                 $delivery_data[] = $customer_sale[0]->name;
                 $delivery_data[] = $customer_sale[0]->address.' '.$customer_sale[0]->city.' '.$customer_sale[0]->country;
                 $delivery_data[] = '';
-            }
+            
         }
         return $delivery_data;
     }

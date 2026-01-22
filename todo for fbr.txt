@@ -1,0 +1,51 @@
+
+customer k table me dalni hain
+"buyerNTNCNIC": "",
+  "buyerBusinessName": "F3 Technologies (Pvt) Ltd",
+  "buyerProvince": "Punjab",
+  "buyerAddress": "2nd Floor, Arfa Software Tech Park, Lahore",
+  "buyerRegistrationType": "Unregistered",
+
+
+fbr k lye fbr invoice setting ka table bana kar usme setting rakhni ha
+
+    "scenarioId": "SN018",
+
+
+
+
+     "hsCode": "9815.6000",
+     "fixedNotifiedValueOrRetailPrice": 0,
+      "salesTaxWithheldAtSource": 0.0,
+      "extraTax": "",
+      "furtherTax": 0.0,
+      "sroScheduleNo": "",
+      "fedPayable": 0.0,
+      "sroItemSerialNo": ""
+
+      above fields nned to be added in product table
+       "saleType": "Services (FED in ST Mode)",  // scenario_id ki base pr aay gi
+
+      "productDescription": "API Integration Services",  //name
+      "rate": "16%",  //tax_id
+      "uoM": "Per Month",  //unit_id
+      "quantity": 1,  //enter by user 
+      "totalValues": 11600.0, //calcualted
+      "valueSalesExcludingST": 10000.0, //calcualted
+      "salesTaxApplicable": 1600.0,  //calcualted
+     
+      "discount": 0.0,  //enter by user 
+
+
+
+      -- Add to items table
+ALTER TABLE products ADD COLUMN (
+  hs_code VARCHAR(20) NULL,
+  fixed_notified_value_or_retail_price DECIMAL(12,2) DEFAULT 0,
+  sales_tax_withheld_at_source DECIMAL(12,2) DEFAULT 0,
+   extra_tax  DECIMAL(12,2) DEFAULT 0,
+    further_tax  DECIMAL(12,2) DEFAULT 0,
+    fed_payable DECIMAL(12,2) DEFAULT 0
+  sro_schedule_no VARCHAR(50) NULL,
+  sro_item_serial_no VARCHAR(50) NULL,
+);

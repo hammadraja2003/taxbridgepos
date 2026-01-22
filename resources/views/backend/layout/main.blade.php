@@ -169,7 +169,9 @@
 
   <!-- Google fonts -->
   @if($general_setting->font_css)
+  <style>
     {!! $general_setting->font_css !!}
+  </style>
   @else
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1456,17 +1458,6 @@
         }
     });
 
-  </script>
-
-  <script>
-    $(document).ready(function() {
-        $(".alert").delay(3000).slideUp(300, function() {
-            $(this).remove();
-        });
-    });
-</script>
-
-    <script>
       // Automatically activate sidebar menu based on current URL
       $(document).ready(function() {
           var currentUrl = window.location.href;

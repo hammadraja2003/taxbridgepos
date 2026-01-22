@@ -42,9 +42,7 @@ class PrinterController extends Controller
 
 
         $input = $request->only(['name', 'warehouse_id', 'connection_type', 'capability_profile', 'char_per_line', 'ip_address', 'port', 'path']);
-
         $input['created_by'] = Auth::user()->id;
-
         if ($input['connection_type'] == 'network') {
             $input['path'] = '';
         } elseif (in_array($input['connection_type'], ['windows', 'linux'])) {
@@ -54,8 +52,9 @@ class PrinterController extends Controller
 
         // Check connector before saving
         try {
+            // app(PrinterService::class)->getConnector($receipt_printer);
             $receipt_printer = new Printer($input);
-            app(PrinterService::class)->getConnector($receipt_printer);
+            app(PrinterService::class)->getConnector($receipt_printer)->finalize();
             $receipt_printer->save();
             return redirect('printers')->with('message', __('db.Data inserted successfully'));
         } catch (\Throwable $e) {
@@ -101,7 +100,8 @@ class PrinterController extends Controller
         // Check connector before saving
         try {
             $printer->fill($input);
-            app(PrinterService::class)->getConnector($printer);
+            // app(PrinterService::class)->getConnector($printer);
+            app(PrinterService::class)->getConnector($printer)->finalize();
             $printer->save();
             return redirect('printers')->with('message', __('db.Data updated successfully'));
         } catch (\Throwable $e) {

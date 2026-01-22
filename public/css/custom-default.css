@@ -879,11 +879,13 @@ div.has-error > .form-text {
     line-height: 2;
 }
 .payment-amount {
-    background-color: #5579a4;
-    text-align: center;
+    /* background-color: #5579a4; */
+    /* text-align: center; */
+}
+#mCSB_3 {
+    background-color: #5579a41f;
 }
 .payment-amount h2 {
-    color: #fff;
     font-size: 1.5rem;
     line-height: 2;
     margin-bottom: 0;

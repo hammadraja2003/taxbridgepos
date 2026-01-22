@@ -69,51 +69,8 @@ class HomeController extends Controller
 
     public function dashboard()
     {
-
-        //Write your translatable strings in JSON format below
-        // $jsonData = '{
-        //     "Available Quantity": "Available Quantity",
-        //     "Hide Total Due": "Hide Total Due"
-        // }';
-
-        // $translations = json_decode($jsonData, true);
-
-        // $languages = DB::table('languages')->pluck('language');
-
-        // foreach ($languages as $locale) {
-        //     foreach ($translations as $key => $value) {
-        //         // Optional: Check if this translation already exists to avoid duplication
-        //         $exists = DB::table('translations')
-        //             ->where('locale', $locale)
-        //             ->where('key', $key)
-        //             ->exists();
-
-        //         if (!$exists) {
-        //             DB::table('translations')->insert([
-        //                 'locale' => $locale,
-        //                 'group' => 'db',
-        //                 'key' => $key,
-        //                 'value' => $value,
-        //                 'created_at' => now(),
-        //                 'updated_at' => now(),
-        //             ]);
-        //         }
-        //     }
-
-
         config()->set('database.connections.mysql.strict', false);
         DB::reconnect();
-
-        $general_setting = getGeneralSetting();
-        if($general_setting && in_array('restaurant', explode(',', $general_setting->modules))) {
-            if(Auth::user()->role_type > 2 && isset(Auth::user()->kitchen_id)){
-
-                $result = (new \Modules\Restaurant\Http\Controllers\KitchenController)->dashboard();
-
-                return $result;
-            }
-        }
-
         if(Auth::user()->role_type == 4) {
             $customer = Customer::select('id', 'points')->where('user_id', Auth::id())->first();
             $lims_sale_data = Sale::with('warehouse')

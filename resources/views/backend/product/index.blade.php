@@ -338,14 +338,16 @@
     });
 
     $(document).on("click", "tr.product-link td:not(:first-child, :last-child)", function() {
-        productDetails( $(this).parent().data('product'), $(this).parent().data('imagedata') );
+     
+        productDetails( $(this).parent().data('product'), $(this).parent().data('imagedata'), $(this).parent().data('fbr-data') );
+        
     });
 
     $(document).on("click", ".view", function(){
         var product = $(this).parent().parent().parent().parent().parent().data('product');
         var imagedata = $(this).parent().parent().parent().parent().parent().data('imagedata');
-        // console.log(product);
-        productDetails(product, imagedata);
+        var fbr_data = $(this).parent().parent().parent().parent().parent().data('fbr-data');
+        productDetails(product, imagedata, fbr_data);
     });
 
     $("#print-btn").on("click", function() {
@@ -357,7 +359,7 @@
           setTimeout(function(){newWin.close();},10);
     });
 
-    function productDetails(product, imagedata) {
+    function productDetails(product, imagedata, fbr_data) {
         product[11] = product[11].replace(/@/g, '"');
         htmltext = slidertext = '';
 
@@ -444,17 +446,12 @@
         }
         if(product[0] == 'standard' || product[0] == 'combo') {
             if(product[19]) {
-                debugger;
                 $.get('products/variant-data/' + product[12], function(variantData) {
-                    debugger;
                     var newHead = $("<thead>");
                     var newBody = $("<tbody>");
                     var newRow = $("<tr>");
                     newRow.append('<th>{{__("db.Variant")}}</th><th>{{__("db.Item Code")}}</th><th>{{__("db.Additional Cost")}}</th><th>{{__("db.Additional Price")}}</th><th>{{__("db.Qty")}}</th>');
                     newHead.append(newRow);
-
-                    console.log(variantData);
-
                     $.each(variantData, function(i) {
                         var newRow = $("<tr>");
                         var cols = '';
@@ -543,6 +540,30 @@
                 });
             }
         }
+
+        if(fbr_data[8] == 1 && fbr_data.length > 0) {
+            let fbrLabels = [
+                '{{__("db.HS Code")}}',
+                '{{__("db.Fixed or Retail Price")}}',
+                '{{__("db.Sales Tax Withheld")}}',
+                '{{__("db.Extra Tax")}}',
+                '{{__("db.Further Tax")}}',
+                '{{__("db.FED Payable")}}',
+                '{{__("db.SRO Schedule No")}}',
+                '{{__("db.SRO Item Serial No")}}',
+                '{{__("db.This Product has FBR Invoice Attributes")}}'
+            ];
+
+            for(let i = 0; i < fbr_data.length; i++) {
+                if(i == 8){
+
+                    htmltext +=fbr_data[i] == '1' ? '<p>'+fbrLabels[i]+': Yes</p>' : '<p>'+fbrLabels[i]+': No</p>'; 
+                }else{
+                    htmltext += '<p>'+fbrLabels[i]+': '+fbr_data[i]+'</p>';
+                }
+            }
+        }
+
 
         $('#product-content').html(htmltext);
         $('#slider-content').html(slidertext);
@@ -727,6 +748,8 @@
                 $(row).addClass('product-link');
                 $(row).attr('data-product', data['product']);
                 $(row).attr('data-imagedata', data['imagedata']);
+                $(row).attr('data-fbr-data', data['fbr_data']);
+
             },
             "columns": columns,
             'language': {
@@ -786,7 +809,7 @@
         });
     });
 
-    $('select').selectpicker();
+    $('.select').selectpicker();
 
 </script>
 @endpush

@@ -9,7 +9,7 @@ class Warehouse extends Model
     protected $connection = 'tenant';   
     protected $fillable =[
 
-        "name", "phone", "email", "address", "is_active"
+        "name", "phone", "email", "address", "is_active", "warehouse_type"
     ];
 
     public function product()

@@ -4,6 +4,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Models\BusinessConfiguration;
 
 if (!function_exists('normalize_to_sql_datetime')) {
     function normalize_to_sql_datetime($input, $useCurrentTime = false)
@@ -219,5 +220,134 @@ if (!function_exists('getBusinessConfig')) {
             return null;
         }
         return BusinessConfiguration::where('bus_config_id', $tenantId)->first();
+    }
+}
+if (!function_exists('provinceOptions')) {
+    function provinceOptions($selected = null)
+    {
+        $provinces = [
+            "BALOCHISTAN",
+            "AZAD JAMMU AND KASHMIR",
+            "CAPITAL TERRITORY",
+            "KHYBER PAKHTUNKHWA",
+            "PUNJAB",
+            "SINDH",
+            "GILGIT BALTISTAN",
+        ];
+        $html = '<option value="">-- Select Province --</option>';
+        foreach ($provinces as $province) {
+            $isSelected = (strtoupper($selected) === strtoupper($province)) ? 'selected' : '';
+            $html .= "<option value=\"{$province}\" {$isSelected}>{$province}</option>";
+        }
+        return $html;
+    }
+}
+if (!function_exists('getMyScenarioOptions')) {
+   function getMyScenarioOptions($selectedCode = null)
+    {
+        $bus_config_id = session('bus_config_id');
+
+        if (!$bus_config_id) {
+            return [];
+        }
+
+        $scenarios = DB::connection('master')
+            ->table('business_scenarios as bs')
+            ->join('sandbox_scenarios as ss', 'bs.scenario_id', '=', 'ss.scenario_id')
+            ->where('bs.bus_config_id', $bus_config_id)
+            ->orderBy('ss.scenario_code', 'asc')
+            ->get();
+
+
+        $html = '<option value="">-- Select Scenario --</option>';
+        foreach ($scenarios as $scenario) {
+            $isSelected = ($selectedCode === $scenario->scenario_id) ? 'selected' : '';
+            $html .= "<option data-scenario_description=\"{$scenario->sale_type}\" value=\"{$scenario->scenario_id}\" {$isSelected}>{$scenario->scenario_code}</option>";
+        }
+        return $html;
+    }
+}
+if (!function_exists('fbrPostDropdown')) {
+
+    function fbrPostDropdown($name = 'fbr_posting', $selected = null, $id = null, $class = 'form-control', $required = true)
+    {
+        $fbr_posts = [
+            "1" => "POST TO FBR",
+            "0" => "DON'T POST TO FBR"
+        ];
+
+        $idAttribute = $id ? "id=\"{$id}\"" : '';
+        $requiredAttribute = $required ? 'required' : '';
+
+        $html = "<select name=\"{$name}\" class=\"{$class}\" {$idAttribute} {$requiredAttribute}>";
+        $html .= '<option value="">-- Select FBR Posting --</option>';
+
+        foreach ($fbr_posts as $key => $label) {
+            $isSelected = ($selected !== null && $selected == $key) ? 'selected' : '';
+            $html .= "<option value=\"{$key}\" {$isSelected}>{$label}</option>";
+        }
+
+        $html .= '</select>';
+
+        return $html;
+    }
+}
+
+if (!function_exists('getBusinessConfigurations')) {
+    function getBusinessConfigurations()
+    {
+        $bus_config_id = session('bus_config_id');
+        $business_configurations = BusinessConfiguration::where('bus_config_id', $bus_config_id)->first();
+        return $business_configurations;
+    }
+}
+if (!function_exists('getFbrEnv')) {
+    function getFbrEnv(): string
+    {
+        $bus_config_id = Auth::user()->bus_config_id ?? session('bus_config_id');
+        if (!$bus_config_id) {
+            return 'sandbox';
+        }
+        $config = BusinessConfiguration::where('bus_config_id', $bus_config_id)->first();
+        if (!$config) {
+            return 'sandbox';
+        }
+        return $config->fbr_env ?? 'sandbox';
+    }
+}
+if (!function_exists('warehouseTypeDropdown')) {
+
+    function warehouseTypeDropdown($name = 'warehouse_type', $selected = null, $id = null, $class = 'form-control', $required = true)
+    {
+        $warehouse_types = [
+            "1" => "Warehouse",
+            "2" => "Store"
+        ];
+
+        $idAttribute = $id ? "id=\"{$id}\"" : '';
+        $requiredAttribute = $required ? 'required' : '';
+
+        $html = "<select name=\"{$name}\" class=\"{$class}\" {$idAttribute} {$requiredAttribute}>";
+        $html .= '<option value="">-- Select Warehouse Type --</option>';
+
+        foreach ($warehouse_types as $key => $label) {
+            $isSelected = ($selected !== null && $selected == $key) ? 'selected' : '';
+            $html .= "<option value=\"{$key}\" {$isSelected}>{$label}</option>";
+        }
+
+        $html .= '</select>';
+
+        return $html;
+    }
+}
+if (!function_exists('getWarehouseType')) {
+
+    function getWarehouseType($type)
+    {
+        $warehouse_types = [
+            "1" => "Warehouse",
+            "2" => "Store"
+        ];
+        return $warehouse_types[$type];
     }
 }

@@ -335,6 +335,17 @@
                                             </select>
                                         </div>
                                     </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>{{__('db.FBR Posting')}} * <x-info title="The FBR posting is automatically selected based on the POS settings. You can change it here temporarily for this invoice only. To change it permanently, update it in the POS settings." type="info" /></label>
+                                            @php
+                                                $pos_setting = \App\Models\PosSetting::first();
+                                                $fbr_posting_value = $pos_setting ? $pos_setting->fbr_posting : null;
+                                            @endphp
+                                            {!! fbrPostDropdown('fbr_posting', $fbr_posting_value, 'fbr_posting') !!}
+                                            <x-validation-error fieldName="fbr_posting" />
+                                        </div>
+                                    </div>
                                 </div>
                                 <div id="payment">
                                     <div class="row">

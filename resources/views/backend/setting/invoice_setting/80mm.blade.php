@@ -15,10 +15,15 @@
 
     <style type="text/css">
         * {
-            font-size: 14px;
+            font-size: 11px !important;
             line-height: 24px;
             font-family: 'Ubuntu', sans-serif;
             text-transform: capitalize;
+        }
+        body{
+            font-size: 11px !important;
+            margin: 0;
+            padding: 0;
         }
 
         .btn {
@@ -37,7 +42,7 @@
         }
 
         .btn-primary {
-            background-color: #6449e7;
+            background-color: #5579a4;
             color: #FFF;
             width: 100%;
         }
@@ -106,6 +111,11 @@
                 page-break-before: avoid;
             }*/
         }
+
+        td, th {
+            padding: 2px 0;
+            width: auto !important;
+        }
     </style>
 </head>
 
@@ -132,16 +142,14 @@
         <div id="receipt-data">
             @if (isset($show->show_warehouse_info) && $show->show_warehouse_info == 1)
                 <div class="centered">
-
                     @if ($general_setting->site_logo || $invoice_settings->company_logo)
                     <img src="{{ $invoice_settings->company_logo ? url('invoices', $invoice_settings->company_logo) : url('logo', $general_setting->site_logo) }}"
                             height="{{ $invoice_settings->logo_height ?? auto }}" width="{{ $invoice_settings->logo_width ?? auto }}" style="margin:5px 0;">
+                    @else
+                    <h2 style="margin: 0 0 5px">{{ $general_setting->company_name }}</h2>
                     @endif
-
-                    <h2 style="margin: 0 0 5px">{{ $general_setting->company_name ?? $lims_biller_data->company_name }}</h2>
-
-                    <p style="margin: 0 0 5px">{{ __('db.Address') }} : {{ $lims_warehouse_data->address }}
-                        <br>{{ __('db.Phone Number') }}: {{ $lims_warehouse_data->phone }}
+                    <p style="margin: 0 0 5px">{{ $lims_warehouse_data->address }}
+                        <br>{{ $lims_warehouse_data->phone }}
                         @if ($general_setting->vat_registration_number && isset($show->show_vat_registration_number) && $show->show_vat_registration_number == 1)
                         <br>{{__('db.VAT Number')}}: {{$general_setting->vat_registration_number}}
                         @endif
@@ -159,14 +167,8 @@
                 {{ __('db.reference') }}: {{ $lims_sale_data->reference_no }}<br>
                 @endif
 
-                @if (isset($show->show_customer_name) && $show->show_customer_name == 1)
                 {{ __('db.customer') }}: {{ $lims_customer_data->name }}
-                @endif
-
-                @if ($lims_sale_data->table_id)
-                    <br>{{ __('db.Table') }}: {{ $lims_sale_data->table->name }}
-                    <br>{{ __('db.Queue') }}: {{ $lims_sale_data->queue }}
-                @endif
+            
                 <?php
                 foreach ($sale_custom_fields as $key => $fieldName) {
                     $field_name = str_replace(' ', '_', strtolower($fieldName));
@@ -180,6 +182,15 @@
 
             </p>
             <table class="table-data">
+                <tr>
+                    <th colspan="4" style="text-align: left;">{{ __('db.Item Description') }}</th>
+                </tr>
+                <tr>
+                    <th style="text-align: left; width: 10%;"><small>Qty</small></th>
+                    <th style="text-align: left; width: 30%;"><small>Price</small></th>
+                    <th style="text-align: left; width: 20%;"><small>GST</small></th>
+                    <th style="text-align: right; width: 40%;"><small>Total</small></th>
+                </tr>
                 <tbody>
                     <?php $total_product_tax = 0; ?>
                     @foreach ($lims_product_sale_data as $key => $product_sale_data)
@@ -196,7 +207,7 @@
                         }
                         // @dd($product_sale_data->imei_number);
                         if ($product_sale_data->imei_number && !str_contains($product_sale_data->imei_number, 'null')) {
-                            $product_name .= '<br><small>' . trans('IMEI or Serial Numbers') . ': ' . $product_sale_data->imei_number .'</small>';
+                            $product_name .= '<br><small>' . trans('IMEI or Serial Numbers') . ': ' . $product_sale_data->imei_number . '</small>';
                         }
 
                         // Warranty
@@ -217,12 +228,12 @@
                         if ($product_sale_data->topping_id) {
                             $decoded_topping_id = is_string($product_sale_data->topping_id) ? json_decode($product_sale_data->topping_id, true) : $product_sale_data->topping_id;
 
-                            //dd(json_decode($product_sale_data->topping_id));
+                            // dd(json_decode($product_sale_data->topping_id));
                             if (is_array($decoded_topping_id)) {
                                 foreach ($decoded_topping_id as $topping) {
-                                    $topping_names[] = $topping['name']; // Extract name
-                                    $topping_prices[] = $topping['price']; // Extract price
-                                    $topping_price_sum += $topping['price']; // Sum up prices
+                                    $topping_names[] = $topping['name'];  // Extract name
+                                    $topping_prices[] = $topping['price'];  // Extract price
+                                    $topping_price_sum += $topping['price'];  // Sum up prices
                                 }
                             }
                         }
@@ -230,53 +241,27 @@
                         $net_price_with_toppings = $product_sale_data->net_unit_price + $topping_price_sum;
                         $subtotal = $product_sale_data->total + $topping_price_sum;
                         ?>
-                        @if (isset($show->show_description) && $show->show_description == 1 )
+                        @if (empty($show) || !isset($show->show_description) || $show->show_description == 1)
                             <tr style="border-top: 1px dotted #999">
-                                <td colspan="2">
-                                    {!! $product_name !!}
-
-                                    @if (!empty($topping_names))
-                                        <br><small>({{ implode(', ', $topping_names) }})</small>
-                                    @endif
-
-                                    @foreach ($product_custom_fields as $index => $fieldName)
-                                        <?php $field_name = str_replace(' ', '_', strtolower($fieldName)); ?>
-                                        @if ($lims_product_data->$field_name)
-                                            @if (!$index)
-                                                <br>{{ $fieldName . ': ' . $lims_product_data->$field_name }}
-                                            @else
-                                                {{ '/' . $fieldName . ': ' . $lims_product_data->$field_name }}
-                                            @endif
-                                        @endif
-                                    @endforeach
-                                    <br>{{ $product_sale_data->qty }} x
-                                    <x-amount-currency-symbol
-                                        :amount="$product_sale_data->total / $product_sale_data->qty"
-                                        :currency_symbol="$lims_sale_data->currency->symbol" />
-
-                                    @if (!empty($topping_prices))
-                                        <small>+
-                                            {{ implode(' + ', array_map(fn($price) => number_format($price, $general_setting->decimal, '.', ','), $topping_prices)) }}</small>
-                                    @endif
-
-                                    @if ($product_sale_data->tax_rate)
-                                        <?php $total_product_tax += $product_sale_data->tax; ?>
-                                        [{{ __('db.Tax') }} ({{ $product_sale_data->tax_rate }}%):
-                                        {{ $product_sale_data->tax }}]
-                                    @endif
+                                <td colspan="4">
+                                    <b>{!! $product_name !!}</b>
                                 </td>
-                                <td style="text-align:right;vertical-align:bottom">
-                                    <x-amount-currency-symbol
-                                        :amount="$subtotal"
-                                        :currency_symbol="$lims_sale_data->currency->symbol" /></td>
                             </tr>
+                            <tr>
+                                <td style="text-align: left;">{{ $product_sale_data->qty }}</td>
+                                <td style="text-align: left;">{{ $product_sale_data->net_unit_price }}</td>
+                                <td style="text-align: left;">{{ $product_sale_data->tax }}</td>
+                                <td style="text-align: right;">{{ $subtotal }}</td>
+                            </tr>
+                            
+                            
                         @endif
                     @endforeach
 
                     <!-- <tfoot> -->
                     <tr>
                         <th colspan="2" style="text-align:left">{{ __('db.Total') }}</th>
-                        <th style="text-align:right">
+                        <th colspan="2" style="text-align:right">
                             <x-amount-currency-symbol
                                 :amount="$lims_sale_data->total_price"
                                 :currency_symbol="$lims_sale_data->currency->symbol" />
@@ -284,49 +269,20 @@
                     </tr>
                     @if ($general_setting->invoice_format == 'gst' && $general_setting->state == 1)
                         <tr>
-                            <td colspan="2">IGST</td>
-                            <td style="text-align:right">
+                            <th colspan="2" style="text-align:left">Sales Tax</th>
+                            <th colspan="2" style="text-align:right">
                                 <x-amount-currency-symbol
                                     :amount="$total_product_tax"
                                     :currency_symbol="$lims_sale_data->currency->symbol" />
-                            </td>
-                        </tr>
-                    @elseif($general_setting->invoice_format == 'gst' && $general_setting->state == 2)
-                        <tr>
-                            <td colspan="2">SGST</td>
-                            <td style="text-align:right">
-                                @php $total_product_tax_amount = ((float) ($total_product_tax / 2)) @endphp
-                                <x-amount-currency-symbol
-                                    :amount="$total_product_tax_amount"
-                                    :currency_symbol="$lims_sale_data->currency->symbol" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2">CGST</td>
-                            <td style="text-align:right">
-                                @php $total_product_tax_amount = ((float) ($total_product_tax / 2)) @endphp
-                                <x-amount-currency-symbol
-                                    :amount="$total_product_tax_amount"
-                                    :currency_symbol="$lims_sale_data->currency->symbol" />
-                            </td>
+                            </th>
                         </tr>
                     @endif
                     @if ($lims_sale_data->order_tax)
                         <tr>
                             <th colspan="2" style="text-align:left">{{ __('db.Order Tax') }}</th>
-                            <th style="text-align:right">
+                            <th colspan="2" style="text-align:right">
                                 <x-amount-currency-symbol
                                     :amount="$lims_sale_data->order_tax"
-                                    :currency_symbol="$lims_sale_data->currency->symbol" />
-                            </th>
-                        </tr>
-                    @endif
-                    @if ($lims_sale_data->order_discount)
-                        <tr>
-                            <th colspan="2" style="text-align:left">{{ __('db.Order Discount') }}</th>
-                            <th style="text-align:right">
-                                <x-amount-currency-symbol
-                                    :amount="$lims_sale_data->order_discount"
                                     :currency_symbol="$lims_sale_data->currency->symbol" />
                             </th>
                         </tr>
@@ -334,7 +290,7 @@
                     @if ($lims_sale_data->coupon_discount)
                         <tr>
                             <th colspan="2" style="text-align:left">{{ __('db.Coupon Discount') }}</th>
-                            <th style="text-align:right">
+                            <th colspan="2" style="text-align:right">
                                 <x-amount-currency-symbol
                                     :amount="$lims_sale_data->coupon_discount"
                                     :currency_symbol="$lims_sale_data->currency->symbol" />
@@ -344,16 +300,57 @@
                     @if ($lims_sale_data->shipping_cost)
                         <tr>
                             <th colspan="2" style="text-align:left">{{ __('db.Shipping Cost') }}</th>
-                            <th style="text-align:right">
+                            <th colspan="2" style="text-align:right">
                                 <x-amount-currency-symbol
                                     :amount="$lims_sale_data->shipping_cost"
                                     :currency_symbol="$lims_sale_data->currency->symbol" />
                             </th>
                         </tr>
                     @endif
+                    @if ($lims_sale_data->total_extra_tax)
+                    <tr>
+                        <th colspan="2" style="text-align:left">{{ __('db.Total Extra Tax') }}</th>
+                        <th colspan="2" style="text-align:right">
+                            <x-amount-currency-symbol
+                                    :amount="$lims_sale_data->total_extra_tax"
+                                    :currency_symbol="$lims_sale_data->currency->symbol" />
+                        </th>
+                    </tr>
+                    @endif
+                    @if ($lims_sale_data->total_further_tax)
+                    <tr>
+                        <th colspan="2" style="text-align:left">{{ __('db.Total Further Tax') }}</th>
+                        <th colspan="2" style="text-align:right">
+                            <x-amount-currency-symbol
+                                    :amount="$lims_sale_data->total_further_tax"
+                                    :currency_symbol="$lims_sale_data->currency->symbol" />
+                        </th>
+                    </tr>
+                    @endif
+                    @if ($lims_sale_data->total_fed_payable)
+                    <tr>
+                        <th colspan="2" style="text-align:left">{{ __('db.FED Payable') }}</th>
+                        <th colspan="2" style="text-align:right">
+                            <x-amount-currency-symbol
+                                    :amount="$lims_sale_data->total_fed_payable"
+                                    :currency_symbol="$lims_sale_data->currency->symbol" />
+                        </th>
+                    </tr>
+                    @endif
+                    
+                    @if ($lims_sale_data->order_discount)
+                        <tr>
+                            <th colspan="2" style="text-align:left">{{ __('db.Order Discount') }}</th>
+                            <th colspan="2" style="text-align:right">
+                                <x-amount-currency-symbol
+                                    :amount="$lims_sale_data->order_discount"
+                                    :currency_symbol="$lims_sale_data->currency->symbol" />
+                            </th>
+                        </tr>
+                    @endif
                     <tr>
                         <th colspan="2" style="text-align:left">{{ __('db.grand total') }}</th>
-                        <th style="text-align:right">
+                        <th colspan="2" style="text-align:right">
                             <x-amount-currency-symbol
                                     :amount="$lims_sale_data->grand_total"
                                     :currency_symbol="$lims_sale_data->currency->symbol" />
@@ -362,7 +359,7 @@
                     @if ($lims_sale_data->grand_total - $lims_sale_data->paid_amount > 0)
                         <tr>
                             <th colspan="2" style="text-align:left">{{ __('db.Due') }}</th>
-                            <th style="text-align:right">
+                            <th colspan="2" style="text-align:right">
                                 <x-amount-currency-symbol
                                     :amount="$lims_sale_data->grand_total - $lims_sale_data->paid_amount"
                                     :currency_symbol="$lims_sale_data->currency->symbol" />
@@ -373,7 +370,7 @@
                         <tr>
                             @if (!$show->hide_total_due)
                             <th colspan="2" style="text-align:left">{{ __('db.Total Due') }}</th>
-                            <th style="text-align:right">
+                            <th colspan="2" style="text-align:right">
                                 <x-amount-currency-symbol
                                     :amount="$totalDue"
                                     :currency_symbol="$lims_sale_data->currency->symbol" /></th>
@@ -383,12 +380,12 @@
                     <tr>
                         @if (isset($show->show_in_words) && $show->show_in_words == 1)
                             @if ($general_setting->currency_position == 'prefix')
-                                <th class="centered" colspan="3">{{ __('db.In Words') }}:
+                                <th class="centered" colspan="4">{{ __('db.In Words') }}:
                                     <span>{{ $currency_code }}</span>
                                     <span>{{ str_replace('-', ' ', $numberInWords) }}</span>
                                 </th>
                             @else
-                                <th class="centered" colspan="3">{{ __('db.In Words') }}:
+                                <th class="centered" colspan="4">{{ __('db.In Words') }}:
                                     <span>{{ str_replace('-', ' ', $numberInWords) }}</span>
                                     <span>{{ $currency_code }}</span>
                                 </th>
@@ -397,7 +394,7 @@
                     </tr>
                     <tr>
                         @if (isset($show->show_sale_note) && isset($lims_sale_data->sale_note) && $show->show_sale_note)
-                            <td colspan="3">
+                            <td colspan="4">
                                <p class=""> <strong>{{ __('db.Sale Note') }}:</strong>{{ $lims_sale_data->sale_note }}</p>
                             </td>
                         @endif
@@ -410,14 +407,14 @@
                     @if (isset($show->show_paid_info) && $show->show_paid_info == 1)
                         @foreach ($lims_payment_data as $payment_data)
                             <tr style="background-color:#ddd;">
-                                <td style="padding: 5px;width:30%">{{ __('db.Paid By') }}:
+                                <td style="padding: 5px;width:30%;text-align:center;">{{ __('db.Payment') }}:
                                     {{ $payment_data->paying_method }}</td>
-                                <td style="padding: 5px;width:40%">{{ __('db.Amount') }}:
+                                <td style="padding: 5px;width:40%;text-align:center;">{{ __('db.Amount') }}:
                                     <x-amount-currency-symbol
                                         :amount="$payment_data->amount + $payment_data->change"
                                         :currency_symbol="$lims_sale_data->currency->symbol" />
                                 </td>
-                                <td style="padding: 5px;width:30%">{{ __('db.Change') }}:
+                                <td style="padding: 5px;width:30%;text-align:center;">{{ __('db.Change') }}:
                                     <x-amount-currency-symbol
                                         :amount="$payment_data->change"
                                         :currency_symbol="$lims_sale_data->currency->symbol" />
@@ -426,7 +423,7 @@
                         @endforeach
                     @endif
                     <tr>
-                        <td class="centered" colspan="3">
+                        <td class="centered" colspan="4">
                             <small>
                                 @if (isset($show->show_biller_info) && $show->show_biller_info == 1)
                                 {{ __('db.Served By') }}: {{ $lims_bill_by['name'] }} - ({{ $lims_bill_by['user_name'] }})
@@ -436,8 +433,26 @@
                                 <strong>{!! $invoice_settings->footer_text ?? __('db.Thank you for shopping with us Please come again') !!}</strong>
                             @endif
                     </tr>
+                    @if ($lims_sale_data->is_posted_to_fbr == 1 && !empty($lims_sale_data->fbr_invoice_number))
                     <tr>
-                        <td class="centered" colspan="3">
+                        @php
+                            $fbrQrText = $lims_sale_data->fbr_invoice_number;
+                        @endphp
+                        <td class="centered" colspan="4">
+                            <?php echo '<img style="margin-top:10px;" src="data:image/png;base64,' . DNS2D::getBarcodePNG($fbrQrText, 'QRCODE') . '" alt="QRcode"   />'; ?>
+                            <img src="https://www.switchertechno.com/wp-content/uploads/1.jpg" width="80px" style="margin-top:10px;"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="centered" colspan="4">
+                            <small>
+                                FBR Invoice # : {{ $lims_sale_data->fbr_invoice_number }}
+                            </small>
+                        </td>
+                    </tr>
+                    @else
+                    <tr>
+                        <td class="centered" colspan="4">
                             @if (isset($show->show_barcode) && $show->show_barcode == 1)
                                 <?php echo '<img style="margin-top:10px;" src="data:image/png;base64,' . DNS1D::getBarcodePNG($lims_sale_data->reference_no, 'C128') . '" width="300" alt="barcode"   />'; ?>
                             @endif
@@ -447,8 +462,12 @@
                             @endif
                         </td>
                     </tr>
+                    @endif
                 </tbody>
             </table>
+            <p style="text-align:center;">
+                <small>Developed By Secureism Pvt. Ltd.</small> 
+            </p>  
         </div>
     </div>
 
@@ -458,7 +477,7 @@
         function auto_print() {
             window.print();
         }
-        //setTimeout(auto_print, 1000);
+        setTimeout(auto_print, 1000);
     </script>
 
 </body>

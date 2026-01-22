@@ -254,7 +254,7 @@
                                         @endif
                                         <select name="invoice_format" class="selectpicker form-control" required>
                                             <option value="standard">Standard</option>
-                                            <option value="gst">Indian GST</option>
+                                            <option value="gst">Pakistani GST</option>
                                         </select>
                                     </div>
                                 </div>
@@ -337,7 +337,22 @@
                                         <input type="number" class="form-control" name="expiry_value" value="{{ $lims_general_setting_data->expiry_value ?? '0' }}">
                                     </div>
                                 </div> -->
-                                <div class="col-md-4 mt-4">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>{{__('db.Default FBR Scenario')}}</label>
+                                        <select name="default_fbr_scenario" class="form-control">
+                                           {!! getMyScenarioOptions($lims_general_setting_data->default_fbr_scenario) !!}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>{{__('db.Default FBR Scenario Description')}}</label>
+                                        <input type="text" name="default_fbr_scenario_type" id="default_fbr_scenario_type" class="form-control" readonly>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3 mt-4">
                                     <div class="form-group mt-2">
                                         @if($lims_general_setting_data->disable_signup)
                                         <input type="checkbox" name="disable_signup" value="1" checked>
@@ -348,7 +363,7 @@
                                         <label>{{__('db.Disable registration')}}</label>
                                     </div>
                                 </div>
-                                <div class="col-md-4 mt-4">
+                                <div class="col-md-3 mt-4">
                                     <div class="form-group mt-2">
                                         @if($lims_general_setting_data->disable_forgot_password)
                                         <input type="checkbox" name="disable_forgot_password" value="1" checked>
@@ -389,7 +404,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-6 mt-2">
+                                <!-- <div class="col-md-6 mt-2">
                                     <div class="form-group mb-3">
                                         <label for="app_key">App Key <x-info title="It is to set up your TaxBridge mobile app" type="info" /></label>
                                         <div class="input-group">
@@ -399,7 +414,7 @@
                                             @endif
                                         </div>
                                     </div>
-                                </div>
+                                </div> -->
                                 <div class="col-md-6">
                                     <div id="qrcode"></div>
                                 </div>
@@ -573,6 +588,15 @@
 </script>
 
 <script>
+    $(document).ready(function() {
+    @if($lims_general_setting_data->default_fbr_scenario != null)
+        $('select[name="default_fbr_scenario"]').trigger('change');
+    @endif
+    });
+    $(document).on('change', 'select[name="default_fbr_scenario"]', function () {
+        let description = $(this).find(':selected').data('scenario_description');
+        $('#default_fbr_scenario_type').val(description ? description : '');
+    });
     document.getElementById('site_logo').addEventListener('change', function () {
         const file = this.files[0];
         const errorEl = document.getElementById('logo_error');
@@ -596,5 +620,6 @@
             return;
         }
     });
+
 </script>
 @endpush

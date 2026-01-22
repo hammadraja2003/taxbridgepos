@@ -35,11 +35,13 @@ class DiscountController extends Controller
             ['code', $code],
             ['is_active', true]
         ])->select('id', 'name', 'code')->first();
-
-        $product[] = $lims_product_data->id;
-        $product[] = $lims_product_data->name;
-        $product[] = $lims_product_data->code;
-        return $product;
+        if(!empty($lims_product_data)) {
+            $product[] = $lims_product_data->id;
+            $product[] = $lims_product_data->name;
+            $product[] = $lims_product_data->code;
+            return $product;
+        }
+        return [];
     }
 
     public function store(Request $request)
