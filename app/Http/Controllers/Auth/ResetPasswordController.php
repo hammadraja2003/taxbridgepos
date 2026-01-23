@@ -9,15 +9,15 @@ use Illuminate\Http\Request;
 class ResetPasswordController extends Controller
 {
     /*
-    |--------------------------------------------------------------------------
-    | Password Reset Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller is responsible for handling password reset requests
-    | and uses a simple trait to include this behavior. You're free to
-    | explore this trait and override any methods you wish to tweak.
-    |
-    */
+     * |--------------------------------------------------------------------------
+     * | Password Reset Controller
+     * |--------------------------------------------------------------------------
+     * |
+     * | This controller is responsible for handling password reset requests
+     * | and uses a simple trait to include this behavior. You're free to
+     * | explore this trait and override any methods you wish to tweak.
+     * |
+     */
 
     use ResetsPasswords;
 
@@ -26,7 +26,7 @@ class ResetPasswordController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/dashboard';
+    protected $redirectTo = '/login';
 
     /**
      * Create a new controller instance.
@@ -46,4 +46,21 @@ class ResetPasswordController extends Controller
         ]);
     }
 
+    protected function resetPassword($user, $password)
+    {
+        $user->password = bcrypt($password);
+        $user->save();
+
+        // User ko logout kar do
+        \Auth::logout();
+
+        // Session regenerate karo
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+    }
+
+    public function redirectPath()
+    {
+        return '/login';
+    }
 }

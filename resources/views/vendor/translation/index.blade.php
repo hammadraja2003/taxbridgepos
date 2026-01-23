@@ -3,8 +3,6 @@
 
 @endpush
 @section('content')
-
-    <!-- @include('includes.session_message') -->
     
     <div class="container mt-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -17,8 +15,8 @@
                 <label class="form-label">Select Language:</label>
                 <select id="localeName" class="form-select border border-secondary" onchange="fetchTranslations()">
                     @foreach ($languages as $language)
-                        <?php 
-                            $default = $language->is_default;
+                        <?php
+                        $default = $language->is_default;
                         ?>
                         <option value="{{ $language->language }}" @selected($default)>{{ $language->name }}</option>
                     @endforeach

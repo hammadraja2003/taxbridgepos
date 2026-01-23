@@ -827,8 +827,7 @@
                         <li class="has-dropdown {{ (request()->is('file_manager*')) ? 'active' : '' }}">
 
                             @if(auth()->user()->can('view-file_manager') || auth()->user()->can('view-official_documents'))
-                                <a href="#file_manager" aria-expanded="false" data-toggle="collapse"> <i
-                                            class="dripicons-archive"></i><span>{{__('File Manager')}}</span>
+                                <a href="#file_manager" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-store"></i><span>{{__('File Manager')}}</span>
                                 </a>
                             @endcan
 

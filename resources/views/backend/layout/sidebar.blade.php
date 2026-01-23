@@ -9,17 +9,17 @@
                         @can('categories-index')
                             <li id="category-menu"><a href="{{route('category.index')}}">{{__('db.category')}}</a></li>
                         @endcan
-                        @can('brand')
+                        @can('brand-index')
                             <li id="brand-menu"><a href="{{route('brand.index')}}">{{__('db.Brand')}}</a></li>
                         @endcan
-                        @can('unit')
+                        @can('unit-index')
                             <li id="unit-menu"><a href="{{route('unit.index')}}">{{__('db.Unit')}}</a></li>
-                        @endcan
-                        @can('products-index')
-                            <li id="product-list-menu"><a href="{{route('products.index')}}">{{__('db.product_list')}}</a></li>
                         @endcan
                         @can('products-add')
                             <li id="product-create-menu"><a href="{{route('products.create')}}">{{__('db.add_product')}}</a></li>
+                        @endcan
+                        @can('products-index')
+                            <li id="product-list-menu"><a href="{{route('products.index')}}">{{__('db.product_list')}}</a></li>
                         @endcan
                         @can('print_barcode')
                             <li id="printBarcode-menu"><a href="{{route('product.printBarcode')}}">{{__('db.print_barcode')}}</a></li>
@@ -40,11 +40,11 @@
                     <a href="#purchase" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-card"></i><span>{{__('db.Purchase')}}</span></a>
 
                     <ul id="purchase" class="collapse list-unstyled ">
-                        @can('purchases-index')
-                            <li id="purchase-list-menu"><a href="{{route('purchases.index')}}">{{__('db.Purchase List')}}</a></li>
-                        @endcan
                         @can('purchases-add')
                             <li id="purchase-create-menu"><a href="{{route('purchases.create')}}">{{__('db.Add Purchase')}}</a></li>
+                        @endcan
+                        @can('purchases-index')
+                            <li id="purchase-list-menu"><a href="{{route('purchases.index')}}">{{__('db.Purchase List')}}</a></li>
                         @endcan
                         @can('purchases-import')
                             <li id="purchase-import-menu"><a href="{{url('purchases/purchase_by_csv')}}">{{__('db.Import Purchase By CSV')}}</a></li>
@@ -99,11 +99,11 @@
                     <a href="#quotation" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-document"></i><span>{{__('db.Quotation')}}</span></a>
                     
                     <ul id="quotation" class="collapse list-unstyled ">
-                        @can('quotes-index')
-                            <li id="quotation-list-menu"><a href="{{route('quotations.index')}}">{{__('db.Quotation List')}}</a></li>
-                        @endcan
                         @can('quotes-add')
                             <li id="quotation-create-menu"><a href="{{route('quotations.create')}}">{{__('db.Add Quotation')}}</a></li>
+                        @endcan
+                        @can('quotes-index')
+                            <li id="quotation-list-menu"><a href="{{route('quotations.index')}}">{{__('db.Quotation List')}}</a></li>
                         @endcan
                     </ul>
                 </li>
@@ -113,11 +113,11 @@
                 <li>
                     <a href="#transfer" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-export"></i><span>{{__('db.Transfer')}}</span></a>
                     <ul id="transfer" class="collapse list-unstyled ">
-                        @can('transfers-index')
-                            <li id="transfer-list-menu"><a href="{{route('transfers.index')}}">{{__('db.Transfer List')}}</a></li>
-                        @endcan
                         @can('transfers-add')
                             <li id="transfer-create-menu"><a href="{{route('transfers.create')}}">{{__('db.Add Transfer')}}</a></li>
+                        @endcan
+                        @can('transfers-index')
+                            <li id="transfer-list-menu"><a href="{{route('transfers.index')}}">{{__('db.Transfer List')}}</a></li>
                         @endcan
                         @can('transfers-import')
                             <li id="transfer-import-menu"><a href="{{url('transfers/transfer_by_csv')}}">{{__('db.Import Transfer By CSV')}}</a></li>
@@ -132,11 +132,11 @@
 
                     <ul id="expense" class="collapse list-unstyled ">
                         <li id="exp-cat-menu"><a href="{{route('expense_categories.index')}}">{{__('db.Expense Category')}}</a></li>
-                        @can('expenses-index')
-                            <li id="exp-list-menu"><a href="{{route('expenses.index')}}">{{__('db.Expense List')}}</a></li>
-                        @endcan
                         @can('expenses-add')
                             <li><a id="add-expense" href=""> {{__('db.Add Expense')}}</a></li>
+                        @endcan
+                        @can('expenses-index')
+                            <li id="exp-list-menu"><a href="{{route('expenses.index')}}">{{__('db.Expense List')}}</a></li>
                         @endcan
                     </ul>
                 </li>
@@ -242,7 +242,8 @@
                 </li>
             @endcan
 
-            <!-- @if(in_array('manufacturing',explode(',',$general_setting->modules)))
+            @can('sidebar_manufacturing')
+            @if(in_array('manufacturing',explode(',',$general_setting->modules)))
                 <li>
                     <a href="#manufacturing" aria-expanded="false" data-toggle="collapse"> <i class="fa fa-industry"></i><span>{{__('db.Manufacturing')}}</span></a>
 
@@ -252,10 +253,12 @@
                         <li id="production-create-menu"><a href="{{route('recipes.index')}}">{{__('db.Recipe')}}</a></li>
                     </ul>
                 </li>
-            @endif -->
+            @endif
+            @endcan
 
 
-            <!-- <li><a href="#whatsapp" aria-expanded="false" data-toggle="collapse"><i class="dripicons-message"></i><span>{{ __('db.whatsapp') }}</span></a>
+             @can('sidebar_whatsapp')
+            <li><a href="#whatsapp" aria-expanded="false" data-toggle="collapse"><i class="dripicons-message"></i><span>{{ __('db.whatsapp') }}</span></a>
                 <ul id="whatsapp" class="collapse list-unstyled">
                     <li id="whatsapp-settings-menu">
                         <a href="{{ route('whatsapp.settings') }}">{{ __('db.whatsapp_settings') }}</a>
@@ -267,7 +270,8 @@
                         <a href="{{ route('whatsapp.send.page') }}">{{ __('db.send_message') }}</a>
                     </li>
                 </ul>
-            </li> -->
+            </li>
+            @endcan
 
             @can('sidebar_reports')
                 <li>
@@ -439,7 +443,7 @@
                 </li>
             @endcan
 
-            {{--@can('sidebar_settings')--}}
+            @can('sidebar_settings')
                 <li>
                     <a href="#setting" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-gear"></i><span>{{__('db.settings')}}</span></a>
                     
@@ -499,7 +503,7 @@
                             <!-- <li><a href="{{route('setting.backup')}}">{{__('db.Backup Database')}}</a></li> -->
                         @endcan
                         @can('mail_setting')
-                            <!-- <li id="mail-setting-menu"><a href="{{route('setting.mail')}}">{{__('db.Mail Setting')}}</a></li> -->
+                            <li id="mail-setting-menu"><a href="{{route('setting.mail')}}">{{__('db.Mail Setting')}}</a></li>
                         @endcan
                         @can('reward_point_setting')
                             <li id="reward-point-setting-menu"><a href="{{route('setting.rewardPoint')}}">{{__('db.Reward Point Setting')}}</a></li>
@@ -527,6 +531,7 @@
                         @endcan
                     </ul>
                 </li>
+            @endcan
             <!-- @can ('addons')
                 @if(\Auth::user()->role_type != 4)
                
@@ -553,9 +558,9 @@
             @endcan -->
 
              <li id="logout-menu">
-                  <a href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();"><i class="dripicons-power"></i>{{ __('db.logout') }}</a>
-                  <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                    @csrf
-                  </form>
-                </li>
+                <a href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();"><i class="dripicons-power"></i>{{ __('db.logout') }}</a>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+                </form>
+            </li>
         </ul>

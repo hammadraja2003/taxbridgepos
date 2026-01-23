@@ -4,9 +4,6 @@
 @endpush
 @section('content')
 
-    <!-- @include('includes.session_message') -->
-
-
     <form action="{{ route('languages.translations.index', ['language' => $language]) }}" method="get">
 
         <div class="container-fluid mt-3 mb-3">

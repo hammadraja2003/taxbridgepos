@@ -58,6 +58,39 @@
 											</td>
 										@endforeach
 									</tr>
+									<tr>
+										<td>{{ __('db.brand')}}</td>
+										@foreach ($permissions as $perm)
+											@php $key = "brand-{$perm}"; @endphp
+											<td class="text-center">
+												<div class="checkbox icheckbox_square-blue">
+													<input type="checkbox"
+														value="1"
+														id="{{ $key }}"
+														name="{{ $key }}"
+														{{ in_array($key, $all_permission) ? 'checked' : '' }}>
+													<label for="{{ $key }}"></label>
+												</div>
+											</td>
+										@endforeach
+									</tr>
+
+									<tr>
+										<td>{{ __('db.unit')}}</td>
+										@foreach ($permissions as $perm)
+											@php $key = "unit-{$perm}"; @endphp
+											<td class="text-center">
+												<div class="checkbox icheckbox_square-blue">
+													<input type="checkbox"
+														value="1"
+														id="{{ $key }}"
+														name="{{ $key }}"
+														{{ in_array($key, $all_permission) ? 'checked' : '' }}>
+													<label for="{{ $key }}"></label>
+												</div>
+											</td>
+										@endforeach
+									</tr>
 
 									<tr>
 										<td>{{ __('db.product') }}</td>
@@ -1435,30 +1468,7 @@
 								                </div>
 								            </div>
 						                </span>
-						                <span>
-								            <div aria-checked="false" aria-disabled="false">
-								                <div class="checkbox">
-							                    	@if(in_array("brand", $all_permission))
-							                    	<input type="checkbox" value="1" id="brand" name="brand" checked>
-							                    	@else
-							                    	<input type="checkbox" value="1" id="brand" name="brand">
-							                    	@endif
-								                    <label for="brand" class="padding05">{{__('db.Brand')}} &nbsp;&nbsp;</label>
-								                </div>
-								            </div>
-						                </span>
-						                <span>
-								            <div aria-checked="false" aria-disabled="false">
-								                <div class="checkbox">
-							                    	@if(in_array("unit", $all_permission))
-							                    	<input type="checkbox" value="1" id="unit" name="unit" checked>
-							                    	@else
-							                    	<input type="checkbox" value="1" id="unit" name="unit">
-							                    	@endif
-								                    <label for="unit" class="padding05">{{__('db.Unit')}} &nbsp;&nbsp;</label>
-								                </div>
-								            </div>
-						                </span>
+						             
 						                <span>
 								            <div aria-checked="false" aria-disabled="false">
 								                <div class="checkbox">
@@ -1635,7 +1645,7 @@
 							                    	@else
 							                    	<input type="checkbox" value="1" id="invoice_create_edit_delete" name="invoice_create_edit_delete">
 							                    	@endif
-								                    <label for="invoice_create_edit_delete" class="padding05">{{__('db.Invoice Create/Edit/Delete')}} &nbsp;&nbsp;</label>
+								                    <label for="invoice_create_edit_delete" class="padding05">{{__('db.Invoice Settings Create/Edit/Delete')}} &nbsp;&nbsp;</label>
 								                </div>
 								            </div>
 						                </span>

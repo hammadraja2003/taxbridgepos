@@ -73,7 +73,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label></label><br>
-                                            <a href="../sample_file/sample_purchase_products.csv" class="btn btn-primary btn-block btn-lg"><i class="dripicons-download"></i> {{__('db.Download Sample File')}}</a>
+                                            <a href="../sample_file/sample_purchase_products.csv" class="btn btn-primary"><i class="dripicons-download"></i> {{__('db.Download Sample File')}}</a>
                                         </div>
                                     </div>
                                 </div>

@@ -7,10 +7,17 @@
 
     <section>
         <div class="container-fluid">
-            <button class="btn btn-primary" data-toggle="modal" data-target="#createModal"><i class="dripicons-plus"></i>
-                {{ __('db.Add Brand') }} </button>&nbsp;
-            <button class="btn btn-primary" data-toggle="modal" data-target="#importBrand"><i class="dripicons-copy"></i>
-                {{ __('db.Import Brand') }}</button>
+            @can('brand-add')
+                <button class="btn btn-primary" data-toggle="modal" data-target="#createModal"><i
+                        class="dripicons-plus"></i>
+                    {{ __('db.Add Brand') }} </button>&nbsp;
+            @endcan
+
+            @can('brand-import')
+                <button class="btn btn-primary" data-toggle="modal" data-target="#importBrand"><i
+                        class="dripicons-copy"></i>
+                    {{ __('db.Import Brand') }}</button>
+            @endcan
         </div>
         <div class="table-responsive">
             <table id="biller-table" class="table">
@@ -43,10 +50,13 @@
                                     </button>
                                     <ul class="dropdown-menu edit-options dropdown-menu-right dropdown-default"
                                         user="menu">
+                                        @can('brand-edit')
                                         <li><button type="button" data-id="{{ $brand->id }}"
                                                 class="open-EditbrandDialog btn btn-link" data-toggle="modal"
                                                 data-target="#editModal"><i class="dripicons-document-edit"></i>
                                                 {{ __('db.edit') }}</button></li>
+                                        @endcan
+                                        @can('brand-delete')
                                         <li class="divider"></li>
                                         {{ Form::open(['route' => ['brand.destroy', $brand->id], 'method' => 'DELETE']) }}
                                         <li>
@@ -55,6 +65,7 @@
                                                     class="dripicons-trash"></i> {{ __('db.delete') }}</button>
                                         </li>
                                         {{ Form::close() }}
+                                        @endcan
                                     </ul>
                                 </div>
                             </td>
@@ -137,7 +148,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label> {{ __('db.Sample File') }}</label>
-                                <a href="sample_file/sample_brand.csv" class="btn btn-info btn-block btn-md"><i
+                                <a href="sample_file/sample_brand.csv" class="btn btn-info"><i
                                         class="dripicons-download"></i> {{ __('db.Download') }}</a>
                             </div>
                         </div>

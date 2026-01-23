@@ -1,4 +1,4 @@
-@if (session()->has('customMessage'))
+<!-- @if (session()->has('customMessage'))
     <div class="alert alert-{{session('type')}} alert-dismissible fade show text-center" role="alert">
         <strong>{!! session('customMessage') !!}</strong>
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -21,4 +21,4 @@
             <span aria-hidden="true">&times;</span>
         </button>
     </div>
-@endif
+@endif -->

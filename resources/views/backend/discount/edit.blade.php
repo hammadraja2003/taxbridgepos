@@ -49,7 +49,7 @@
                                 </div>
                                 <div class="col-md-9 form-group product-selection">
                                 	<label>{{__('db.Select Product')}} *</label>
-                                	<input type="text" name="product_code" id="product-code" class="form-control" placeholder="{{__('db.Type product code seperated by comma')}}">
+                                	<input type="text" name="product_code" id="product-code" class="form-control" placeholder="{{__('db.Type product code or name separated by comma')}}">
                                 </div>
                                 <div class="col-md-9 form-group product-selection">
                                 	<div class="table-responsive ml-2">
@@ -64,7 +64,7 @@
                                             </thead>
                                             <tbody>
                                             @if($lims_discount_data->applicable_for == 'Specific')
-                                                <?php $product_ids = explode(",", $lims_discount_data->product_list); ?>
+                                                <?php $product_ids = explode(',', $lims_discount_data->product_list); ?>
                                                 @foreach($product_ids as $key => $product_id)
                                                 <?php $product_data = \App\Models\Product::select('id', 'name', 'code')->find($product_id); ?>
                                                     <tr>
@@ -145,7 +145,7 @@
 
     var discount_plan_ids = <?php echo json_encode($discount_plan_ids); ?>;
     var applicable_for = <?php echo json_encode($lims_discount_data->applicable_for); ?>;
-    var days = <?php echo json_encode(explode(",", $lims_discount_data->days)); ?>;
+    var days = <?php echo json_encode(explode(',', $lims_discount_data->days)); ?>;
     for(i = 0; i < days.length; i++) {
         $("."+days[i]).prop('checked', true);
     }
@@ -158,6 +158,10 @@
         if($(this).val().indexOf(',') > -1){
             var code = $(this).val().slice(0, -1);
             $.get('../product-search/' + code, function(data) {
+                if(data.length == 0){
+                    alert("Product not found");
+                    return;
+                }
 		        var newRow = $("<tr>");
 	            var cols = '';
 	            var rowindex = $("table#product-table tbody tr:last").index();

@@ -26,19 +26,19 @@
             <tbody>
                 @foreach($lims_supplier_all as $key => $supplier)
                 <?php
-                    $returned_amount = DB::table('purchases')
-                                    ->join('return_purchases', 'purchases.id', '=', 'return_purchases.purchase_id')
-                                    ->where([
-                                        ['purchases.supplier_id', $supplier->id],
-                                        ['purchases.payment_status', 1]
-                                    ])
-                                    ->sum('return_purchases.grand_total');
-                    $purchaseData = App\Models\Purchase::where([
-                                    ['supplier_id', $supplier->id],
-                                    ['payment_status', 1]
-                                ])
-                                ->selectRaw('SUM(grand_total) as grand_total,SUM(paid_amount) as paid_amount')
-                                ->first();
+                $returned_amount = DB::table('purchases')
+                    ->join('return_purchases', 'purchases.id', '=', 'return_purchases.purchase_id')
+                    ->where([
+                        ['purchases.supplier_id', $supplier->id],
+                        ['purchases.payment_status', 1]
+                    ])
+                    ->sum('return_purchases.grand_total');
+                $purchaseData = App\Models\Purchase::where([
+                    ['supplier_id', $supplier->id],
+                    ['payment_status', 1]
+                ])
+                    ->selectRaw('SUM(grand_total) as grand_total,SUM(paid_amount) as paid_amount')
+                    ->first();
                 ?>
                 <tr data-id="{{$supplier->id}}">
                     <td>{{$key}}</td>
@@ -181,7 +181,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label> {{__('db.Sample File')}}</label>
-                        <a href="sample_file/sample_supplier.csv" class="btn btn-info btn-block btn-md"><i class="dripicons-download"></i> {{__('db.Download')}}</a>
+                        <a href="sample_file/sample_supplier.csv" class="btn btn-info"><i class="dripicons-download"></i> {{__('db.Download')}}</a>
                     </div>
                 </div>
             </div>

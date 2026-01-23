@@ -14,12 +14,12 @@
                         <p class="italic"><small>{{__('db.The field labels marked with * are required input fields')}}.</small></p>
                         {!! Form::open(['route' => 'supplier.store', 'method' => 'post', 'files' => true]) !!}
                         <div class="row">
-                            <div class="col-md-4 mt-4">
+                            <!-- <div class="col-md-4 mt-4">
                                 <div class="form-group">
                                     <input type="checkbox" name="both" value="1" />&nbsp;
                                     <label>{{__('db.Both Customer and Supplier')}}</label>
                                 </div>
-                            </div>
+                            </div> -->
                             <div class="col-md-4 customer-group-section">
                                 <div class="form-group">
                                     <label>{{__('db.Customer Group')}} *</strong> </label>

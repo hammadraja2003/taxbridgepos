@@ -219,12 +219,12 @@
 
             if ($product_sale_data->topping_id) {
                 $decoded_topping_id = is_string($product_sale_data->topping_id) ? json_decode($product_sale_data->topping_id, true) : $product_sale_data->topping_id;
-                //dd(json_decode($product_sale_data->topping_id));
+                // dd(json_decode($product_sale_data->topping_id));
                 if (is_array($decoded_topping_id)) {
                     foreach ($decoded_topping_id as $topping) {
-                        $topping_names[] = $topping['name']; // Extract name
-                        $topping_prices[] = $topping['price']; // Extract price
-                        $topping_price_sum += $topping['price']; // Sum up prices
+                        $topping_names[] = $topping['name'];  // Extract name
+                        $topping_prices[] = $topping['price'];  // Extract price
+                        $topping_price_sum += $topping['price'];  // Sum up prices
                     }
                 }
             }

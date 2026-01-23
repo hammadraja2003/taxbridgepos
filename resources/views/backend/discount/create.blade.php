@@ -44,7 +44,7 @@
                                 <div class="col-md-9 form-group product-selection">
                                     <label>{{ __('db.Select Product') }} *</label>
                                     <input type="text" name="product_code" id="product-code" class="form-control"
-                                        placeholder="{{ __('db.Type product code seperated by comma') }}">
+                                        placeholder="{{ __('db.Type product code or name separated by comma') }}">
                                 </div>
                                 <div class="col-md-9 form-group product-selection">
                                     <div class="table-responsive ml-2">
@@ -147,10 +147,15 @@
 
                 // If not exists, proceed to add new row
                 $.get('product-search/' + code, function(data) {
+                    if(data.length == 0){
+                        alert("Product not found");
+                        return;
+                    }
+                    console.log(data);
                     var newRow = $("<tr>");
                     var cols = '';
                     var rowindex = $("table#product-table tbody tr:last").index();
-                    console.log(rowindex);
+
                     cols += '<td><input type="hidden" name="product_list[]" value="' + data[0] + '" />' + (
                         rowindex + 2) + '</td>';
                     cols += '<td>' + data[1] + '</td>';

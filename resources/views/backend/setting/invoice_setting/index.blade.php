@@ -7,12 +7,17 @@
     </style>
 @endpush
 @section('content')
-    <!-- @include('includes.session_message') -->
-    
+   <x-validation-error fieldName="title" />
+    <x-validation-error fieldName="image" />
+    <x-success-message key="message" />
+    <x-error-message key="not_permitted" />
+
 <section>
     <div class="container-fluid">
-        <div class="text-right"> <!-- Or just plain div if we want it left aligned like others which seem to default left -->
+        <div class="text-right">
+            @can('invoice_create_edit_delete')
             <a class="btn btn-primary" href="{{ route('settings.invoice.create') }}"> <i class="dripicons-plus"></i> {{ __('db.Add New Invoice Setting') }}</a>
+            @endcan
         </div>
     </div>
 
@@ -52,12 +57,13 @@
 
 
                         <td class="text-center align-middle">
+                            @can('invoice_create_edit_delete')
                             <a class="btn btn-warning btn-sm"
                                 href="{{ route('settings.invoice.edit', $invoice->id) }}"></i>{{ __('db.update')}}</a>
                             <button class="btn btn-danger btn-sm delete-invoice" data-id="{{ $invoice->id }}"
                                 data-url="{{ route('settings.invoice.destroy', $invoice->id) }}">{{ __('db.delete')}}</button>
-                            {{-- <a href="{{ route('settings.invoice.show', $invoice->id) }}" class="btn btn-outline-primary">Show
-                            </a> --}}
+                                  @endcan
+                            
                         </td>
                     </tr>
                 @empty
