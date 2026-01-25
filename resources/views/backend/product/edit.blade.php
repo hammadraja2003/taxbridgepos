@@ -97,7 +97,7 @@
                                 <div id="combo" class="col-md-12 mb-1">
                                     <label>{{__('db.add_product')}}</label>
                                     <div class="search-box input-group mb-3">
-                                        <button class="btn btn-secondary"><i class="fa fa-barcode"></i></button>
+                                        <button type="button" class="btn btn-secondary"><i class="fa fa-barcode"></i></button>
                                         <input type="text" name="product_code_name" id="lims_productcodeSearch" placeholder="{{__('db.Please type product code and select')}}" class="form-control" />
                                     </div>
                                     <label>{{__('db.Combo Products')}}</label>
@@ -117,24 +117,23 @@
                                             <tbody>
                                                 @if($lims_product_data->type == 'combo')
                                                 <?php
-                                                    $product_list = explode(",", $lims_product_data->product_list);
-                                                    $wastage_percent = explode(",", $lims_product_data->wastage_percent);
-                                                    $qty_list = explode(",", $lims_product_data->qty_list);
-                                                    $variant_list = explode(",", $lims_product_data->variant_list);
-                                                    $price_list = explode(",", $lims_product_data->price_list);
+                                                $product_list = explode(',', $lims_product_data->product_list);
+                                                $wastage_percent = explode(',', $lims_product_data->wastage_percent);
+                                                $qty_list = explode(',', $lims_product_data->qty_list);
+                                                $variant_list = explode(',', $lims_product_data->variant_list);
+                                                $price_list = explode(',', $lims_product_data->price_list);
                                                 ?>
                                                 @foreach($product_list as $key=>$id)
                                                 <tr>
                                                     <?php
-                                                        $product = App\Models\Product::find($id);
-                                                        $combo_unit = App\Models\Unit::query()->where('id',$product->unit_id)->orWhere('base_unit',$product->unit_id)->get()->unique('id');
+                                                    $product = App\Models\Product::find($id);
+                                                    $combo_unit = App\Models\Unit::query()->where('id', $product->unit_id)->orWhere('base_unit', $product->unit_id)->get()->unique('id');
 
-                                                        if($lims_product_data->variant_list && $variant_list[$key]) {
-                                                            $product_variant_data = App\Models\ProductVariant::select('item_code')->FindExactProduct($id, $variant_list[$key])->first();
-                                                            $product->code = $product_variant_data->item_code;
-                                                        }
-                                                        else
-                                                            $variant_list[$key] = "";
+                                                    if ($lims_product_data->variant_list && $variant_list[$key]) {
+                                                        $product_variant_data = App\Models\ProductVariant::select('item_code')->FindExactProduct($id, $variant_list[$key])->first();
+                                                        $product->code = $product_variant_data->item_code;
+                                                    } else
+                                                        $variant_list[$key] = '';
                                                     ?>
                                                     <td>{{$product->name}} [{{$product->code}}]</td>
                                                     <td>
@@ -382,8 +381,8 @@
                                                 @elseif($field->type == 'checkbox')
                                                     <br>
                                                     <?php
-                                                    $option_values = explode(",", $field->option_value);
-                                                    $field_values =  explode(",", $lims_product_data->$field_name);
+                                                    $option_values = explode(',', $field->option_value);
+                                                    $field_values = explode(',', $lims_product_data->$field_name);
                                                     ?>
                                                     @foreach($option_values as $value)
                                                         <label>
@@ -394,7 +393,7 @@
                                                 @elseif($field->type == 'radio_button')
                                                     <br>
                                                     <?php
-                                                    $option_values = explode(",", $field->option_value);
+                                                    $option_values = explode(',', $field->option_value);
                                                     ?>
                                                     @foreach($option_values as $value)
                                                         <label class="radio-inline">
@@ -403,7 +402,7 @@
                                                         &nbsp;
                                                     @endforeach
                                                 @elseif($field->type == 'select')
-                                                    <?php $option_values = explode(",", $field->option_value); ?>
+                                                    <?php $option_values = explode(',', $field->option_value); ?>
                                                     <select class="form-control" name="{{$field_name}}" @if($field->is_required){{'required'}}@endif>
                                                         @foreach($option_values as $value)
                                                             <option value="{{$value}}" @if($value == $lims_product_data->$field_name){{'selected'}}@endif>{{$value}}</option>
@@ -411,8 +410,8 @@
                                                     </select>
                                                 @elseif($field->type == 'multi_select')
                                                     <?php
-                                                    $option_values = explode(",", $field->option_value);
-                                                    $field_values =  explode(",", $lims_product_data->$field_name);
+                                                    $option_values = explode(',', $field->option_value);
+                                                    $field_values = explode(',', $lims_product_data->$field_name);
                                                     ?>
                                                     <select class="form-control" name="{{$field_name}}[]" @if($field->is_required){{'required'}}@endif multiple>
                                                         @foreach($option_values as $value)
@@ -468,7 +467,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <?php $images = explode(",", $lims_product_data->image)?>
+                                                <?php $images = explode(',', $lims_product_data->image) ?>
                                                 @foreach($images as $key => $image)
                                                 <tr>
                                                     <td><button type="button" class="btn btn-sm"><i class="fa fa-list"></i></button></td>
@@ -513,7 +512,7 @@
                                                     </td>
                                                     <td>
                                                         <?php
-                                                            $product_warehouse = \App\Models\Product_Warehouse::FindProductWithoutVariant($lims_product_data->id, $warehouse->id)->first();
+                                                        $product_warehouse = \App\Models\Product_Warehouse::FindProductWithoutVariant($lims_product_data->id, $warehouse->id)->first();
                                                         ?>
                                                         @if($product_warehouse)
                                                             <input type="number" name="diff_price[]" class="form-control" value="{{$product_warehouse->price}}">
@@ -553,7 +552,7 @@
                                     <div id="variant-input-section">
                                         @foreach($lims_product_data->variant_option as $key => $variant_option)
                                         <?php
-                                            $noOfVariantValue += count(explode(",", $lims_product_data->variant_value[$key]));
+                                        $noOfVariantValue += count(explode(',', $lims_product_data->variant_value[$key]));
                                         ?>
                                         <div class="row">
                                             <div class="col-sm-4 form-group mt-2">
@@ -1607,16 +1606,16 @@
     var lims_product_code = [
         @foreach($lims_product_list_without_variant as $product)
         <?php
-            $productArray[] = htmlspecialchars($product->code) . '(' . preg_replace('/[\n\r]/', "<br>", htmlspecialchars($product->name)). ')';
+        $productArray[] = htmlspecialchars($product->code) . '(' . preg_replace('/[\n\r]/', '<br>', htmlspecialchars($product->name)) . ')';
         ?>
         @endforeach
         @foreach($lims_product_list_with_variant as $product)
             <?php
-                $productArray[] = htmlspecialchars($product->item_code) . '|' . preg_replace('/[\n\r]/', "<br>", htmlspecialchars($product->name));
+            $productArray[] = htmlspecialchars($product->item_code) . '|' . preg_replace('/[\n\r]/', '<br>', htmlspecialchars($product->name));
             ?>
         @endforeach
             <?php
-                echo  '"'.implode('","', $productArray).'"';
+            echo '"' . implode('","', $productArray) . '"';
             ?> ];
 
     var lims_productcodeSearch = $('#lims_productcodeSearch');

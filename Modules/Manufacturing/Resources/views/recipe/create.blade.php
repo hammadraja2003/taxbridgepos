@@ -55,7 +55,7 @@
                                 <div id="combo" class="col-md-12 mb-1">
                                     <label>{{__('db.add_Ingredient')}}</label>
                                     <div class="search-box input-group mb-3">
-                                        <button class="btn btn-secondary"><i class="fa fa-barcode"></i></button>
+                                        <button type="button" class="btn btn-secondary"><i class="fa fa-barcode"></i></button>
                                         <input type="text" name="product_code_name" id="lims_productcodeSearch" placeholder="{{ __('db.Please type product code and select') }}" class="form-control" />
                                     </div>
                                     <label>{{__('db.Ingredient List')}}</label>
@@ -218,7 +218,7 @@
     @endif
 
     @if(config('database.connections.saleprosaas_landlord'))
-        numberOfProduct = <?php echo json_encode($numberOfProduct)?>;
+        numberOfProduct = <?php echo json_encode($numberOfProduct) ?>;
         $.ajax({
             type: 'GET',
             async: false,
@@ -731,16 +731,16 @@
     var lims_product_code = [
         @foreach($lims_product_list_without_variant as $product)
             <?php
-                $productArray[] = htmlspecialchars($product->code) . ' (' . preg_replace('/[\n\r]/', "<br>", htmlspecialchars($product->name)) . ')';
+            $productArray[] = htmlspecialchars($product->code) . ' (' . preg_replace('/[\n\r]/', '<br>', htmlspecialchars($product->name)) . ')';
             ?>
         @endforeach
         @foreach($lims_product_list_with_variant as $product)
             <?php
-                $productArray[] = htmlspecialchars($product->item_code) . ' (' . preg_replace('/[\n\r]/', "<br>", htmlspecialchars($product->name)) . ')';
+            $productArray[] = htmlspecialchars($product->item_code) . ' (' . preg_replace('/[\n\r]/', '<br>', htmlspecialchars($product->name)) . ')';
             ?>
         @endforeach
             <?php
-                echo  '"'.implode('","', $productArray).'"';
+            echo '"' . implode('","', $productArray) . '"';
             ?> ];
 
     var lims_productcodeSearch = $('#lims_productcodeSearch');

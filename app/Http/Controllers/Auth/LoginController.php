@@ -1,34 +1,27 @@
 <?php
 
-
-
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Cache;
 use DB;
 
-
 class LoginController extends Controller
-
 {
     use AuthenticatesUsers;
 
     protected $redirectTo = null;
 
     /**
-
      * Create a new controller instance.
-
      *
-
+     *
+     *
      * @return void
-
      */
-
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
@@ -36,8 +29,8 @@ class LoginController extends Controller
 
     public function showLoginForm()
     {
-        //getting theme
-        if(isset($_COOKIE['theme']))
+        // getting theme
+        if (isset($_COOKIE['theme']))
             $theme = $_COOKIE['theme'];
         else
             $theme = 'light';
@@ -67,7 +60,7 @@ class LoginController extends Controller
                 Auth::logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
-                
+
                 return redirect()->route('login')->with('delete_message', 'Your account is not configured. Please contact administrator.');
             }
 
@@ -83,7 +76,7 @@ class LoginController extends Controller
                 Auth::logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
-                
+
                 return redirect()->route('login')->with('delete_message', 'Unable to configure tenant. Please contact administrator.');
             }
 
@@ -100,6 +93,6 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/login'); // Replace with your desired URL
+        return redirect('/login');  // Replace with your desired URL
     }
 }

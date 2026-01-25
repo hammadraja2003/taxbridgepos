@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Discount;
 use App\Models\DiscountPlan;
-use App\Models\Product;
 use App\Models\DiscountPlanDiscount;
+use App\Models\Product;
 use App\Models\Roles as Role;
+use Illuminate\Http\Request;
 use Auth;
 
 class DiscountController extends Controller
@@ -15,11 +15,10 @@ class DiscountController extends Controller
     public function index()
     {
         $role = Role::find(Auth::user()->role_id);
-        if($role->hasPermissionTo('discount_plan')) {
+        if ($role->hasPermissionTo('discount_plan')) {
             $lims_discount_all = Discount::with('discountPlans')->orderBy('id', 'desc')->get();
             return view('backend.discount.index', compact('lims_discount_all'));
-        }
-        else
+        } else
             return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
     }
 
@@ -31,11 +30,19 @@ class DiscountController extends Controller
 
     public function productSearch($code)
     {
-        $lims_product_data = Product::where([
-            ['code', $code],
-            ['is_active', true]
-        ])->select('id', 'name', 'code')->first();
-        if(!empty($lims_product_data)) {
+        // $lims_product_data = Product::where([
+        //     ['code', $code],
+        //     ['is_active', true]
+        // ])->select('id', 'name', 'code')->first();
+        $lims_product_data = Product::where('is_active', true)
+            ->where(function ($query) use ($code) {
+                $query
+                    ->where('code', $code)
+                    ->orWhere('name', 'like', "%{$code}%");
+            })
+            ->select('id', 'name', 'code')
+            ->first();
+        if (!empty($lims_product_data)) {
             $product[] = $lims_product_data->id;
             $product[] = $lims_product_data->name;
             $product[] = $lims_product_data->code;
@@ -49,10 +56,10 @@ class DiscountController extends Controller
         $data = $request->all();
         $data['valid_from'] = date('Y-m-d', strtotime($data['valid_from']));
         $data['valid_till'] = date('Y-m-d', strtotime($data['valid_till']));
-        if(isset($data['product_list'])) {
-            $data['product_list'] = implode(",", $data['product_list']);
+        if (isset($data['product_list'])) {
+            $data['product_list'] = implode(',', $data['product_list']);
         }
-        $data['days'] = implode(",", $data['days']);
+        $data['days'] = implode(',', $data['days']);
         $lims_discount_data = Discount::create($data);
         foreach ($data['discount_plan_id'] as $key => $discount_plan_id) {
             DiscountPlanDiscount::create([
@@ -75,28 +82,28 @@ class DiscountController extends Controller
     {
         $data = $request->all();
         $lims_discount_data = Discount::find($id);
-        $data['valid_from'] = date('Y-m-d', strtotime(str_replace("/", "-", $data['valid_from'])));
-        $data['valid_till'] = date('Y-m-d', strtotime(str_replace("/", "-", $data['valid_till'])));
-        if(!isset($data['is_active']))
+        $data['valid_from'] = date('Y-m-d', strtotime(str_replace('/', '-', $data['valid_from'])));
+        $data['valid_till'] = date('Y-m-d', strtotime(str_replace('/', '-', $data['valid_till'])));
+        if (!isset($data['is_active']))
             $data['is_active'] = 0;
-        if($data['applicable_for'] == 'All')
+        if ($data['applicable_for'] == 'All')
             $data['product_list'] = '';
-        elseif(isset($data['product_list']))
-            $data['product_list'] = implode(",", $data['product_list']);
-        $data['days'] = implode(",", $data['days']);
+        elseif (isset($data['product_list']))
+            $data['product_list'] = implode(',', $data['product_list']);
+        $data['days'] = implode(',', $data['days']);
         $pre_discount_plan_ids = DiscountPlanDiscount::where('discount_id', $id)->pluck('discount_plan_id')->toArray();
-        //deleting previous discount plan id if not exist
+        // deleting previous discount plan id if not exist
         foreach ($pre_discount_plan_ids as $key => $discount_plan_id) {
-            if(!in_array($discount_plan_id, $data['discount_plan_id'])) {
+            if (!in_array($discount_plan_id, $data['discount_plan_id'])) {
                 DiscountPlanDiscount::where([
                     ['discount_plan_id', $discount_plan_id],
                     ['discount_id', $id]
                 ])->first()->delete();
             }
         }
-        //inserting new discount plan id
+        // inserting new discount plan id
         foreach ($data['discount_plan_id'] as $key => $discount_plan_id) {
-            if(!in_array($discount_plan_id, $pre_discount_plan_ids)) {
+            if (!in_array($discount_plan_id, $pre_discount_plan_ids)) {
                 DiscountPlanDiscount::create(['discount_plan_id' => $id, 'discount_id' => $id]);
             }
         }

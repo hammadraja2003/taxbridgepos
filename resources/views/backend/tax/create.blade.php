@@ -130,7 +130,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label> {{__('db.Sample File')}}</label>
-                        <a href="sample_file/sample_tax.csv" class="btn btn-info btn-block btn-md"><i class="dripicons-download"></i>  {{__('db.Download')}}</a>
+                        <a href="sample_file/sample_tax.csv" class="btn btn-info"><i class="dripicons-download"></i>  {{__('db.Download')}}</a>
                     </div>
                 </div>
             </div>

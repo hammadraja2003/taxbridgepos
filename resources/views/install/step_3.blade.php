@@ -14,18 +14,16 @@
 		    <header>
 	            <img src="{{ asset('install-assets/images/logo.png') }}" alt="Logo" style="max-width: 120px;"/>
 	            <h1 class="text-center">TaxBridgeSaas Auto Installer</h1>
-
-                @include('includes.session_message')
 	        </header>
 	        <hr>
 		    <div class="content">
 		        <?php
-		        if (isset($_GET['_error'])) {
-		        	if ($_GET['_error'] != '') {
-		        		echo '<h4 class="text-danger">'.$_GET['_error'].'</h4>';
-		        	}
-		        }
-		        ?>
+				if (isset($_GET['_error'])) {
+					if ($_GET['_error'] != '') {
+						echo '<h4 class="text-danger">' . $_GET['_error'] . '</h4>';
+					}
+				}
+				?>
 		        <form action="{{ route('install-process') }}" method="post">
                     @csrf
 		            <fieldset>

@@ -58,7 +58,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label> {{__('db.Sample File')}}</label>
-                        <a href="sample_file/sample_customer.csv" class="btn btn-info btn-block btn-md"><i class="dripicons-download"></i>  {{__('db.Download')}}</a>
+                        <a href="sample_file/sample_customer.csv" class="btn btn-info"><i class="dripicons-download"></i>  {{__('db.Download')}}</a>
                     </div>
                 </div>
             </div>
@@ -136,8 +136,8 @@
                     @endphp
                     @foreach($lims_gift_card_list as $gift_card)
                     <?php
-                        $balance[$gift_card->id] = $gift_card->amount - $gift_card->expense;
-                        $expired_date[$gift_card->id] = $gift_card->expired_date;
+                    $balance[$gift_card->id] = $gift_card->amount - $gift_card->expense;
+                    $expired_date[$gift_card->id] = $gift_card->expired_date;
                     ?>
                         <option value="{{$gift_card->id}}">{{$gift_card->card_no}}</option>
                     @endforeach

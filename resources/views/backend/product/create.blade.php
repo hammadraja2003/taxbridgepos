@@ -74,7 +74,7 @@
                                 <div id="combo" class="col-md-12 mb-1">
                                     <label>{{__('db.add_product')}}</label>
                                     <div class="search-box input-group mb-3">
-                                        <button class="btn btn-secondary"><i class="fa fa-barcode"></i></button>
+                                        <button type="button" class="btn btn-secondary"><i class="fa fa-barcode"></i></button>
                                         <input type="text" name="product_code_name" id="lims_productcodeSearch" placeholder="{{ __('db.Please type product code and select') }}" class="form-control" />
                                     </div>
                                     <label>{{__('db.Combo Products')}}</label>
@@ -299,7 +299,7 @@
                                                 <textarea rows="5" name="{{str_replace(' ', '_', strtolower($field->name))}}" value="{{$field->default_value}}" class="form-control" @if($field->is_required){{'required'}}@endif></textarea>
                                             @elseif($field->type == 'checkbox')
                                                 <br>
-                                                <?php $option_values = explode(",", $field->option_value); ?>
+                                                <?php $option_values = explode(',', $field->option_value); ?>
                                                 @foreach($option_values as $value)
                                                     <label>
                                                         <input type="checkbox" name="{{str_replace(' ', '_', strtolower($field->name))}}[]" value="{{$value}}" @if($value == $field->default_value){{'checked'}}@endif @if($field->is_required){{'required'}}@endif> {{$value}}
@@ -308,7 +308,7 @@
                                                 @endforeach
                                             @elseif($field->type == 'radio_button')
                                                 <br>
-                                                <?php $option_values = explode(",", $field->option_value); ?>
+                                                <?php $option_values = explode(',', $field->option_value); ?>
                                                 @foreach($option_values as $value)
                                                     <label class="radio-inline">
                                                         <input type="radio" name="{{str_replace(' ', '_', strtolower($field->name))}}" value="{{$value}}" @if($value == $field->default_value){{'checked'}}@endif @if($field->is_required){{'required'}}@endif> {{$value}}
@@ -316,14 +316,14 @@
                                                     &nbsp;
                                                 @endforeach
                                             @elseif($field->type == 'select')
-                                                <?php $option_values = explode(",", $field->option_value); ?>
+                                                <?php $option_values = explode(',', $field->option_value); ?>
                                                 <select class="form-control" name="{{str_replace(' ', '_', strtolower($field->name))}}" @if($field->is_required){{'required'}}@endif>
                                                     @foreach($option_values as $value)
                                                         <option value="{{$value}}" @if($value == $field->default_value){{'selected'}}@endif>{{$value}}</option>
                                                     @endforeach
                                                 </select>
                                             @elseif($field->type == 'multi_select')
-                                                <?php $option_values = explode(",", $field->option_value); ?>
+                                                <?php $option_values = explode(',', $field->option_value); ?>
                                                 <select class="form-control" name="{{str_replace(' ', '_', strtolower($field->name))}}[]" @if($field->is_required){{'required'}}@endif multiple>
                                                     @foreach($option_values as $value)
                                                         <option value="{{$value}}" @if($value == $field->default_value){{'selected'}}@endif>{{$value}}</option>
@@ -1212,16 +1212,16 @@
     var lims_product_code = [
         @foreach($lims_product_list_without_variant as $product)
             <?php
-                $productArray[] = htmlspecialchars($product->code) . ' (' . preg_replace('/[\n\r]/', "<br>", htmlspecialchars($product->name)) . ')';
+            $productArray[] = htmlspecialchars($product->code) . ' (' . preg_replace('/[\n\r]/', '<br>', htmlspecialchars($product->name)) . ')';
             ?>
         @endforeach
         @foreach($lims_product_list_with_variant as $product)
             <?php
-                $productArray[] = htmlspecialchars($product->item_code) . ' (' . preg_replace('/[\n\r]/', "<br>", htmlspecialchars($product->name)) . ')';
+            $productArray[] = htmlspecialchars($product->item_code) . ' (' . preg_replace('/[\n\r]/', '<br>', htmlspecialchars($product->name)) . ')';
             ?>
         @endforeach
             <?php
-                echo  '"'.implode('","', $productArray).'"';
+            echo '"' . implode('","', $productArray) . '"';
             ?> ];
 
     var lims_productcodeSearch = $('#lims_productcodeSearch');

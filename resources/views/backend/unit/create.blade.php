@@ -7,8 +7,13 @@
 
 <section>
     <div class="container-fluid">
+        @can('unit-add')
         <a href="#" data-toggle="modal" data-target="#createUnitModal" class="btn btn-primary"><i class="dripicons-plus"></i> {{__('db.Add Unit')}}</a>&nbsp;
+         @endcan
+         @can('unit-import')
         <a href="#" data-toggle="modal" data-target="#importUnit" class="btn btn-primary"><i class="dripicons-copy"></i> {{__('db.Import Unit')}}</a>
+        @endcan
+       
     </div>
     <div class="table-responsive">
         <table id="unit-table" class="table">
@@ -52,16 +57,20 @@
                                 <span class="sr-only">Toggle Dropdown</span>
                             </button>
                             <ul class="dropdown-menu edit-options dropdown-menu-right dropdown-default" user="menu">
+                                @can('unit-edit')
                                 <li>
                                     <button type="button" data-id="{{$unit->id}}" class="open-EditUnitDialog btn btn-link" data-toggle="modal" data-target="#editModal"><i class="dripicons-document-edit"></i> {{__('db.edit')}}
                                 </button>
                                 </li>
+                                @endcan
+                                @can('unit-delete')
                                 <li class="divider"></li>
                                 {{ Form::open(['route' => ['unit.destroy', $unit->id], 'method' => 'DELETE'] ) }}
                                 <li>
                                     <button type="submit" class="btn btn-link" onclick="return confirmDelete()"><i class="dripicons-trash"></i> {{__('db.delete')}}</button>
                                 </li>
                                 {{ Form::close() }}
+                                @endcan
                             </ul>
                         </div>
                     </td>
@@ -152,7 +161,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label> {{__('db.Sample File')}}</label>
-                        <a href="sample_file/sample_unit.csv" class="btn btn-info btn-block btn-md"><i class="dripicons-download"></i>  {{__('db.Download')}}</a>
+                        <a href="sample_file/sample_unit.csv" class="btn btn-info"><i class="dripicons-download"></i>  {{__('db.Download')}}</a>
                     </div>
                 </div>
             </div>

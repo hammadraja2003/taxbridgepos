@@ -19,20 +19,20 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="row">
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label>{{__('db.date')}}</label>
                                             <input type="text" name="created_at" class="form-control date" value="{{date($general_setting->date_format, strtotime($lims_purchase_data->created_at->toDateString()))}}" />
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label>{{__('db.Reference No')}}</label>
                                             <p><strong>{{ $lims_purchase_data->reference_no }}</strong> </p>
                                         </div>
                                         <x-validation-error fieldName="reference_no" />
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label>{{__('db.Warehouse')}} *</label>
                                             <input type="hidden" name="warehouse_id_hidden" value="{{$lims_purchase_data->warehouse_id}}" />
@@ -44,7 +44,7 @@
                                             <x-validation-error fieldName="warehouse_id" />
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label>{{__('db.Supplier')}}</label>
                                             <input type="hidden" name="supplier_id_hidden" value="{{ $lims_purchase_data->supplier_id }}" />
@@ -55,7 +55,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label>{{__('db.Purchase Status')}}</label>
                                             <input type="hidden" name="status_hidden" value="{{$lims_purchase_data->status}}">
@@ -67,7 +67,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label>{{__('db.Attach Document')}}</label> <i class="dripicons-question" data-toggle="tooltip" title="Only jpg, jpeg, png, gif, pdf, csv, docx, xlsx and txt file is supported"></i>
                                             <input type="file" name="document" class="form-control" >
@@ -80,7 +80,7 @@
                                         </div>
                                     </div>
                                     @if ($lims_purchase_data->currency_id && $lims_purchase_data->exchange_rate)
-                                        <div class="col-md-2">
+                                        <div class="col-md-3">
                                             <div class="form-group">
                                                 <label>{{__('db.Currency')}} *</label>
                                                 <select name="currency_id" id="currency-id" class="form-control selectpicker" data-toggle="tooltip" title="">
@@ -93,7 +93,7 @@
                                                 <x-validation-error fieldName="currency_id" />
                                             </div>
                                         </div>
-                                        <div class="col-md-2">
+                                        <div class="col-md-3">
                                             <div class="form-group mb-0">
                                                 <label>{{__('db.Exchange Rate')}} *</label>
                                             </div>
@@ -121,8 +121,8 @@
                                                     @elseif($field->type == 'checkbox')
                                                         <br>
                                                         <?php
-                                                        $option_values = explode(",", $field->option_value);
-                                                        $field_values =  explode(",", $lims_purchase_data->$field_name);
+                                                        $option_values = explode(',', $field->option_value);
+                                                        $field_values = explode(',', $lims_purchase_data->$field_name);
                                                         ?>
                                                         @foreach($option_values as $value)
                                                             <label>
@@ -133,7 +133,7 @@
                                                     @elseif($field->type == 'radio_button')
                                                         <br>
                                                         <?php
-                                                        $option_values = explode(",", $field->option_value);
+                                                        $option_values = explode(',', $field->option_value);
                                                         ?>
                                                         @foreach($option_values as $value)
                                                             <label class="radio-inline">
@@ -142,7 +142,7 @@
                                                             &nbsp;
                                                         @endforeach
                                                     @elseif($field->type == 'select')
-                                                        <?php $option_values = explode(",", $field->option_value); ?>
+                                                        <?php $option_values = explode(',', $field->option_value); ?>
                                                         <select class="form-control" name="{{$field_name}}" @if($field->is_required){{'required'}}@endif>
                                                             @foreach($option_values as $value)
                                                                 <option value="{{$value}}" @if($value == $lims_purchase_data->$field_name){{'selected'}}@endif>{{$value}}</option>
@@ -150,8 +150,8 @@
                                                         </select>
                                                     @elseif($field->type == 'multi_select')
                                                         <?php
-                                                        $option_values = explode(",", $field->option_value);
-                                                        $field_values =  explode(",", $lims_purchase_data->$field_name);
+                                                        $option_values = explode(',', $field->option_value);
+                                                        $field_values = explode(',', $lims_purchase_data->$field_name);
                                                         ?>
                                                         <select class="form-control" name="{{$field_name}}[]" @if($field->is_required){{'required'}}@endif multiple>
                                                             @foreach($option_values as $value)
@@ -205,48 +205,45 @@
                                                     @foreach($lims_product_purchase_data as $product_purchase)
                                                     <tr>
                                                     <?php
-                                                        $product_data = DB::table('products')->find($product_purchase->product_id);
-                                                        if($product_purchase->variant_id) {
-                                                            $product_variant_data = \App\Models\ProductVariant::FindExactProduct($product_data->id, $product_purchase->variant_id)->select('item_code')->first();
-                                                            if($product_variant_data)
-                                                                $product_data->code = $product_variant_data->item_code;
+                                                    $product_data = DB::table('products')->find($product_purchase->product_id);
+                                                    if ($product_purchase->variant_id) {
+                                                        $product_variant_data = \App\Models\ProductVariant::FindExactProduct($product_data->id, $product_purchase->variant_id)->select('item_code')->first();
+                                                        if ($product_variant_data)
+                                                            $product_data->code = $product_variant_data->item_code;
+                                                    }
+
+                                                    $tax = DB::table('taxes')->where('rate', $product_purchase->tax_rate)->first();
+
+                                                    $units = DB::table('units')->where('base_unit', $product_data->unit_id)->orWhere('id', $product_data->unit_id)->get();
+
+                                                    $unit_name = array();
+                                                    $unit_operator = array();
+                                                    $unit_operation_value = array();
+
+                                                    foreach ($units as $unit) {
+                                                        if ($product_purchase->purchase_unit_id == $unit->id) {
+                                                            array_unshift($unit_name, $unit->unit_name);
+                                                            array_unshift($unit_operator, $unit->operator);
+                                                            array_unshift($unit_operation_value, $unit->operation_value);
+                                                        } else {
+                                                            $unit_name[] = $unit->unit_name;
+                                                            $unit_operator[] = $unit->operator;
+                                                            $unit_operation_value[] = $unit->operation_value;
                                                         }
+                                                    }
+                                                    if ($product_data->tax_method == 1) {
+                                                        $product_cost = ($product_purchase->net_unit_cost + ($product_purchase->discount / $product_purchase->qty)) / $unit_operation_value[0];
+                                                    } else {
+                                                        $product_cost = (($product_purchase->total + ($product_purchase->discount / $product_purchase->qty)) / $product_purchase->qty) / $unit_operation_value[0];
+                                                    }
 
-                                                        $tax = DB::table('taxes')->where('rate', $product_purchase->tax_rate)->first();
+                                                    $temp_unit_name = $unit_name = implode(',', $unit_name) . ',';
 
-                                                        $units = DB::table('units')->where('base_unit', $product_data->unit_id)->orWhere('id', $product_data->unit_id)->get();
+                                                    $temp_unit_operator = $unit_operator = implode(',', $unit_operator) . ',';
 
-                                                        $unit_name = array();
-                                                        $unit_operator = array();
-                                                        $unit_operation_value = array();
+                                                    $temp_unit_operation_value = $unit_operation_value = implode(',', $unit_operation_value) . ',';
 
-                                                        foreach($units as $unit) {
-                                                            if($product_purchase->purchase_unit_id == $unit->id) {
-                                                                array_unshift($unit_name, $unit->unit_name);
-                                                                array_unshift($unit_operator, $unit->operator);
-                                                                array_unshift($unit_operation_value, $unit->operation_value);
-                                                            }
-                                                            else {
-                                                                $unit_name[]  = $unit->unit_name;
-                                                                $unit_operator[] = $unit->operator;
-                                                                $unit_operation_value[] = $unit->operation_value;
-                                                            }
-                                                        }
-                                                        if($product_data->tax_method == 1){
-                                                            $product_cost = ($product_purchase->net_unit_cost + ($product_purchase->discount / $product_purchase->qty)) / $unit_operation_value[0];
-                                                        }
-                                                        else{
-                                                            $product_cost = (($product_purchase->total + ($product_purchase->discount / $product_purchase->qty)) / $product_purchase->qty) / $unit_operation_value[0];
-                                                        }
-
-
-                                                        $temp_unit_name = $unit_name = implode(",",$unit_name) . ',';
-
-                                                        $temp_unit_operator = $unit_operator = implode(",",$unit_operator) .',';
-
-                                                        $temp_unit_operation_value = $unit_operation_value =  implode(",",$unit_operation_value) . ',';
-
-                                                        $product_batch_data = \App\Models\ProductBatch::select('batch_no', 'expired_date')->find($product_purchase->product_batch_id);
+                                                    $product_batch_data = \App\Models\ProductBatch::select('batch_no', 'expired_date')->find($product_purchase->product_batch_id);
                                                     ?>
                                                         <td>{{$product_data->name}} <button type="button" class="edit-product btn btn-link" data-toggle="modal" data-target="#editModal"> <i class="dripicons-document-edit"></i></button> </td>
                                                         <td>{{$product_data->code}}</td>
@@ -489,12 +486,12 @@
                                 <input type="number" name="edit_product_price" class="form-control" step="0.01">
                             </div>
                             <?php
-                                $tax_name_all[] = 'No Tax';
-                                $tax_rate_all[] = 0;
-                                foreach($lims_tax_list as $tax) {
-                                    $tax_name_all[] = $tax->name;
-                                    $tax_rate_all[] = $tax->rate;
-                                }
+                            $tax_name_all[] = 'No Tax';
+                            $tax_rate_all[] = 0;
+                            foreach ($lims_tax_list as $tax) {
+                                $tax_name_all[] = $tax->name;
+                                $tax_rate_all[] = $tax->rate;
+                            }
                             ?>
                             <div class="col-md-4 form-group">
                                 <label>{{__('db.Tax Rate')}}</label>
@@ -654,16 +651,16 @@ $('select[name="status"]').on('change', function() {
 var lims_product_code = [
     @foreach($lims_product_list_without_variant as $product)
         <?php
-            $productArray[] = htmlspecialchars($product->code) . '|' . preg_replace('/[\n\r]/', "<br>", htmlspecialchars($product->name));
+        $productArray[] = htmlspecialchars($product->code) . '|' . preg_replace('/[\n\r]/', '<br>', htmlspecialchars($product->name));
         ?>
     @endforeach
     @foreach($lims_product_list_with_variant as $product)
         <?php
-            $productArray[] = htmlspecialchars($product->item_code) . '|' . preg_replace('/[\n\r]/', "<br>", htmlspecialchars($product->name));
+        $productArray[] = htmlspecialchars($product->item_code) . '|' . preg_replace('/[\n\r]/', '<br>', htmlspecialchars($product->name));
         ?>
     @endforeach
     <?php
-        echo  '"'.implode('","', $productArray).'"';
+    echo '"' . implode('","', $productArray) . '"';
     ?>
 ];
 
@@ -692,7 +689,7 @@ var lims_product_code = [
 $('body').on('focus',".expired-date", function() {
     $(this).datepicker({
         format: "yyyy-mm-dd",
-        startDate: "<?php echo date("Y-m-d", strtotime('+ 1 days')) ?>",
+        startDate: "<?php echo date('Y-m-d', strtotime('+ 1 days')) ?>",
         autoclose: true,
         todayHighlight: true
     });

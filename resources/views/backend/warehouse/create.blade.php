@@ -28,17 +28,15 @@
             <tbody>
                 @foreach($lims_warehouse_all as $key=>$warehouse)
                 <?php
-                    $number_of_product = App\Models\Product_Warehouse::
-                    join('products', 'product_warehouse.product_id', '=', 'products.id')
-                    ->where([ ['product_warehouse.warehouse_id', $warehouse->id],
-                              ['products.is_active', true]
-                    ])->count();
+                $number_of_product = App\Models\Product_Warehouse::join('products', 'product_warehouse.product_id', '=', 'products.id')
+                    ->where([['product_warehouse.warehouse_id', $warehouse->id],
+                        ['products.is_active', true]])
+                    ->count();
 
-                    $stock_qty = App\Models\Product_Warehouse::
-                    join('products', 'product_warehouse.product_id', '=', 'products.id')
-                    ->where([ ['product_warehouse.warehouse_id', $warehouse->id],
-                              ['products.is_active', true]
-                    ])->sum('product_warehouse.qty');
+                $stock_qty = App\Models\Product_Warehouse::join('products', 'product_warehouse.product_id', '=', 'products.id')
+                    ->where([['product_warehouse.warehouse_id', $warehouse->id],
+                        ['products.is_active', true]])
+                    ->sum('product_warehouse.qty');
                 ?>
                 <tr data-id="{{$warehouse->id}}">
                     <td>{{$key}}</td>
@@ -181,7 +179,7 @@
               <div class="col-md-6">
                   <div class="form-group">
                       <label> {{__('db.Sample File')}}</label>
-                      <a href="sample_file/sample_warehouse.csv" class="btn btn-info btn-block btn-md"><i class="dripicons-download"></i>  {{__('db.Download')}}</a>
+                      <a href="sample_file/sample_warehouse.csv" class="btn btn-info"><i class="dripicons-download"></i>  {{__('db.Download')}}</a>
                   </div>
               </div>
         </div>
@@ -203,7 +201,7 @@
     $("ul#setting #warehouse-menu").addClass("active");
 
     @if(config('database.connections.saleprosaas_landlord'))
-        numberOfWarehouse = <?php echo json_encode($numberOfWarehouse)?>;
+        numberOfWarehouse = <?php echo json_encode($numberOfWarehouse) ?>;
         $.ajax({
             type: 'GET',
             async: false,

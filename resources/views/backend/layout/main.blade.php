@@ -211,9 +211,9 @@
         <a id="toggle-btn" href="#" class="menu-btn"><i class="fa fa-bars"> </i></a>
 
         <div class="d-flex align-items-center gap-3 mb-3">
-          <h5 class="mb-0 fw-semibold">
+          <!-- <h5 class="mb-0 fw-semibold">
              Company: {{ $general_setting->company_name ?? '—' }}
-          </h5>
+          </h5> -->
           <h5 class="mb-0 fw-semibold">
              DB: {{ $business_config->db_name ?? '—' }}
           </h5>
@@ -323,7 +323,7 @@
           @endif
           <!-- <li class="nav-item d-none d-lg-block"><a id="switch-theme" data-toggle="tooltip" title="{{ __('Switch Theme') }}"><i class="dripicons-brightness-max"></i></a></li> -->
           <li class="nav-item d-none d-lg-block"><a id="btnFullscreen" data-toggle="tooltip" title="{{ __('Full Screen') }}"><i class="dripicons-expand"></i></a></li>
-          @if(\Auth::user()->role_type <= 2) <li class="nav-item"><a href="{{route('cashRegister.index') }}" data-toggle="tooltip" title="{{ __('Cash Register List') }}"><i class="dripicons-archive"></i></a></li>
+          @if(\Auth::user()->role_type <= 2) <li class="nav-item"><a href="{{route('cashRegister.index') }}" data-toggle="tooltip" title="{{ __('Cash Register List') }}"><i class="dripicons-store"></i></a></li>
             @endif
             
             @php
@@ -438,7 +438,6 @@
       </nav>
     </header>
     @endif
-    <!-- @include('includes.session_message') -->
     <div style="display:none;background: #f8f9fa;"  id="content" class="animate-bottom">
       @yield('content')
     </div>
@@ -942,9 +941,9 @@
             <?php
             $lims_user_list = \App\Models\User::where([
               ['is_active', true],
-              ['bus_config_id' , session('bus_config_id')],
+              ['bus_config_id', session('bus_config_id')],
               ['id', '!=', \Auth::user()->id]
-            ])->get();  
+            ])->get();
             ?>
             <div class="form-group">
               <label>{{ __('User') }} *</label>

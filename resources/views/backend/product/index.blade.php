@@ -181,7 +181,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label> {{__('db.Sample File')}}</label>
-                        <a href="sample_file/sample_products.csv" class="btn btn-info btn-block btn-md"><i class="dripicons-download"></i>  {{__('db.Download')}}</a>
+                        <a href="sample_file/sample_products.csv" class="btn btn-info"><i class="dripicons-download"></i>  {{__('db.Download')}}</a>
                     </div>
                 </div>
            </div>
@@ -263,7 +263,7 @@
             localStorage.removeItem("message");
         }
 
-        numberOfProduct = <?php echo json_encode($numberOfProduct)?>;
+        numberOfProduct = <?php echo json_encode($numberOfProduct) ?>;
         $.ajax({
             type: 'GET',
             async: false,
@@ -577,7 +577,7 @@
 
     let buttons = [];
     @can('product_export')
-        buttons.push([
+        buttons.push(
             {
                 extend: 'pdf',
                 text: '<i title="export to pdf" class="fa fa-file-pdf-o"></i>',
@@ -669,11 +669,11 @@
                         );
                 }*/
             },
-        ]);
+        );
     @endcan
 
     @can('products-delete')
-        buttons.push([
+        buttons.push(
             {
                 text: '<i title="delete" class="dripicons-cross"></i>',
                 className: 'buttons-delete',
@@ -708,7 +708,7 @@
                         alert('This feature is disable for demo!');
                 }
             },
-        ]);
+        );
     @endcan
 
     buttons.push([

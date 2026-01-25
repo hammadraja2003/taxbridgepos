@@ -109,7 +109,7 @@
                                     <div id="combo" class="col-md-12 mb-1">
                                         <label>{{ __('db.add_Ingredient') }}</label>
                                         <div class="search-box input-group mb-3">
-                                            <button class="btn btn-secondary"><i class="fa fa-barcode"></i></button>
+                                            <button type="button" class="btn btn-secondary"><i class="fa fa-barcode"></i></button>
                                             <input type="text" name="product_code_name" id="lims_productcodeSearch"
                                                 placeholder="{{ __('db.Please type product code and select') }}"
                                                 class="form-control" />
@@ -141,16 +141,16 @@
                                                     @foreach ($product_list as $key => $id)
                                                         <tr>
                                                             <?php
-                                                            $product    = App\Models\Product::find($id);
+                                                            $product = App\Models\Product::find($id);
                                                             $combo_unit = App\Models\Unit::query()->where('id', $product->unit_id)->orWhere('base_unit', $product->unit_id)->get()->unique('id');
-                                                            $unit       = App\Models\Unit::query()
-                                                                                ->where('id', $unit_id[$key])
-                                                                                ->first();
-                                                            if($unit->operator == '*'){
+                                                            $unit = App\Models\Unit::query()
+                                                                ->where('id', $unit_id[$key])
+                                                                ->first();
+                                                            if ($unit->operator == '*') {
                                                                 $subtotal = $price_list[$key] * ($unit->operation_value * $qty_list[$key] ?? 1);
-                                                            }elseif($unit->operator == '/'){
+                                                            } elseif ($unit->operator == '/') {
                                                                 $subtotal = $price_list[$key] / $unit->operation_value;
-                                                            }else{
+                                                            } else {
                                                                 $subtotal = $price_list[$key] * 1;
                                                             }
 

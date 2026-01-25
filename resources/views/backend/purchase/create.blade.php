@@ -18,13 +18,13 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="row">
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label>{{__('db.date')}}</label>
                                             <input type="text" name="created_at" class="form-control date" placeholder="{{__('db.Choose date')}}" value="{{date($general_setting->date_format,strtotime('now'))}}"/>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label>
                                                 {{__('db.Reference No')}}
@@ -33,7 +33,7 @@
                                         </div>
                                         <x-validation-error fieldName="reference_no" />
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label>{{__('db.Warehouse')}} *</label>
                                             <select name="warehouse_id" class="selectpicker form-control" data-live-search="true" title="Select warehouse..." required>
@@ -44,7 +44,7 @@
                                             <x-validation-error fieldName="warehouse_id" />
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label>{{__('db.Supplier')}}</label>
                                             <select name="supplier_id" class="selectpicker form-control" data-live-search="true" title="Select supplier...">
@@ -54,7 +54,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label>{{__('db.Purchase Status')}}</label>
                                             <select name="status" class="form-control">
@@ -65,7 +65,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label>{{__('db.Attach Document')}}</label> <i class="dripicons-question" data-toggle="tooltip" title="Only jpg, jpeg, png, gif, pdf, csv, docx, xlsx and txt file is supported"></i>
                                             <input type="file" name="document" class="form-control" >
@@ -77,7 +77,7 @@
                                             <x-validation-error fieldName="document" />
                                         </div>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label>{{__('db.Currency')}} *</label>
                                             <select name="currency_id" id="currency-id" class="form-control selectpicker" data-toggle="tooltip" title="">
@@ -88,7 +88,7 @@
                                             <x-validation-error fieldName="currency_id" />
                                         </div>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-3">
                                         <div class="form-group mb-0">
                                             <label>{{__('db.Exchange Rate')}} *</label>
                                         </div>
@@ -113,7 +113,7 @@
                                                         <textarea rows="5" name="{{str_replace(' ', '_', strtolower($field->name))}}" value="{{$field->default_value}}" class="form-control" @if($field->is_required){{'required'}}@endif></textarea>
                                                     @elseif($field->type == 'checkbox')
                                                         <br>
-                                                        <?php $option_values = explode(",", $field->option_value); ?>
+                                                        <?php $option_values = explode(',', $field->option_value); ?>
                                                         @foreach($option_values as $value)
                                                             <label>
                                                                 <input type="checkbox" name="{{str_replace(' ', '_', strtolower($field->name))}}[]" value="{{$value}}" @if($value == $field->default_value){{'checked'}}@endif @if($field->is_required){{'required'}}@endif> {{$value}}
@@ -122,7 +122,7 @@
                                                         @endforeach
                                                     @elseif($field->type == 'radio_button')
                                                         <br>
-                                                        <?php $option_values = explode(",", $field->option_value); ?>
+                                                        <?php $option_values = explode(',', $field->option_value); ?>
                                                         @foreach($option_values as $value)
                                                             <label class="radio-inline">
                                                                 <input type="radio" name="{{str_replace(' ', '_', strtolower($field->name))}}" value="{{$value}}" @if($value == $field->default_value){{'checked'}}@endif @if($field->is_required){{'required'}}@endif> {{$value}}
@@ -130,14 +130,14 @@
                                                             &nbsp;
                                                         @endforeach
                                                     @elseif($field->type == 'select')
-                                                        <?php $option_values = explode(",", $field->option_value); ?>
+                                                        <?php $option_values = explode(',', $field->option_value); ?>
                                                         <select class="form-control" name="{{str_replace(' ', '_', strtolower($field->name))}}" @if($field->is_required){{'required'}}@endif>
                                                             @foreach($option_values as $value)
                                                                 <option value="{{$value}}" @if($value == $field->default_value){{'selected'}}@endif>{{$value}}</option>
                                                             @endforeach
                                                         </select>
                                                     @elseif($field->type == 'multi_select')
-                                                        <?php $option_values = explode(",", $field->option_value); ?>
+                                                        <?php $option_values = explode(',', $field->option_value); ?>
                                                         <select class="form-control" name="{{str_replace(' ', '_', strtolower($field->name))}}[]" @if($field->is_required){{'required'}}@endif multiple>
                                                             @foreach($option_values as $value)
                                                                 <option value="{{$value}}" @if($value == $field->default_value){{'selected'}}@endif>{{$value}}</option>
@@ -153,7 +153,7 @@
                                     <div class="col-md-12 mt-3">
                                         <label>{{__('db.Select Product')}}</label>
                                         <div class="search-box input-group">
-                                            <button class="btn btn-secondary"><i class="fa fa-barcode"></i></button>
+                                            <button type="button" class="btn btn-secondary"><i class="fa fa-barcode"></i></button>
                                             <input type="text" name="product_code_name" id="lims_productcodeSearch" placeholder="{{__('db.Please type product code and select')}}" class="form-control" />
 
                                         </div>
@@ -247,7 +247,7 @@
                                     </div>
                                 </div>
                                 <div class="row mt-3">
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label>{{__('db.Order Tax')}}</label>
                                             <select class="form-control" name="order_tax_rate">
@@ -258,7 +258,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label>
                                                 <strong>{{__('db.Discount')}}</strong>
@@ -266,7 +266,7 @@
                                             <input type="number" name="order_discount" class="form-control" step="any" />
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label>
                                                 <strong>{{__('db.Shipping Cost')}}</strong>
@@ -274,9 +274,7 @@
                                             <input type="number" name="shipping_cost" class="form-control" step="any" />
                                         </div>
                                     </div>
-                                </div>
-                                <div class="row mt-3">
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label>{{__('db.Payment Status')}} *</label>
                                             <select name="payment_status" id="payment_status" class="form-control">
@@ -287,9 +285,11 @@
                                             <x-validation-error fieldName="payment_status" />
                                         </div>
                                     </div>
+                                </div>
+                                <div class="row mt-3">
                                     <?php
-                                        $accountSelection = $role_has_permissions_list->where('name', 'account-selection')->first();
-                                        $defaultAccount = $lims_account_list->where('is_default', true)->first();
+                                    $accountSelection = $role_has_permissions_list->where('name', 'account-selection')->first();
+                                    $defaultAccount = $lims_account_list->where('is_default', true)->first();
                                     ?>
                                     <!-- New Account Selection Field -->
                                     <div id="account-list" class="col-md-3 col-6" hidden>
@@ -464,12 +464,12 @@
                                 <input type="number" name="edit_product_price" class="form-control" step="0.01">
                             </div>
                             <?php
-                                $tax_name_all[] = 'No Tax';
-                                $tax_rate_all[] = 0;
-                                foreach($lims_tax_list as $tax) {
-                                    $tax_name_all[] = $tax->name;
-                                    $tax_rate_all[] = $tax->rate;
-                                }
+                            $tax_name_all[] = 'No Tax';
+                            $tax_rate_all[] = 0;
+                            foreach ($lims_tax_list as $tax) {
+                                $tax_name_all[] = $tax->name;
+                                $tax_rate_all[] = $tax->rate;
+                            }
                             ?>
                             <div class="col-md-4 form-group">
                                 <label>{{__('db.Tax Rate')}}</label>
@@ -690,17 +690,17 @@
     var lims_product_code = [
         @foreach($lims_product_list_without_variant as $product)
             <?php
-                $productArray[] = htmlspecialchars($product->code) . '|' . preg_replace('/[\n\r]/', "<br>", htmlspecialchars($product->name));
+            $productArray[] = htmlspecialchars($product->code) . '|' . preg_replace('/[\n\r]/', '<br>', htmlspecialchars($product->name));
             ?>
         @endforeach
         @foreach($lims_product_list_with_variant as $product)
             <?php
-                $productArray[] = htmlspecialchars($product->item_code) . '|' . preg_replace('/[\n\r]/', "<br>", htmlspecialchars($product->name));
+            $productArray[] = htmlspecialchars($product->item_code) . '|' . preg_replace('/[\n\r]/', '<br>', htmlspecialchars($product->name));
             ?>
         @endforeach
 
         <?php
-            echo  '"'.implode('","', $productArray).'"';
+        echo '"' . implode('","', $productArray) . '"';
         ?>
     ];
 
@@ -729,7 +729,7 @@
     $('body').on('focus',".expired-date", function() {
         $(this).datepicker({
             format: "yyyy-mm-dd",
-            startDate: "<?php echo date("Y-m-d", strtotime('+ 1 days')) ?>",
+            startDate: "<?php echo date('Y-m-d', strtotime('+ 1 days')) ?>",
             autoclose: true,
             todayHighlight: true
         });
