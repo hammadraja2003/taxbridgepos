@@ -200,20 +200,6 @@
     $("ul#setting").addClass("show");
     $("ul#setting #warehouse-menu").addClass("active");
 
-    @if(config('database.connections.saleprosaas_landlord'))
-        numberOfWarehouse = <?php echo json_encode($numberOfWarehouse) ?>;
-        $.ajax({
-            type: 'GET',
-            async: false,
-            url: '{{route("package.fetchData", $general_setting->package_id)}}',
-            success: function(data) {
-                if(data['number_of_warehouse'] > 0 && data['number_of_warehouse'] <= numberOfWarehouse) {
-                    $("a.add-warehouse-btn").addClass('d-none');
-                }
-            }
-        });
-    @endif
-
     var user_verified = <?php echo json_encode(env('USER_VERIFIED')) ?>;
 
     $.ajaxSetup({

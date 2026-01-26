@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Brand;
-use Illuminate\Validation\Rule;
-use App\Traits\TenantInfo;
 use App\Traits\CacheForget;
+use App\Traits\TenantInfo;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class BrandController extends Controller
 {
@@ -22,7 +22,6 @@ class BrandController extends Controller
 
     public function store(Request $request)
     {
-
         $request->title = preg_replace('/\s+/', ' ', $request->title);
         $this->validate($request, [
             'title' => [
@@ -31,18 +30,17 @@ class BrandController extends Controller
                     return $query->where('is_active', 1);
                 }),
             ],
-
             'image' => 'image|mimes:jpg,jpeg,png,gif|max:100000',
         ]);
 
         $input = $request->except('image');
         $input['is_active'] = true;
-        if (in_array('ecommerce', explode(',', config('addons'))))
-            $input['slug'] = Str::slug($request->title, '-');
+        // if (in_array('ecommerce', explode(',', config('addons'))))
+        //     $input['slug'] = Str::slug($request->title, '-');
         $image = $request->image;
         if ($image) {
             $ext = pathinfo($image->getClientOriginalName(), PATHINFO_EXTENSION);
-            $imageName = date("Ymdhis");
+            $imageName = date('Ymdhis');
             if (!config('database.connections.saleprosaas_landlord')) {
                 $imageName = $imageName . '.' . $ext;
                 $image->move(public_path('images/brand'), $imageName);
@@ -77,19 +75,18 @@ class BrandController extends Controller
                     return $query->where('is_active', 1);
                 }),
             ],
-
             'image' => 'image|mimes:jpg,jpeg,png,gif|max:100000',
         ]);
         $lims_brand_data = Brand::findOrFail($request->brand_id);
         $lims_brand_data->title = $request->title;
-        if (in_array('ecommerce', explode(',', config('addons')))) {
-            $lims_brand_data->page_title = $request->page_title;
-            $lims_brand_data->short_description = $request->short_description;
-        }
+        // if (in_array('ecommerce', explode(',', config('addons')))) {
+        //     $lims_brand_data->page_title = $request->page_title;
+        //     $lims_brand_data->short_description = $request->short_description;
+        // }
         $image = $request->image;
         if ($image) {
             $ext = pathinfo($image->getClientOriginalName(), PATHINFO_EXTENSION);
-            $imageName = date("Ymdhis");
+            $imageName = date('Ymdhis');
             if (!config('database.connections.saleprosaas_landlord')) {
                 $imageName = $imageName . '.' . $ext;
                 $image->move(public_path('images/brand'), $imageName);
@@ -107,26 +104,26 @@ class BrandController extends Controller
 
     public function importBrand(Request $request)
     {
-        //get file
+        // get file
         $upload = $request->file('file');
         $ext = pathinfo($upload->getClientOriginalName(), PATHINFO_EXTENSION);
         if ($ext != 'csv')
             return redirect()->back()->with('not_permitted', __('db.Please upload a CSV file'));
-        $filename =  $upload->getClientOriginalName();
+        $filename = $upload->getClientOriginalName();
         $filePath = $upload->getRealPath();
-        //open and read
+        // open and read
         $file = fopen($filePath, 'r');
         $header = fgetcsv($file);
         $escapedHeader = [];
-        //validate
+        // validate
         foreach ($header as $key => $value) {
             $lheader = strtolower($value);
             $escapedItem = preg_replace('/[^a-z]/', '', $lheader);
             array_push($escapedHeader, $escapedItem);
         }
-        //looping through othe columns
+        // looping through othe columns
         while ($columns = fgetcsv($file)) {
-            if ($columns[0] == "")
+            if ($columns[0] == '')
                 continue;
             foreach ($columns as $key => $value) {
                 $value = preg_replace('/\D/', '', $value);
@@ -187,10 +184,10 @@ class BrandController extends Controller
                 $csvData[] = $data->title . ',' . $data->image;
             }
         }
-        $filename = date('Y-m-d') . ".csv";
+        $filename = date('Y-m-d') . '.csv';
         $file_path = public_path() . '/downloads/' . $filename;
         $file_url = url('/') . '/downloads/' . $filename;
-        $file = fopen($file_path, "w+");
+        $file = fopen($file_path, 'w+');
         foreach ($csvData as $exp_data) {
             fputcsv($file, explode(',', $exp_data));
         }

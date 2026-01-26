@@ -2,25 +2,24 @@
 
 namespace App\Traits;
 
-use App\Models\landlord\Tenant;
-use Illuminate\Support\Str;
-use DB;
-use App\Models\Brand;
-use App\Models\Category;
-use App\Models\Product;
-use App\Models\landlord\Package;
-use App\Models\landlord\TenantPayment;
 use App\Mail\TenantCreate;
 use App\Models\landlord\MailSetting;
-use Mail;
-use Illuminate\Support\Facades\Artisan;
-use Database\Seeders\Tenant\TenantDatabaseSeeder;
-use Modules\Ecommerce\Database\Seeders\EcommerceDatabaseSeeder;
+use App\Models\landlord\Package;
+use App\Models\landlord\Tenant;
+use App\Models\landlord\TenantPayment;
+use App\Models\Brand;
+use App\Models\Category;
 use App\Models\GeneralSetting;
+use App\Models\Product;
+use Database\Seeders\Tenant\TenantDatabaseSeeder;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Str;
+use Modules\Ecommerce\Database\Seeders\EcommerceDatabaseSeeder;
+use DB;
+use Mail;
 
 trait TenantInfo
 {
-
     use \App\Traits\MailInfo;
 
     public function getTenantId()
@@ -97,21 +96,21 @@ trait TenantInfo
                 'permission_ids' => '67,68,69,97,'
             ]
         ];
-        if(file_exists(base_path('Modules/Manufacturing'))){
+        if (file_exists(base_path('Modules/Manufacturing'))) {
             $features['manufacturing'] = [
                 'name' => 'Manufacturing',
                 'default' => false,
                 'permission_ids' => '136,'
             ];
         }
-        if(file_exists(base_path('Modules/Ecommerce'))) {
+        if (file_exists(base_path('Modules/Ecommerce'))) {
             $features['ecommerce'] = [
                 'name' => 'Ecommerce',
                 'default' => false,
                 'permission_ids' => '136,'
             ];
         }
-        if(file_exists(base_path('Modules/Woocommerce'))){
+        if (file_exists(base_path('Modules/Woocommerce'))) {
             $features['woocommerce'] = [
                 'name' => 'Woocommerce',
                 'default' => false,
@@ -122,12 +121,12 @@ trait TenantInfo
         return $features;
     }
 
-    //This function is called from tenantCheckout() in payment controller
+    // This function is called from tenantCheckout() in payment controller
     public function createTenant($request)
     {
         $key_prefix = 'tenant_' . session('bus_config_id') . '_';
-        if (cache()->has($key_prefix.'general_setting')) {
-            $general_setting = cache()->get($key_prefix.'general_setting');
+        if (cache()->has($key_prefix . 'general_setting')) {
+            $general_setting = cache()->get($key_prefix . 'general_setting');
         } else {
             // $general_setting = DB::table('general_settings')->latest()->first();
             $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
@@ -138,13 +137,8 @@ trait TenantInfo
         if (in_array('manufacturing', $features)) {
             $modules[] = 'manufacturing';
         }
-        if (in_array('ecommerce', $features)) {
-            $modules[] = 'ecommerce';
-        }
-        if (in_array('woocommerce', $features))
-            $modules[] = 'woocommerce';
         if (count($modules))
-            $modules = implode(",", $modules);
+            $modules = implode(',', $modules);
         else
             $modules = Null;
 
@@ -158,7 +152,7 @@ trait TenantInfo
             $paid_by = $request->payment_method;
         else
             $paid_by = '';
-        //creating tenant
+        // creating tenant
         $tenant = Tenant::create(['id' => $request->tenant]);
         $tenant->domains()->create(['domain' => $request->tenant . '.' . env('CENTRAL_DOMAIN')]);
 
@@ -166,24 +160,24 @@ trait TenantInfo
             TenantPayment::create(['tenant_id' => $tenant->id, 'amount' => $request->price, 'paid_by' => $paid_by]);
         }
 
-        ///////////////Start if someone wants ecommerce demo as his own demo////////////////
+        // /////////////Start if someone wants ecommerce demo as his own demo////////////////
         // if (isset($modules) && str_contains($modules, "ecommerce") && file_exists(public_path('ecommerce_demo.sql'))) {
         //     $tenant->run(function () {
         //         DB::unprepared(file_get_contents(public_path('ecommerce_demo.sql')));
         //     });
         // }
-        ///////////////End if someone wants ecommerce demo as his own demo////////////////
+        // /////////////End if someone wants ecommerce demo as his own demo////////////////
 
         // Start set tenant specific data for tenant seeder
         $packageData = Package::find($request->package_id);
         $pack_perm_role_pairs = explode('),(', trim($packageData->role_permission_values, '()'));
         // Convert each pair into an associative array
-        if ($pack_perm_role_pairs != [""]) {
+        if ($pack_perm_role_pairs != ['']) {
             $package_permissions_role = array_map(function ($pk_perm_role_p) {
-                [$permission_id, $role_id] = explode(',', $pk_perm_role_p); // Split the pair
+                [$permission_id, $role_id] = explode(',', $pk_perm_role_p);  // Split the pair
                 return [
-                    'permission_id' => (int) $permission_id, // Cast to int
-                    'role_id' => (int) $role_id,             // Cast to int
+                    'permission_id' => (int) $permission_id,  // Cast to int
+                    'role_id' => (int) $role_id,  // Cast to int
                 ];
             }, $pack_perm_role_pairs);
         } else {
@@ -191,36 +185,36 @@ trait TenantInfo
         }
 
         $tenantData = [
-            //set general_setting information
+            // set general_setting information
             'site_title' => $general_setting->site_title,
             'site_logo' => $general_setting->site_logo,
             'package_id' => $request->package_id,
             'subscription_type' => $request->subscription_type,
             'developed_by' => $general_setting->developed_by,
             'modules' => $modules,
-            'expiry_date' => date("Y-m-d", strtotime("+" . $numberOfDaysToExpired . " days")),
-            //set user information
+            'expiry_date' => date('Y-m-d', strtotime('+' . $numberOfDaysToExpired . ' days')),
+            // set user information
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'phone' => $request->phone_number,
             'company_name' => $request->company_name,
-            //set permission info
+            // set permission info
             'package_permissions_role' => $package_permissions_role,
         ];
-        //End set tenant specific data for TenantDatabaseSeeder and call running TenantDatabaseSeeder
+        // End set tenant specific data for TenantDatabaseSeeder and call running TenantDatabaseSeeder
 
-        //Start running TenantDatabaseSeeder
+        // Start running TenantDatabaseSeeder
         TenantDatabaseSeeder::$tenantData = $tenantData;
         Artisan::call('tenants:seed', [
             '--tenants' => $request->tenant,
             '--force' => true,
         ]);
-        //End running TenantDatabaseSeeder
+        // End running TenantDatabaseSeeder
 
-        copy(public_path("landlord/images/logo/") . $general_setting->site_logo, public_path("logo/") . $general_setting->site_logo);
+        copy(public_path('landlord/images/logo/') . $general_setting->site_logo, public_path('logo/') . $general_setting->site_logo);
 
-        //Start running Ecommerce seeder for tenant if package has ecommerce module
+        // Start running Ecommerce seeder for tenant if package has ecommerce module
         if (isset($modules) && str_contains($modules, 'ecommerce')) {
             Artisan::call('tenants:seed', [
                 '--tenants' => $request->tenant,
@@ -228,7 +222,7 @@ trait TenantInfo
                 '--force' => true,
             ]);
 
-            //Update slug column on category,brand,product table as this is needed for ecommerce
+            // Update slug column on category,brand,product table as this is needed for ecommerce
             $tenant->run(function () {
                 $this->brandSlug();
                 $this->categorySlug();
@@ -253,22 +247,22 @@ trait TenantInfo
                 DB::table('products')->update(['is_online' => 1]);
             });
 
-            copy(public_path("logo/") . $general_setting->site_logo, public_path("frontend/images/") . $general_setting->site_logo);
+            copy(public_path('logo/') . $general_setting->site_logo, public_path('frontend/images/') . $general_setting->site_logo);
         }
-        //End running Ecommerce seeder if package has ecommerce module
+        // End running Ecommerce seeder if package has ecommerce module
 
         if (!env('WILDCARD_SUBDOMAIN')) {
             $this->addSubdomain($tenant);
         }
 
-        //updating tenant others information on landlord DB
-        $tenant->update(['package_id' => $request->package_id, 'subscription_type' => $request->subscription_type, 'company_name' => $request->company_name, 'phone_number' => $request->phone_number, 'email' => $request->email, 'expiry_date' => date("Y-m-d", strtotime("+" . $numberOfDaysToExpired . " days"))]);
+        // updating tenant others information on landlord DB
+        $tenant->update(['package_id' => $request->package_id, 'subscription_type' => $request->subscription_type, 'company_name' => $request->company_name, 'phone_number' => $request->phone_number, 'email' => $request->email, 'expiry_date' => date('Y-m-d', strtotime('+' . $numberOfDaysToExpired . ' days'))]);
 
         // $message have no use, it is not shown in any place, as frontend signup redirect to tenants domain,
         // check PaymentController@tenantCheckout function
         $message = 'Client created successfully.';
 
-        //sending welcome message to tenant
+        // sending welcome message to tenant
         $mail_setting = MailSetting::latest()->first();
         if ($mail_setting) {
             $this->setMailInfo($mail_setting);
@@ -294,7 +288,7 @@ trait TenantInfo
             $cat->save();
         });
 
-        //Best approach for larger dataset
+        // Best approach for larger dataset
         // DB::table('categories')
         // ->whereNull('slug')
         // ->update(['slug' => DB::raw("REPLACE(LOWER(name), ' ', '-')")]);
@@ -321,7 +315,6 @@ trait TenantInfo
         $abandoned_permission_ids = json_decode($abandoned_permission_ids);
         $permission_ids = json_decode($permission_ids);
         $tenant->run(function () use ($tenant, $abandoned_permission_ids, $permission_ids, $package_id, $modules, $expiry_date, $subscription_type) {
-
             if (count($abandoned_permission_ids)) {
                 DB::connection('master')->table('role_has_permissions')->whereIn('permission_id', $abandoned_permission_ids)->delete();
             }
@@ -361,7 +354,7 @@ trait TenantInfo
                 $this->brandSlug();
                 $this->productSlug();
 
-                copy(public_path("logo/") . $general_setting->site_logo, public_path("frontend/images/") . $general_setting->site_logo);
+                copy(public_path('logo/') . $general_setting->site_logo, public_path('frontend/images/') . $general_setting->site_logo);
             }
         });
     }
@@ -370,24 +363,24 @@ trait TenantInfo
     {
         $subdomain = $tenant->id;
         if (env('SERVER_TYPE') == 'cpanel') {
-            $url = "https://" . env('CENTRAL_DOMAIN') . ":2083/json-api/cpanel?cpanel_jsonapi_func=addsubdomain&cpanel_jsonapi_module=SubDomain&cpanel_jsonapi_version=2&domain=" . $subdomain . "&rootdomain=" . env('CENTRAL_DOMAIN');
+            $url = 'https://' . env('CENTRAL_DOMAIN') . ':2083/json-api/cpanel?cpanel_jsonapi_func=addsubdomain&cpanel_jsonapi_module=SubDomain&cpanel_jsonapi_version=2&domain=' . $subdomain . '&rootdomain=' . env('CENTRAL_DOMAIN');
             if (env('ROOT_DOMAIN'))
-                $url .= "&dir=public_html";
+                $url .= '&dir=public_html';
             else
-                $url .= "&dir=" . env('CENTRAL_DOMAIN');
-            //return $url;
+                $url .= '&dir=' . env('CENTRAL_DOMAIN');
+            // return $url;
             $curl = curl_init($url);
             curl_setopt($curl, CURLOPT_URL, $url);
             curl_setopt($curl, CURLOPT_POST, true);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-            //setting the curl headers
+            // setting the curl headers
             $headers = array(
-                "Authorization: cpanel " . env('CPANEL_USER_NAME') . ":" . env('CPANEL_API_KEY'),
-                "Content-Type: text/plain"
+                'Authorization: cpanel ' . env('CPANEL_USER_NAME') . ':' . env('CPANEL_API_KEY'),
+                'Content-Type: text/plain'
             );
             curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 
-            //for debug only!
+            // for debug only!
             curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
             curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 
@@ -405,7 +398,7 @@ trait TenantInfo
                     'document_root' => '/httpdocs',
                 ],
                 'parent_domain' => [
-                    "name" => $host,
+                    'name' => $host,
                 ]
             ];
 
@@ -418,8 +411,8 @@ trait TenantInfo
                 'Content-Type: application/json',
                 'Authorization: Basic ' . base64_encode("$username:$password"),
             ]);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false); // Disable SSL hostname verification if needed
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Disable SSL certificate verification if needed
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);  // Disable SSL hostname verification if needed
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);  // Disable SSL certificate verification if needed
 
             $response = curl_exec($ch);
             curl_close($ch);
@@ -432,20 +425,20 @@ trait TenantInfo
     {
         if (env('SERVER_TYPE') == 'cpanel') {
             $subdomain = $tenant->id;
-            $url = "https://" . env('CENTRAL_DOMAIN') . ":2083/json-api/cpanel?cpanel_jsonapi_func=delsubdomain&cpanel_jsonapi_module=SubDomain&cpanel_jsonapi_version=2&domain=" . $subdomain . "." . env('CENTRAL_DOMAIN');
-            //return $url;
+            $url = 'https://' . env('CENTRAL_DOMAIN') . ':2083/json-api/cpanel?cpanel_jsonapi_func=delsubdomain&cpanel_jsonapi_module=SubDomain&cpanel_jsonapi_version=2&domain=' . $subdomain . '.' . env('CENTRAL_DOMAIN');
+            // return $url;
             $curl = curl_init($url);
             curl_setopt($curl, CURLOPT_URL, $url);
             curl_setopt($curl, CURLOPT_POST, true);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-            //setting the curl headers
+            // setting the curl headers
             $headers = array(
-                "Authorization: cpanel " . env('CPANEL_USER_NAME') . ":" . env('CPANEL_API_KEY'),
-                "Content-Type: text/plain"
+                'Authorization: cpanel ' . env('CPANEL_USER_NAME') . ':' . env('CPANEL_API_KEY'),
+                'Content-Type: text/plain'
             );
             curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 
-            //for debug only!
+            // for debug only!
             curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
             curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 
@@ -465,8 +458,8 @@ trait TenantInfo
                 'Content-Type: application/json',
                 'Authorization: Basic ' . base64_encode("$username:$password"),
             ]);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false); // Disable SSL hostname verification if needed
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Disable SSL certificate verification if needed
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);  // Disable SSL hostname verification if needed
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);  // Disable SSL certificate verification if needed
             curl_exec($ch);
             curl_close($ch);
         }

@@ -525,6 +525,12 @@ class SaleController extends Controller
                 // Calculation for due
                 $nestedData['due'] = number_format(($sale->grand_total - $returned_amount - $sale->paid_amount) / $sale->exchange_rate, config('decimal'));
 
+                if ($lims_installment_plan_data) {
+                    $nestedData['installment_plan'] = '<a href="' . route('installmentplan.show', $lims_installment_plan_data->id) . '" class="badge badge-success" style="text-decoration: none;" target="_blank">' . __('db.Installment Plan') . '</a>';
+                } else {
+                    $nestedData['installment_plan'] = 'N/A';
+                }
+
                 // Custom fields data
                 foreach ($field_names as $field_name) {
                     $nestedData[$field_name] = $sale->$field_name;
@@ -2432,21 +2438,21 @@ class SaleController extends Controller
             $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
             cache()->put('tenant_' . session('bus_config_id') . '_general_setting', $general_setting, 60 * 60 * 24);
         }
-        if ($general_setting && in_array('restaurant', explode(',', $general_setting->modules))) {
-            // Try to find base product
-            $product = Product::select('id', 'name', 'code', 'is_variant', 'is_batch', 'is_imei', 'qty', 'price', 'wholesale_price', 'cost', 'promotion', 'promotion_price', 'last_date', 'tax_id', 'tax_method', 'type', 'unit_id', 'sale_unit_id', 'extras')->where('code', $code)->where('is_active', true)->first();
-        } else {
-            // Try to find base product
-            $product = Product::select('id', 'name', 'code', 'is_variant', 'is_batch', 'is_imei', 'qty', 'price', 'wholesale_price', 'cost', 'promotion', 'promotion_price', 'last_date', 'tax_id', 'tax_method', 'type', 'unit_id', 'sale_unit_id', 'hs_code',
-                'fixed_notified_value_or_retail_price',
-                'sales_tax_withheld_at_source',
-                'extra_tax',
-                'further_tax',
-                'fed_payable',
-                'sro_schedule_no',
-                'sro_item_serial_no',
-                'is_fbr_invoice_product')->where('code', $code)->where('is_active', true)->first();
-        }
+        // if ($general_setting && in_array('restaurant', explode(',', $general_setting->modules))) {
+        //     // Try to find base product
+        //     $product = Product::select('id', 'name', 'code', 'is_variant', 'is_batch', 'is_imei', 'qty', 'price', 'wholesale_price', 'cost', 'promotion', 'promotion_price', 'last_date', 'tax_id', 'tax_method', 'type', 'unit_id', 'sale_unit_id', 'extras')->where('code', $code)->where('is_active', true)->first();
+        // } else {
+        // Try to find base product
+        $product = Product::select('id', 'name', 'code', 'is_variant', 'is_batch', 'is_imei', 'qty', 'price', 'wholesale_price', 'cost', 'promotion', 'promotion_price', 'last_date', 'tax_id', 'tax_method', 'type', 'unit_id', 'sale_unit_id', 'hs_code',
+            'fixed_notified_value_or_retail_price',
+            'sales_tax_withheld_at_source',
+            'extra_tax',
+            'further_tax',
+            'fed_payable',
+            'sro_schedule_no',
+            'sro_item_serial_no',
+            'is_fbr_invoice_product')->where('code', $code)->where('is_active', true)->first();
+        // }
 
         // Try to find variant if base product not found
         if (!$product) {
@@ -2701,9 +2707,9 @@ class SaleController extends Controller
                 $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
                 cache()->put('tenant_' . session('bus_config_id') . '_general_setting', $general_setting, 60 * 60 * 24);
             }
-            if (in_array('restaurant', explode(',', $general_setting->modules))) {
-                $product_sale[10][$key] = $product_sale_data->topping_id;
-            }
+            // if (in_array('restaurant', explode(',', $general_setting->modules))) {
+            //     $product_sale[10][$key] = $product_sale_data->topping_id;
+            // }
         }
         return $product_sale;
     }
@@ -3009,9 +3015,9 @@ class SaleController extends Controller
             $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
             cache()->put('tenant_' . session('bus_config_id') . '_general_setting', $general_setting, 60 * 60 * 24);
         }
-        if (in_array('restaurant', explode(',', $general_setting->modules))) {
-            $topping_product = $data['topping_product'] ?? [];
-        }
+        // if (in_array('restaurant', explode(',', $general_setting->modules))) {
+        //     $topping_product = $data['topping_product'] ?? [];
+        // }
 
         if ($document) {
             $v = Validator::make(
@@ -3045,10 +3051,10 @@ class SaleController extends Controller
             $data['payment_status'] = 4;
 
         $lims_product_sale_data = Product_Sale::where('sale_id', $id)->get();
-        if (in_array('restaurant', explode(',', $general_setting->modules))) {
-            // Delete old product sales
-            Product_Sale::where('sale_id', $id)->delete();
-        }
+        // if (in_array('restaurant', explode(',', $general_setting->modules))) {
+        //     // Delete old product sales
+        //     Product_Sale::where('sale_id', $id)->delete();
+        // }
 
         $product_id = $data['product_id'];
         $imei_number = $data['imei_number'];
@@ -3487,25 +3493,25 @@ class SaleController extends Controller
             $product_sale['total'] = $mail_data['total'][$key] = $total[$key];
             // return $old_product_variant_id;
 
-            if (in_array('restaurant', explode(',', $general_setting->modules))) {
-                $product_sale['topping_id'] = $topping_product[$key] ?? null;
+            // if (in_array('restaurant', explode(',', $general_setting->modules))) {
+            //     $product_sale['topping_id'] = $topping_product[$key] ?? null;
 
+            //     Product_Sale::create($product_sale);
+            // } else {
+            if ($product_sale['variant_id'] && in_array($product_variant_id[$key], $old_product_variant_id)) {
+                Product_Sale::where([
+                    ['product_id', $pro_id],
+                    ['variant_id', $product_sale['variant_id']],
+                    ['sale_id', $id]
+                ])->update($product_sale);
+            } elseif ($product_sale['variant_id'] === null && (in_array($pro_id, $old_product_id))) {
+                Product_Sale::where([
+                    ['sale_id', $id],
+                    ['product_id', $pro_id]
+                ])->update($product_sale);
+            } else
                 Product_Sale::create($product_sale);
-            } else {
-                if ($product_sale['variant_id'] && in_array($product_variant_id[$key], $old_product_variant_id)) {
-                    Product_Sale::where([
-                        ['product_id', $pro_id],
-                        ['variant_id', $product_sale['variant_id']],
-                        ['sale_id', $id]
-                    ])->update($product_sale);
-                } elseif ($product_sale['variant_id'] === null && (in_array($pro_id, $old_product_id))) {
-                    Product_Sale::where([
-                        ['sale_id', $id],
-                        ['product_id', $pro_id]
-                    ])->update($product_sale);
-                } else
-                    Product_Sale::create($product_sale);
-            }
+            // }
         }
         // return $product_variant_id;
         $lims_sale_data->update($data);
@@ -3574,11 +3580,11 @@ class SaleController extends Controller
             $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
             cache()->put('tenant_' . session('bus_config_id') . '_general_setting', $general_setting, 60 * 60 * 24);
         }
-        if (in_array('restaurant', explode(',', $general_setting->modules))) {
-            $sale = Sale::where('sale_status', 5)->whereNull('deleted_at')->latest()->first();
-        } else {
-            $sale = Sale::where('sale_status', 1)->whereNull('deleted_at')->latest()->first();
-        }
+        // if (in_array('restaurant', explode(',', $general_setting->modules))) {
+        //     $sale = Sale::where('sale_status', 5)->whereNull('deleted_at')->latest()->first();
+        // } else {
+        $sale = Sale::where('sale_status', 1)->whereNull('deleted_at')->latest()->first();
+        // }
         return redirect()->route('sale.invoice', $sale->id);
     }
 
@@ -5433,7 +5439,7 @@ class SaleController extends Controller
             }
         }
 
-        // 🔹 Step 1: Exact variant match (quick path)
+        // Step 1: Exact variant match
         $exactVariant = ProductVariant::join('products', 'product_variants.product_id', '=', 'products.id')
             ->join('product_warehouse', function ($join) use ($warehouse_id) {
                 $join
@@ -5477,7 +5483,7 @@ class SaleController extends Controller
             return response()->json([$exactVariant]);
         }
 
-        // 🔹 Step 2: Prefetch data for efficiency
+        // Step 2: Prefetch data
         $warehouseStocks = DB::table('product_warehouse')
             ->where('warehouse_id', $warehouse_id)
             ->select('product_id', 'variant_id', 'qty', 'imei_number', 'price', 'product_batch_id')
@@ -5504,9 +5510,17 @@ class SaleController extends Controller
             ->unique('item_code')
             ->groupBy('product_id');
 
-        // ------------------------------------------
-        // FAST PREFIX SEARCH ON PRODUCT CODE
-        // ------------------------------------------
+        // 🔹 IMEI Map for all products in warehouse
+        $imeiMap = Product_Warehouse::where('warehouse_id', $warehouse_id)
+            ->whereNotNull('imei_number')
+            ->get()
+            ->groupBy('product_id')
+            ->map(function ($items) {
+                return $items->pluck('imei_number')->flatten()->toArray();
+            })
+            ->toArray();
+
+        // Step 3: Search by code, name, IMEI (same as before)
         $byCode = Product::Join('product_warehouse', function ($j) use ($warehouse_id) {
             $j
                 ->on('products.id', '=', 'product_warehouse.product_id')
@@ -5525,11 +5539,7 @@ class SaleController extends Controller
             ->limit(20)
             ->get();
 
-        // ------------------------------------------
-        // SEARCH BY NAME (ONLY if code is empty)
-        // ------------------------------------------
         $byName = collect();
-
         if ($byCode->isEmpty()) {
             $byName = Product::Join('product_warehouse', function ($j) use ($warehouse_id) {
                 $j
@@ -5550,43 +5560,23 @@ class SaleController extends Controller
                 ->get();
         }
 
-        // ------------------------------------------
-        // SEARCH BY IMEI (ONLY if nothing found yet)
-        // ------------------------------------------
+        // IMEI search only if code/name empty
         $byIMEI = collect();
-
         if ($byCode->isEmpty() && $byName->isEmpty()) {
-            $byIMEI = Product_Warehouse::where('warehouse_id', $warehouse_id)
-                ->where('imei_number', 'like', '%' . $search . '%')
-                ->limit(5)
-                ->get()
-                ->map(function ($pw) {
-                    return Product::find($pw->product_id);
-                });
-        }
-
-        $byIMEI = collect();
-
-        if ($byCode->isEmpty() && $byName->isEmpty()) {
-            $imeiMatch = Product_Warehouse::where('warehouse_id', $warehouse_id)
-                ->where('imei_number', 'like', '%' . $search . '%')
-                ->first();
-
-            if ($imeiMatch) {
-                $product = Product::find($imeiMatch->product_id);
-
-                if ($product) {
-                    // Inject matched IMEI for exact handling
-                    $product->imei_number = $search;
-
-                    $byIMEI = collect([$product]);
+            foreach ($imeiMap as $pid => $imeis) {
+                foreach ($imeis as $imei) {
+                    if (strpos($imei, $search) !== false) {
+                        $product = Product::find($pid);
+                        if ($product) {
+                            $product->imei_number = $search;
+                            $byIMEI->push($product);
+                        }
+                    }
                 }
             }
         }
 
-        // ------------------------------------------
-        // COMBINE RESULTS
-        // ------------------------------------------
+        // Merge results
         $baseProducts = $byCode
             ->merge($byName)
             ->merge($byIMEI)
@@ -5594,12 +5584,12 @@ class SaleController extends Controller
             ->take(20)
             ->values();
 
-        // 🔹 Step 4: Add combo products
+        // Step 4: Combo products (same as original)
         $combos = Product::where('products.is_active', true)
             ->where('products.type', 'combo')
             ->where(function ($q) use ($search) {
                 $q
-                    ->where('products.code', 'like', '%search%')
+                    ->where('products.code', 'like', "%$search%")
                     ->orWhere('products.name', 'like', "%$search%");
             })
             ->select('products.*')
@@ -5607,7 +5597,6 @@ class SaleController extends Controller
             ->limit(20)
             ->get();
 
-        // Calculate combo available qty efficiently
         foreach ($combos as $combo) {
             $componentIds = array_filter(explode(',', $combo->product_list));
             $requiredQtys = array_filter(explode(',', $combo->qty_list));
@@ -5630,140 +5619,36 @@ class SaleController extends Controller
             $baseProducts->push($combo);
         }
 
-        // 🔹 Step 5: Build unified product array
+        // Step 5: Build final products array
         foreach ($baseProducts as $product) {
             $batch_no = null;
             $expired_date = null;
 
             if ($product->is_batch == 1 && $product->product_batch_id) {
                 $batch = $productBatches[$product->product_batch_id] ?? null;
-                if ($batch) {
-                    if ($batch->expired_date < $today) {
-                        continue;  // skip expired
-                    }
+                if ($batch && $batch->expired_date >= $today) {
                     $batch_no = $batch->batch_no;
                     $expired_date = date(config('date_format'), strtotime($batch->expired_date));
                 }
             }
 
-            $imei_numbers = $product->imei_number ? explode(',', $product->imei_number) : [null];
-
-            // Exact IMEI match short-circuit
-            if (in_array($search, $imei_numbers)) {
-                $exactMatchFound = true;
-                if ($product->is_variant == 1) {
-                    $vars = $variants[$product->id] ?? collect();
-                    foreach ($vars as $v) {
-                        return response()->json([[
-                            'id' => $product->id,
-                            'code' => $v->item_code,
-                            'name' => $product->name,
-                            'qty' => $v->qty,
-                            'price' => $product->price + $v->additional_price,
-                            'is_imei' => $product->is_imei,
-                            'is_embeded' => $product->is_embeded,
-                            'batch_no' => $batch_no,
-                            'product_batch_id' => $product->product_batch_id,
-                            'expired_date' => $expired_date,
-                            'imei_number' => $search,
-                        ]]);
-                    }
-                } else {
-                    return response()->json([[
-                        'id' => $product->id,
-                        'code' => $product->code,
-                        'name' => $product->name,
-                        'qty' => $product->qty,
-                        'price' => $product->price,
-                        'is_imei' => $product->is_imei,
-                        'is_embeded' => $product->is_embeded,
-                        'batch_no' => $batch_no,
-                        'product_batch_id' => $product->product_batch_id,
-                        'expired_date' => $expired_date,
-                        'imei_number' => $search,
-                    ]]);
-                }
-            }
-
-            // Variant handling
-            if ($product->is_variant == 1) {
-                $vars = $variants[$product->id] ?? collect();
-                foreach ($vars as $v) {
-                    $products[] = [
-                        'id' => $product->id,
-                        'code' => $v->item_code,
-                        'name' => $product->name,
-                        'qty' => $v->qty,
-                        'price' => $product->price + $v->additional_price,
-                        'is_imei' => $product->is_imei,
-                        'is_embeded' => $product->is_embeded,
-                        'batch_no' => $batch_no,
-                        'product_batch_id' => $product->product_batch_id,
-                        'expired_date' => $expired_date,
-                        'imei_number' => null,
-                        'hs_code' => $product->hs_code,
-                        'fixed_notified_value_or_retail_price' => $product->fixed_notified_value_or_retail_price,
-                        'sales_tax_withheld_at_source' => $product->sales_tax_withheld_at_source,
-                        'extra_tax' => $product->extra_tax,
-                        'further_tax' => $product->further_tax,
-                        'fed_payable' => $product->fed_payable,
-                        'sro_schedule_no' => $product->sro_schedule_no,
-                        'sro_item_serial_no' => $product->sro_item_serial_no,
-                        'is_fbr_invoice_product' => $product->is_fbr_invoice_product
-                    ];
-                }
-                // ensuring uniqueness by product code (array to collection and back)
-                $products = (collect($products)->unique('code'))->values()->toArray();
-            } else {
-                // Embedded product code normalization
-                if ($product->is_embeded == 1 && isset($product_embed_code)) {
-                    $product->code = $product_embed_code;
-                } elseif ($product->is_embeded == 1 && !isset($product_embed_code)) {
-                    continue;
-                }
-
-                if ($product->is_imei == 1 && !empty($product->imei_number)) {
-                    $imeiList = array_filter(explode(',', $product->imei_number));
-
-                    foreach ($imeiList as $imei) {
-                        $products[] = [
-                            'type' => $product->type,
-                            'id' => $product->id,
-                            'code' => $product->code,
-                            'name' => $product->name,
-                            'qty' => 1,  // each IMEI represents one physical unit
-                            'price' => $product->price,
-                            'is_imei' => $product->is_imei,
-                            'is_embeded' => $product->is_embeded,
-                            'batch_no' => $batch_no,
-                            'product_batch_id' => $product->product_batch_id,
-                            'expired_date' => $expired_date,
-                            'imei_number' => trim($imei),
-                            'hs_code' => $product->hs_code,
-                            'fixed_notified_value_or_retail_price' => $product->fixed_notified_value_or_retail_price,
-                            'sales_tax_withheld_at_source' => $product->sales_tax_withheld_at_source,
-                            'extra_tax' => $product->extra_tax,
-                            'further_tax' => $product->further_tax,
-                            'fed_payable' => $product->fed_payable,
-                            'sro_schedule_no' => $product->sro_schedule_no,
-                            'sro_item_serial_no' => $product->sro_item_serial_no,
-                            'is_fbr_invoice_product' => $product->is_fbr_invoice_product,
-                        ];
-                    }
-                } else {
+            // IMEI handling
+            if ($product->is_imei == 1) {
+                $imeiList = $imeiMap[$product->id] ?? [];
+                foreach ($imeiList as $imei) {
                     $products[] = [
                         'type' => $product->type,
                         'id' => $product->id,
                         'code' => $product->code,
                         'name' => $product->name,
-                        'qty' => $product->qty ?? 0,
+                        'qty' => 1,
                         'price' => $product->price,
-                        'is_imei' => $product->is_imei,
+                        'is_imei' => 1,
                         'is_embeded' => $product->is_embeded,
                         'batch_no' => $batch_no,
                         'product_batch_id' => $product->product_batch_id,
                         'expired_date' => $expired_date,
-                        'imei_number' => $product->imei_number,
+                        'imei_number' => $imei,
                         'hs_code' => $product->hs_code,
                         'fixed_notified_value_or_retail_price' => $product->fixed_notified_value_or_retail_price,
                         'sales_tax_withheld_at_source' => $product->sales_tax_withheld_at_source,
@@ -5775,6 +5660,30 @@ class SaleController extends Controller
                         'is_fbr_invoice_product' => $product->is_fbr_invoice_product,
                     ];
                 }
+            } else {
+                $products[] = [
+                    'type' => $product->type,
+                    'id' => $product->id,
+                    'code' => $product->code,
+                    'name' => $product->name,
+                    'qty' => $product->qty ?? 0,
+                    'price' => $product->price,
+                    'is_imei' => $product->is_imei,
+                    'is_embeded' => $product->is_embeded,
+                    'batch_no' => $batch_no,
+                    'product_batch_id' => $product->product_batch_id,
+                    'expired_date' => $expired_date,
+                    'imei_number' => $product->imei_number,
+                    'hs_code' => $product->hs_code,
+                    'fixed_notified_value_or_retail_price' => $product->fixed_notified_value_or_retail_price,
+                    'sales_tax_withheld_at_source' => $product->sales_tax_withheld_at_source,
+                    'extra_tax' => $product->extra_tax,
+                    'further_tax' => $product->further_tax,
+                    'fed_payable' => $product->fed_payable,
+                    'sro_schedule_no' => $product->sro_schedule_no,
+                    'sro_item_serial_no' => $product->sro_item_serial_no,
+                    'is_fbr_invoice_product' => $product->is_fbr_invoice_product,
+                ];
             }
         }
 

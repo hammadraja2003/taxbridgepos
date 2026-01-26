@@ -818,8 +818,6 @@
                         $noResults.hide();
                         data.forEach(function (product) {
 
-
-                        console.log(product);
                             let productHtml = '';
                             let displayStock = '';
 
@@ -846,6 +844,7 @@
                                 `;
                                 fbrDisplay = ` [HS: ${product.hs_code}]`;
                             }
+                            
 
                          
                             var batch_id = product.product_batch_id ? product.product_batch_id : '';
@@ -977,29 +976,42 @@
         });
 
         // Toggle fields visibility when checkbox checked/unchecked
+        let base_grand_total = 0;
         $('#enable_installment').on('change', function() {
             if (this.checked) {
                 $('#installmentFields').slideDown();
-                $('#installment_price').val($('input[name="grand_total"]').val());
-                let installment_total_price = parseFloat($('input[name="grand_total"]').val() + $('#additional_amount').val());
-                $('#installment_total').val(installment_total_price.toFixed(2));
-                $('input[name="grand_total"]').val(installment_total_price);
-                $('input[name="total_price"]').val(installment_total_price);
-                $('#grand_total').val(installment_total_price);
+
+                base_grand_total = parseFloat($('input[name="grand_total"]').val()) || 0;
+
+                $('#installment_price').val(base_grand_total.toFixed(2));
+                $('#additional_amount').val(0);
+                $('#installment_total').val(base_grand_total.toFixed(2));
+
+                $('input[name="grand_total"]').val(base_grand_total);
+                $('input[name="total_price"]').val(base_grand_total);
+                $('#grand_total').text(base_grand_total.toFixed(2));
             } else {
                 $('#installmentFields').slideUp();
+
+                // restore original total
+                $('input[name="grand_total"]').val(base_grand_total);
+                $('input[name="total_price"]').val(base_grand_total);
+                $('#grand_total').text(base_grand_total.toFixed(2));
             }
         });
 
+
         $('#additional_amount').on('input', function() {
-            let grand_total = parseFloat($('input[name="grand_total"]').val());
             let additional_amount = parseFloat($(this).val()) || 0;
-            let installment_total_price = grand_total + additional_amount;
+
+            let installment_total_price = base_grand_total + additional_amount;
+
             $('#installment_total').val(installment_total_price.toFixed(2));
             $('input[name="grand_total"]').val(installment_total_price);
             $('input[name="total_price"]').val(installment_total_price);
             $('#grand_total').text(installment_total_price.toFixed(2));
         });
+
 
         $('#down_payment_id').on('input', function() {
             let down_payment_amount = parseFloat($(this).val()) || 0;
@@ -1078,21 +1090,6 @@
     $("ul#sale").siblings('a').attr('aria-expanded','true');
     $("ul#sale").addClass("show");
     $("ul#sale #sale-create-menu").addClass("active");
-
-    @if(config('database.connections.saleprosaas_landlord'))
-        numberOfInvoice = <?php echo json_encode($numberOfInvoice) ?>;
-        $.ajax({
-            type: 'GET',
-            async: false,
-            url: '{{route("package.fetchData", $general_setting->package_id)}}',
-            success: function(data) {
-                if(data['number_of_invoice'] > 0 && data['number_of_invoice'] <= numberOfInvoice) {
-                    localStorage.setItem("message", "You don't have permission to create another invoice as you already exceed the limit! Subscribe to another package if you wants more!");
-                    location.href = "{{route('sales.index')}}";
-                }
-            }
-        });
-    @endif
 
     @if($lims_pos_setting_data)
         var public_key = <?php echo json_encode($lims_pos_setting_data->stripe_public_key) ?>;
@@ -1350,24 +1347,50 @@ $('button[name="update_btn"]').on("click", function() {
     $('#editModal').modal('hide');
 });
 
+// $("#myTable").on('click', '.plus', function() {
+//     rowindex = $(this).closest('tr').index();
+//     var qty = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .qty').val();
+//     var max_qty = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .qty').attr('max');
+//     if(!qty)
+//         qty = 1;
+//     else if(max_qty && qty >= max_qty) {
+//         alert("Quantity cannot exceed available stock (" + max_qty + ").");
+//         return;
+//     }
+//     else
+//         qty = parseFloat(qty) + 1;
+//     if(is_variant[rowindex]){
+//         checkQuantity(String(qty), true);
+//     }else{
+//         checkDiscount(qty, true);
+//     }
+// });
+
 $("#myTable").on('click', '.plus', function() {
-    rowindex = $(this).closest('tr').index();
-    var qty = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .qty').val();
-    var max_qty = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .qty').attr('max');
-    if(!qty)
-        qty = 1;
-    else if(max_qty && qty >= max_qty) {
+    let rowindex = $(this).closest('tr').index();
+
+    let qty = parseFloat(
+        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .qty').val()
+    ) || 0;
+
+    let max_qty = parseFloat(
+        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .qty').attr('max')
+    );
+
+    let newQty = qty + 1;
+
+    if (max_qty && newQty > max_qty) {
         alert("Quantity cannot exceed available stock (" + max_qty + ").");
         return;
     }
-    else
-        qty = parseFloat(qty) + 1;
+
     if(is_variant[rowindex]){
-        checkQuantity(String(qty), true);
-    }else{
-        checkDiscount(qty, true);
+        checkQuantity(String(newQty), true);
+    } else {
+        checkDiscount(newQty, true);
     }
 });
+
 
 $("#myTable").on('click', '.minus', function() {
     rowindex = $(this).closest('tr').index();

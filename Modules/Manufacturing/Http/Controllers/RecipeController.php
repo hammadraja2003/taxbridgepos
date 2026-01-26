@@ -5,18 +5,18 @@ namespace Modules\Manufacturing\Http\Controllers;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\CustomField;
+use App\Models\GeneralSetting;
 use App\Models\Product;
 use App\Models\Product_Warehouse;
+use App\Models\Roles as Role;
 use App\Models\Tax;
 use App\Models\Unit;
 use App\Models\Warehouse;
-use App\Models\GeneralSetting;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use App\Models\Roles as Role;
 
 class RecipeController extends Controller
 {
@@ -24,41 +24,40 @@ class RecipeController extends Controller
      * Display a listing of the resource.
      * @return Renderable
      */
-
     public function index(Request $request)
     {
         $role = Role::find(Auth::user()->role_id);
-        if($role->hasPermissionTo('products-index')){
+        if ($role->hasPermissionTo('products-index')) {
             $lims_warehouse_list = Warehouse::where('is_active', true)->get();
 
-            if($request->input('warehouse_id')) {
+            if ($request->input('warehouse_id')) {
                 $warehouse_id = $request->input('warehouse_id');
-            }
-            else {
-                if (Auth::user()->warehouse_id) $warehouse_id = Auth::user()->warehouse_id;
-                else $warehouse_id = 0;
+            } else {
+                if (Auth::user()->warehouse_id)
+                    $warehouse_id = Auth::user()->warehouse_id;
+                else
+                    $warehouse_id = 0;
             }
 
             $permissions = Role::findByName($role->name)->permissions;
 
             foreach ($permissions as $permission)
                 $all_permission[] = $permission->name;
-            if(empty($all_permission))
+            if (empty($all_permission))
                 $all_permission[] = 'dummy text';
             $role_id = $role->id;
             $role_type = $role->role_type;
             $numberOfProduct = DB::table('products')->where('is_active', true)->count();
             $custom_fields = CustomField::where([
-                                ['belongs_to', 'product'],
-                                ['is_table', true]
-                            ])->pluck('name');
+                ['belongs_to', 'product'],
+                ['is_table', true]
+            ])->pluck('name');
             $field_name = [];
-            foreach($custom_fields as $fieldName) {
-                $field_name[] = str_replace(" ", "_", strtolower($fieldName));
+            foreach ($custom_fields as $fieldName) {
+                $field_name[] = str_replace(' ', '_', strtolower($fieldName));
             }
-            return view('manufacturing::recipe.index', compact('warehouse_id','all_permission', 'role_id', 'role_type', 'numberOfProduct', 'custom_fields', 'field_name','lims_warehouse_list'));
-        }
-        else
+            return view('manufacturing::recipe.index', compact('warehouse_id', 'all_permission', 'role_id', 'role_type', 'numberOfProduct', 'custom_fields', 'field_name', 'lims_warehouse_list'));
+        } else
             return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
     }
 
@@ -74,7 +73,7 @@ class RecipeController extends Controller
     public function create()
     {
         $role = Role::firstOrCreate(['id' => Auth::user()->role_id]);
-        if ($role->hasPermissionTo('products-add')){
+        if ($role->hasPermissionTo('products-add')) {
             $lims_product_list_without_variant = $this->productWithoutVariant();
             $lims_product_list_with_variant = $this->productWithVariant();
             $lims_brand_list = Brand::where('is_active', true)->get();
@@ -88,36 +87,37 @@ class RecipeController extends Controller
             // $general_setting = DB::table('general_settings')->select('modules')->first();
             $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
             $lims_product_list = Product::where([
-                    ['type', 'standard'],
-                    ['is_active', true]
-                ])->orWhere('type','combo')->get(['name','id']);
-            if(in_array('restaurant',explode(',',$general_setting->modules))){
-                $kitchen_list = DB::table('kitchens')->where('is_active',1)->get();
-                $menu_type_list = DB::table('menu_type')->where('is_active',1)->get();
+                ['type', 'standard'],
+                ['is_active', true]
+            ])->orWhere('type', 'combo')->get(['name', 'id']);
+            // if(in_array('restaurant',explode(',',$general_setting->modules))){
+            //     $kitchen_list = DB::table('kitchens')->where('is_active',1)->get();
+            //     $menu_type_list = DB::table('menu_type')->where('is_active',1)->get();
 
-                return view('manufacturing::recipe.create',compact('lims_product_list','kitchen_list','menu_type_list','lims_product_list_without_variant', 'lims_product_list_with_variant', 'lims_brand_list', 'lims_category_list', 'lims_unit_list', 'lims_tax_list', 'lims_warehouse_list', 'numberOfProduct', 'custom_fields'));
-            }
+            //     return view('manufacturing::recipe.create',compact('lims_product_list','kitchen_list','menu_type_list','lims_product_list_without_variant', 'lims_product_list_with_variant', 'lims_brand_list', 'lims_category_list', 'lims_unit_list', 'lims_tax_list', 'lims_warehouse_list', 'numberOfProduct', 'custom_fields'));
+            // }
 
-            return view('manufacturing::recipe.create',compact('lims_product_list','lims_product_list_without_variant', 'lims_product_list_with_variant', 'lims_brand_list', 'lims_category_list', 'lims_unit_list', 'lims_tax_list', 'lims_warehouse_list', 'numberOfProduct', 'custom_fields'));
-        }
-        else
+            return view('manufacturing::recipe.create', compact('lims_product_list', 'lims_product_list_without_variant', 'lims_product_list_with_variant', 'lims_brand_list', 'lims_category_list', 'lims_unit_list', 'lims_tax_list', 'lims_warehouse_list', 'numberOfProduct', 'custom_fields'));
+        } else
             return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
     }
 
-
     public function productWithoutVariant()
     {
-        return Product::ActiveStandard()->select('id', 'name', 'code')
-                ->whereNull('is_variant')->get();
+        return Product::ActiveStandard()
+            ->select('id', 'name', 'code')
+            ->whereNull('is_variant')
+            ->get();
     }
 
-       public function productWithVariant()
+    public function productWithVariant()
     {
         return Product::join('product_variants', 'products.id', 'product_variants.product_id')
-                ->ActiveStandard()
-                ->whereNotNull('is_variant')
-                ->select('products.id', 'products.name', 'product_variants.item_code', 'product_variants.qty')
-                ->orderBy('position')->get();
+            ->ActiveStandard()
+            ->whereNotNull('is_variant')
+            ->select('products.id', 'products.name', 'product_variants.item_code', 'product_variants.qty')
+            ->orderBy('position')
+            ->get();
     }
 
     /**
@@ -130,17 +130,17 @@ class RecipeController extends Controller
         $request->validate([
             'p_id' => 'required',
         ]);
-        try{
+        try {
             DB::beginTransaction();
             $product = Product::query()->findOrFail($request->p_id);
             // dd($request->all());
             $data = [
-                'qty_list'=> implode(",", $request->product_qty),
-                'price_list'=> implode(",", $request->unit_price),
-                'wastage_percent'=> implode(",", $request->wastage_percent),
-                'combo_unit_id'=> implode(",", $request->combo_unit_id),
-                'product_list'=> implode(",", $request->product_list ?? $request->product_id),
-                'variant_list'=> implode(",", $request->variant_list ?? $request->variant_id),
+                'qty_list' => implode(',', $request->product_qty),
+                'price_list' => implode(',', $request->unit_price),
+                'wastage_percent' => implode(',', $request->wastage_percent),
+                'combo_unit_id' => implode(',', $request->combo_unit_id),
+                'product_list' => implode(',', $request->product_list ?? $request->product_id),
+                'variant_list' => implode(',', $request->variant_list ?? $request->variant_id),
                 'is_recipe' => 1
             ];
 
@@ -148,14 +148,12 @@ class RecipeController extends Controller
             $data['price'] = array_sum($request->unit_price);
             $product->update($data);
             DB::commit();
-            return redirect()->route('recipes.index')->with('success','Successfully Recipe Created');
-
-        } catch (\Throwable $e){
+            return redirect()->route('recipes.index')->with('success', 'Successfully Recipe Created');
+        } catch (\Throwable $e) {
             DB::rollBack();
             // dd($e);
             return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
         }
-
     }
 
     /**
@@ -176,7 +174,7 @@ class RecipeController extends Controller
     public function edit($id)
     {
         $role = Role::firstOrCreate(['id' => Auth::user()->role_id]);
-        if ($role->hasPermissionTo('products-add')){
+        if ($role->hasPermissionTo('products-add')) {
             $lims_product_list_without_variant = $this->productWithoutVariant();
             $lims_product_list_with_variant = $this->productWithVariant();
             $lims_brand_list = Brand::where('is_active', true)->get();
@@ -190,18 +188,17 @@ class RecipeController extends Controller
             // $general_setting = DB::table('general_settings')->select('modules')->first();
             $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
             $lims_product_data = Product::where([
-            ['id', $id],
-        ])->first();
-            if(in_array('restaurant',explode(',',$general_setting->modules))){
-                $kitchen_list = DB::table('kitchens')->where('is_active',1)->get();
-                $menu_type_list = DB::table('menu_type')->where('is_active',1)->get();
+                ['id', $id],
+            ])->first();
+            // if (in_array('restaurant', explode(',', $general_setting->modules))) {
+            //     $kitchen_list = DB::table('kitchens')->where('is_active', 1)->get();
+            //     $menu_type_list = DB::table('menu_type')->where('is_active', 1)->get();
 
-                return view('manufacturing::recipe.edit',compact('lims_product_data','kitchen_list','menu_type_list','lims_product_list_without_variant', 'lims_product_list_with_variant', 'lims_brand_list', 'lims_category_list', 'lims_unit_list', 'lims_tax_list', 'lims_warehouse_list', 'numberOfProduct', 'custom_fields'));
-            }
+            //     return view('manufacturing::recipe.edit', compact('lims_product_data', 'kitchen_list', 'menu_type_list', 'lims_product_list_without_variant', 'lims_product_list_with_variant', 'lims_brand_list', 'lims_category_list', 'lims_unit_list', 'lims_tax_list', 'lims_warehouse_list', 'numberOfProduct', 'custom_fields'));
+            // }
 
-            return view('manufacturing::recipe.edit',compact('lims_product_data','lims_product_list_without_variant', 'lims_product_list_with_variant', 'lims_brand_list', 'lims_category_list', 'lims_unit_list', 'lims_tax_list', 'lims_warehouse_list', 'numberOfProduct', 'custom_fields'));
-        }
-        else
+            return view('manufacturing::recipe.edit', compact('lims_product_data', 'lims_product_list_without_variant', 'lims_product_list_with_variant', 'lims_brand_list', 'lims_category_list', 'lims_unit_list', 'lims_tax_list', 'lims_warehouse_list', 'numberOfProduct', 'custom_fields'));
+        } else
             return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
     }
 
@@ -224,10 +221,9 @@ class RecipeController extends Controller
     public function destroy($id)
     {
         $product = Product::query()->findOrFail($id);
-        $product->update(['is_recipe'=> 0]);
-        return redirect()->back()->with('success','Successfully recipe Removed');
+        $product->update(['is_recipe' => 0]);
+        return redirect()->back()->with('success', 'Successfully recipe Removed');
     }
-
 
     public function productData(Request $request)
     {
@@ -242,41 +238,42 @@ class RecipeController extends Controller
         $warehouse_id = $request->input('warehouse_id');
         $is_recipe = $request->input('is_recipe');
         // dd($warehouse_id);
-        if($is_recipe == true){
-            $totalData = Product::where('is_recipe',1)->where('is_active', true)->count();
-        }else{
+        if ($is_recipe == true) {
+            $totalData = Product::where('is_recipe', 1)->where('is_active', true)->count();
+        } else {
             $totalData = DB::table('products')->where('is_active', true)->count();
         }
         $totalFiltered = $totalData;
 
-        if($request->input('length') != -1)
+        if ($request->input('length') != -1)
             $limit = $request->input('length');
         else
             $limit = $totalData;
         $start = $request->input('start');
-        $order = 'products.'.$columns[$request->input('order.0.column')];
+        $order = 'products.' . $columns[$request->input('order.0.column')];
         $dir = $request->input('order.0.dir');
-        //fetching custom fields data
+        // fetching custom fields data
         $custom_fields = CustomField::where([
-                        ['belongs_to', 'product'],
-                        ['is_table', true]
-                    ])->pluck('name');
+            ['belongs_to', 'product'],
+            ['is_table', true]
+        ])->pluck('name');
         $field_names = [];
-        foreach($custom_fields as $fieldName) {
-            $field_names[] = str_replace(" ", "_", strtolower($fieldName));
+        foreach ($custom_fields as $fieldName) {
+            $field_names[] = str_replace(' ', '_', strtolower($fieldName));
         }
-        if(empty($request->input('search.value'))){
-            $query = Product::with('category', 'brand', 'unit')->offset($start)
-                        ->where('is_active', true)
-                        ->limit($limit)
-                        ->orderBy($order,$dir);
-            $products = $is_recipe ? $query->where('is_recipe',1)->get() : $query->get();
+        if (empty($request->input('search.value'))) {
+            $query = Product::with('category', 'brand', 'unit')
+                ->offset($start)
+                ->where('is_active', true)
+                ->limit($limit)
+                ->orderBy($order, $dir);
+            $products = $is_recipe ? $query->where('is_recipe', 1)->get() : $query->get();
         } else {
             $search = $request->input('search.value');
             $q = Product::select('products.*')
                 ->with('category', 'brand', 'unit')
                 ->join('categories', 'products.category_id', '=', 'categories.id')
-                ->leftjoin('product_purchases','product_purchases.product_id','=', 'products.id')
+                ->leftjoin('product_purchases', 'product_purchases.product_id', '=', 'products.id')
                 ->leftjoin('brands', 'products.brand_id', '=', 'brands.id')
                 ->leftjoin('product_variants', 'products.id', '=', 'product_variants.product_id')
                 ->where([
@@ -305,17 +302,18 @@ class RecipeController extends Controller
                     ['product_purchases.imei_number', 'LIKE', "%{$search}%"],
                     ['products.is_active', true]
                 ]);
-            //searching with custom field
+            // searching with custom field
             foreach ($field_names as $key => $field_name) {
                 $q = $q->orwhere('products.' . $field_name, 'LIKE', "%{$search}%");
             }
 
-            $q = $q->offset($start)
+            $q = $q
+                ->offset($start)
                 ->limit($limit)
-                ->orderBy($order,$dir);
+                ->orderBy($order, $dir);
 
             $products = $q->groupBy('products.id')->get();
-            $products = $is_recipe ? $q->where('is_recipe',1)->get() : $q->get();
+            $products = $is_recipe ? $q->where('is_recipe', 1)->get() : $q->get();
             $totalFiltered = $q->groupBy('products.id')->count();
             /*$totalFiltered = Product::
                             join('categories', 'products.category_id', '=', 'categories.id')
@@ -341,49 +339,44 @@ class RecipeController extends Controller
                             ->count();*/
         }
         $data = array();
-        if(!empty($products))
-        {
-            foreach ($products as $key=>$product)
-            {
+        if (!empty($products)) {
+            foreach ($products as $key => $product) {
                 $nestedData['id'] = $product->id;
                 $nestedData['key'] = $key;
-                $product_image = explode(",", $product->image);
+                $product_image = explode(',', $product->image);
                 $product_image = htmlspecialchars($product_image[0]);
-                if($product_image && $product_image != 'zummXD2dvAtI.png') {
-                    if(file_exists("public/images/product/small/". $product_image))
-                        $nestedData['image'] = '<img src="'.url('images/product/small', $product_image).'" height="50" width="50">';
+                if ($product_image && $product_image != 'zummXD2dvAtI.png') {
+                    if (file_exists('public/images/product/small/' . $product_image))
+                        $nestedData['image'] = '<img src="' . url('images/product/small', $product_image) . '" height="50" width="50">';
                     else
-                        $nestedData['image'] = '<img src="'.url('images/product', $product_image).'" height="50" width="50">';
-                }
-                else
+                        $nestedData['image'] = '<img src="' . url('images/product', $product_image) . '" height="50" width="50">';
+                } else
                     $nestedData['image'] = '<img src="images/zummXD2dvAtI.png" height="50" width="50">';
-                $nestedData['name'] = '<div class="d-flex align-items-center">'.$nestedData['image'].'  <span style="color:#111;margin:0 10px;">'.$product->name.'</span></div>';
+                $nestedData['name'] = '<div class="d-flex align-items-center">' . $nestedData['image'] . '  <span style="color:#111;margin:0 10px;">' . $product->name . '</span></div>';
                 $nestedData['code'] = $product->code;
-                if($product->brand)
+                if ($product->brand)
                     $nestedData['brand'] = $product->brand->title;
                 else
-                    $nestedData['brand'] = "N/A";
+                    $nestedData['brand'] = 'N/A';
                 $nestedData['category'] = $product->category->name;
-                if($warehouse_id > 0 && $product->type == 'standard') {
+                if ($warehouse_id > 0 && $product->type == 'standard') {
                     $nestedData['qty'] = Product_Warehouse::where([
-                                                ['product_id', $product->id],
-                                                ['warehouse_id', $warehouse_id]
-                                            ])->sum('qty');
-                }
-                elseif($product->type == 'standard') {
+                        ['product_id', $product->id],
+                        ['warehouse_id', $warehouse_id]
+                    ])->sum('qty');
+                } elseif ($product->type == 'standard') {
                     $nestedData['qty'] = Product_Warehouse::where([
                         ['product_id', $product->id],
                     ])->sum('qty');
-                }
-                else
+                } else
                     $nestedData['qty'] = $product->qty;
 
-                if($product->unit_id)
+                if ($product->unit_id)
                     $nestedData['unit'] = $product->unit->unit_name ?? 'N/A';
                 else
                     $nestedData['unit'] = 'N/A';
 
-                if($product->type == 'combo' || $product->is_recipe == 1){
+                if ($product->type == 'combo' || $product->is_recipe == 1) {
                     $nestedData['wastage_percent'] = $product->wastage_percent ?? 'N/A';
                     $combo_unit_id = $product->combo_unit_id ?? 'N/A';
                     $combo_unit_arr = explode(',', $combo_unit_id);
@@ -392,67 +385,65 @@ class RecipeController extends Controller
                         return $units[$id] ?? '';
                     }, $combo_unit_arr);
                     $nestedData['combo_unit'] = implode(',', $combo_unit_names);
-                }
-                else{
+                } else {
                     $nestedData['combo_unit_id'] = 'N/A';
                 }
                 $nestedData['cost'] = $product->cost;
                 $nestedData['price'] = $product->price;
 
-                if(config('currency_position') == 'prefix')
-                    $nestedData['stock_worth'] = config('currency').' '.($nestedData['qty'] * $product->price).' / '.config('currency').' '.($nestedData['qty'] * $product->cost);
+                if (config('currency_position') == 'prefix')
+                    $nestedData['stock_worth'] = config('currency') . ' ' . ($nestedData['qty'] * $product->price) . ' / ' . config('currency') . ' ' . ($nestedData['qty'] * $product->cost);
                 else
-                    $nestedData['stock_worth'] = ($nestedData['qty'] * $product->price).' '.config('currency').' / '.($nestedData['qty'] * $product->cost).' '.config('currency');
+                    $nestedData['stock_worth'] = ($nestedData['qty'] * $product->price) . ' ' . config('currency') . ' / ' . ($nestedData['qty'] * $product->cost) . ' ' . config('currency');
 
-                //fetching custom fields data
-                foreach($field_names as $field_name) {
+                // fetching custom fields data
+                foreach ($field_names as $field_name) {
                     $nestedData[$field_name] = $product->$field_name;
                 }
 
                 $nestedData['options'] = '<div class="btn-group">
-                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'.__("db.action").'
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' . __('db.action') . '
                               <span class="caret"></span>
                               <span class="sr-only">Toggle Dropdown</span>
                             </button>
                             <ul class="dropdown-menu edit-options dropdown-menu-right dropdown-default" user="menu">
                             <li>
-                                <button="type" class="btn btn-link view"><i class="fa fa-eye"></i> '.__('db.View').'</button>
+                                <button="type" class="btn btn-link view"><i class="fa fa-eye"></i> ' . __('db.View') . '</button>
                             </li>';
 
-                if(in_array("products-edit", $request['all_permission']))
+                if (in_array('products-edit', $request['all_permission']))
                     $nestedData['options'] .= '<li>
-                            <a href="'.route('recipes.edit', $product->id).'" class="btn btn-link"><i class="fa fa-edit"></i> '.__('db.edit').'</a>
+                            <a href="' . route('recipes.edit', $product->id) . '" class="btn btn-link"><i class="fa fa-edit"></i> ' . __('db.edit') . '</a>
                         </li>';
 
-                if(in_array("products-delete", $request['all_permission']))
-                    $nestedData['options'] .= \Form::open(["route" => ["recipes.destroy", $product->id], "method" => "DELETE"] ).'
+                if (in_array('products-delete', $request['all_permission']))
+                    $nestedData['options'] .= \Form::open(['route' => ['recipes.destroy', $product->id], 'method' => 'DELETE']) . '
                             <li>
-                              <button type="submit" class="btn btn-link" onclick="return confirmDelete()"><i class="fa fa-trash"></i> '.__("db.delete").'</button>
-                            </li>'.\Form::close().'
+                              <button type="submit" class="btn btn-link" onclick="return confirmDelete()"><i class="fa fa-trash"></i> ' . __('db.delete') . '</button>
+                            </li>' . \Form::close() . '
                         </ul>
                     </div>';
                 // data for product details by one click
-                if($product->tax_id)
-                    $tax = Tax::find($product->tax_id)->name ?? "N/A";
+                if ($product->tax_id)
+                    $tax = Tax::find($product->tax_id)->name ?? 'N/A';
                 else
-                    $tax = "N/A";
+                    $tax = 'N/A';
 
-                if($product->tax_method == 1)
+                if ($product->tax_method == 1)
                     $tax_method = __('db.Exclusive');
                 else
                     $tax_method = __('db.Inclusive');
 
-                $nestedData['product'] = array( '[ "'.$product->type.'"', ' "'.$product->name.'"', ' "'.$product->code.'"', ' "'.$nestedData['brand'].'"', ' "'.$nestedData['category'].'"', ' "'.$nestedData['unit'].'"', ' "'.$product->cost.'"', ' "'.$product->price.'"', ' "'.$tax.'"', ' "'.$tax_method.'"', ' "'.$product->alert_quantity.'"', ' "'.preg_replace('/\s+/S', " ", $product->product_details).'"', ' "'.$product->id.'"', ' "'.$product->product_list.'"', ' "'.$product->variant_list.'"', ' "'.$product->qty_list.'"', ' "'.$product->price_list.'"', ' "'.$nestedData['qty'].'"', ' "'.$product->image.'"', ' "'.$product->is_variant.'"','"'.@$nestedData['combo_unit'].'"','"'.@$nestedData['wastage_percent'].'"]'
-                );
-                //$nestedData['imagedata'] = DNS1D::getBarcodePNG($product->code, $product->barcode_symbology);
+                $nestedData['product'] = array('[ "' . $product->type . '"', ' "' . $product->name . '"', ' "' . $product->code . '"', ' "' . $nestedData['brand'] . '"', ' "' . $nestedData['category'] . '"', ' "' . $nestedData['unit'] . '"', ' "' . $product->cost . '"', ' "' . $product->price . '"', ' "' . $tax . '"', ' "' . $tax_method . '"', ' "' . $product->alert_quantity . '"', ' "' . preg_replace('/\s+/S', ' ', $product->product_details) . '"', ' "' . $product->id . '"', ' "' . $product->product_list . '"', ' "' . $product->variant_list . '"', ' "' . $product->qty_list . '"', ' "' . $product->price_list . '"', ' "' . $nestedData['qty'] . '"', ' "' . $product->image . '"', ' "' . $product->is_variant . '"', '"' . @$nestedData['combo_unit'] . '"', '"' . @$nestedData['wastage_percent'] . '"]');
+                // $nestedData['imagedata'] = DNS1D::getBarcodePNG($product->code, $product->barcode_symbology);
                 $data[] = $nestedData;
             }
         }
         $json_data = array(
-            "draw"            => intval($request->input('draw')),
-            "recordsTotal"    => intval($totalData),
-            "recordsFiltered" => intval($totalFiltered),
-            "data"            => $data
+            'draw' => intval($request->input('draw')),
+            'recordsTotal' => intval($totalData),
+            'recordsFiltered' => intval($totalFiltered),
+            'data' => $data
         );
 
         echo json_encode($json_data);

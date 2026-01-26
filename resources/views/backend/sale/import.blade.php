@@ -186,21 +186,6 @@
     $("ul#sale").addClass("show");
     $("ul#sale #sale-import-menu").addClass("active");
 
-    @if(config('database.connections.saleprosaas_landlord'))
-        numberOfInvoice = <?php echo json_encode($numberOfInvoice) ?>;
-        $.ajax({
-            type: 'GET',
-            async: false,
-            url: '{{route("package.fetchData", $general_setting->package_id)}}',
-            success: function(data) {
-                if(data['number_of_invoice'] > 0 && data['number_of_invoice'] <= numberOfInvoice) {
-                    localStorage.setItem("message", "You don't have permission to create another invoice as you already exceed the limit! Subscribe to another package if you wants more!");
-                    location.href = "{{route('sales.index')}}";
-                }
-            }
-        });
-    @endif
-
 $('.selectpicker').selectpicker({
     style: 'btn-link',
 });

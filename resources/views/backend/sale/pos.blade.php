@@ -2253,22 +2253,6 @@
         }
     });
 
-    ////Start the code is for TaxBridgeSaas///
-    @if(config('database.connections.saleprosaas_landlord'))
-        numberOfInvoice = <?php echo json_encode($numberOfInvoice) ?>;
-        $.ajax({
-            type: 'GET',
-            async: false,
-            url: '{{route("package.fetchData", $general_setting->package_id)}}',
-            success: function(data) {
-                if(data['number_of_invoice'] > 0 && data['number_of_invoice'] <= numberOfInvoice) {
-                    location.href = "{{route('sales.index')}}";
-                }
-            }
-        });
-    @endif
-    ////End the code is for TaxBridgeSaas///
-
     ///NOT NEEDED - Check///
     $("ul#sale").siblings('a').attr('aria-expanded','true');
     $("ul#sale").addClass("show");

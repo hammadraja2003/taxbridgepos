@@ -54,7 +54,7 @@
                                         @endif
                                         <label class="mt-2"><strong>{{__('db.Active')}}</strong></label>
                                     </div>
-                                    @if(in_array('restaurant',explode(',',$general_setting->modules)))
+                                    <!-- @if(in_array('restaurant',explode(',',$general_setting->modules)))
                                     <div class="form-group d-inline-block ml-2">
                                         @if($lims_user_data->is_active)
                                         <input class="mt-2" type="checkbox" name="service_staff" value="1" checked>
@@ -63,7 +63,7 @@
                                         @endif
                                         <label class="mt-2"><strong>{{__('db.Waiter')}}</strong></label>
                                     </div>
-                                    @endif
+                                    @endif -->
                                     <div class="form-group">
                                         <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">
                                     </div>

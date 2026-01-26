@@ -12,10 +12,10 @@
             <a href="{{route('recipes.create')}}" class="btn btn-primary add-product-btn"><i class="dripicons-plus"></i> {{__('db.add_recipes')}}</a>
 
         @endif
-        @if( in_array("products-edit", $all_permission) && in_array('ecommerce',explode(',',$general_setting->modules)) )
+        <!-- @if( in_array("products-edit", $all_permission) && in_array('ecommerce',explode(',',$general_setting->modules)) )
             <a href="{{route('product.allProductInStock')}}" class="btn btn-dark add-product-btn"><i class="dripicons-stack"></i> {{__('db.All Product In Stock')}}</a>
             <a href="{{route('product.showAllProductOnline')}}" class="btn btn-dark add-product-btn"><i class="dripicons-wifi"></i> {{__('db.Show All Product Online')}}</a>
-        @endif
+        @endif -->
 
     </div>
     <div class="table-responsive">
@@ -125,25 +125,6 @@
     $("ul#product").siblings('a').attr('aria-expanded','true');
     $("ul#product").addClass("show");
     $("ul#product #product-list-menu").addClass("active");
-
-    @if(config('database.connections.saleprosaas_landlord'))
-        if(localStorage.getItem("message")) {
-            alert(localStorage.getItem("message"));
-            localStorage.removeItem("message");
-        }
-
-        numberOfProduct = <?php echo json_encode($numberOfProduct)?>;
-        $.ajax({
-            type: 'GET',
-            async: false,
-            url: '{{route("package.fetchData", $general_setting->package_id)}}',
-            success: function(data) {
-                if(data['number_of_product'] > 0 && data['number_of_product'] <= numberOfProduct) {
-                    $("a.add-product-btn").addClass('d-none');
-                }
-            }
-        });
-    @endif
 
     function confirmDelete() {
         if (confirm("Are you sure want to delete?")) {

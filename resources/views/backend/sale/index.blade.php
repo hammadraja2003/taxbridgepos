@@ -59,9 +59,9 @@
                                 <option value="2">{{__('db.Pending')}}</option>
                                 <option value="4">{{__('db.Returned')}}</option>
                                 <option value="5">{{__('db.Processing')}}</option>
-                                @if(in_array('restaurant',explode(',',$general_setting->modules)))
+                                <!-- @if(in_array('restaurant',explode(',',$general_setting->modules)))
                                 <option value="6">{{__('db.Cooked')}}</option>
-                                @endif
+                                @endif -->
                             </select>
                         </div>
                     </div>
@@ -141,6 +141,7 @@
                     <th>{{__('db.Returned Amount')}}</th>
                     <th>{{__('db.Paid')}}</th>
                     <th>{{__('db.Due')}}</th>
+                    <th>{{__('db.Installment Plan')}}</th>
                     @foreach($custom_fields as $fieldName)
                     <th>{{$fieldName}}</th>
                     @endforeach
@@ -160,6 +161,8 @@
                     <th></th>
                     <th></th>
                 @endif
+                <th></th>
+                <th></th>
                 <th></th>
                 <th></th>
                 <th></th>
@@ -665,25 +668,6 @@
     $("ul#sale").addClass("show");
     $("ul#sale #sale-list-menu").addClass("active");
 
-    @if(config('database.connections.saleprosaas_landlord'))
-        if(localStorage.getItem("message")) {
-            alert(localStorage.getItem("message"));
-            localStorage.removeItem("message");
-        }
-
-        numberOfInvoice = <?php echo json_encode($numberOfInvoice) ?>;
-        $.ajax({
-            type: 'GET',
-            async: false,
-            url: '{{route("package.fetchData", $general_setting->package_id)}}',
-            success: function(data) {
-                if(data['number_of_invoice'] > 0 && data['number_of_product'] <= numberOfInvoice) {
-                    $("a.add-sale-btn").addClass('d-none');
-                }
-            }
-        });
-    @endif
-
     var show_products_details = <?php echo json_encode($general_setting->show_products_details_in_sales_table) ?>;
     let columns = [
         { "data": "key" },
@@ -713,7 +697,8 @@
         { "data": "grand_total" },
         { "data": "returned_amount" },
         { "data": "paid_amount" },
-        { "data": "due" }
+        { "data": "due" },
+        { "data": "installment_plan" }
     );
 
     var field_name = <?php echo json_encode($field_name) ?>;
@@ -932,9 +917,9 @@
         var sale = $('table.sale-list tbody tr:nth-child(' + (rowindex + 1) + ')').data('sale');
         balance = sale[21] - sale[22];
 
-        $('input[name="paying_amount"]').val(balance);
-        $('#add-payment input[name="balance"]').val(balance);
-        $('input[name="amount"]').val(balance);
+        $('input[name="paying_amount"]').val(balance.toFixed(2));
+        $('#add-payment input[name="balance"]').val(balance.toFixed(2));
+        $('input[name="amount"]').val(balance.toFixed(2));
         $('input[name="sale_id"]').val(sale_id);
         // Fill readonly currency info
         $('#currency_display').text(currency_name);

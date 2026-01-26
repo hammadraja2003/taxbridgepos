@@ -65,7 +65,7 @@
                 <x-validation-error fieldName="parent_id" />
             </div>
            
-            @if(in_array('restaurant',explode(',',$general_setting->modules)))
+            <!-- @if(in_array('restaurant',explode(',',$general_setting->modules)))
             <div class="col-md-12 mt-3">
                 <h6><strong>{{ __('For Website') }}</strong></h6>
                 <hr>
@@ -74,8 +74,8 @@
                 <br>
                 <input type="checkbox" name="featured" id="featured" value="1"> <label>{{ __('List on website') }}</label>
             </div>
-            @endif
-            @if(in_array('ecommerce',explode(',',$general_setting->modules)))
+            @endif -->
+            <!-- @if(in_array('ecommerce',explode(',',$general_setting->modules)))
             <div class="col-md-12 mt-3">
                 <h6><strong>{{ __('For Website') }}</strong></h6>
                 <hr>
@@ -89,9 +89,9 @@
                 <br>
                 <input type="checkbox" name="featured" id="featured" value="1"> <label>{{ __('List on category dropdown') }}</label>
             </div>
-            @endif
+            @endif -->
         </div>
-        @if(in_array('ecommerce',explode(',',$general_setting->modules)))
+        <!-- @if(in_array('ecommerce',explode(',',$general_setting->modules)))
         <div class="row">
             <div class="col-md-12 mt-3">
                 <h6><strong>{{ __('For SEO') }}</strong></h6>
@@ -106,7 +106,7 @@
                 {{Form::text('short_description',null,array('class' => 'form-control', 'placeholder' => __('db.Meta Description')))}}
             </div>
         </div>
-        @endif
+        @endif -->
 
         <div class="form-group">
             <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">

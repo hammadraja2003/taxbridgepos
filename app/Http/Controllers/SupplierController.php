@@ -2,25 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use Mail;
-use App\Models\Account;
-use App\Models\Payment;
-use App\Models\Customer;
-use App\Models\Purchase;
-use App\Models\ReturnPurchase;
-use App\Models\Supplier;
-use App\Models\MailSetting;
 use App\Mail\CustomerCreate;
 use App\Mail\SupplierCreate;
+use App\Models\Account;
 use App\Models\CashRegister;
-use Illuminate\Http\Request;
+use App\Models\Customer;
 use App\Models\CustomerGroup;
+use App\Models\MailSetting;
+use App\Models\Payment;
+use App\Models\Purchase;
 use App\Models\PurchaseProductReturn;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\DB;
+use App\Models\ReturnPurchase;
 use App\Models\Roles as Role;
+use App\Models\Supplier;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Permission;
+use Mail;
 
 class SupplierController extends Controller
 {
@@ -29,48 +30,47 @@ class SupplierController extends Controller
     public function index()
     {
         $role = Role::find(Auth::user()->role_id);
-        if($role->hasPermissionTo('suppliers-index')){
+        if ($role->hasPermissionTo('suppliers-index')) {
             $permissions = Role::findByName($role->name)->permissions;
             foreach ($permissions as $permission)
                 $all_permission[] = $permission->name;
-            if(empty($all_permission))
+            if (empty($all_permission))
                 $all_permission[] = 'dummy text';
             $lims_supplier_all = Supplier::where('is_active', true)->get();
-            return view('backend.supplier.index',compact('lims_supplier_all', 'all_permission'));
-        }
-        else
+            return view('backend.supplier.index', compact('lims_supplier_all', 'all_permission'));
+        } else
             return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
     }
 
     public function clearDue(Request $request)
     {
         $lims_due_purchase_data = Purchase::select('id', 'warehouse_id', 'grand_total', 'paid_amount', 'payment_status')
-                            ->where([
-                                ['payment_status', 1],
-                                ['supplier_id', $request->supplier_id]
-                            ])->get();
+            ->where([
+                ['payment_status', 1],
+                ['supplier_id', $request->supplier_id]
+            ])
+            ->get();
 
         $total_paid_amount = $request->amount;
         foreach ($lims_due_purchase_data as $key => $purchase_data) {
-            if($total_paid_amount == 0)
+            if ($total_paid_amount == 0)
                 break;
             $due_amount = $purchase_data->grand_total - $purchase_data->paid_amount;
 
-            if($request->cash_register)
+            if ($request->cash_register)
                 $cash_register_id = $request->cash_register;
             else
                 $cash_register_id = null;
             $account_data = Account::select('id')->where('is_default', 1)->first();
-            if($total_paid_amount >= $due_amount) {
+            if ($total_paid_amount >= $due_amount) {
                 $paid_amount = $due_amount;
                 $payment_status = 2;
-            }
-            else {
+            } else {
                 $paid_amount = $total_paid_amount;
                 $payment_status = 1;
             }
             Payment::create([
-                'payment_reference' => 'ppr-'.date("Ymd").'-'.date("his"),
+                'payment_reference' => 'ppr-' . date('Ymd') . '-' . date('his'),
                 'purchase_id' => $purchase_data->id,
                 'user_id' => $purchase_data->supplier_id,
                 'cash_register_id' => $cash_register_id,
@@ -91,11 +91,10 @@ class SupplierController extends Controller
     public function create()
     {
         $role = Role::find(Auth::user()->role_id);
-        if($role->hasPermissionTo('suppliers-add')){
-            $lims_customer_group_all = CustomerGroup::where('is_active',true)->get();
+        if ($role->hasPermissionTo('suppliers-add')) {
+            $lims_customer_group_all = CustomerGroup::where('is_active', true)->get();
             return view('backend.supplier.create', compact('lims_customer_group_all'));
-        }
-        else
+        } else
             return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
     }
 
@@ -104,21 +103,21 @@ class SupplierController extends Controller
         $this->validate($request, [
             'company_name' => [
                 'max:255',
-                    Rule::unique('suppliers')->where(function ($query) {
+                Rule::unique('suppliers')->where(function ($query) {
                     return $query->where('is_active', 1);
                 }),
             ],
             'email' => [
                 'max:255',
-                    Rule::unique('suppliers')->where(function ($query) {
+                Rule::unique('suppliers')->where(function ($query) {
                     return $query->where('is_active', 1);
                 }),
             ],
             'image' => 'image|mimes:jpg,jpeg,png,gif|max:100000',
         ]);
 
-        //validation for customer if create both user and supplier
-        if(isset($request->both)) {
+        // validation for customer if create both user and supplier
+        if (isset($request->both)) {
             $this->validate($request, [
                 'phone_number' => [
                     'max:255',
@@ -142,9 +141,9 @@ class SupplierController extends Controller
         $create_supplier = Supplier::create($lims_supplier_data);
 
         // create dummy purchase if supplier has opening balance (due)
-        if(isset($lims_supplier_data['opening_balance']) && $lims_supplier_data['opening_balance'] > 0) {
+        if (isset($lims_supplier_data['opening_balance']) && $lims_supplier_data['opening_balance'] > 0) {
             $lims_purchase_data = new Purchase();
-            $lims_purchase_data->reference_no = 'sob-' . date("Ymd") . '-'. date("his"); //customer opening balance
+            $lims_purchase_data->reference_no = 'sob-' . date('Ymd') . '-' . date('his');  // customer opening balance
             $lims_purchase_data->supplier_id = $create_supplier->id;
             $lims_purchase_data->user_id = Auth::id();
             $lims_purchase_data->warehouse_id = 1;
@@ -154,8 +153,8 @@ class SupplierController extends Controller
             $lims_purchase_data->total_tax = 0;
             $lims_purchase_data->total_cost = $lims_supplier_data['opening_balance'];
             $lims_purchase_data->grand_total = $lims_supplier_data['opening_balance'];
-            $lims_purchase_data->status = 1; // completed
-            $lims_purchase_data->payment_status = 1; // pending
+            $lims_purchase_data->status = 1;  // completed
+            $lims_purchase_data->payment_status = 1;  // pending
             $lims_purchase_data->paid_amount = 0;
             $lims_purchase_data->purchase_type = 'Opening balance';
             $lims_purchase_data->created_at = '1970-01-01 12:00:00';
@@ -163,20 +162,19 @@ class SupplierController extends Controller
         }
 
         $message = 'Supplier';
-        if(isset($request->both)) {
+        if (isset($request->both)) {
             Customer::create($lims_supplier_data);
             $message .= ' and Customer';
         }
         $mail_setting = MailSetting::latest()->first();
-        if($lims_supplier_data['email'] && $mail_setting) {
+        if ($lims_supplier_data['email'] && $mail_setting) {
             $this->setMailInfo($mail_setting);
             try {
                 Mail::to($lims_supplier_data['email'])->send(new SupplierCreate($lims_supplier_data));
-                if(isset($request->both))
+                if (isset($request->both))
                     Mail::to($lims_supplier_data['email'])->send(new CustomerCreate($lims_supplier_data));
                 $message .= ' created successfully!';
-            }
-            catch(\Exception $e) {
+            } catch (\Exception $e) {
                 $message .= ' created successfully. Please setup your <a href="setting/mail_setting">mail setting</a> to send mail.';
             }
         }
@@ -201,9 +199,9 @@ class SupplierController extends Controller
 
         // Total paid to supplier
         $total_paid = DB::table('payments')
-        ->join('purchases', 'payments.purchase_id', '=', 'purchases.id')
-        ->where('purchases.supplier_id', $id)
-        ->sum('payments.amount');
+            ->join('purchases', 'payments.purchase_id', '=', 'purchases.id')
+            ->where('purchases.supplier_id', $id)
+            ->sum('payments.amount');
         // Balance formula
         $balance_due = ($opening_balance + $total_purchases) - ($total_paid + $total_return);
 
@@ -222,50 +220,49 @@ class SupplierController extends Controller
         // Supplier Purchases
         $purchases = Purchase::where('supplier_id', $id)->get()->map(function ($p) {
             return [
-                'date'      => $p->date ?? $p->created_at->format('Y-m-d H:i:s'),
-                'type'      => 'Purchase',
+                'date' => $p->date ?? $p->created_at->format('Y-m-d H:i:s'),
+                'type' => 'Purchase',
                 'reference' => $p->reference_no,
-                'debit'     => floatval($p->grand_total), // increase payable
-                'credit'    => 0,
+                'debit' => floatval($p->grand_total),  // increase payable
+                'credit' => 0,
             ];
         });
 
-        // Supplier Payments (must check correct column)
         $payments = DB::table('payments')
-        ->join('purchases', 'payments.purchase_id', '=', 'purchases.id')
-        ->where('purchases.supplier_id', $id)
-        ->get()->map(function ($p) {
-            return [
-                'date'      => $p->date ?? $p->created_at->format('Y-m-d H:i:s'),
-                'type'      => 'Payment',
-                'reference' => $p->payment_reference ?? '-',
-                'debit'     => 0,
-                'credit'    => floatval($p->amount),
-            ];
-        });
+            ->join('purchases', 'payments.purchase_id', '=', 'purchases.id')
+            ->where('purchases.supplier_id', $id)
+            ->get()
+            ->map(function ($p) {
+                return [
+                    'date' => $p->date ?? Carbon::parse($p->created_at)->format('Y-m-d H:i:s'),
+                    'type' => 'Payment',
+                    'reference' => $p->payment_reference ?? '-',
+                    'debit' => 0,
+                    'credit' => floatval($p->amount),
+                ];
+            });
 
         // Supplier Returns (Query the Return Transaction directly)
-        $returns = \App\Models\ReturnPurchase::where('supplier_id', $id)
+        $returns = ReturnPurchase::where('supplier_id', $id)
             ->get()
             ->map(function ($r) {
                 return [
-                    'date'      => $r->created_at->format('Y-m-d H:i:s'), // or $r->date if it exists
-                    'type'      => 'Purchase Return',
+                    'date' => $r->created_at->format('Y-m-d H:i:s'),  // or $r->date if it exists
+                    'type' => 'Purchase Return',
                     'reference' => $r->reference_no ?? '-',
-                    'debit'     => 0,
-                    'credit'    => floatval($r->grand_total),
+                    'debit' => 0,
+                    'credit' => floatval($r->grand_total),
                 ];
             });
-            // return $returns;
+        // return $returns;
 
         // Merge All
         $ledger = $purchases->merge($payments)->merge($returns)->sortBy('date')->values()->toArray();
 
-
         // Running Balance
         $balance = 0;
         foreach ($ledger as $key => $row) {
-            $balance += ($row['debit'] - $row['credit']); // debit increases payable
+            $balance += ($row['debit'] - $row['credit']);  // debit increases payable
             $ledger[$key]['balance'] = number_format($balance, 2);
         }
 
@@ -275,11 +272,10 @@ class SupplierController extends Controller
     public function edit($id)
     {
         $role = Role::find(Auth::user()->role_id);
-        if($role->hasPermissionTo('suppliers-edit')){
-            $lims_supplier_data = Supplier::where('id',$id)->first();
-            return view('backend.supplier.edit',compact('lims_supplier_data'));
-        }
-        else
+        if ($role->hasPermissionTo('suppliers-edit')) {
+            $lims_supplier_data = Supplier::where('id', $id)->first();
+            return view('backend.supplier.edit', compact('lims_supplier_data'));
+        } else
             return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
     }
 
@@ -288,14 +284,13 @@ class SupplierController extends Controller
         $this->validate($request, [
             'company_name' => [
                 'max:255',
-                    Rule::unique('suppliers')->ignore($id)->where(function ($query) {
+                Rule::unique('suppliers')->ignore($id)->where(function ($query) {
                     return $query->where('is_active', 1);
                 }),
             ],
-
             'email' => [
                 'max:255',
-                    Rule::unique('suppliers')->ignore($id)->where(function ($query) {
+                Rule::unique('suppliers')->ignore($id)->where(function ($query) {
                     return $query->where('is_active', 1);
                 }),
             ],
@@ -344,55 +339,52 @@ class SupplierController extends Controller
 
     public function importSupplier(Request $request)
     {
-        $upload=$request->file('file');
+        $upload = $request->file('file');
         $ext = pathinfo($upload->getClientOriginalName(), PATHINFO_EXTENSION);
-        if($ext != 'csv')
+        if ($ext != 'csv')
             return redirect()->back()->with('not_permitted', __('db.Please upload a CSV file'));
-        $filename =  $upload->getClientOriginalName();
-        $filePath=$upload->getRealPath();
-        //open and read
-        $file=fopen($filePath, 'r');
-        $header= fgetcsv($file);
-        $escapedHeader=[];
-        //validate
+        $filename = $upload->getClientOriginalName();
+        $filePath = $upload->getRealPath();
+        // open and read
+        $file = fopen($filePath, 'r');
+        $header = fgetcsv($file);
+        $escapedHeader = [];
+        // validate
         foreach ($header as $key => $value) {
-            $lheader=strtolower($value);
-            $escapedItem=preg_replace('/[^a-z]/', '', $lheader);
+            $lheader = strtolower($value);
+            $escapedItem = preg_replace('/[^a-z]/', '', $lheader);
             array_push($escapedHeader, $escapedItem);
         }
-        //looping through othe columns
-        while($columns=fgetcsv($file))
-        {
-            if($columns[0]=="")
+        // looping through othe columns
+        while ($columns = fgetcsv($file)) {
+            if ($columns[0] == '')
                 continue;
             foreach ($columns as $key => $value) {
-                $value=preg_replace('/\D/','',$value);
+                $value = preg_replace('/\D/', '', $value);
             }
-           $data= array_combine($escapedHeader, $columns);
+            $data = array_combine($escapedHeader, $columns);
 
-           $supplier = Supplier::firstOrNew(['company_name'=>$data['companyname']]);
-           $supplier->name = $data['name'];
-           $supplier->image = $data['image'];
-           $supplier->vat_number = $data['vatnumber'];
-           $supplier->email = $data['email'];
-           $supplier->phone_number = $data['phonenumber'];
-           $supplier->address = $data['address'];
-           $supplier->city = $data['city'];
-           $supplier->state = $data['state'];
-           $supplier->postal_code = $data['postalcode'];
-           $supplier->country = $data['country'];
-           $supplier->is_active = true;
-           $supplier->save();
-           $message = 'Supplier Imported Successfully';
+            $supplier = Supplier::firstOrNew(['company_name' => $data['companyname']]);
+            $supplier->name = $data['name'];
+            $supplier->image = $data['image'];
+            $supplier->vat_number = $data['vatnumber'];
+            $supplier->email = $data['email'];
+            $supplier->phone_number = $data['phonenumber'];
+            $supplier->address = $data['address'];
+            $supplier->city = $data['city'];
+            $supplier->state = $data['state'];
+            $supplier->postal_code = $data['postalcode'];
+            $supplier->country = $data['country'];
+            $supplier->is_active = true;
+            $supplier->save();
+            $message = 'Supplier Imported Successfully';
 
-           $mail_setting = MailSetting::latest()->first();
+            $mail_setting = MailSetting::latest()->first();
 
-
-           if($data['email'] && $mail_setting) {
+            if ($data['email'] && $mail_setting) {
                 try {
                     Mail::to($data['email'])->send(new SupplierCreate($data));
-                }
-                catch(\Excetion $e){
+                } catch (\Excetion $e) {
                     $message = 'Supplier imported successfully. Please setup your <a href="setting/mail_setting">mail setting</a> to send mail.';
                 }
             }
@@ -403,10 +395,10 @@ class SupplierController extends Controller
     public function suppliersAll()
     {
         $lims_supplier_list = DB::table('suppliers')->where('is_active', true)->get();
-        
+
         $html = '';
-        foreach($lims_supplier_list as $supplier){
-            $html .='<option value="'.$supplier->id.'">'.$supplier->name . ' (' . $supplier->phone_number. ')'.'</option>';
+        foreach ($lims_supplier_list as $supplier) {
+            $html .= '<option value="' . $supplier->id . '">' . $supplier->name . ' (' . $supplier->phone_number . ')' . '</option>';
         }
 
         return response()->json($html);
@@ -415,22 +407,22 @@ class SupplierController extends Controller
     public function supplierDue($id)
     {
         $lims_due_purchase_data = Purchase::where([
-                                        ['payment_status', 1],
-                                        ['supplier_id', $id]
-                                    ])->get();
+            ['payment_status', 1],
+            ['supplier_id', $id]
+        ])->get();
         $due = 0;
         foreach ($lims_due_purchase_data as $key => $purchase_data) {
             $due += ($purchase_data->grand_total - $purchase_data->paid_amount);
         }
 
         $returned_amount = DB::table('purchases')
-                                ->join('return_purchases', 'purchases.id', '=', 'return_purchases.purchase_id')
-                                ->where([
-                                    ['purchases.supplier_id', $id],
-                                    ['purchases.payment_status', 1]
-                                ])
-                                ->whereNull('purchases.deleted_at')
-                                ->sum('return_purchases.grand_total');
+            ->join('return_purchases', 'purchases.id', '=', 'return_purchases.purchase_id')
+            ->where([
+                ['purchases.supplier_id', $id],
+                ['purchases.payment_status', 1]
+            ])
+            ->whereNull('purchases.deleted_at')
+            ->sum('return_purchases.grand_total');
         $due -= $returned_amount;
 
         return response()->json([$due]);
@@ -464,5 +456,34 @@ class SupplierController extends Controller
             });
 
         return response()->json(['data' => $payments]);
+    }
+
+    public function purchaseReturns($supplier_id)
+    {
+        $returns = ReturnPurchase::where('supplier_id', $supplier_id)
+            ->select(
+                'id',
+                'created_at',
+                'reference_no',
+                'grand_total',
+                'return_note',
+                'staff_note'
+            )
+            ->latest('created_at')
+            ->get()
+            ->map(function ($return) {
+                return [
+                    'id' => $return->id,
+                    'created_at' => $return->created_at
+                        ? date('Y-m-d H:i', strtotime($return->created_at))
+                        : '-',
+                    'reference_no' => $return->reference_no ?? '-',
+                    'grand_total' => number_format($return->grand_total, 2),
+                    'return_note' => $return->return_note ?? '-',
+                    'staff_note' => $return->staff_note ?? '-',
+                ];
+            });
+
+        return response()->json(['data' => $returns]);
     }
 }

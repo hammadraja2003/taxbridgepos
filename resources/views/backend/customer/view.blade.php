@@ -46,6 +46,11 @@
                 {{ __('db.Sale Payment') }}
             </a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#sales-return-latest" role="tab" data-toggle="tab">
+                {{ __('db.Sale Return') }}
+            </a>
+        </li>
     </ul>
 
     <div id="ledger-summery" class="row mt-3 text-center d-none">
@@ -140,6 +145,28 @@
                             <th>{{ __('db.Amount') }}</th>
                             <th>{{ __('db.Payment Method') }}</th>
                             <th>{{ __('db.Payment At') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SALES RETURN TAB -->
+        <div role="tabpanel" class="tab-pane fade" id="sales-return-latest">
+            <div class="table-responsive">
+                <table id="recent-sales-return" class="table w-100">
+                    <thead>
+                        <tr>
+                            <th>{{ __('db.date') }}</th>
+                            <th>{{ __('db.reference') }}</th>
+                            <th>Total Qty</th>
+                            <th>Total Price</th>
+                            <th>Grand Total</th>
+                            <th>Discount</th>
+                            <th>Tax</th>
+                            <th>Return Note</th>
+                            <th>Staff Note</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -261,6 +288,24 @@ $(function () {
             { data: 'amount' },
             { data: 'paying_method' },
             { data: 'payment_at' },
+        ],
+        order: [[0, 'desc']],
+        responsive: true,
+    });
+    
+    // SALES RETURN TABLE
+    $('#recent-sales-return').DataTable({
+        ajax: "{{ route('customers.customerReturns', $lims_customer_data->id) }}",
+        columns: [
+            { data: 'created_at', title: 'Date' },
+            { data: 'reference_no', title: 'Reference No' },
+            { data: 'total_qty', title: 'Total Qty' },
+            { data: 'total_price', title: 'Total Price' },
+            { data: 'grand_total', title: 'Grand Total' },
+            { data: 'total_discount', title: 'Discount' },
+            { data: 'total_tax', title: 'Tax' },
+            { data: 'return_note', title: 'Return Note' },
+            { data: 'staff_note', title: 'Staff Note' },
         ],
         order: [[0, 'desc']],
         responsive: true,

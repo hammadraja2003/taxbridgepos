@@ -36,7 +36,8 @@
                                     <div class="col-md-3">
                                         <div class="form-group">
                                             <label>{{__('db.Warehouse')}} *</label>
-                                            <select name="warehouse_id" class="selectpicker form-control" data-live-search="true" title="Select warehouse..." required>
+                                            <select name="warehouse_id" class="form-control" data-live-search="true" title="Select warehouse..." required>
+                                                <option value="">Select warehouse</option>
                                                 @foreach($lims_warehouse_list as $warehouse)
                                                 <option value="{{$warehouse->id}}">{{$warehouse->name}}</option>
                                                 @endforeach
@@ -48,6 +49,7 @@
                                         <div class="form-group">
                                             <label>{{__('db.Supplier')}}</label>
                                             <select name="supplier_id" class="selectpicker form-control" data-live-search="true" title="Select supplier...">
+                                                <option value="">Select supplier</option>
                                                 @foreach($lims_supplier_list as $supplier)
                                                 <option value="{{$supplier->id}}">{{$supplier->name .' ('. $supplier->company_name .')'}}</option>
                                                 @endforeach
@@ -81,6 +83,7 @@
                                         <div class="form-group">
                                             <label>{{__('db.Currency')}} *</label>
                                             <select name="currency_id" id="currency-id" class="form-control selectpicker" data-toggle="tooltip" title="">
+                                                <option value="">Select currency</option>
                                                 @foreach($currency_list as $currency_data)
                                                 <option value="{{$currency_data->id}}" data-rate="{{$currency_data->exchange_rate}}" @if($currency_data->exchange_rate == 1){{'checked'}}@endif>{{$currency_data->code}}</option>
                                                 @endforeach
@@ -296,6 +299,7 @@
                                         <div class="form-group top-fields">
                                             <label>{{__('db.Account')}}</label>
                                             <select required name="account_id" id="account_id" class="selectpicker form-control" data-live-search="true">
+                                                <option value="">Select account</option>
                                                 @if ($accountSelection)
                                                     @foreach($lims_account_list as $account)
                                                         @if($account->is_default)
@@ -474,6 +478,7 @@
                             <div class="col-md-4 form-group">
                                 <label>{{__('db.Tax Rate')}}</label>
                                 <select name="edit_tax_rate" class="form-control selectpicker">
+                                    <option value="">Select tax rate</option>
                                     @foreach($tax_name_all as $key => $name)
                                     <option value="{{$key}}">{{$name}}</option>
                                     @endforeach
@@ -482,6 +487,7 @@
                             <div class="col-md-4 form-group">
                                 <label>{{__('db.Product Unit')}}</label>
                                 <select name="edit_unit" class="form-control selectpicker">
+                                    <option value="">Select unit</option>
                                 </select>
                             </div>
                         </div>
@@ -542,6 +548,14 @@
     $(document).ready(function(){
         $("#submit-btn").on("click", function(e){
             e.preventDefault(); // stop normal submit
+
+            let form = document.getElementById('purchase-form');
+
+            // ✅ Check required fields first
+            if (!form.checkValidity()) {
+                form.reportValidity(); // browser messages show karega
+                return;
+            }
             var payment_status = $('#payment_status').val();
 
             if(payment_status == 3 || payment_status == 4){

@@ -135,7 +135,7 @@
                         <div class="col-md-6 mb-3">
                             <div class="form-group">
                                 <label for="paid_by_id" class="form-label d-block">Paid By *</label>
-                                <select name="paid_by_id" id="paid_by_id" class="form-select w-100">
+                                <select name="paid_by_id" id="paid_by_id" class="form-control form-select w-100">
                                     @foreach($options as $option)
                                         <option value="{{ $option }}">{{ ucfirst($option) }}</option>
                                     @endforeach
@@ -146,7 +146,7 @@
                         <div class="col-md-6 mb-3">
                             <div class="form-group">
                                 <label for="account_id" class="form-label">Account *</label>
-                                <select class="form-select w-100" name="account_id" id="account_id">
+                                <select class="form-control form-select w-100" name="account_id" id="account_id">
                                     @foreach($lims_account_list as $account)
                                         <option value="{{ $account->id }}" {{ $account->is_default ? 'selected' : '' }}>
                                             {{ $account->name }} [{{ $account->account_no }}]

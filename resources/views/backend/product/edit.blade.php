@@ -1,20 +1,5 @@
 @extends('backend.layout.main')
 
-@if(in_array('ecommerce',explode(',',$general_setting->modules)) || in_array('restaurant',explode(',',$general_setting->modules)))
-@push('css')
-<style>
-.search_result, .search_result_addon {border:1px solid #e4e6fc;border-radius:5px;overflow-y: scroll;}
-.search_result > div, .search_result_addon > div, .selected_items > div, .selected_addons > div {border-top:1px solid #e4e6fc;cursor:pointer;display:flex;align-items:center;padding: 10px;position: relative;}
-.search_result > div > img, .search_result_addon > div > img, .selected_items > div > img, .selected_addons > div > img {margin-right: 10px;max-width: 40px;}
-.search_result > div h4, .search_result_addon > div h4, .selected_items > div h4, .selected_addons > div h4 {font-size: 0.9rem;}
-.search_result > div i,  .search_result_addon > div i, {color:#54b948;position:absolute;right:5px;top:30%}
-.search_result div:first-child, .search_result_addon div:first-child, {border-top:none}
-.selected_items .remove_item, .selected_addons .remove_item {position: absolute;right: 20px;top:20px};
-.delVarOption{display: flex;flex-direction: column;align-items: center;}
-</style>
-@endpush
-@endif
-
 @section('content')
 
 <x-success-message key="edit_message" />
@@ -706,7 +691,7 @@
                                     <h5><input name="is_sync_disable" {{$lims_product_data->is_sync_disable==1 ? 'checked':''}} type="checkbox" id="is_sync_disable" value="1">&nbsp; {{__('db.Disable Woocommerce Sync')}}</h5>
                                 </div>
                                 @endif -->
-                                @if(in_array('ecommerce',explode(',',$general_setting->modules)) || in_array('restaurant',explode(',',$general_setting->modules)))
+                                <!-- @if(in_array('ecommerce',explode(',',$general_setting->modules)) || in_array('restaurant',explode(',',$general_setting->modules)))
                                 <div class="col-md-12 mt-3">
                                     <h5><input name="is_online" type="checkbox" id="is_online" value="1" {{$lims_product_data->is_online==1 ? 'checked':''}}>&nbsp; {{__('db.Sell Online')}}</h5>
                                 </div>
@@ -719,17 +704,14 @@
                                             <input name="is_addon" type="checkbox" id="is_addon" value="1" {{$lims_product_data->is_addon==1 ? 'checked':''}}>&nbsp; {{__('db.This is topping')}} <i class="dripicons-question" data-toggle="tooltip" title="{{__('db.Check this if the item is a topping or extra or add-on only to be served with a main course')}}"></i></h5>
                                     </div>
                                     @endif
-                                @endif
+                                @endif -->
 
-                                @if(in_array('ecommerce',explode(',',$general_setting->modules)))
+                                <!-- @if(in_array('ecommerce',explode(',',$general_setting->modules)))
                                 <div class="col-md-12 mt-3">
                                     <h5><input name="in_stock" type="checkbox" id="in_stock" value="1" {{$lims_product_data->in_stock==1 ? 'checked':''}}>&nbsp; {{__('db.In Stock')}}</h5>
                                 </div>
-                                <!-- <div class="col-md-12 mt-3 track_inventory">
-                                    <h5><input name="track_inventory" type="checkbox" id="track_inventory" value="1" {{$lims_product_data->track_inventory==1 ? 'checked':''}}>&nbsp; {{__('db.Track Inventory')}}</h5>
-                                </div> -->
-                                @endif
-                                @if(in_array('ecommerce',explode(',',$general_setting->modules)) || in_array('restaurant',explode(',',$general_setting->modules)))
+                                @endif -->
+                                <!-- @if(in_array('ecommerce',explode(',',$general_setting->modules)) || in_array('restaurant',explode(',',$general_setting->modules)))
                                 <div class="col-12 mt-3">
                                     <div class="form-group">
                                         <label>{{__('db.Product Tags')}} ></label>
@@ -767,9 +749,9 @@
                                         <textarea class="selected_ids hidden no-tiny" name="products">{{$related_products}},</textarea>
                                     @endif
                                 </div>
-                                @endif
+                                @endif -->
 
-                                @if(in_array('restaurant',explode(',',$general_setting->modules)))
+                                <!-- @if(in_array('restaurant',explode(',',$general_setting->modules)))
                                 <div class="col-md-12 form-group extra-section">
                                     <label>{{__('db.Extras')}}</label>
                                     <input type="text" id="search_addons" class="form-control">
@@ -785,7 +767,7 @@
                                             @endforeach
                                         </div>
                                         <textarea class="selected_addon_ids hidden no-tiny" name="extras">{{$extras}},</textarea>
-                                    @endif
+                                    @endif -->
                                 </div>
                                 <div class="col-md-4 col-6">
                                     <div class="form-group top-fields">
@@ -841,21 +823,21 @@
         }
     });
 
-    @if(in_array('restaurant',explode(',',$general_setting->modules)))
-    $("#is_addon").on('click', function(){
-        if($("#is_addon").prop('checked') == false){
-            $('.extra-section,.related-section').css('display','block');
-        }else{
-            $('.extra-section,.related-section').css('display','none');
-        }
-    })
+    // @if(in_array('restaurant',explode(',',$general_setting->modules)))
+    // $("#is_addon").on('click', function(){
+    //     if($("#is_addon").prop('checked') == false){
+    //         $('.extra-section,.related-section').css('display','block');
+    //     }else{
+    //         $('.extra-section,.related-section').css('display','none');
+    //     }
+    // })
 
-    if($("#is_addon").prop('checked') == false || {{$lims_product_data->is_addon}} == 0){
-        $('.extra-section,.related-section').css('display','block');
-    }else{
-        $('.extra-section,.related-section').css('display','none');
-    }
-    @endif
+    // if($("#is_addon").prop('checked') == false || {{$lims_product_data->is_addon}} == 0){
+    //     $('.extra-section,.related-section').css('display','block');
+    // }else{
+    //     $('.extra-section,.related-section').css('display','none');
+    // }
+    // @endif
 
     // $("#in_stock").on('click', function(){
     //     if($("#in_stock").prop('checked') == false){
@@ -866,91 +848,91 @@
     //     }
     // })
 
-    @if(in_array('ecommerce',explode(',',$general_setting->modules)) || in_array('restaurant',explode(',',$general_setting->modules)))
-    $('#search_products').on('input', function() {
-        var item = $(this).val();
-        $('.search_result').html('<div class="d-block text-center"><div class="spinner-border text-secondary" role="status"><span class="sr-only">Loading...</span></div></div>');
+    // @if(in_array('ecommerce',explode(',',$general_setting->modules)) || in_array('restaurant',explode(',',$general_setting->modules)))
+    // $('#search_products').on('input', function() {
+    //     var item = $(this).val();
+    //     $('.search_result').html('<div class="d-block text-center"><div class="spinner-border text-secondary" role="status"><span class="sr-only">Loading...</span></div></div>');
 
-        if(item.length >= 3){
-            $.ajax({
-                type: "get",
-                url: "{{url('search')}}/" + item,
-                success: function(data) {
-                    $('.search_result').html('').css('height','200px');
-                    $.each(data,function(key, value){
-                        var image = value.image.split(',');
-                        $('.search_result').append('<div data-id="'+value.id+'"><img src="{{asset("images/product/small/")}}/'+image[0]+'"><h4>'+value.name+'</h4><i class="dripicons-checkmark d-none"></i></div>')
-                    })
-                }
-            })
-        } else if (item.length < 3) {
-            $('.search_result').html('');
-        }
-    });
+    //     if(item.length >= 3){
+    //         $.ajax({
+    //             type: "get",
+    //             url: "{{url('search')}}/" + item,
+    //             success: function(data) {
+    //                 $('.search_result').html('').css('height','200px');
+    //                 $.each(data,function(key, value){
+    //                     var image = value.image.split(',');
+    //                     $('.search_result').append('<div data-id="'+value.id+'"><img src="{{asset("images/product/small/")}}/'+image[0]+'"><h4>'+value.name+'</h4><i class="dripicons-checkmark d-none"></i></div>')
+    //                 })
+    //             }
+    //         })
+    //     } else if (item.length < 3) {
+    //         $('.search_result').html('');
+    //     }
+    // });
 
-    $(document).on('click','.search_result div',function(){
-        $(this).find('i').removeClass('d-none');
-        var selected_item = '<div data-id="'+$(this).data('id')+'">'+$(this).html()+'<span class="remove_item"><i class="dripicons-cross"></i></span></div>';
-        if ($('.selected_ids').html().indexOf($(this).data('id')) === -1){
-            $('.selected_items').prepend(selected_item);
-            $('.selected_ids').append($(this).data('id')+',');
-            $('.selected_items .dripicons-checkmark').addClass('d-none');
-        }
-    });
+    // $(document).on('click','.search_result div',function(){
+    //     $(this).find('i').removeClass('d-none');
+    //     var selected_item = '<div data-id="'+$(this).data('id')+'">'+$(this).html()+'<span class="remove_item"><i class="dripicons-cross"></i></span></div>';
+    //     if ($('.selected_ids').html().indexOf($(this).data('id')) === -1){
+    //         $('.selected_items').prepend(selected_item);
+    //         $('.selected_ids').append($(this).data('id')+',');
+    //         $('.selected_items .dripicons-checkmark').addClass('d-none');
+    //     }
+    // });
 
-    $(document).on('click','.remove_item',function(){
-        var item = $(this).parent().remove();
-        var remove_id = $(this).parent().data('id');
-        var selected_ids = $('.selected_ids').html().replace(remove_id+',','');
-        $('.selected_ids').html(selected_ids);
+    // $(document).on('click','.remove_item',function(){
+    //     var item = $(this).parent().remove();
+    //     var remove_id = $(this).parent().data('id');
+    //     var selected_ids = $('.selected_ids').html().replace(remove_id+',','');
+    //     $('.selected_ids').html(selected_ids);
 
-    });
-    @endif
+    // });
+    // @endif
 
-    @if(in_array('restaurant',explode(',',$general_setting->modules)))
-    $('#search_addons').on('input', function() {
-        var item = $(this).val();
-        $('.search_result_addon').html('<div class="d-block text-center"><div class="spinner-border text-secondary" role="status"><span class="sr-only">Loading...</span></div></div>');
+    // @if(in_array('restaurant',explode(',',$general_setting->modules)))
+    // $('#search_addons').on('input', function() {
+    //     var item = $(this).val();
+    //     $('.search_result_addon').html('<div class="d-block text-center"><div class="spinner-border text-secondary" role="status"><span class="sr-only">Loading...</span></div></div>');
 
-        if(item.length >= 3){
-            $.ajax({
-                type: "get",
-                url: "{{url('search')}}/" + item,
-                success: function(data) {
-                    $('.search_result_addon').html('').css('height','200px');
-                    $.each(data,function(key, value){
-                        var image = value.image.split(',');
-                        $('.search_result_addon').append('<div data-id="'+value.id+'"><img src="{{asset("images/product/small/")}}/'+image[0]+'"><h4>'+value.name+'</h4><i class="dripicons-checkmark d-none"></i></div>')
-                    })
-                }
-            })
-        } else if (item.length < 3) {
-            $('.search_result_addon').html('');
-        }
-    });
+    //     if(item.length >= 3){
+    //         $.ajax({
+    //             type: "get",
+    //             url: "{{url('search')}}/" + item,
+    //             success: function(data) {
+    //                 $('.search_result_addon').html('').css('height','200px');
+    //                 $.each(data,function(key, value){
+    //                     var image = value.image.split(',');
+    //                     $('.search_result_addon').append('<div data-id="'+value.id+'"><img src="{{asset("images/product/small/")}}/'+image[0]+'"><h4>'+value.name+'</h4><i class="dripicons-checkmark d-none"></i></div>')
+    //                 })
+    //             }
+    //         })
+    //     } else if (item.length < 3) {
+    //         $('.search_result_addon').html('');
+    //     }
+    // });
 
-    $(document).on('click','.search_result_addon div',function(){
-        $(this).find('i').removeClass('d-none');
-        var selected_addon = '<div data-id="'+$(this).data('id')+'">'+$(this).html()+'<span class="remove_item"><i class="dripicons-cross"></i></span></div>';
-        if ($('.selected_addon_ids').html().indexOf($(this).data('id')) === -1){
-            $('.selected_addons').prepend(selected_addon);
-            $('.selected_addon_ids').append($(this).data('id')+',');
-            $('.selected_addons .dripicons-checkmark').addClass('d-none');
-        }
-    });
+    // $(document).on('click','.search_result_addon div',function(){
+    //     $(this).find('i').removeClass('d-none');
+    //     var selected_addon = '<div data-id="'+$(this).data('id')+'">'+$(this).html()+'<span class="remove_item"><i class="dripicons-cross"></i></span></div>';
+    //     if ($('.selected_addon_ids').html().indexOf($(this).data('id')) === -1){
+    //         $('.selected_addons').prepend(selected_addon);
+    //         $('.selected_addon_ids').append($(this).data('id')+',');
+    //         $('.selected_addons .dripicons-checkmark').addClass('d-none');
+    //     }
+    // });
 
-    $(document).on('click','.remove_item',function(){
-        var item = $(this).parent().remove();
-        var remove_addon_id = $(this).parent().data('id');
-        var selected_addon_ids = $('.selected_addon_ids').html().replace(remove_addon_id +',','');
-        $('.selected_addon_ids').html(selected_addon_ids);
+    // $(document).on('click','.remove_item',function(){
+    //     var item = $(this).parent().remove();
+    //     var remove_addon_id = $(this).parent().data('id');
+    //     var selected_addon_ids = $('.selected_addon_ids').html().replace(remove_addon_id +',','');
+    //     $('.selected_addon_ids').html(selected_addon_ids);
 
-    });
+    // });
 
-    var kitchen = $("input[name='kitchen']").val();
-    $('select[name=kitchen_id]').val(kitchen);
+    // var kitchen = $("input[name='kitchen']").val();
+    // $('select[name=kitchen_id]').val(kitchen);
 
-    @endif
+    // @endif
 
     $("ul#product").siblings('a').attr('aria-expanded','true');
     $("ul#product").addClass("show");

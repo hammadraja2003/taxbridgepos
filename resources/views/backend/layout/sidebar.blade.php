@@ -335,9 +335,11 @@
                                 {!! Form::close() !!}
                             </li>
                         @endcan
+                        @can('challan-report')
                         <li id="challan-report-menu">
                             <a href="{{route('report.challan')}}"> {{__('db.Challan Report')}}</a>
                         </li>
+                        @endcan
                         @can('sale-report-chart')
                             <li id="sale-report-chart-menu">
                                 {!! Form::open(['route' => 'report.saleChart', 'method' => 'post', 'id' => 'sale-report-chart-form']) !!}
@@ -452,14 +454,16 @@
                             <li id="general-setting-menu"><a href="{{route('setting.general')}}">{{__('db.General Setting')}}</a></li>
                         @endcan
                         @if(\Auth::user()->role_type <= 2)
-                            <!-- <li id="printer-menu"><a href="{{route('printers.index')}}">{{__('db.Receipt Printers')}}</a></li> -->
+                             <li id="printer-menu"><a href="{{route('printers.index')}}">{{__('db.Receipt Printers')}}</a></li>
                         @endif
                         @can ('invoice_setting')
                             <li id="invoice-menu"><a href="{{route('settings.invoice.index')}}">{{__('db.Invoice Settings')}}</a></li>
                         @endcan
                         @can('role_permission')
                             <li id="role-menu"><a href="{{route('role.index')}}">{{__('db.Role Permission')}}</a></li>
-                            <!-- <li><a href="{{route('smstemplates.index')}}">{{__('db.SMS Template')}}</a></li> -->
+                        @endcan
+                        @can('sms_template')
+                            <li id="sms-template-menu"><a href="{{route('smstemplates.index')}}">{{__('db.SMS Template')}}</a></li>
                         @endcan
                         @can('custom_field')
                             <li id="custom-field-list-menu"><a href="{{route('custom-fields.index')}}">{{__('db.Custom Field List')}}</a></li>
@@ -497,10 +501,10 @@
                         @endcan
                             <li id="user-menu"><a href="{{route('user.profile', ['id' => Auth::id()])}}">{{__('db.User Profile')}}</a></li>
                         @can('create_sms')
-                            <!-- <li id="create-sms-menu"><a href="{{route('setting.createSms')}}">{{__('db.Create SMS')}}</a></li> -->
+                            <li id="create-sms-menu"><a href="{{route('setting.createSms')}}">{{__('db.Create SMS')}}</a></li>
                         @endcan
                         @can('backup_database')
-                            <!-- <li><a href="{{route('setting.backup')}}">{{__('db.Backup Database')}}</a></li> -->
+                            <li><a href="{{route('setting.backup')}}">{{__('db.Backup Database')}}</a></li>
                         @endcan
                         @can('mail_setting')
                             <li id="mail-setting-menu"><a href="{{route('setting.mail')}}">{{__('db.Mail Setting')}}</a></li>
@@ -509,18 +513,18 @@
                             <li id="reward-point-setting-menu"><a href="{{route('setting.rewardPoint')}}">{{__('db.Reward Point Setting')}}</a></li>
                         @endcan
                         @can('sms_setting')
-                            <!-- <li id="sms-setting-menu"><a href="{{route('setting.sms')}}">{{__('db.SMS Setting')}}</a></li> -->
+                            <li id="sms-setting-menu"><a href="{{route('setting.sms')}}">{{__('db.SMS Setting')}}</a></li>
                         @endcan
 
                         @can('payment_gateway_setting')
-                            <!-- <li id="payment-gateway-setting-menu"><a href="{{route('setting.gateway')}}">{{__('db.Payment Gateways')}}</a></li> -->
+                            <li id="payment-gateway-setting-menu"><a href="{{route('setting.gateway')}}">{{__('db.Payment Gateways')}}</a></li>
                         @endcan
 
                         @can('pos_setting')
                             <li id="pos-setting-menu"><a href="{{route('setting.pos')}}">POS {{__('db.settings')}}</a></li>
                         @endcan
                         @can('hrm_setting')
-                            <!-- <li id="hrm-setting-menu"><a href="{{route('setting.hrm')}}"> {{__('db.HRM Setting')}}</a></li> -->
+                            <li id="hrm-setting-menu"><a href="{{route('setting.hrm')}}"> {{__('db.HRM Setting')}}</a></li>
                         @endcan
                         @can('barcode_setting')
                             <li id="barcode-setting-menu"><a href="{{route('barcodes.index')}}"> {{__('db.Barcode Settings')}}</a></li>
@@ -532,30 +536,6 @@
                     </ul>
                 </li>
             @endcan
-            <!-- @can ('addons')
-                @if(\Auth::user()->role_type != 4)
-               
-                    <li><a href="{{url('addon-list')}}" id="addon-list"> <i class="dripicons-flag"></i><span>{{__('db.Addons')}}</span></a></li>
-                  
-                    @if (in_array('woocommerce',explode(',',$general_setting->modules)))
-                        <li><a href="{{route('woocommerce.index')}}"> <i class="fa fa-wordpress"></i><span>WooCommerce</span></a></li>
-                    @endif
-                    @if(in_array('ecommerce',explode(',',$general_setting->modules)))
-                        <li>
-                            <a href="#ecommerce" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-shopping-bag"></i><span>eCommerce</span></a>
-                            <ul id="ecommerce" class="collapse list-unstyled ">
-                                @include('ecommerce::backend.layout.sidebar-menu')
-                            </ul>
-                        </li>
-                    @endif
-                    @if(in_array('project',explode(',',$general_setting->modules)))
-                        @include('project::backend.layout.sidebar-menu')
-                    @endif
-                    @if(in_array('restaurant',explode(',',$general_setting->modules)))
-                        @include('restaurant::backend.layout.sidebar-menu')
-                    @endif
-                @endif
-            @endcan -->
 
              <li id="logout-menu">
                 <a href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();"><i class="dripicons-power"></i>{{ __('db.logout') }}</a>

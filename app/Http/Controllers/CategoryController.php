@@ -184,16 +184,16 @@ class CategoryController extends Controller
         if (isset($request->is_sync_disable))
             $lims_category_data['is_sync_disable'] = $request->is_sync_disable;
 
-        if (in_array('ecommerce', explode(',', config('addons')))) {
-            $lims_category_data['slug'] = Str::slug($request->name, '-');
-            if ($request->featured == 1) {
-                $lims_category_data['featured'] = 1;
-            } else {
-                $lims_category_data['featured'] = 0;
-            }
-            $lims_category_data['page_title'] = $request->page_title;
-            $lims_category_data['short_description'] = $request->short_description;
-        }
+        // if (in_array('ecommerce', explode(',', config('addons')))) {
+        //     $lims_category_data['slug'] = Str::slug($request->name, '-');
+        //     if ($request->featured == 1) {
+        //         $lims_category_data['featured'] = 1;
+        //     } else {
+        //         $lims_category_data['featured'] = 0;
+        //     }
+        //     $lims_category_data['page_title'] = $request->page_title;
+        //     $lims_category_data['short_description'] = $request->short_description;
+        // }
         $category = Category::create($lims_category_data);
 
         $key_prefix = 'tenant_' . session('bus_config_id') . '_';
@@ -276,16 +276,16 @@ class CategoryController extends Controller
         if (!isset($input['is_sync_disable']) && \Schema::hasColumn('categories', 'is_sync_disable'))
             $input['is_sync_disable'] = null;
 
-        if (in_array('ecommerce', explode(',', config('addons')))) {
-            $input['slug'] = Str::slug($request->name, '-');
-            if ($request->featured == 1) {
-                $input['featured'] = 1;
-            } else {
-                $input['featured'] = 0;
-            }
-            $input['page_title'] = $request->page_title;
-            $input['short_description'] = $request->short_description;
-        }
+        // if (in_array('ecommerce', explode(',', config('addons')))) {
+        //     $input['slug'] = Str::slug($request->name, '-');
+        //     if ($request->featured == 1) {
+        //         $input['featured'] = 1;
+        //     } else {
+        //         $input['featured'] = 0;
+        //     }
+        //     $input['page_title'] = $request->page_title;
+        //     $input['short_description'] = $request->short_description;
+        // }
 
         DB::table('categories')->where('id', $request->category_id)->update($input);
 
@@ -329,9 +329,9 @@ class CategoryController extends Controller
             } else
                 $parent_id = null;
 
-            if (in_array('ecommerce', explode(',', config('addons')))) {
-                $input['slug'] = Str::slug($data['name'], '-');
-            }
+            // if (in_array('ecommerce', explode(',', config('addons')))) {
+            //     $input['slug'] = Str::slug($data['name'], '-');
+            // }
 
             $category->parent_id = $parent_id;
             $category->is_active = true;

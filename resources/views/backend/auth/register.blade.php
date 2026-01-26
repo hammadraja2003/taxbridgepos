@@ -1,4 +1,4 @@
-<?php //$general_setting = DB::table('general_settings')->find(1); ?>
+<?php // $general_setting = DB::table('general_settings')->find(1); ?>
 <!DOCTYPE html>
 <html>
   <head>
@@ -135,22 +135,7 @@
       </div>
     </div>
     <script type="text/javascript">
-
-      @if(config('database.connections.saleprosaas_landlord'))
-        numberOfUserAccount = <?php echo json_encode($numberOfUserAccount)?>;
-        $.ajax({
-            type: 'GET',
-            async: false,
-            url: '{{route("package.fetchData", $general_setting->package_id)}}',
-            success: function(data) {
-                if(data['number_of_user_account'] > 0 && data['number_of_user_account'] <= numberOfUserAccount) {
-                    localStorage.setItem("message", "You don't have permission to create another user account as you already exceed the limit! Subscribe to another package if you wants more!");
-                    location.href = "{{route('user.index')}}";
-                }
-            }
-        });
-    @endif
-      // ------------------------------------------------------- //
+    // ------------------------------------------------------- //
     // Material Inputs
     // ------------------------------------------------------ //
 

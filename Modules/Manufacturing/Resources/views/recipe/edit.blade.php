@@ -1,76 +1,5 @@
 @extends('backend.layout.main')
 
-@if (in_array('ecommerce', explode(',', $general_setting->modules)) ||
-        in_array('restaurant', explode(',', $general_setting->modules)))
-    @push('css')
-        <style>
-            .search_result,
-            .search_result_addon {
-                border: 1px solid #e4e6fc;
-                border-radius: 5px;
-                overflow-y: scroll;
-            }
-
-            .search_result>div,
-            .search_result_addon>div,
-            .selected_items>div,
-            .selected_addons>div {
-                border-top: 1px solid #e4e6fc;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                padding: 10px;
-                position: relative;
-            }
-
-            .search_result>div>img,
-            .search_result_addon>div>img,
-            .selected_items>div>img,
-            .selected_addons>div>img {
-                margin-right: 10px;
-                max-width: 40px;
-            }
-
-            .search_result>div h4,
-            .search_result_addon>div h4,
-            .selected_items>div h4,
-            .selected_addons>div h4 {
-                font-size: 0.9rem;
-            }
-
-            .search_result>div i,
-            .search_result_addon>div i,
-            {
-            color: #54b948;
-            position: absolute;
-            right: 5px;
-            top: 30%
-            }
-
-            .search_result div:first-child,
-            .search_result_addon div:first-child,
-            {
-            border-top: none
-            }
-
-            .selected_items .remove_item,
-            .selected_addons .remove_item {
-                position: absolute;
-                right: 20px;
-                top: 20px
-            }
-
-            ;
-
-            .delVarOption {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            }
-        </style>
-    @endpush
-@endif
-
 @section('content')
     <section class="forms">
         <div class="container-fluid">
@@ -276,117 +205,117 @@
             }
         })
 
-        @if (in_array('ecommerce', explode(',', $general_setting->modules)) ||
-                in_array('restaurant', explode(',', $general_setting->modules)))
-            $('#search_products').on('input', function() {
-                var item = $(this).val();
-                $('.search_result').html(
-                    '<div class="d-block text-center"><div class="spinner-border text-secondary" role="status"><span class="sr-only">Loading...</span></div></div>'
-                    );
+        // @if (in_array('ecommerce', explode(',', $general_setting->modules)) ||
+        //         in_array('restaurant', explode(',', $general_setting->modules)))
+        //     $('#search_products').on('input', function() {
+        //         var item = $(this).val();
+        //         $('.search_result').html(
+        //             '<div class="d-block text-center"><div class="spinner-border text-secondary" role="status"><span class="sr-only">Loading...</span></div></div>'
+        //             );
 
-                if (item.length >= 3) {
-                    $.ajax({
-                        type: "get",
-                        url: "{{ url('search') }}/" + item,
-                        success: function(data) {
-                            $('.search_result').html('').css('height', '200px');
-                            $.each(data, function(key, value) {
-                                var image = value.image.split(',');
-                                $('.search_result').append('<div data-id="' + value.id +
-                                    '"><img src="{{ asset('images/product/small/') }}/' +
-                                    image[0] + '"><h4>' + value.name +
-                                    '</h4><i class="dripicons-checkmark d-none"></i></div>')
-                            })
-                        }
-                    })
-                } else if (item.length < 3) {
-                    $('.search_result').html('');
-                }
-            });
+        //         if (item.length >= 3) {
+        //             $.ajax({
+        //                 type: "get",
+        //                 url: "{{ url('search') }}/" + item,
+        //                 success: function(data) {
+        //                     $('.search_result').html('').css('height', '200px');
+        //                     $.each(data, function(key, value) {
+        //                         var image = value.image.split(',');
+        //                         $('.search_result').append('<div data-id="' + value.id +
+        //                             '"><img src="{{ asset('images/product/small/') }}/' +
+        //                             image[0] + '"><h4>' + value.name +
+        //                             '</h4><i class="dripicons-checkmark d-none"></i></div>')
+        //                     })
+        //                 }
+        //             })
+        //         } else if (item.length < 3) {
+        //             $('.search_result').html('');
+        //         }
+        //     });
 
-            $(document).on('click', '.search_result div', function() {
-                $(this).find('i').removeClass('d-none');
-                var selected_item = '<div data-id="' + $(this).data('id') + '">' + $(this).html() +
-                    '<span class="remove_item"><i class="dripicons-cross"></i></span></div>';
-                if ($('.selected_ids').html().indexOf($(this).data('id')) === -1) {
-                    $('.selected_items').prepend(selected_item);
-                    $('.selected_ids').append($(this).data('id') + ',');
-                    $('.selected_items .dripicons-checkmark').addClass('d-none');
-                }
-            });
+        //     $(document).on('click', '.search_result div', function() {
+        //         $(this).find('i').removeClass('d-none');
+        //         var selected_item = '<div data-id="' + $(this).data('id') + '">' + $(this).html() +
+        //             '<span class="remove_item"><i class="dripicons-cross"></i></span></div>';
+        //         if ($('.selected_ids').html().indexOf($(this).data('id')) === -1) {
+        //             $('.selected_items').prepend(selected_item);
+        //             $('.selected_ids').append($(this).data('id') + ',');
+        //             $('.selected_items .dripicons-checkmark').addClass('d-none');
+        //         }
+        //     });
 
-            $(document).on('click', '.remove_item', function() {
-                var item = $(this).parent().remove();
-                var remove_id = $(this).parent().data('id');
-                var selected_ids = $('.selected_ids').html().replace(remove_id + ',', '');
-                $('.selected_ids').html(selected_ids);
+        //     $(document).on('click', '.remove_item', function() {
+        //         var item = $(this).parent().remove();
+        //         var remove_id = $(this).parent().data('id');
+        //         var selected_ids = $('.selected_ids').html().replace(remove_id + ',', '');
+        //         $('.selected_ids').html(selected_ids);
 
-            });
-        @endif
+        //     });
+        // @endif
 
-        @if (in_array('restaurant', explode(',', $general_setting->modules)))
-            $('#search_addons').on('input', function() {
-                var item = $(this).val();
-                $('.search_result_addon').html(
-                    '<div class="d-block text-center"><div class="spinner-border text-secondary" role="status"><span class="sr-only">Loading...</span></div></div>'
-                    );
+        // @if (in_array('restaurant', explode(',', $general_setting->modules)))
+        //     $('#search_addons').on('input', function() {
+        //         var item = $(this).val();
+        //         $('.search_result_addon').html(
+        //             '<div class="d-block text-center"><div class="spinner-border text-secondary" role="status"><span class="sr-only">Loading...</span></div></div>'
+        //             );
 
-                if (item.length >= 3) {
-                    $.ajax({
-                        type: "get",
-                        url: "{{ url('search') }}/" + item,
-                        success: function(data) {
-                            $('.search_result_addon').html('').css('height', '200px');
-                            $.each(data, function(key, value) {
-                                var image = value.image.split(',');
-                                $('.search_result_addon').append('<div data-id="' + value.id +
-                                    '"><img src="{{ asset('images/product/small/') }}/' +
-                                    image[0] + '"><h4>' + value.name +
-                                    '</h4><i class="dripicons-checkmark d-none"></i></div>')
-                            })
-                        }
-                    })
-                } else if (item.length < 3) {
-                    $('.search_result_addon').html('');
-                }
-            });
+        //         if (item.length >= 3) {
+        //             $.ajax({
+        //                 type: "get",
+        //                 url: "{{ url('search') }}/" + item,
+        //                 success: function(data) {
+        //                     $('.search_result_addon').html('').css('height', '200px');
+        //                     $.each(data, function(key, value) {
+        //                         var image = value.image.split(',');
+        //                         $('.search_result_addon').append('<div data-id="' + value.id +
+        //                             '"><img src="{{ asset('images/product/small/') }}/' +
+        //                             image[0] + '"><h4>' + value.name +
+        //                             '</h4><i class="dripicons-checkmark d-none"></i></div>')
+        //                     })
+        //                 }
+        //             })
+        //         } else if (item.length < 3) {
+        //             $('.search_result_addon').html('');
+        //         }
+        //     });
 
-            $(document).on('click', '.search_result_addon div', function() {
-                $(this).find('i').removeClass('d-none');
-                var selected_addon = '<div data-id="' + $(this).data('id') + '">' + $(this).html() +
-                    '<span class="remove_item"><i class="dripicons-cross"></i></span></div>';
-                if ($('.selected_addon_ids').html().indexOf($(this).data('id')) === -1) {
-                    $('.selected_addons').prepend(selected_addon);
-                    $('.selected_addon_ids').append($(this).data('id') + ',');
-                    $('.selected_addons .dripicons-checkmark').addClass('d-none');
-                }
-            });
+        //     $(document).on('click', '.search_result_addon div', function() {
+        //         $(this).find('i').removeClass('d-none');
+        //         var selected_addon = '<div data-id="' + $(this).data('id') + '">' + $(this).html() +
+        //             '<span class="remove_item"><i class="dripicons-cross"></i></span></div>';
+        //         if ($('.selected_addon_ids').html().indexOf($(this).data('id')) === -1) {
+        //             $('.selected_addons').prepend(selected_addon);
+        //             $('.selected_addon_ids').append($(this).data('id') + ',');
+        //             $('.selected_addons .dripicons-checkmark').addClass('d-none');
+        //         }
+        //     });
 
-            $(document).on('click', '.remove_item', function() {
-                var item = $(this).parent().remove();
-                var remove_addon_id = $(this).parent().data('id');
-                var selected_addon_ids = $('.selected_addon_ids').html().replace(remove_addon_id + ',', '');
-                $('.selected_addon_ids').html(selected_addon_ids);
+        //     $(document).on('click', '.remove_item', function() {
+        //         var item = $(this).parent().remove();
+        //         var remove_addon_id = $(this).parent().data('id');
+        //         var selected_addon_ids = $('.selected_addon_ids').html().replace(remove_addon_id + ',', '');
+        //         $('.selected_addon_ids').html(selected_addon_ids);
 
-            });
-        @endif
+        //     });
+        // @endif
 
-        @if (config('database.connections.saleprosaas_landlord'))
-            numberOfProduct = <?php echo json_encode($numberOfProduct); ?>;
-            $.ajax({
-                type: 'GET',
-                async: false,
-                url: '{{ route('package.fetchData', $general_setting->package_id) }}',
-                success: function(data) {
-                    if (data['number_of_product'] > 0 && data['number_of_product'] <= numberOfProduct) {
-                        localStorage.setItem("message",
-                            "You don't have permission to create another product as you already exceed the limit! Subscribe to another package if you wants more!"
-                            );
-                        location.href = "{{ route('products.index') }}";
-                    }
-                }
-            });
-        @endif
+        // @if (config('database.connections.saleprosaas_landlord'))
+        //     numberOfProduct = <?php echo json_encode($numberOfProduct); ?>;
+        //     $.ajax({
+        //         type: 'GET',
+        //         async: false,
+        //         url: '{{ route('package.fetchData', $general_setting->package_id) }}',
+        //         success: function(data) {
+        //             if (data['number_of_product'] > 0 && data['number_of_product'] <= numberOfProduct) {
+        //                 localStorage.setItem("message",
+        //                     "You don't have permission to create another product as you already exceed the limit! Subscribe to another package if you wants more!"
+        //                     );
+        //                 location.href = "{{ route('products.index') }}";
+        //             }
+        //         }
+        //     });
+        // @endif
 
         $("#digital").hide();
         // $("#combo").hide();

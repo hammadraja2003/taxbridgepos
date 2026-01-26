@@ -42,6 +42,11 @@
                 {{ __('db.Payment') }}
             </a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#supplier-return" role="tab" data-toggle="tab">
+                {{ __('db.Purchase Return') }}
+            </a>
+        </li>
     </ul>
 
     <div id="ledger-summery" class="row mt-3 text-center d-none">
@@ -125,6 +130,22 @@
         <div role="tabpanel" class="tab-pane fade" id="payment-latest">
             <div class="table-responsive">
                 <table id="recent-payment" class="table w-100">
+                    <thead>
+                        <tr>
+                            <th>{{ __('db.date') }}</th>
+                            <th>{{ __('db.reference') }}</th>
+                            <th>{{ __('db.Amount') }}</th>
+                            <th>{{ __('db.Payment Method') }}</th>
+                            <th>{{ __('db.Payment At') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        <div role="tabpanel" class="tab-pane fade" id="supplier-return">
+            <div class="table-responsive">
+                <table id="recent-supplier-return" class="table w-100">
                     <thead>
                         <tr>
                             <th>{{ __('db.date') }}</th>
@@ -253,6 +274,20 @@
             autoWidth: false,
             responsive: true,
         });
+        $('#recent-supplier-return').DataTable({
+            ajax: "{{ route('suppliers.purchaseReturns', $lims_supplier_data->id) }}",
+            columns: [
+                { data: 'created_at', title: '{{ __("db.date") }}' },
+                { data: 'reference_no', title: '{{ __("db.reference") }}' },
+                { data: 'grand_total', title: '{{ __("db.Amount") }}' },
+                { data: 'return_note', title: '{{ __("db.Return Note") }}' },
+                { data: 'staff_note', title: '{{ __("db.Staff Note") }}' }
+            ],
+            order: [[0, 'desc']],
+            autoWidth: false,
+            responsive: true,
+        });
+
 
         $("#print-btn").on("click", function(){
             var divContents = document.getElementById("purchase-details").innerHTML;

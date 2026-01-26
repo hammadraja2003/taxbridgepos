@@ -49,20 +49,6 @@
                                         <label>{{__('db.RTL Layout')}}</label>
                                     </div>
                                 </div>
-                                @if(config('database.connections.saleprosaas_landlord'))
-                                    <div class="col-md-4 mt-4">
-                                        <div class="form-group">
-                                            @if($lims_general_setting_data->is_zatca)
-                                            <input type="checkbox" name="is_zatca" value="1" checked>
-                                            @else
-                                            <input type="checkbox" name="is_zatca" value="1" />
-                                            @endif
-                                            &nbsp;
-                                            <label>{{__('db.ZATCA QrCode')}}</label>
-
-                                        </div>
-                                    </div>
-                                @endif
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>{{__('db.Company Name')}}</label>
@@ -418,70 +404,6 @@
                                 <div class="col-md-6">
                                     <div id="qrcode"></div>
                                 </div>
-                                @if(config('database.connections.saleprosaas_landlord'))
-                                    <br>
-                                    <div class="col-md-2">
-                                        <div class="form-group">
-                                            <label>{{__('db.Subscription Type')}}</label>
-                                            <p>{{$lims_general_setting_data->subscription_type}}</p>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <div class="form-group">
-                                            <label>{{__('db.Package Name')}}</label>
-                                            <p id="package-name"></p>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <div class="form-group">
-                                            <label>{{__('db.Monthly Fee')}}</label>
-                                            <p id="monthly-fee"></p>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <div class="form-group">
-                                            <label>{{__('db.Yearly Fee')}}</label>
-                                            <p id="yearly-fee"></p>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <label>{{__('db.Number of Warehouses')}}</label>
-                                            <p id="number-of-warehouse"></p>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <div class="form-group">
-                                            <label>{{__('db.Number of Products')}}</label>
-                                            <p id="number-of-product"></p>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <div class="form-group">
-                                            <label>{{__('db.Number of Invoices')}}</label>
-                                            <p id="number-of-invoice"></p>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <label>{{__('db.Number of User Account')}}</label>
-                                            <p id="number-of-user-account"></p>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <div class="form-group">
-                                            <label>{{__('db.Number of Employees')}}</label>
-                                            <p id="number-of-employee"></p>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <div class="form-group">
-                                            <label>{{__('db.Subscription Ends at')}}</label>
-                                            <p>{{date($lims_general_setting_data->date_format, strtotime($lims_general_setting_data->expiry_date))}}</p>
-                                        </div>
-                                    </div>
-
-                                @endif
                             </div>
                             <div class="form-group mt-3">
                                 <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">
@@ -531,45 +453,6 @@
         var style_link= $('#custom-style').attr('href').replace(/([^-]*)$/, $(this).data('color') );
         $('#custom-style').attr('href', style_link);
     });
-
-    @if(config('database.connections.saleprosaas_landlord'))
-        $.ajax({
-            type: 'GET',
-            async: false,
-            url: '{{route("package.fetchData", $lims_general_setting_data->package_id)}}',
-            success: function(data) {
-                $("#package-name").text(data['name']);
-                $("#monthly-fee").text(data['monthly_fee']);
-                $("#yearly-fee").text(data['yearly_fee']);
-                $("#package-name").text(data['name']);
-
-                if(data['number_of_warehouse'])
-                    $("#number-of-warehouse").text(data['number_of_warehouse']);
-                else
-                    $("#number-of-warehouse").text('Unlimited');
-
-                if(data['number_of_product'])
-                    $("#number-of-product").text(data['number_of_product']);
-                else
-                    $("#number-of-product").text('Unlimited');
-
-                if(data['number_of_invoice'])
-                    $("#number-of-invoice").text(data['number_of_invoice']);
-                else
-                    $("#number-of-invoice").text('Unlimited');
-
-                if(data['number_of_user_account'])
-                    $("#number-of-user-account").text(data['number_of_user_account']);
-                else
-                    $("#number-of-user-account").text('Unlimited');
-
-                if(data['number_of_employee'])
-                    $("#number-of-employee").text(data['number_of_employee']);
-                else
-                    $("#number-of-employee").text('Unlimited');
-            }
-        });
-    @endif
 
 
     function generateAppKey() {

@@ -74,12 +74,12 @@
                                         <input class="mt-2" type="checkbox" name="is_active" value="1" checked>
                                         <label class="mt-2"><strong>{{__('db.Active')}}</strong></label>
                                     </div>
-                                    @if(in_array('restaurant',explode(',',$general_setting->modules)))
+                                    <!-- @if(in_array('restaurant',explode(',',$general_setting->modules)))
                                     <div class="form-group d-inline-block ml-2">
                                         <input class="mt-2" type="checkbox" name="service_staff" value="1">
                                         <label class="mt-2"><strong>{{__('db.Waiter')}}</strong></label>
                                     </div>
-                                    @endif
+                                    @endif -->
                                     <div class="form-group">
                                         <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">
                                     </div>
@@ -166,21 +166,6 @@
     $('.selectpicker').selectpicker({
       style: 'btn-link',
     });
-
-    @if(config('database.connections.saleprosaas_landlord'))
-        numberOfUserAccount = <?php echo json_encode($numberOfUserAccount)?>;
-        $.ajax({
-            type: 'GET',
-            async: false,
-            url: '{{route("package.fetchData", $general_setting->package_id)}}',
-            success: function(data) {
-                if(data['number_of_user_account'] > 0 && data['number_of_user_account'] <= numberOfUserAccount) {
-                    localStorage.setItem("message", "You don't have permission to create another user account as you already exceed the limit! Subscribe to another package if you wants more!");
-                    location.href = "{{route('user.index')}}";
-                }
-            }
-        });
-    @endif
 
     $('#genbutton').on("click", function(){
       $.get('genpass', function(data){

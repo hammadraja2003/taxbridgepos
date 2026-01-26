@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Mail\BillerCreate;
 use App\Models\Biller;
 use App\Models\MailSetting;
-use Illuminate\Validation\Rule;
 use App\Models\Roles as Role;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Permission;
 use Auth;
-use App\Mail\BillerCreate;
 use Mail;
 
 class BillerController extends Controller
@@ -21,23 +21,22 @@ class BillerController extends Controller
     public function index()
     {
         $role = Role::find(Auth::user()->role_id);
-        if($role->hasPermissionTo('billers-index')) {
+        if ($role->hasPermissionTo('billers-index')) {
             $permissions = Role::findByName($role->name)->permissions;
             foreach ($permissions as $permission)
                 $all_permission[] = $permission->name;
-            if(empty($all_permission))
+            if (empty($all_permission))
                 $all_permission[] = 'dummy text';
             $lims_biller_all = biller::where('is_active', true)->get();
-            return view('backend.biller.index',compact('lims_biller_all', 'all_permission'));
-        }
-        else
+            return view('backend.biller.index', compact('lims_biller_all', 'all_permission'));
+        } else
             return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
     }
 
     public function create()
     {
         $role = Role::find(Auth::user()->role_id);
-        if($role->hasPermissionTo('billers-add'))
+        if ($role->hasPermissionTo('billers-add'))
             return view('backend.biller.create');
         else
             return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
@@ -48,14 +47,14 @@ class BillerController extends Controller
         $this->validate($request, [
             'company_name' => [
                 'max:255',
-                    Rule::unique('billers')->where(function ($query) {
+                Rule::unique('billers')->where(function ($query) {
                     return $query->where('is_active', 1);
                 }),
             ],
             'email' => [
                 'email',
                 'max:255',
-                    Rule::unique('billers')->where(function ($query) {
+                Rule::unique('billers')->where(function ($query) {
                     return $query->where('is_active', 1);
                 }),
             ],
@@ -67,12 +66,11 @@ class BillerController extends Controller
         $image = $request->image;
         if ($image) {
             $ext = pathinfo($image->getClientOriginalName(), PATHINFO_EXTENSION);
-            $imageName = date("Ymdhis");
-            if(!config('database.connections.saleprosaas_landlord')) {
+            $imageName = date('Ymdhis');
+            if (!config('database.connections.saleprosaas_landlord')) {
                 $imageName = $imageName . '.' . $ext;
                 $image->move(public_path('images/biller'), $imageName);
-            }
-            else {
+            } else {
                 $imageName = $this->getTenantId() . '_' . $imageName . '.' . $ext;
                 $image->move(public_path('images/biller'), $imageName);
             }
@@ -80,26 +78,24 @@ class BillerController extends Controller
         }
         Biller::create($lims_biller_data);
         $key_prefix = 'tenant_' . session('bus_config_id') . '_';
-        $this->cacheForget($key_prefix.'biller_list');
+        $this->cacheForget($key_prefix . 'biller_list');
 
         $mailSetting = MailSetting::latest()->first();
-        if(!empty($mailSetting) && !empty($lims_biller_data['email'])) {
+        if (!empty($mailSetting) && !empty($lims_biller_data['email'])) {
             $message = $this->mailAction($lims_biller_data, $mailSetting);
-        }else {
+        } else {
             $message = 'Data inserted successfully.';
         }
         return redirect('biller')->with('message', $message);
-
     }
 
     public function edit($id)
     {
         $role = Role::find(Auth::user()->role_id);
-        if($role->hasPermissionTo('billers-edit')) {
-            $lims_biller_data = Biller::where('id',$id)->first();
-            return view('backend.biller.edit',compact('lims_biller_data'));
-        }
-        else
+        if ($role->hasPermissionTo('billers-edit')) {
+            $lims_biller_data = Biller::where('id', $id)->first();
+            return view('backend.biller.edit', compact('lims_biller_data'));
+        } else
             return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
     }
 
@@ -108,18 +104,17 @@ class BillerController extends Controller
         $this->validate($request, [
             'company_name' => [
                 'max:255',
-                    Rule::unique('billers')->ignore($id)->where(function ($query) {
+                Rule::unique('billers')->ignore($id)->where(function ($query) {
                     return $query->where('is_active', 1);
                 }),
             ],
             'email' => [
                 'email',
                 'max:255',
-                    Rule::unique('billers')->ignore($id)->where(function ($query) {
+                Rule::unique('billers')->ignore($id)->where(function ($query) {
                     return $query->where('is_active', 1);
                 }),
             ],
-
             'image' => 'image|mimes:jpg,jpeg,png,gif|max:100000',
         ]);
 
@@ -127,15 +122,14 @@ class BillerController extends Controller
         $input = $request->except('image');
         $image = $request->image;
         if ($image) {
-            $this->fileDelete(public_path('images/biller'),$lims_biller_data->image);
+            $this->fileDelete(public_path('images/biller'), $lims_biller_data->image);
 
             $ext = pathinfo($image->getClientOriginalName(), PATHINFO_EXTENSION);
-            $imageName = date("Ymdhis");
-            if(!config('database.connections.saleprosaas_landlord')) {
+            $imageName = date('Ymdhis');
+            if (!config('database.connections.saleprosaas_landlord')) {
                 $imageName = $imageName . '.' . $ext;
                 $image->move(public_path('images/biller'), $imageName);
-            }
-            else {
+            } else {
                 $imageName = $this->getTenantId() . '_' . $imageName . '.' . $ext;
                 $image->move(public_path('images/biller'), $imageName);
             }
@@ -144,42 +138,41 @@ class BillerController extends Controller
 
         $lims_biller_data->update($input);
         $key_prefix = 'tenant_' . session('bus_config_id') . '_';
-        $this->cacheForget($key_prefix.'biller_list');
+        $this->cacheForget($key_prefix . 'biller_list');
         return redirect('biller')->with('message', __('db.Data updated successfully'));
     }
 
     public function importBiller(Request $request)
     {
-        $upload=$request->file('file');
+        $upload = $request->file('file');
         $ext = pathinfo($upload->getClientOriginalName(), PATHINFO_EXTENSION);
-        if($ext != 'csv')
+        if ($ext != 'csv')
             return redirect()->back()->with('not_permitted', __('db.Please upload a CSV file'));
-        $filename =  $upload->getClientOriginalName();
-        $filePath=$upload->getRealPath();
-        //open and read
-        $file=fopen($filePath, 'r');
-        $header= fgetcsv($file);
-        $escapedHeader=[];
-        //validate
+        $filename = $upload->getClientOriginalName();
+        $filePath = $upload->getRealPath();
+        // open and read
+        $file = fopen($filePath, 'r');
+        $header = fgetcsv($file);
+        $escapedHeader = [];
+        // validate
         foreach ($header as $key => $value) {
-            $lheader=strtolower($value);
-            $escapedItem=preg_replace('/[^a-z]/', '', $lheader);
+            $lheader = strtolower($value);
+            $escapedItem = preg_replace('/[^a-z]/', '', $lheader);
             array_push($escapedHeader, $escapedItem);
         }
 
         $mailSetting = MailSetting::latest()->first();
 
-        //looping through othe columns
-        while($columns=fgetcsv($file))
-        {
-            if($columns[0]=="")
+        // looping through othe columns
+        while ($columns = fgetcsv($file)) {
+            if ($columns[0] == '')
                 continue;
             foreach ($columns as $key => $value) {
-                $value=preg_replace('/\D/','',$value);
+                $value = preg_replace('/\D/', '', $value);
             }
-            $data= array_combine($escapedHeader, $columns);
+            $data = array_combine($escapedHeader, $columns);
 
-            $biller = Biller::firstOrNew(['company_name'=>$data['companyname']]);
+            $biller = Biller::firstOrNew(['company_name' => $data['companyname']]);
             $biller->name = $data['name'];
             $biller->image = $data['image'];
             $biller->vat_number = $data['vatnumber'];
@@ -195,22 +188,20 @@ class BillerController extends Controller
             $message = $this->mailAction($data, $mailSetting);
         }
         $key_prefix = 'tenant_' . session('bus_config_id') . '_';
-        $this->cacheForget($key_prefix.'biller_list');
+        $this->cacheForget($key_prefix . 'biller_list');
         return redirect('biller')->with('message', $message);
     }
 
     protected function mailAction($data, $mailSetting)
     {
         $message = 'Data inserted successfully';
-        if(!$mailSetting) {
+        if (!$mailSetting) {
             $message = 'Data inserted successfully. Please setup your <a href="setting/mail_setting">mail setting</a> to send mail.';
-        }
-        else if($data['email'] && $mailSetting) {
-            try{
+        } else if ($data['email'] && $mailSetting) {
+            try {
                 $this->setMailInfo($mailSetting);
                 Mail::to($data['email'])->send(new BillerCreate($data));
-            }
-            catch(\Exception $e){
+            } catch (\Exception $e) {
                 $message = $e->getMessage();
             }
         }
@@ -227,23 +218,23 @@ class BillerController extends Controller
             $lims_biller_data->is_active = false;
             $lims_biller_data->save();
 
-            $this->fileDelete(public_path('images/biller'),$lims_biller_data->image);
+            $this->fileDelete(public_path('images/biller'), $lims_biller_data->image);
         }
 
         $key_prefix = 'tenant_' . session('bus_config_id') . '_';
-        $this->cacheForget($key_prefix.'biller_list');
+        $this->cacheForget($key_prefix . 'biller_list');
         return 'Biller deleted successfully!';
     }
 
     public function destroy($id)
     {
         $lims_biller_data = Biller::find($id);
-        $this->fileDelete(public_path('images/biller'),$lims_biller_data->image);
+        $this->fileDelete(public_path('images/biller'), $lims_biller_data->image);
 
         $lims_biller_data->is_active = false;
         $lims_biller_data->save();
         $key_prefix = 'tenant_' . session('bus_config_id') . '_';
-        $this->cacheForget($key_prefix.'biller_list');
+        $this->cacheForget($key_prefix . 'biller_list');
         return redirect('biller')->with('not_permitted', __('db.Data deleted successfully'));
     }
 }

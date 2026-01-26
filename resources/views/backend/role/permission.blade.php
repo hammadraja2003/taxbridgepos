@@ -1221,6 +1221,18 @@
 						                <span>
 						                    <div aria-checked="false" aria-disabled="false">
 								                <div class="checkbox">
+							                    	@if(in_array("challan-report", $all_permission))
+							                    	<input type="checkbox" value="1" id="challan-report" name="challan-report" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="challan-report" name="challan-report">
+							                    	@endif
+								                    <label for="challan-report" class="padding05">{{__('db.Challan Report')}} &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
 							                    	@if(in_array("sale-report-chart", $all_permission))
 							                    	<input type="checkbox" value="1" id="sale-report-chart" name="sale-report-chart" checked>
 							                    	@else
@@ -1661,6 +1673,18 @@
 								                </div>
 								            </div>
 						                </span>
+                                        <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("sms_template", $all_permission))
+							                    	<input type="checkbox" value="1" id="sms_template" name="sms_template" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="sms_template" name="sms_template">
+							                    	@endif
+								                    <label for="sms_template" class="padding05">{{__('db.SMS Template')}} &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
 						            </td>
 						        </tr>
 						        <tr>
@@ -1846,46 +1870,6 @@
 	$("ul#setting").siblings('a').attr('aria-expanded','true');
     $("ul#setting").addClass("show");
     $("ul#setting #role-menu").addClass("active");
-
-    @if(config('database.connections.saleprosaas_landlord'))
-    	$.ajax({
-        type: 'GET',
-        async: false,
-        url: '{{route("package.fetchData", $general_setting->package_id)}}',
-        success: function(data) {
-            features = data['features'];
-            console.log(features);
-
-            if(!features.includes("sale_return"))
-            	$("tr.sale-return-row").addClass('d-none');
-            if(!features.includes("purchase_return"))
-            	$("tr.purchase-return-row").addClass('d-none');
-            if(!features.includes("expense"))
-            	$("tr.expense-row").addClass('d-none');
-            if(!features.includes("quotation"))
-            	$("tr.quotation-row").addClass('d-none');
-            if(!features.includes("transfer"))
-            	$("tr.transfer-row").addClass('d-none');
-            if(!features.includes("delivery"))
-            	$("span.delivery-section").addClass('d-none');
-            if(!features.includes("stock_count_and_adjustment")) {
-            	$("span.stock-count-section").addClass('d-none');
-            	$("span.adjustment-section").addClass('d-none');
-            }
-            if(!features.includes("report"))
-            	$("tr.report-row").addClass('d-none');
-            if(!features.includes("accounting"))
-            	$("tr.accounting-row").addClass('d-none');
-            if(!features.includes("hrm")) {
-            	$("tr.employee-row").addClass('d-none');
-            	$("tr.hrm-row").addClass('d-none');
-            	$("span.hrm-setting-section").addClass('d-none');
-            }
-            if(!features.includes("manufacturing") && !features.includes("woocommerce") && !features.includes("ecommerce") && !features.includes("restaurant"))
-                $("tr.addon-row").addClass('d-none');
-        }
-    });
-    @endif
 
 	$("#select_all").on( "change", function() {
 	    if ($(this).is(':checked')) {

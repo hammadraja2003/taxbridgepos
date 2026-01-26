@@ -2,80 +2,74 @@
 
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
-
 // use App\Http\Controllers\DemoAutoUpdateController;
 use App\Http\Controllers\Api\RegisterController;
 // use App\Http\Controllers\Api\LoginController;
-use App\Http\Controllers\Api\HomeController;
+use App\Http\Controllers\Api\AccountController;
+use App\Http\Controllers\Api\AdjustmentController;
+use App\Http\Controllers\Api\AttendanceController;
+use App\Http\Controllers\Api\BarcodeController;
+use App\Http\Controllers\Api\BillerController;
 use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\CategoryController;
-use App\Http\Controllers\Api\UnitController;
-use App\Http\Controllers\Api\ProductController;
-use App\Http\Controllers\Api\WarehouseController;
-use App\Http\Controllers\Api\SupplierController;
+use App\Http\Controllers\Api\ChallanController;
+use App\Http\Controllers\Api\CouponController;
+use App\Http\Controllers\Api\CourierController;
 use App\Http\Controllers\Api\CurrencyController;
-use App\Http\Controllers\Api\TaxController;
-use App\Http\Controllers\Api\PurchaseController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\CustomerGroupController;
-use App\Http\Controllers\Api\SaleController;
-use App\Http\Controllers\Api\BillerController;
-use App\Http\Controllers\Api\SettingController;
-use App\Http\Controllers\Api\DiscountPlanController;
+use App\Http\Controllers\Api\DeliveryController;
+use App\Http\Controllers\Api\DepartmentController;
 use App\Http\Controllers\Api\DiscountController;
+use App\Http\Controllers\Api\DiscountPlanController;
+use App\Http\Controllers\Api\EmployeeController;
 use App\Http\Controllers\Api\ExpenseCategoryController;
 use App\Http\Controllers\Api\ExpenseController;
+use App\Http\Controllers\Api\GiftCardController;
+use App\Http\Controllers\Api\HolidayController;
+use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\IncomeCategoryController;
 use App\Http\Controllers\Api\IncomeController;
-use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\InvoiceSettingController;
-use App\Http\Controllers\Api\BarcodeController;
 use App\Http\Controllers\Api\LanguageController;
-use App\Http\Controllers\Api\TableController;
 use App\Http\Controllers\Api\MoneyTransferController;
-use App\Http\Controllers\Api\ReturnSaleController;
-use App\Http\Controllers\Api\ReturnPurchaseController;
-use App\Http\Controllers\Api\TransferController;
+use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\PackingSlipController;
+use App\Http\Controllers\Api\PayrollController;
+use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\PurchaseController;
 use App\Http\Controllers\Api\QuotationController;
 use App\Http\Controllers\Api\ReportController;
-use App\Http\Controllers\Api\NotificationController;
-use App\Http\Controllers\Api\SMSController;
-use App\Http\Controllers\Api\UserController;
-use App\Http\Controllers\Api\SmsTemplateController;
-use App\Http\Controllers\Api\AdjustmentController;
-use App\Http\Controllers\Api\EmployeeController;
-use App\Http\Controllers\Api\DepartmentController;
-use App\Http\Controllers\Api\PayrollController;
-use App\Http\Controllers\Api\GiftCardController;
-use App\Http\Controllers\Api\CouponController;
-use App\Http\Controllers\Api\DeliveryController;
-use App\Http\Controllers\Api\PackingSlipController;
-use App\Http\Controllers\Api\ChallanController;
-use App\Http\Controllers\Api\HolidayController;
-use App\Http\Controllers\Api\CourierController;
-use App\Http\Controllers\Api\AttendanceController;
+use App\Http\Controllers\Api\ReturnPurchaseController;
+use App\Http\Controllers\Api\ReturnSaleController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\RouteMapController;
+use App\Http\Controllers\Api\SaleController;
+use App\Http\Controllers\Api\SettingController;
+use App\Http\Controllers\Api\SMSController;
+use App\Http\Controllers\Api\SmsTemplateController;
 use App\Http\Controllers\Api\StockCountController;
-
+use App\Http\Controllers\Api\SupplierController;
+use App\Http\Controllers\Api\TableController;
+use App\Http\Controllers\Api\TaxController;
+use App\Http\Controllers\Api\TransferController;
+use App\Http\Controllers\Api\UnitController;
+use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\WarehouseController;
 use Illuminate\Support\Facades\Route;
 
 /*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
+ * |--------------------------------------------------------------------------
+ * | API Routes
+ * |--------------------------------------------------------------------------
+ * |
+ * | Here is where you can register API routes for your application. These
+ * | routes are loaded by the RouteServiceProvider within a group which
+ * | is assigned the "api" middleware group. Enjoy building your API!
+ * |
+ */
 
 $middleware = ['api'];
-if (config('database.connections.saleprosaas_landlord')) {
-    $middleware[] = InitializeTenancyByDomain::class;
-    $middleware[] = PreventAccessFromCentralDomains::class;
-}
 
 // Commented out - DemoAutoUpdateController does not exist
 // Route::controller(DemoAutoUpdateController::class)->group(function () {
@@ -317,7 +311,6 @@ Route::group(['middleware' => $middleware], function () {
         Route::get('generate/return-reference', [ReturnSaleController::class, 'generateReference']);
         Route::resource('return-sale', ReturnSaleController::class);
 
-
         Route::controller(ReturnPurchaseController::class)->group(function () {
             Route::prefix('return-purchase')->group(function () {
                 Route::post('return-data', 'returnData');
@@ -348,7 +341,7 @@ Route::group(['middleware' => $middleware], function () {
 
         Route::resource('quotations', QuotationController::class);
 
-        //Sms Template
+        // Sms Template
         Route::resource('smstemplates', SmsTemplateController::class);
 
         // HRM Routes
@@ -437,7 +430,7 @@ Route::group(['middleware' => $middleware], function () {
                 Route::post('sale-report', 'saleReportHandler');
                 Route::get('sale-report/table', 'saleReportTable');
 
-                // Purchase Report  
+                // Purchase Report
                 Route::get('purchase-report/create', 'purchaseReportForm');
                 Route::post('purchase-report', 'purchaseReportHandler');
                 Route::get('purchase-report/table', 'purchaseReportTable');

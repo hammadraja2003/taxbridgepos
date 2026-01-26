@@ -508,11 +508,11 @@ class ProductController extends Controller
 
         $data['name'] = preg_replace('/[\n\r]/', '<br>', htmlspecialchars(trim($data['name']), ENT_QUOTES));
 
-        if (in_array('ecommerce', explode(',', config('addons')))) {
-            $data['slug'] = Str::slug($data['name'], '-');
-            $data['slug'] = preg_replace('/[^A-Za-z0-9\-]/', '', $data['slug']);
-            $data['slug'] = str_replace('\/', '/', $data['slug']);
-        }
+        // if (in_array('ecommerce', explode(',', config('addons')))) {
+        //     $data['slug'] = Str::slug($data['name'], '-');
+        //     $data['slug'] = preg_replace('/[^A-Za-z0-9\-]/', '', $data['slug']);
+        //     $data['slug'] = str_replace('\/', '/', $data['slug']);
+        // }
 
         if ($data['type'] == 'combo' || (isset($data['is_recipe']) && $data['is_recipe'] == 1)) {
             $data['product_list'] = implode(',', $data['product_id']);
@@ -1892,11 +1892,11 @@ class ProductController extends Controller
                     'image' => $data['image'] ?? 'zummXD2dvAtI.png',
                 ]);
 
-                if (in_array('ecommerce', explode(',', config('addons')))) {
-                    $data['slug'] = Str::slug($data['name'], '-');
-                    $product->slug = preg_replace('/[^A-Za-z0-9\-]/', '', $data['slug']);
-                    $product->in_stock = true;
-                }
+                // if (in_array('ecommerce', explode(',', config('addons')))) {
+                //     $data['slug'] = Str::slug($data['name'], '-');
+                //     $product->slug = preg_replace('/[^A-Za-z0-9\-]/', '', $data['slug']);
+                //     $product->in_stock = true;
+                // }
 
                 $image_names = [];
                 if (!empty($data['image']) && $data['image'] != 'zummXD2dvAtI.png') {

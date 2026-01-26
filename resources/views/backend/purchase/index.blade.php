@@ -531,9 +531,9 @@
         }     
 
         balance = parseFloat(balance.replace(/,/g, ''));
-        $('input[name="amount"]').val(balance);
-        $('input[name="balance"]').val(balance);
-        $('input[name="paying_amount"]').val(balance);
+        $('input[name="amount"]').val(balance.toFixed(2));
+        $('input[name="balance"]').val(balance.toFixed(2));
+        $('input[name="paying_amount"]').val(balance.toFixed(2));
         $('input[name="purchase_id"]').val(purchase_id);
         // Fill readonly currency info
         $('#currency_display').text(currency_name);

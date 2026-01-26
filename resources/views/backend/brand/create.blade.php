@@ -97,7 +97,7 @@
                         <label>{{ __('db.Image') }}</label>
                         {{ Form::file('image', ['class' => 'form-control']) }}
                     </div>
-                    @if (in_array('ecommerce', explode(',', $general_setting->modules)))
+                    <!-- @if (in_array('ecommerce', explode(',', $general_setting->modules)))
                         <div class="row">
                             <div class="col-md-12 mt-3">
                                 <h6><strong>{{ __('For SEO') }}</strong></h6>
@@ -112,7 +112,7 @@
                                 {{ Form::text('short_description', null, ['class' => 'form-control', 'placeholder' => __('db.Meta Title')]) }}
                             </div>
                         </div>
-                    @endif
+                    @endif -->
                     <div class="form-group">
                         <input type="submit" value="{{ __('db.submit') }}" class="btn btn-primary">
                     </div>
@@ -182,7 +182,7 @@
                         <label>{{ __('db.Image') }}</label>
                         {{ Form::file('image', ['class' => 'form-control']) }}
                     </div>
-                    @if (in_array('ecommerce', explode(',', $general_setting->modules)))
+                    <!-- @if (in_array('ecommerce', explode(',', $general_setting->modules)))
                         <div class="row">
                             <div class="col-md-12 mt-3">
                                 <h6><strong>{{ __('db.For SEO') }}</strong></h6>
@@ -197,7 +197,7 @@
                                 {{ Form::text('short_description', null, ['class' => 'form-control', 'placeholder' => __('db.Meta Description')]) }}
                             </div>
                         </div>
-                    @endif
+                    @endif -->
                     <div class="form-group">
                         <input type="submit" value="{{ __('db.submit') }}" class="btn btn-primary">
                     </div>

@@ -109,7 +109,7 @@
                     <td>{{ $user->company_name}}</td>
                     <td>{{ $user->phone}}</td>
 
-                    <?php $role = DB::connection('master')->table('roles')->find($user->role_id);?>
+                    <?php $role = DB::connection('master')->table('roles')->find($user->role_id); ?>
                     <td>{{ $role->name }}</td>
                     <td class="text-center">
                         <div class="custom-control custom-switch">
@@ -160,24 +160,6 @@
     $("ul#people").siblings('a').attr('aria-expanded','true');
     $("ul#people").addClass("show");
     $("ul#people #user-list-menu").addClass("active");
-
-    @if(config('database.connections.saleprosaas_landlord'))
-        if(localStorage.getItem("message")) {
-            alert(localStorage.getItem("message"));
-            localStorage.removeItem("message");
-        }
-        numberOfUserAccount = <?php echo json_encode($numberOfUserAccount)?>;
-        $.ajax({
-            type: 'GET',
-            async: false,
-            url: '{{route("package.fetchData", $general_setting->package_id)}}',
-            success: function(data) {
-                if(data['number_of_user_account'] > 0 && data['number_of_user_account'] <= numberOfUserAccount) {
-                    $("a.add-user-btn").addClass('d-none');
-                }
-            }
-        });
-    @endif
 
     var user_id = [];
     var user_verified = <?php echo json_encode(env('USER_VERIFIED')) ?>;

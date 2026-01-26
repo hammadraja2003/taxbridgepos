@@ -77,7 +77,7 @@
                                   <td>{{__('db.Cash Payment')}}:</td>
                                   <td id="cash_payment" class="text-right"></td>
                                 </tr>
-                                <tr>
+                                <!-- <tr>
                                   <td>{{__('db.Credit Card Payment')}}:</td>
                                   <td id="credit_card_payment" class="text-right"></td>
                                 </tr>
@@ -92,7 +92,7 @@
                                 <tr>
                                   <td>{{__('db.Paypal Payment')}}:</td>
                                   <td id="paypal_payment" class="text-right"></td>
-                                </tr>
+                                </tr> -->
                                 <tr>
                                   <td>{{__('db.Total Sale Return')}}:</td>
                                   <td id="total_sale_return" class="text-right"></td>
@@ -146,17 +146,17 @@
               else
                 $("#register-details-modal #closing-section").addClass('d-none');
 
-              $('#register-details-modal #cash_in_hand').text(data['cash_in_hand']);
-              $('#register-details-modal #total_sale_amount').text(data['total_sale_amount']);
-              $('#register-details-modal #total_payment').text(data['total_payment']);
-              $('#register-details-modal #cash_payment').text(data['cash_payment']);
-              $('#register-details-modal #credit_card_payment').text(data['credit_card_payment']);
-              $('#register-details-modal #cheque_payment').text(data['cheque_payment']);
-              $('#register-details-modal #gift_card_payment').text(data['gift_card_payment']);
-              $('#register-details-modal #paypal_payment').text(data['paypal_payment']);
-              $('#register-details-modal #total_sale_return').text(data['total_sale_return']);
-              $('#register-details-modal #total_expense').text(data['total_expense']);
-              $('#register-details-modal #total_cash').text(data['total_cash']);
+              $('#register-details-modal #cash_in_hand').text(data['cash_in_hand'].toFixed(2));
+              $('#register-details-modal #total_sale_amount').text(data['total_sale_amount'].toFixed(2));
+              $('#register-details-modal #total_payment').text(data['total_payment'].toFixed(2));
+              $('#register-details-modal #cash_payment').text(data['cash_payment'].toFixed(2));
+            //   $('#register-details-modal #credit_card_payment').text(data['credit_card_payment'].toFixed(2));
+            //   $('#register-details-modal #cheque_payment').text(data['cheque_payment'].toFixed(2));
+            //   $('#register-details-modal #gift_card_payment').text(data['gift_card_payment'].toFixed(2));
+            //   $('#register-details-modal #paypal_payment').text(data['paypal_payment'].toFixed(2));
+              $('#register-details-modal #total_sale_return').text(data['total_sale_return'].toFixed(2));
+              $('#register-details-modal #total_expense').text(data['total_expense'].toFixed(2));
+              $('#register-details-modal #total_cash').text(data['total_cash'].toFixed(2));
               $('#register-details-modal input[name=cash_register_id]').val(id);
           }
       });
