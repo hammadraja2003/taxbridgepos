@@ -13,8 +13,6 @@ class Payroll extends Model
         "status", "amount_array","month"
     ];
 
-   
-
     public function employee()
     {
     	return $this->belongsTo('App\Models\Employee');

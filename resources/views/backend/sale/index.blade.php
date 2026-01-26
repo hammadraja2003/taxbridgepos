@@ -59,9 +59,6 @@
                                 <option value="2">{{__('db.Pending')}}</option>
                                 <option value="4">{{__('db.Returned')}}</option>
                                 <option value="5">{{__('db.Processing')}}</option>
-                                <!-- @if(in_array('restaurant',explode(',',$general_setting->modules)))
-                                <option value="6">{{__('db.Cooked')}}</option>
-                                @endif -->
                             </select>
                         </div>
                     </div>

@@ -12,10 +12,6 @@
             <a href="{{route('recipes.create')}}" class="btn btn-primary add-product-btn"><i class="dripicons-plus"></i> {{__('db.add_recipes')}}</a>
 
         @endif
-        <!-- @if( in_array("products-edit", $all_permission) && in_array('ecommerce',explode(',',$general_setting->modules)) )
-            <a href="{{route('product.allProductInStock')}}" class="btn btn-dark add-product-btn"><i class="dripicons-stack"></i> {{__('db.All Product In Stock')}}</a>
-            <a href="{{route('product.showAllProductOnline')}}" class="btn btn-dark add-product-btn"><i class="dripicons-wifi"></i> {{__('db.Show All Product Online')}}</a>
-        @endif -->
 
     </div>
     <div class="table-responsive">

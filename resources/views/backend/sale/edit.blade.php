@@ -209,16 +209,6 @@
                                                             <input type="hidden" class="product-batch-id" name="product_batch_id[]" value="{{$product_sale->product_batch_id}}">
                                                             <input type="text" class="form-control batch-no" name="batch_no[]" value="{{$product_batch_data->batch_no}}" required/>
                                                         @endif
-                                                        <!-- @if(in_array('restaurant',explode(',',$general_setting->modules)))
-                                                        @php
-                                                            $toppings = json_decode($product_sale->topping_id, true);
-                                                            $toppingTotal = collect($toppings)->sum('price');
-                                                        @endphp
-
-                                                        @if(!empty($toppings))
-                                                            Includes: {{ collect($toppings)->pluck('name')->implode(', ') }}
-                                                        @endif
-                                                        @endif -->
                                                         </td>
                                                         <td>
                                                             <div class="input-group"><span class="input-group-btn">
@@ -267,10 +257,7 @@
                                                         <input type="hidden" class="subtotal-value" name="subtotal[]" value="{{$product_sale->total}}" />
                                                         <input type="hidden" class="imei-number" name="imei_number[]"  value="{{$product_sale->imei_number}}" />
                                                         <input type="hidden" class="is-imei"  value="{{$product_data->is_imei}}" />
-
-                                                        <!-- @if(in_array('restaurant',explode(',',$general_setting->modules)))
-                                                        <input type="hidden" class="topping_product" name="topping_product[]"  value="{{$product_sale->topping_id}}" />
-                                                        @endif -->
+                                                    
                                                     </tr>
                                                     @endforeach
                                                 </tbody>
@@ -453,9 +440,6 @@
                                             <select name="sale_status" class="form-control">
                                                 <option value="1">{{__('db.Completed')}}</option>
                                                 <option value="2">{{__('db.Pending')}}</option>
-                                                <!-- @if(in_array('restaurant',explode(',',$general_setting->modules)))
-                                                <option value="5">{{__('db.Processing')}}</option>
-                                                @endif -->
                                             </select>
                                             <x-validation-error fieldName="sale_status" />
                                         </div>
@@ -1124,12 +1108,6 @@ $(document).on('click', '.product-img', function() {
     var customer_id = $('#customer_id').val();
     var warehouse_id = $('#warehouse_id').val();
     var biller_id = $('#biller_id').val();
-
-    @if(in_array('restaurant',explode(',',$general_setting->modules)))
-    var table_id = $('#table_id').val();
-    var waiter_id = $('#waiter_id').val();
-    var service_id = $('#service_id').val();
-    @endif
 
     var data = $(this).data();
     productSearch(data);

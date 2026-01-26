@@ -524,38 +524,9 @@
                 </select>
                 <x-validation-error fieldName="parent_id" />
               </div>
-              <!-- @if(in_array('ecommerce',explode(',',$general_setting->modules)))
-              <div class="col-md-12 mt-3">
-                <h6><strong>{{ __('For Website') }}</strong></h6>
-                <hr>
-              </div>
-
-              <div class="col-md-6 form-group">
-                <label>{{ __('Icon') }}</label>
-                <input type="file" name="icon" class="form-control">
-              </div>
-              <div class="col-md-6 form-group">
-                <input class="mt-5" type="checkbox" name="featured" id="featured" value="1"> <label>{{ __('List on category dropdown') }}</label>
-              </div>
-              @endif -->
+             
             </div>
 
-            <!-- @if(in_array('ecommerce',explode(',',$general_setting->modules)))
-            <div class="row">
-              <div class="col-md-12 mt-3">
-                <h6><strong>{{ __('For SEO') }}</strong></h6>
-                <hr>
-              </div>
-              <div class="col-md-12 form-group">
-                <label>{{ __('Meta Title') }}</label>
-                {{Form::text('page_title',null,array('class' => 'form-control', 'placeholder' => __('db.Meta Title')))}}
-              </div>
-              <div class="col-md-12 form-group">
-                <label>{{ __('Meta Description') }}</label>
-                {{Form::text('short_description',null,array('class' => 'form-control', 'placeholder' => __('db.Meta Description')))}}
-              </div>
-            </div>
-            @endif -->
 
             <div class="form-group">
               <input type="hidden" class="category-ajax-check" name="ajax" value="0">

@@ -125,9 +125,6 @@ class PackingSlipController extends Controller
         $data = $request->all();
         // return dd($data);
         $packing_slip = PackingSlip::latest()->first();
-        // if(in_array('ecommerce',explode(',', config('addons'))))
-        //     $sale = Sale::with('customer')->whereNull('deleted_at')->select('id', 'sale_status', 'customer_id', 'warehouse_id', 'shipping_name', 'shipping_address', 'shipping_city', 'shipping_country', 'sale_type')->find($data['sale_id']);
-        // else
         $sale = Sale::with('customer')->whereNull('deleted_at')->select('id', 'sale_status', 'customer_id', 'warehouse_id')->find($data['sale_id']);
 
         if ($packing_slip)

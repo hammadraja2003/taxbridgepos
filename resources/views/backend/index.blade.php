@@ -53,32 +53,6 @@
                 <div class="brand-text float-left mt-4">
                     <h3 style="font-size:1em">{{ __('db.welcome') }} <span>{{ Auth::user()->name }}</span></h3>
                 </div>
-                <!-- @if (in_array('restaurant', explode(',', $general_setting->modules)))
-                    @if (Auth::user()->role_type > 2 && isset(Auth::user()->service_staff))
-                        @php
-                            $cooked = DB::table('sales')
-                                ->where('waiter_id', Auth::user()->id)
-                                ->where('sale_status', 5)
-                                ->orWhere('sale_status', 6)
-                                ->where('sales.created_at', '>=', now()->subDay())
-                                ->count();
-                        @endphp
-                    @elseif(Auth::user()->role_type <= 2)
-                        @php
-                            $cooked = DB::table('sales')
-                                ->where('sale_status', 6)
-                                ->where('sales.created_at', '>=', now()->subDay())
-                                ->count();
-                        @endphp
-                    @endif
-                @endif -->
-                <!-- @if (in_array('restaurant', explode(',', $general_setting->modules)))
-                    <a href="{{ route('kitchen.dashboard') }}">
-                        <div class="alert alert-warning alert-dismissible text-center mb-2">
-                            <strong>{{ $cooked }} {{ __('db.Orders to serve') }}</strong>
-                        </div>
-                    </a>
-                @endif -->
 
                 @php
                     $revenue_profit_summary = $role_has_permissions_list

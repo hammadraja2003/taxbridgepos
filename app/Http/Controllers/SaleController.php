@@ -2097,19 +2097,9 @@ class SaleController extends Controller
                 cache()->put('tenant_' . session('bus_config_id') . '_general_setting', $general_setting, 60 * 60 * 24);
             }
 
-            // if(in_array('restaurant',explode(',',$general_setting->modules))){
-            //     $lims_table_list = Table::join('floors','tables.floor_id','=','floors.id')
-            //             ->select('tables.id as id','tables.name','tables.number_of_person','floors.name as floor')
-            //             ->get();
-
-            //     $service_list = DB::table('services')->where('is_active',1)->get();
-            //     $waiter_list = DB::connection('master')->table('users')->where('service_staff',1)->where('is_active',1)->get();
-            // }else{
             $lims_table_list = Cache::remember($key_prefix . 'table_list', 60 * 60 * 24 * 30, function () {
                 return Table::where('is_active', true)->get();
             });
-            // }
-
             $lims_coupon_list = Cache::remember($key_prefix . 'coupon_list', 60 * 60 * 24 * 30, function () {
                 return Coupon::where('is_active', true)->get();
             });
@@ -2184,11 +2174,7 @@ class SaleController extends Controller
                 $variables[] = 'draft_product_data';
                 $variables[] = 'draft_product_discount';
             }
-
-            // if(in_array('restaurant',explode(',',$general_setting->modules))){
-            //     $variables[] = 'service_list';
-            //     $variables[] = 'waiter_list';
-            // }
+           
             return view('backend.sale.pos', compact(...$variables));
         } else
             return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
@@ -2202,27 +2188,7 @@ class SaleController extends Controller
             $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
             cache()->put('tenant_' . session('bus_config_id') . '_general_setting', $general_setting, 60 * 60 * 24);
         }
-        // if(in_array('restaurant',explode(',',$general_setting->modules))){
-        //     if(Auth::user()->role_type > 2 && config('staff_access') == 'own') {
-        //         $recent_sale = Sale::join('customers', 'sales.customer_id', '=', 'customers.id')->select('sales.id','sales.reference_no','sales.customer_id','sales.grand_total','sales.created_at','customers.name')->where([
-        //             ['sales.sale_status', 1],
-        //             ['sales.user_id', Auth::id()]
-        //         ])
-        //         ->whereNull('sales.deleted_at')
-        //         ->where(function($q) {
-        //             $q->where('sales.sale_type', '!=', 'opening balance')
-        //             ->orWhereNull('sales.sale_type');
-        //         })
-        //         ->orderBy('id', 'desc')
-        //         ->take(10)->get();
-        //         return response()->json($recent_sale);
-        //     }
-        //     else {
-        //         $recent_sale = Sale::join('customers', 'sales.customer_id', '=', 'customers.id')->select('sales.id','sales.reference_no','sales.customer_id','sales.grand_total','sales.created_at','customers.name')->where('sale_status', 1)->whereNull('sales.deleted_at')->orderBy('id', 'desc')->take(10)->get();
-        //         return response()->json($recent_sale);
-        //     }
-        // }
-        // else {
+   
         if (Auth::user()->role_type > 2 && config('staff_access') == 'own') {
             $recent_sale = Sale::join('customers', 'sales.customer_id', '=', 'customers.id')->select('sales.id', 'sales.reference_no', 'sales.customer_id', 'sales.grand_total', 'sales.created_at', 'customers.name')->where([
                 ['sales.sale_status', 1],
@@ -2233,7 +2199,6 @@ class SaleController extends Controller
             $recent_sale = Sale::join('customers', 'sales.customer_id', '=', 'customers.id')->select('sales.id', 'sales.reference_no', 'sales.customer_id', 'sales.grand_total', 'sales.created_at', 'customers.name')->whereNull('sales.deleted_at')->where('sale_status', 1)->orderBy('id', 'desc')->take(10)->get();
             return response()->json($recent_sale);
         }
-        // }
     }
 
     public function recentDraft()
@@ -2438,10 +2403,7 @@ class SaleController extends Controller
             $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
             cache()->put('tenant_' . session('bus_config_id') . '_general_setting', $general_setting, 60 * 60 * 24);
         }
-        // if ($general_setting && in_array('restaurant', explode(',', $general_setting->modules))) {
-        //     // Try to find base product
-        //     $product = Product::select('id', 'name', 'code', 'is_variant', 'is_batch', 'is_imei', 'qty', 'price', 'wholesale_price', 'cost', 'promotion', 'promotion_price', 'last_date', 'tax_id', 'tax_method', 'type', 'unit_id', 'sale_unit_id', 'extras')->where('code', $code)->where('is_active', true)->first();
-        // } else {
+        
         // Try to find base product
         $product = Product::select('id', 'name', 'code', 'is_variant', 'is_batch', 'is_imei', 'qty', 'price', 'wholesale_price', 'cost', 'promotion', 'promotion_price', 'last_date', 'tax_id', 'tax_method', 'type', 'unit_id', 'sale_unit_id', 'hs_code',
             'fixed_notified_value_or_retail_price',
@@ -2452,8 +2414,7 @@ class SaleController extends Controller
             'sro_schedule_no',
             'sro_item_serial_no',
             'is_fbr_invoice_product')->where('code', $code)->where('is_active', true)->first();
-        // }
-
+        
         // Try to find variant if base product not found
         if (!$product) {
             $variantProduct = Product::join('product_variants', 'products.id', '=', 'product_variants.product_id')
@@ -2707,9 +2668,6 @@ class SaleController extends Controller
                 $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
                 cache()->put('tenant_' . session('bus_config_id') . '_general_setting', $general_setting, 60 * 60 * 24);
             }
-            // if (in_array('restaurant', explode(',', $general_setting->modules))) {
-            //     $product_sale[10][$key] = $product_sale_data->topping_id;
-            // }
         }
         return $product_sale;
     }
@@ -3015,9 +2973,7 @@ class SaleController extends Controller
             $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
             cache()->put('tenant_' . session('bus_config_id') . '_general_setting', $general_setting, 60 * 60 * 24);
         }
-        // if (in_array('restaurant', explode(',', $general_setting->modules))) {
-        //     $topping_product = $data['topping_product'] ?? [];
-        // }
+      
 
         if ($document) {
             $v = Validator::make(
@@ -3051,11 +3007,7 @@ class SaleController extends Controller
             $data['payment_status'] = 4;
 
         $lims_product_sale_data = Product_Sale::where('sale_id', $id)->get();
-        // if (in_array('restaurant', explode(',', $general_setting->modules))) {
-        //     // Delete old product sales
-        //     Product_Sale::where('sale_id', $id)->delete();
-        // }
-
+       
         $product_id = $data['product_id'];
         $imei_number = $data['imei_number'];
         if (isset($data['product_batch_id'])) {
@@ -3493,11 +3445,7 @@ class SaleController extends Controller
             $product_sale['total'] = $mail_data['total'][$key] = $total[$key];
             // return $old_product_variant_id;
 
-            // if (in_array('restaurant', explode(',', $general_setting->modules))) {
-            //     $product_sale['topping_id'] = $topping_product[$key] ?? null;
-
-            //     Product_Sale::create($product_sale);
-            // } else {
+         
             if ($product_sale['variant_id'] && in_array($product_variant_id[$key], $old_product_variant_id)) {
                 Product_Sale::where([
                     ['product_id', $pro_id],
@@ -3511,7 +3459,7 @@ class SaleController extends Controller
                 ])->update($product_sale);
             } else
                 Product_Sale::create($product_sale);
-            // }
+            
         }
         // return $product_variant_id;
         $lims_sale_data->update($data);
@@ -3580,11 +3528,9 @@ class SaleController extends Controller
             $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
             cache()->put('tenant_' . session('bus_config_id') . '_general_setting', $general_setting, 60 * 60 * 24);
         }
-        // if (in_array('restaurant', explode(',', $general_setting->modules))) {
-        //     $sale = Sale::where('sale_status', 5)->whereNull('deleted_at')->latest()->first();
-        // } else {
+       
         $sale = Sale::where('sale_status', 1)->whereNull('deleted_at')->latest()->first();
-        // }
+      
         return redirect()->route('sale.invoice', $sale->id);
     }
 

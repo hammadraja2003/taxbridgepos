@@ -84,19 +84,11 @@ class RecipeController extends Controller
             $numberOfProduct = Product::where('is_active', true)->count();
             $custom_fields = CustomField::where('belongs_to', 'product')->get();
 
-            // $general_setting = DB::table('general_settings')->select('modules')->first();
             $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
             $lims_product_list = Product::where([
                 ['type', 'standard'],
                 ['is_active', true]
             ])->orWhere('type', 'combo')->get(['name', 'id']);
-            // if(in_array('restaurant',explode(',',$general_setting->modules))){
-            //     $kitchen_list = DB::table('kitchens')->where('is_active',1)->get();
-            //     $menu_type_list = DB::table('menu_type')->where('is_active',1)->get();
-
-            //     return view('manufacturing::recipe.create',compact('lims_product_list','kitchen_list','menu_type_list','lims_product_list_without_variant', 'lims_product_list_with_variant', 'lims_brand_list', 'lims_category_list', 'lims_unit_list', 'lims_tax_list', 'lims_warehouse_list', 'numberOfProduct', 'custom_fields'));
-            // }
-
             return view('manufacturing::recipe.create', compact('lims_product_list', 'lims_product_list_without_variant', 'lims_product_list_with_variant', 'lims_brand_list', 'lims_category_list', 'lims_unit_list', 'lims_tax_list', 'lims_warehouse_list', 'numberOfProduct', 'custom_fields'));
         } else
             return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
@@ -184,18 +176,11 @@ class RecipeController extends Controller
             $lims_warehouse_list = Warehouse::where('is_active', true)->get();
             $numberOfProduct = Product::where('is_active', true)->count();
             $custom_fields = CustomField::where('belongs_to', 'product')->get();
-
-            // $general_setting = DB::table('general_settings')->select('modules')->first();
+            
             $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
             $lims_product_data = Product::where([
                 ['id', $id],
             ])->first();
-            // if (in_array('restaurant', explode(',', $general_setting->modules))) {
-            //     $kitchen_list = DB::table('kitchens')->where('is_active', 1)->get();
-            //     $menu_type_list = DB::table('menu_type')->where('is_active', 1)->get();
-
-            //     return view('manufacturing::recipe.edit', compact('lims_product_data', 'kitchen_list', 'menu_type_list', 'lims_product_list_without_variant', 'lims_product_list_with_variant', 'lims_brand_list', 'lims_category_list', 'lims_unit_list', 'lims_tax_list', 'lims_warehouse_list', 'numberOfProduct', 'custom_fields'));
-            // }
 
             return view('manufacturing::recipe.edit', compact('lims_product_data', 'lims_product_list_without_variant', 'lims_product_list_with_variant', 'lims_brand_list', 'lims_category_list', 'lims_unit_list', 'lims_tax_list', 'lims_warehouse_list', 'numberOfProduct', 'custom_fields'));
         } else

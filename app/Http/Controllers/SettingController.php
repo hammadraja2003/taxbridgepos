@@ -75,14 +75,6 @@ class SettingController extends Controller
         // Disable FK checks
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
-        // foreach ($tables as $table) {
-        //     if(!in_array($table->$str, [
-        //         'accounts','hrm_settings','languages','migrations','password_resets',
-        //         'pos_setting','currencies','reward_point_settings','ecommerce_settings','external_services','translations','invoice_settings','units','taxes'
-        //     ])) {
-        //        DB::table($table->$str)->truncate();
-        //     }
-        // }
 
         $protectedTables = [
             'accounts', 'hrm_settings', 'languages', 'migrations', 'password_resets',
