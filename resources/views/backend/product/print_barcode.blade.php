@@ -96,53 +96,42 @@
 
                                     <div class="row mt-2">
                                         <div class="col-md-4">
-                                            <strong><input type="checkbox" name="print[name]" checked value="1" /> {{__('db.Product Name')}}</strong>&nbsp;
-                                            <div class="d-flex justify-content-start">
-                                                <div>Size:</div>&nbsp;
-                                                <div><input type="number" name="print[name_size]" value="15"></div>
-                                            </div>
+                                            <strong><input type="checkbox" name="print[name]" checked value="1" /> {{__('db.Product Name')}}</strong>
+                                            <br>
+                                            <label>Size:</label>
+                                            <div><input type="number" class="form-control" name="print[name_size]" value="15"></div>
                                         </div>
                                         <div class="col-md-4">
-                                            <strong><input type="checkbox" name="print[price]" checked value="1" /> {{__('db.Price')}}</strong>&nbsp;
-                                            <div class="d-flex justify-content-start">
-                                                <div>Size:</div>&nbsp;
-                                                <div><input type="number" name="print[price_size]" value="15"></div>
-                                            </div>
+                                            <strong><input type="checkbox" name="print[price]" checked value="1" /> {{__('db.Price')}}</strong>
+                                            <br>
+                                            <label>Size:</label>
+                                            <div><input type="number" class="form-control" name="print[price_size]" value="15"></div>
                                         </div>
                                         <div class="col-md-4">
                                             <strong><input type="checkbox" name="print[promo_price]" checked value="1" /> {{__('db.Promotional Price')}}</strong>
-                                            <div class="d-flex justify-content-start">
-                                                <div>Size:</div>&nbsp;
-                                                <div><input type="number" name="print[promo_price_size]" value="15"></div>
-                                            </div>
+                                            <br>
+                                            <label>Size:</label>
+                                            <div><input type="number" class="form-control" name="print[promo_price_size]" value="15"></div>
                                         </div>
                                     </div>
                                     <div class="row mt-4">
                                         <div class="col-md-4">
                                             <strong><input type="checkbox" name="print[business_name]" checked value="1" /> {{__('db.Business Name')}}</strong>
-                                            <div class="d-flex justify-content-start">
-                                                <div>Size:</div>&nbsp;
-                                                <div><input type="number" name="print[business_name_size]" value="15"></div>
-                                            </div>
+                                            <br>
+                                            <label>Size:</label>
+                                            <div><input type="number" class="form-control" name="print[business_name_size]" value="15"></div>
                                         </div>
                                         <div class="col-md-4">
                                             <strong><input type="checkbox" name="print[brand_name]" checked value="1" /> {{__('db.Brand')}}</strong>
-                                            <div class="d-flex justify-content-start">
-                                                <div>Size:</div>&nbsp;
-                                                <div><input type="number" name="print[brand_name_size]" value="15"></div>
-                                            </div>
+                                            <br>
+                                            <label>Size:</label>
+                                            <div><input type="number" class="form-control" name="print[brand_name_size]" value="15"></div>
                                         </div>
-                                    </div>
-                                    <input type="hidden" name="print[variations]" value="1">
-                                    <input type="hidden" name="print[variations_size]" value="17">
-                                    <input type="hidden" name="print[packing_date]" value="1">
-                                    <input type="hidden" name="print[packing_date_size	]" value="12">
-                                    <hr>
-                                    <div class="row mt-4">
-                                        <div class="col-md-8">
+                                        <div class="col-md-4">
+                                            <br>
                                             <label><strong>Paper Size *</strong></label>
                                             {!! Form::select('barcode_setting', $barcode_settings, !empty($default) ? $default->id : null, ['class' => 'form-control']); !!}
-
+    
                                             {{-- <select class="form-control" name="paper_size" required id="paper-size">
                                                 <option value="0">Select paper size...</option>
                                                 <option value="36">36 mm (1.4 inch)</option>
@@ -151,6 +140,12 @@
                                             </select> --}}
                                         </div>
                                     </div>
+
+                                    <input type="hidden" name="print[variations]" value="1">
+                                    <input type="hidden" name="print[variations_size]" value="17">
+                                    <input type="hidden" name="print[packing_date]" value="1">
+                                    <input type="hidden" name="print[packing_date_size	]" value="12">
+                                    <hr>
 
                                     <div class="row">
                                         <div class="col-md-12">

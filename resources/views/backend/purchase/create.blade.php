@@ -396,8 +396,30 @@
                                             <textarea rows="5" class="form-control" name="note"></textarea>
                                         </div>
                                     </div>
+                                     <div class="container-fluid col-md-12">
+                                        <table class="table table-bordered table-condensed totals">
+                                            <td><strong>{{__('db.Items')}}</strong>
+                                                <span class="pull-right" id="item">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
+                                            </td>
+                                            <td><strong>{{__('db.Total')}}</strong>
+                                                <span class="pull-right" id="subtotal">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
+                                            </td>
+                                            <td><strong>{{__('db.Order Tax')}}</strong>
+                                                <span class="pull-right" id="order_tax">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
+                                            </td>
+                                            <td><strong>{{__('db.Order Discount')}}</strong>
+                                                <span class="pull-right" id="order_discount">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
+                                            </td>
+                                            <td><strong>{{__('db.Shipping Cost')}}</strong>
+                                                <span class="pull-right" id="shipping_cost">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
+                                            </td>
+                                            <td><strong>{{__('db.grand total')}}</strong>
+                                                <span class="pull-right" id="grand_total">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
+                                            </td>
+                                        </table>
+                                    </div>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group mt-3">
                                     <button type="submit" class="btn btn-primary" id="submit-btn">{{__('db.submit')}}</button>
                                 </div>
                             </div>
@@ -407,28 +429,6 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div class="container-fluid">
-        <table class="table table-bordered table-condensed totals">
-            <td><strong>{{__('db.Items')}}</strong>
-                <span class="pull-right" id="item">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
-            </td>
-            <td><strong>{{__('db.Total')}}</strong>
-                <span class="pull-right" id="subtotal">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
-            </td>
-            <td><strong>{{__('db.Order Tax')}}</strong>
-                <span class="pull-right" id="order_tax">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
-            </td>
-            <td><strong>{{__('db.Order Discount')}}</strong>
-                <span class="pull-right" id="order_discount">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
-            </td>
-            <td><strong>{{__('db.Shipping Cost')}}</strong>
-                <span class="pull-right" id="shipping_cost">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
-            </td>
-            <td><strong>{{__('db.grand total')}}</strong>
-                <span class="pull-right" id="grand_total">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
-            </td>
-        </table>
     </div>
     <div id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" class="modal fade text-left">
         <div role="document" class="modal-dialog">

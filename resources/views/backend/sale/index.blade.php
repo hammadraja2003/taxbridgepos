@@ -14,18 +14,18 @@
 <section>
     <div class="container-fluid">
         @can('sales-add')
-            <a href="{{route('sales.create')}}" class="btn btn-primary add-sale-btn btn-icon"><i class="dripicons-plus"></i> {{__('db.Add Sale')}}</a>&nbsp;
+            <a href="{{route('sales.create')}}" class="btn btn-primary add-sale-btn btn-icon btn-sm"><i class="dripicons-plus"></i> {{__('db.Add Sale')}}</a>&nbsp;
         @endcan
         @can('sales-import')
-            <a href="{{url('sales/sale_by_csv')}}" class="btn btn-primary add-sale-btn btn-icon"><i class="dripicons-copy"></i> {{__('db.Import Sale')}}</a>
+            <a href="{{url('sales/sale_by_csv')}}" class="btn btn-primary add-sale-btn btn-icon btn-sm"><i class="dripicons-copy"></i> {{__('db.Import Sale')}}</a>
         @endcan
         @can('sales-delete')
-            <a href="{{ url('sales/deleted_data') }}" class="btn btn-secondary add-sale-btn btn-icon">
+            <a href="{{ url('sales/deleted_data') }}" class="btn btn-secondary add-sale-btn btn-icon btn-sm">
                 <i class="dripicons-trash"></i>
                  {{ __('Deleted Sales') }}
             </a>
         @endcan
-        <button type="button" class="btn btn-warning btn-icon" id="toggle-filter">
+        <button type="button" class="btn btn-warning btn-icon btn-sm" id="toggle-filter">
             <i class="dripicons-experiment"></i> {{ __('db.Filter Sales') }}
         </button>
         <div class="card mt-3 mb-2">

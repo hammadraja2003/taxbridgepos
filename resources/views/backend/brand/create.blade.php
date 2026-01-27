@@ -8,13 +8,13 @@
     <section>
         <div class="container-fluid">
             @can('brand-add')
-                <button class="btn btn-primary" data-toggle="modal" data-target="#createModal"><i
+                <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#createModal"><i
                         class="dripicons-plus"></i>
                     {{ __('db.Add Brand') }} </button>&nbsp;
             @endcan
 
             @can('brand-import')
-                <button class="btn btn-primary" data-toggle="modal" data-target="#importBrand"><i
+                <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#importBrand"><i
                         class="dripicons-copy"></i>
                     {{ __('db.Import Brand') }}</button>
             @endcan
@@ -42,29 +42,27 @@
                             <td>{{ $brand->title }}</td>
                             <td>
                                 <div class="btn-group">
-                                    <button type="button" class="btn btn-default btn-sm dropdown-toggle"
-                                        data-toggle="dropdown" aria-haspopup="true"
-                                        aria-expanded="false">{{ __('db.action') }}
+                                    <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown"
+                                        aria-haspopup="true" aria-expanded="false">{{ __('db.action') }}
                                         <span class="caret"></span>
                                         <span class="sr-only">Toggle Dropdown</span>
                                     </button>
-                                    <ul class="dropdown-menu edit-options dropdown-menu-right dropdown-default"
-                                        user="menu">
+                                    <ul class="dropdown-menu edit-options dropdown-menu-right dropdown-default" user="menu">
                                         @can('brand-edit')
-                                        <li><button type="button" data-id="{{ $brand->id }}"
-                                                class="open-EditbrandDialog btn btn-link" data-toggle="modal"
-                                                data-target="#editModal"><i class="dripicons-document-edit"></i>
-                                                {{ __('db.edit') }}</button></li>
+                                            <li><button type="button" data-id="{{ $brand->id }}"
+                                                    class="open-EditbrandDialog btn btn-link" data-toggle="modal"
+                                                    data-target="#editModal"><i class="dripicons-document-edit"></i>
+                                                    {{ __('db.edit') }}</button></li>
                                         @endcan
                                         @can('brand-delete')
-                                        <li class="divider"></li>
-                                        {{ Form::open(['route' => ['brand.destroy', $brand->id], 'method' => 'DELETE']) }}
-                                        <li>
-                                            <button type="submit" class="btn btn-link"
-                                                onclick="return confirm('Are you sure want to delete?')"><i
-                                                    class="dripicons-trash"></i> {{ __('db.delete') }}</button>
-                                        </li>
-                                        {{ Form::close() }}
+                                            <li class="divider"></li>
+                                            {{ Form::open(['route' => ['brand.destroy', $brand->id], 'method' => 'DELETE']) }}
+                                            <li>
+                                                <button type="submit" class="btn btn-link"
+                                                    onclick="return confirm('Are you sure want to delete?')"><i
+                                                        class="dripicons-trash"></i> {{ __('db.delete') }}</button>
+                                            </li>
+                                            {{ Form::close() }}
                                         @endcan
                                     </ul>
                                 </div>
@@ -83,12 +81,13 @@
                 {!! Form::open(['route' => 'brand.store', 'method' => 'post', 'files' => true]) !!}
                 <div class="modal-header">
                     <h5 id="exampleModalLabel" class="modal-title">{{ __('db.Add Brand') }}</h5>
-                    <button type="button" data-dismiss="modal" aria-label="Close" class="close"><span
-                            aria-hidden="true"><i class="dripicons-cross"></i></span></button>
+                    <button type="button" data-dismiss="modal" aria-label="Close" class="close"><span aria-hidden="true"><i
+                                class="dripicons-cross"></i></span></button>
                 </div>
                 <div class="modal-body">
                     <p class="italic">
-                        <small>{{ __('db.The field labels marked with * are required input fields') }}.</small></p>
+                        <small>{{ __('db.The field labels marked with * are required input fields') }}.</small>
+                    </p>
                     <div class="form-group">
                         <label>{{ __('Title') }} *</label>
                         {{ Form::text('title', null, ['required' => 'required', 'class' => 'form-control', 'placeholder' => __('db.Type brand title')]) }}
@@ -113,14 +112,16 @@
                 {!! Form::open(['route' => 'brand.import', 'method' => 'post', 'files' => true]) !!}
                 <div class="modal-header">
                     <h5 id="exampleModalLabel" class="modal-title">{{ __('db.Import Brand') }}</h5>
-                    <button type="button" data-dismiss="modal" aria-label="Close" class="close"><span
-                            aria-hidden="true"><i class="dripicons-cross"></i></span></button>
+                    <button type="button" data-dismiss="modal" aria-label="Close" class="close"><span aria-hidden="true"><i
+                                class="dripicons-cross"></i></span></button>
                 </div>
                 <div class="modal-body">
                     <p class="italic">
-                        <small>{{ __('db.The field labels marked with * are required input fields') }}.</small></p>
+                        <small>{{ __('db.The field labels marked with * are required input fields') }}.</small>
+                    </p>
                     <p>{{ __('db.The correct column order is') }} (title*, image [file name])
-                        {{ __('db.and you must follow this') }}.</p>
+                        {{ __('db.and you must follow this') }}.
+                    </p>
                     <p>{{ __('db.To display Image it must be stored in') }} images/brand {{ __('db.directory') }}</p>
                     <div class="row">
                         <div class="col-md-6">
@@ -151,12 +152,13 @@
                 {{ Form::open(['route' => ['brand.update', 1], 'method' => 'PUT', 'files' => true]) }}
                 <div class="modal-header">
                     <h5 id="exampleModalLabel" class="modal-title"> {{ __('db.Update Brand') }}</h5>
-                    <button type="button" data-dismiss="modal" aria-label="Close" class="close"><span
-                            aria-hidden="true"><i class="dripicons-cross"></i></span></button>
+                    <button type="button" data-dismiss="modal" aria-label="Close" class="close"><span aria-hidden="true"><i
+                                class="dripicons-cross"></i></span></button>
                 </div>
                 <div class="modal-body">
                     <p class="italic">
-                        <small>{{ __('db.The field labels marked with * are required input fields') }}.</small></p>
+                        <small>{{ __('db.The field labels marked with * are required input fields') }}.</small>
+                    </p>
                     <div class="form-group">
                         <label>{{ __('db.Title') }} *</label>
                         {{ Form::text('title', null, ['required' => 'required', 'class' => 'form-control']) }}
@@ -191,7 +193,7 @@
             }
         });
 
-        $("#select_all").on("change", function() {
+        $("#select_all").on("change", function () {
             if ($(this).is(':checked')) {
                 $("tbody input[type='checkbox']").prop('checked', true);
             } else {
@@ -199,10 +201,10 @@
             }
         });
 
-        $("#export").on("click", function(e) {
+        $("#export").on("click", function (e) {
             e.preventDefault();
             var brand = [];
-            $(':checkbox:checked').each(function(i) {
+            $(':checkbox:checked').each(function (i) {
                 brand[i] = $(this).val();
             });
             $.ajax({
@@ -212,20 +214,20 @@
 
                     brandArray: brand
                 },
-                success: function(data) {
+                success: function (data) {
                     alert('Exported to CSV file successfully! Click Ok to download file');
                     window.location.href = data;
                 }
             });
         });
 
-        $(document).ready(function() {
-            $(document).on('click', '.open-EditbrandDialog', function() {
+        $(document).ready(function () {
+            $(document).on('click', '.open-EditbrandDialog', function () {
                 var url = "brand/"
                 var id = $(this).data('id').toString();
                 url = url.concat(id).concat("/edit");
 
-                $.get(url, function(data) {
+                $.get(url, function (data) {
                     $("#editModal input[name='title']").val(data['title']);
                     $("#editModal input[name='brand_id']").val(data['id']);
                     $("#editModal input[name='page_title']").val(data['page_title']);
@@ -246,24 +248,24 @@
                 }
             },
             'columnDefs': [{
-                    "orderable": false,
-                    'targets': [0, 1, 3]
-                },
-                {
-                    'render': function(data, type, row, meta) {
-                        if (type === 'display') {
-                            data =
-                                '<div class="checkbox"><input type="checkbox" class="dt-checkboxes"><label></label></div>';
-                        }
+                "orderable": false,
+                'targets': [0, 1, 3]
+            },
+            {
+                'render': function (data, type, row, meta) {
+                    if (type === 'display') {
+                        data =
+                            '<div class="checkbox"><input type="checkbox" class="dt-checkboxes"><label></label></div>';
+                    }
 
-                        return data;
-                    },
-                    'checkboxes': {
-                        'selectRow': true,
-                        'selectAllRender': '<div class="checkbox"><input type="checkbox" class="dt-checkboxes"><label></label></div>'
-                    },
-                    'targets': [0]
-                }
+                    return data;
+                },
+                'checkboxes': {
+                    'selectRow': true,
+                    'selectAllRender': '<div class="checkbox"><input type="checkbox" class="dt-checkboxes"><label></label></div>'
+                },
+                'targets': [0]
+            }
             ],
             'select': {
                 style: 'multi',
@@ -275,114 +277,114 @@
             ],
             dom: '<"row"lfB>rtip',
             buttons: [{
-                    extend: 'pdf',
-                    text: '<i title="export to pdf" class="fa fa-file-pdf-o"></i>',
-                    exportOptions: {
-                        columns: ':visible:Not(.not-exported)',
-                        rows: ':visible',
-                        stripHtml: false
-                    },
-                    customize: function(doc) {
-                        for (var i = 1; i < doc.content[1].table.body.length; i++) {
-                            if (doc.content[1].table.body[i][0].text.indexOf('<img src=') !== -1) {
-                                var imagehtml = doc.content[1].table.body[i][0].text;
-                                var regex = /<img.*?src=['"](.*?)['"]/;
-                                var src = regex.exec(imagehtml)[1];
-                                var tempImage = new Image();
-                                tempImage.src = src;
-                                var canvas = document.createElement("canvas");
-                                canvas.width = tempImage.width;
-                                canvas.height = tempImage.height;
-                                var ctx = canvas.getContext("2d");
-                                ctx.drawImage(tempImage, 0, 0);
-                                var imagedata = canvas.toDataURL("image/png");
-                                delete doc.content[1].table.body[i][0].text;
-                                doc.content[1].table.body[i][0].image = imagedata;
-                                doc.content[1].table.body[i][0].fit = [30, 30];
-                            }
+                extend: 'pdf',
+                text: '<i title="export to pdf" class="fa fa-file-pdf-o"></i>',
+                exportOptions: {
+                    columns: ':visible:Not(.not-exported)',
+                    rows: ':visible',
+                    stripHtml: false
+                },
+                customize: function (doc) {
+                    for (var i = 1; i < doc.content[1].table.body.length; i++) {
+                        if (doc.content[1].table.body[i][0].text.indexOf('<img src=') !== -1) {
+                            var imagehtml = doc.content[1].table.body[i][0].text;
+                            var regex = /<img.*?src=['"](.*?)['"]/;
+                            var src = regex.exec(imagehtml)[1];
+                            var tempImage = new Image();
+                            tempImage.src = src;
+                            var canvas = document.createElement("canvas");
+                            canvas.width = tempImage.width;
+                            canvas.height = tempImage.height;
+                            var ctx = canvas.getContext("2d");
+                            ctx.drawImage(tempImage, 0, 0);
+                            var imagedata = canvas.toDataURL("image/png");
+                            delete doc.content[1].table.body[i][0].text;
+                            doc.content[1].table.body[i][0].image = imagedata;
+                            doc.content[1].table.body[i][0].fit = [30, 30];
                         }
-                    },
-                },
-                {
-                    extend: 'excel',
-                    text: '<i title="export to excel" class="dripicons-document-new"></i>',
-                    exportOptions: {
-                        columns: ':visible:Not(.not-exported)',
-                        rows: ':visible',
-                        format: {
-                            body: function(data, row, column, node) {
-                                if (column === 0 && (data.indexOf('<img src=') !== -1)) {
-                                    var regex = /<img.*?src=['"](.*?)['"]/;
-                                    data = regex.exec(data)[1];
-                                }
-                                return data;
-                            }
-                        }
-                    },
-                },
-                {
-                    extend: 'csv',
-                    text: '<i title="export to csv" class="fa fa-file-text-o"></i>',
-                    exportOptions: {
-                        columns: ':visible:Not(.not-exported)',
-                        rows: ':visible',
-                        format: {
-                            body: function(data, row, column, node) {
-                                if (column === 0 && (data.indexOf('<img src=') !== -1)) {
-                                    var regex = /<img.*?src=['"](.*?)['"]/;
-                                    data = regex.exec(data)[1];
-                                }
-                                return data;
-                            }
-                        }
-                    },
-                },
-                {
-                    extend: 'print',
-                    text: '<i title="print" class="fa fa-print"></i>',
-                    exportOptions: {
-                        columns: ':visible:Not(.not-exported)',
-                        rows: ':visible',
-                        stripHtml: false
-                    },
-                },
-                {
-                    text: '<i title="delete" class="dripicons-cross"></i>',
-                    className: 'buttons-delete',
-                    action: function(e, dt, node, config) {
-                        if (user_verified == '1') {
-                            brand_id.length = 0;
-                            $(':checkbox:checked').each(function(i) {
-                                if (i) {
-                                    brand_id[i - 1] = $(this).closest('tr').data('id');
-                                }
-                            });
-                            if (brand_id.length && confirm("Are you sure want to delete?")) {
-                                $.ajax({
-                                    type: 'POST',
-                                    url: 'brand/deletebyselection',
-                                    data: {
-                                        brandIdArray: brand_id
-                                    },
-                                    success: function(data) {
-                                        setTimeout(function () {
-                                            location.reload();
-                                        }, 300);    
-                                    }
-
-                                });
-                                // dt.rows({ page: 'current', selected: true }).remove().draw(false);
-                            } else if (!brand_id.length)
-                                alert('No brand is selected!');
-                        } else
-                            alert('This feature is disable for demo!');
                     }
                 },
-                {
-                    extend: 'colvis',
-                    text: '<i title="column visibility" class="fa fa-eye"></i>',
-                    columns: ':gt(0)'
+            },
+            {
+                extend: 'excel',
+                text: '<i title="export to excel" class="dripicons-document-new"></i>',
+                exportOptions: {
+                    columns: ':visible:Not(.not-exported)',
+                    rows: ':visible',
+                    format: {
+                        body: function (data, row, column, node) {
+                            if (column === 0 && (data.indexOf('<img src=') !== -1)) {
+                                var regex = /<img.*?src=['"](.*?)['"]/;
+                                data = regex.exec(data)[1];
+                            }
+                            return data;
+                        }
+                    }
                 },
+            },
+            {
+                extend: 'csv',
+                text: '<i title="export to csv" class="fa fa-file-text-o"></i>',
+                exportOptions: {
+                    columns: ':visible:Not(.not-exported)',
+                    rows: ':visible',
+                    format: {
+                        body: function (data, row, column, node) {
+                            if (column === 0 && (data.indexOf('<img src=') !== -1)) {
+                                var regex = /<img.*?src=['"](.*?)['"]/;
+                                data = regex.exec(data)[1];
+                            }
+                            return data;
+                        }
+                    }
+                },
+            },
+            {
+                extend: 'print',
+                text: '<i title="print" class="fa fa-print"></i>',
+                exportOptions: {
+                    columns: ':visible:Not(.not-exported)',
+                    rows: ':visible',
+                    stripHtml: false
+                },
+            },
+            {
+                text: '<i title="delete" class="dripicons-cross"></i>',
+                className: 'buttons-delete',
+                action: function (e, dt, node, config) {
+                    if (user_verified == '1') {
+                        brand_id.length = 0;
+                        $(':checkbox:checked').each(function (i) {
+                            if (i) {
+                                brand_id[i - 1] = $(this).closest('tr').data('id');
+                            }
+                        });
+                        if (brand_id.length && confirm("Are you sure want to delete?")) {
+                            $.ajax({
+                                type: 'POST',
+                                url: 'brand/deletebyselection',
+                                data: {
+                                    brandIdArray: brand_id
+                                },
+                                success: function (data) {
+                                    setTimeout(function () {
+                                        location.reload();
+                                    }, 300);
+                                }
+
+                            });
+                            // dt.rows({ page: 'current', selected: true }).remove().draw(false);
+                        } else if (!brand_id.length)
+                            alert('No brand is selected!');
+                    } else
+                        alert('This feature is disable for demo!');
+                }
+            },
+            {
+                extend: 'colvis',
+                text: '<i title="column visibility" class="fa fa-eye"></i>',
+                columns: ':gt(0)'
+            },
             ],
         });
     </script>
