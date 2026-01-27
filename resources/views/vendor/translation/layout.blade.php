@@ -66,7 +66,7 @@
     <link rel="stylesheet" type="text/css"
           href="{{ asset('vendor/datatable/datatable.responsive.boostrap.min.css') }}">
     <!-- theme stylesheet-->
-    <link rel="stylesheet" href="{{ asset('css/style.default.css') }}" id="theme-stylesheet"
+    <link rel="stylesheet" href="<?php echo env('ASSETS_PATH') . '/css/style.default.css' ?>" id="theme-stylesheet"
           type="text/css">
 
     <link rel="stylesheet" href="{{ asset('vendor/translation/css/main.css') }}">

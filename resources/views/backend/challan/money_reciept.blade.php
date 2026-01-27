@@ -9,11 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="all,follow">
 
-    @if(!config('database.connections.saleprosaas_landlord'))
-        <link rel="stylesheet" href="<?php echo asset('vendor/bootstrap/css/bootstrap.min.css') ?>" type="text/css">
-    @else
-    <link rel="stylesheet" href="<?php echo asset('../../vendor/bootstrap/css/bootstrap.min.css') ?>" type="text/css">
-    @endif
+    <link rel="stylesheet" href="<?php echo env('ASSETS_PATH') . '/bootstrap/css/bootstrap.min.css' ?>" type="text/css">
 
     <style type="text/css">
         * {
@@ -88,16 +84,16 @@
         <p>Date: {{date($general_setting->date_format, strtotime($challan->created_at->toDateString()))}}</p>
         <p>Courier: {{$challan->courier->name.' ['.$challan->courier->phone_number.']'}}</p>
         <?php
-            $packing_slip_list = explode(",", $challan->packing_slip_list);
-            $cash_list = explode(",", $challan->cash_list);
-            $bkash_list = explode(",", $challan->bkash_list);
-            $online_payment_list = explode(",", $challan->online_payment_list);
-            $delivery_charge_list = explode(",", $challan->delivery_charge_list);
-            $status_list = explode(",", $challan->status_list);
-            $cash_sum = 0;
-            $bkash_sum = 0;
-            $online_payment_sum = 0;
-            $delivery_charge_sum = 0;
+        $packing_slip_list = explode(',', $challan->packing_slip_list);
+        $cash_list = explode(',', $challan->cash_list);
+        $bkash_list = explode(',', $challan->bkash_list);
+        $online_payment_list = explode(',', $challan->online_payment_list);
+        $delivery_charge_list = explode(',', $challan->delivery_charge_list);
+        $status_list = explode(',', $challan->status_list);
+        $cash_sum = 0;
+        $bkash_sum = 0;
+        $online_payment_sum = 0;
+        $delivery_charge_sum = 0;
         ?>
         <table class="table table-bordered">
             <thead>
@@ -115,18 +111,18 @@
             <tbody>
             @foreach($packing_slip_list as $key=>$packing_slip_id)
             <?php
-                $packing_slip = \App\Models\PackingSlip::with('sale')->find($packing_slip_id);
-            	if($cash_list[$key])
-            		$cash_sum += $cash_list[$key];
-            	elseif($bkash_list[$key])
-            		$bkash_sum += $bkash_list[$key];
-            	elseif($online_payment_list[$key])
-            		$online_payment_sum += $online_payment_list[$key];
+            $packing_slip = \App\Models\PackingSlip::with('sale')->find($packing_slip_id);
+            if ($cash_list[$key])
+                $cash_sum += $cash_list[$key];
+            elseif ($bkash_list[$key])
+                $bkash_sum += $bkash_list[$key];
+            elseif ($online_payment_list[$key])
+                $online_payment_sum += $online_payment_list[$key];
 
-                if($challan->delivery_charge_list && $delivery_charge_list[$key])
-                    $delivery_charge_sum += $delivery_charge_list[$key];
-                else
-                    $delivery_charge_list[$key] = '';
+            if ($challan->delivery_charge_list && $delivery_charge_list[$key])
+                $delivery_charge_sum += $delivery_charge_list[$key];
+            else
+                $delivery_charge_list[$key] = '';
             ?>
             <tr>
                 <td>{{$key+1}}</td>

@@ -85,8 +85,7 @@
     </div>
 </form>
 @endsection
-<script type="text/javascript" src="<?php echo asset('vendor/jquery/jquery.min.js') ?>"></script>
-
+<script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/jquery/jquery.min.js'; ?>"></script>
 <script>
 
     $("div.alert").delay(4000).slideUp(800);

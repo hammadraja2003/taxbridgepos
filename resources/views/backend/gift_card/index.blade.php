@@ -26,20 +26,22 @@
             <tbody>
                 @foreach($lims_gift_card_all as $key=>$gift_card)
                 <?php
-                    $created_by = DB::connection('master')->table('users')->find($gift_card->created_by);
+                $created_by = DB::connection('master')->table('users')->find($gift_card->created_by);
                 ?>
                 <tr data-id="{{$gift_card->id}}">
                     <td>{{$key}}</td>
                     <td>{{ $gift_card->card_no }}</td>
                     @if($gift_card->customer_id)
-                    <?php $customer = DB::table('customers')->find($gift_card->customer_id);
-                      $client = $customer->name;
+                    <?php
+                    $customer = DB::table('customers')->find($gift_card->customer_id);
+                    $client = $customer->name;
                     ?>
                     <td>{{$client}}</td>
                     @else
-                    <?php $user = DB::connection('master')->table('users')->find($gift_card->user_id);
-                          $client = $user->name;
-                     ?>
+                    <?php
+                    $user = DB::connection('master')->table('users')->find($gift_card->user_id);
+                    $client = $user->name;
+                    ?>
                     <td>{{$client}}</td>
                     @endif
                     <td>{{ $gift_card->amount }}</td>
@@ -130,7 +132,7 @@
               <p class="italic"><small>{{__('db.The field labels marked with * are required input fields')}}.</small></p>
                 {!! Form::open(['route' => 'gift_cards.store', 'method' => 'post']) !!}
                 <?php
-                  $lims_warehouse_list = DB::table('warehouses')->where('is_active', true)->get();
+                $lims_warehouse_list = DB::table('warehouses')->where('is_active', true)->get();
                 ?>
                   <div class="form-group">
                       <label>{{__('db.Card No')}} *</label>
@@ -189,8 +191,8 @@
             <p class="italic"><small>{{__('db.The field labels marked with * are required input fields')}}.</small></p>
               {!! Form::open(['route' => ['gift_cards.update', 1], 'method' => 'put']) !!}
               <?php
-                $lims_warehouse_list = DB::table('warehouses')->where('is_active', true)->get();
-              ?>
+$lims_warehouse_list = DB::table('warehouses')->where('is_active', true)->get();
+?>
                 <div class="form-group">
                     <input type="hidden" name="gift_card_id">
                     <label>{{__('db.Card No')}} *</label>
@@ -342,7 +344,7 @@
           var divToPrint=document.getElementById('viewModal');
           var newWin=window.open('','Print-Window');
           newWin.document.open();
-          newWin.document.write('<link rel="stylesheet" href="<?php echo asset('vendor/bootstrap/css/bootstrap.min.css') ?>" type="text/css"><style type="text/css">@media print {.modal-dialog { max-width: 1000px;} }</style><body onload="window.print()">'+divToPrint.innerHTML+'</body>');
+          newWin.document.write('<link rel="stylesheet" href="<?php echo env('ASSETS_PATH') . '/bootstrap/css/bootstrap.min.css' ?>" type="text/css"><style type="text/css">@media print {.modal-dialog { max-width: 1000px;} }</style><body onload="window.print()">'+divToPrint.innerHTML+'</body>');
           newWin.document.close();
           setTimeout(function(){newWin.close();},10);
     });

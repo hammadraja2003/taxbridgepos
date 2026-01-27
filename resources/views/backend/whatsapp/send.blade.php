@@ -110,11 +110,8 @@
 
 
 @push('scripts')
-    @if (!config('database.connections.saleprosaas_landlord'))
-        <script type="text/javascript" src="<?php echo asset('vendor/emoji/vanillaEmojiPicker.js'); ?>"></script>
-    @else
-        <script type="text/javascript" src="<?php echo asset('../../vendor/emoji/vanillaEmojiPicker.js'); ?>"></script>
-    @endif
+    <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/emoji/vanillaEmojiPicker.js' ?>"></script>
+
 
     <script type="text/javascript">
         $("ul#whatsapp").siblings('a').attr('aria-expanded', 'true');

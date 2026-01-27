@@ -26,11 +26,11 @@
             <tbody>
                 @foreach($lims_stock_count_all as $key => $stock_count)
                 <?php
-                    $warehouse = DB::table('warehouses')->find($stock_count->warehouse_id);
-                    $category_name = [];
-                    $brand_name = [];
-                    $initial_file = 'stock_count/' . $stock_count->initial_file;
-                    $final_file = 'stock_count/' . $stock_count->final_file;
+                $warehouse = DB::table('warehouses')->find($stock_count->warehouse_id);
+                $category_name = [];
+                $brand_name = [];
+                $initial_file = 'stock_count/' . $stock_count->initial_file;
+                $final_file = 'stock_count/' . $stock_count->final_file;
                 ?>
                 <tr>
                     <td>{{$key}}</td>
@@ -318,7 +318,7 @@
           var divToPrint=document.getElementById('stock-count-details');
           var newWin=window.open('','Print-Window');
           newWin.document.open();
-          newWin.document.write('<link rel="stylesheet" href="<?php echo asset('vendor/bootstrap/css/bootstrap.min.css') ?>" type="text/css"><style type="text/css">@media print {.modal-dialog { max-width: 1000px;} }</style><body onload="window.print()">'+divToPrint.innerHTML+'</body>');
+          newWin.document.write('<link rel="stylesheet" href="<?php echo env('ASSETS_PATH') . '/bootstrap/css/bootstrap.min.css' ?>" type="text/css"><style type="text/css">@media print {.modal-dialog { max-width: 1000px;} }</style><body onload="window.print()">'+divToPrint.innerHTML+'</body>');
           newWin.document.close();
           setTimeout(function(){newWin.close();},10);
     });

@@ -70,21 +70,21 @@
                     <tbody>
                       @foreach($lims_sale_data as $key => $sale)
                         <?php
-                            $coupon = \App\Models\Coupon::find($sale->coupon_id);
-                            if($coupon)
-                              $coupon_code = $coupon->code;
-                            else
-                              $coupon_code = null;
+                        $coupon = \App\Models\Coupon::find($sale->coupon_id);
+                        if ($coupon)
+                            $coupon_code = $coupon->code;
+                        else
+                            $coupon_code = null;
 
-                            if($sale->sale_status == 1)
-                              $status = __('db.Completed');
-                            elseif($sale->sale_status == 2)
-                              $status = __('db.Pending');
-                            else
-                              $status = __('db.Draft');
+                        if ($sale->sale_status == 1)
+                            $status = __('db.Completed');
+                        elseif ($sale->sale_status == 2)
+                            $status = __('db.Pending');
+                        else
+                            $status = __('db.Draft');
 
-                            $sale_note = preg_replace('/\s+/S', " ", $sale->sale_note);
-                            $staff_note = preg_replace('/\s+/S', " ", $sale->staff_note);
+                        $sale_note = preg_replace('/\s+/S', ' ', $sale->sale_note);
+                        $staff_note = preg_replace('/\s+/S', ' ', $sale->staff_note);
                         ?>
 
                       <tr data-sale='["{{date($general_setting->date_format, strtotime($sale->created_at->toDateString()))}}", "{{$sale->reference_no}}", "{{$status}}", "{{$sale->biller->name}}", "{{$sale->biller->company_name}}", "{{$sale->biller->email}}", "{{$sale->biller->phone_number}}", "{{$sale->biller->address}}", "{{$sale->biller->city}}", "{{$sale->customer->name}}", "{{$sale->customer->phone_number}}", "{{$sale->customer->address}}", "{{$sale->customer->city}}", "{{$sale->id}}", "{{$sale->total_tax}}", "{{$sale->total_discount}}", "{{$sale->total_price}}", "{{$sale->order_tax}}", "{{$sale->order_tax_rate}}", "{{$sale->order_discount}}", "{{$sale->shipping_cost}}", "{{$sale->grand_total}}", "{{$sale->paid_amount}}", "{{$sale_note}}", "{{$staff_note}}", "{{$sale->user->name}}", "{{$sale->user->email}}", "{{$sale->warehouse->name}}", "{{$coupon_code}}", "{{$sale->coupon_discount}}"]'>
@@ -193,10 +193,10 @@
                         <tbody>
                             @foreach($lims_quotation_data as $key=>$quotation)
                             <?php
-                                if($quotation->quotation_status == 1)
-                                    $status = __('db.Pending');
-                                else
-                                    $status = __('db.Sent');
+                            if ($quotation->quotation_status == 1)
+                                $status = __('db.Pending');
+                            else
+                                $status = __('db.Sent');
                             ?>
                             <tr class="quotation-link" data-quotation='["{{date($general_setting->date_format, strtotime($quotation->created_at->toDateString()))}}", "{{$quotation->reference_no}}", "{{$status}}", "{{$quotation->biller->name}}", "{{$quotation->biller->company_name}}","{{$quotation->biller->email}}", "{{$quotation->biller->phone_number}}", "{{$quotation->biller->address}}", "{{$quotation->biller->city}}", "{{$quotation->customer->name}}", "{{$quotation->customer->phone_number}}", "{{$quotation->customer->address}}", "{{$quotation->customer->city}}", "{{$quotation->id}}", "{{$quotation->total_tax}}", "{{$quotation->total_discount}}", "{{$quotation->total_price}}", "{{$quotation->order_tax}}", "{{$quotation->order_tax_rate}}", "{{$quotation->order_discount}}", "{{$quotation->shipping_cost}}", "{{$quotation->grand_total}}", "{{$quotation->note}}", "{{$quotation->user->name}}", "{{$quotation->user->email}}"]'>
                                 <td>{{$key}}</td>
@@ -427,7 +427,7 @@
       var divToPrint=document.getElementById('sale-details');
       var newWin=window.open('','Print-Window');
       newWin.document.open();
-      newWin.document.write('<link rel="stylesheet" href="<?php echo asset('vendor/bootstrap/css/bootstrap.min.css') ?>" type="text/css"><style type="text/css">@media print {.modal-dialog { max-width: 1000px;} }</style><body onload="window.print()">'+divToPrint.innerHTML+'</body>');
+      newWin.document.write('<link rel="stylesheet" href="<?php echo env('ASSETS_PATH') . '/bootstrap/css/bootstrap.min.css' ?>" type="text/css"><style type="text/css">@media print {.modal-dialog { max-width: 1000px;} }</style><body onload="window.print()">'+divToPrint.innerHTML+'</body>');
       newWin.document.close();
       setTimeout(function(){newWin.close();},10);
     });
@@ -436,7 +436,7 @@
       var divToPrint=document.getElementById('quotation-details');
       var newWin=window.open('','Print-Window');
       newWin.document.open();
-      newWin.document.write('<link rel="stylesheet" href="<?php echo asset('vendor/bootstrap/css/bootstrap.min.css') ?>" type="text/css"><style type="text/css">@media print {.modal-dialog { max-width: 1000px;} }</style><body onload="window.print()">'+divToPrint.innerHTML+'</body>');
+      newWin.document.write('<link rel="stylesheet" href="<?php echo env('ASSETS_PATH') . '/bootstrap/css/bootstrap.min.css' ?>" type="text/css"><style type="text/css">@media print {.modal-dialog { max-width: 1000px;} }</style><body onload="window.print()">'+divToPrint.innerHTML+'</body>');
       newWin.document.close();
       setTimeout(function(){newWin.close();},10);
     });
@@ -445,7 +445,7 @@
       var divToPrint=document.getElementById('return-details');
       var newWin=window.open('','Print-Window');
       newWin.document.open();
-      newWin.document.write('<link rel="stylesheet" href="<?php echo asset('vendor/bootstrap/css/bootstrap.min.css') ?>" type="text/css"><style type="text/css">@media print {.modal-dialog { max-width: 1000px;} }</style><body onload="window.print()">'+divToPrint.innerHTML+'</body>');
+      newWin.document.write('<link rel="stylesheet" href="<?php echo env('ASSETS_PATH') . '/bootstrap/css/bootstrap.min.css' ?>" type="text/css"><style type="text/css">@media print {.modal-dialog { max-width: 1000px;} }</style><body onload="window.print()">'+divToPrint.innerHTML+'</body>');
       newWin.document.close();
       setTimeout(function(){newWin.close();},10);
     });

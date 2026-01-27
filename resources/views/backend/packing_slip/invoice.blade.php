@@ -8,13 +8,9 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="all,follow">
-    @if(!config('database.connections.saleprosaas_landlord'))
-        <link rel="icon" type="image/png" href="{{url('logo', $general_setting->site_logo)}}" />
-        <link rel="stylesheet" href="<?php echo asset('vendor/bootstrap/css/bootstrap.min.css') ?>" type="text/css">
-    @else
-        <link rel="icon" type="image/png" href="{{url('../../logo', $general_setting->site_logo)}}" />
-        <link rel="stylesheet" href="<?php echo asset('../../vendor/bootstrap/css/bootstrap.min.css') ?>" type="text/css">
-    @endif
+    <link rel="icon" type="image/png" href="{{url('logo', $general_setting->site_logo)}}" />
+    <link rel="stylesheet" href="<?php echo env('ASSETS_PATH') . '/bootstrap/css/bootstrap.min.css' ?>" type="text/css">
+
 
     <style type="text/css">
         * {
@@ -130,21 +126,22 @@
                 </tr>
                 @foreach($packing_slip_product_data as $key => $packing_slip_product)
                 <?php
-                    $product = \App\Models\Product::select('name', 'code')->find($packing_slip_product->product_id);
-                    if($packing_slip_product->variant_id) {
-                        $variant = \App\Models\Variant::select('name')->find($packing_slip_product->variant_id);
-                        $product_variant = \App\Models\ProductVariant::select('item_code')->where([
-                            ['product_id', $packing_slip_product->product_id],
-                            ['variant_id', $packing_slip_product->variant_id]
-                        ])->first();
-                        $product->name .= ' ['.$variant->name.']';
-                        $product->code = $product_variant->item_code;
-                    }
-                    $sale_product = \App\Models\Product_Sale::select('qty', 'total')
-                                    ->where([
-                                        ['sale_id', $sale->id],
-                                        ['product_id', $packing_slip_product->product_id]
-                                    ])->first();
+                $product = \App\Models\Product::select('name', 'code')->find($packing_slip_product->product_id);
+                if ($packing_slip_product->variant_id) {
+                    $variant = \App\Models\Variant::select('name')->find($packing_slip_product->variant_id);
+                    $product_variant = \App\Models\ProductVariant::select('item_code')->where([
+                        ['product_id', $packing_slip_product->product_id],
+                        ['variant_id', $packing_slip_product->variant_id]
+                    ])->first();
+                    $product->name .= ' [' . $variant->name . ']';
+                    $product->code = $product_variant->item_code;
+                }
+                $sale_product = \App\Models\Product_Sale::select('qty', 'total')
+                    ->where([
+                        ['sale_id', $sale->id],
+                        ['product_id', $packing_slip_product->product_id]
+                    ])
+                    ->first();
                 ?>
                 <tr>
                     <td colspan="2">{{$product->name}} [{{$product->code}}]</td>
@@ -154,7 +151,7 @@
                 @endforeach
                 <tr>
                     <td class="centered" colspan="3">
-                    <?php echo '<img style="margin-top:10px;" src="data:image/png;base64,' . DNS1D::getBarcodePNG($sale->reference_no, 'C128') . '" width="300" alt="barcode"   />'?>
+                    <?php echo '<img style="margin-top:10px;" src="data:image/png;base64,' . DNS1D::getBarcodePNG($sale->reference_no, 'C128') . '" width="300" alt="barcode"   />' ?>
                     </td>
                 </tr>
                 @if($sale->sale_note)

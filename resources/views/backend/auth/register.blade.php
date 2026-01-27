@@ -10,13 +10,13 @@
     <meta name="robots" content="all,follow">
     <link rel="icon" href="{{ asset('logo/favicon.ico') }}" type="image/x-icon">
     <!-- Bootstrap CSS-->
-    <link rel="stylesheet" href="<?php echo asset('vendor/bootstrap/css/bootstrap.min.css') ?>" type="text/css">
+    <link rel="stylesheet" href="<?php echo env('ASSETS_PATH') . '/bootstrap/css/bootstrap.min.css'; ?>" type="text/css">
     <!-- login stylesheet-->
-    <link rel="stylesheet" href="<?php echo asset('css/auth.css') ?>" id="theme-stylesheet" type="text/css">
+    <link rel="stylesheet" href="<?php echo env('ASSETS_PATH') . '/css/auth.css' ?>" id="theme-stylesheet" type="text/css">
     <!-- Google fonts - Roboto -->
     <link rel="preload" href="https://fonts.googleapis.com/css?family=Nunito:400,500,700" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link href="https://fonts.googleapis.com/css?family=Nunito:400,500,700" rel="stylesheet"></noscript>
-    <script type="text/javascript" src="<?php echo asset('vendor/jquery/jquery.min.js') ?>"></script>
+    <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/jquery/jquery.min.js'; ?>"></script>
    
   </head>
   <body>
