@@ -83,7 +83,8 @@ nav.navbar {
 .side-navbar li a[aria-expanded="true"],
 .side-navbar li.active>a {
     background: var(--primary-bg-color);
-    color: var(--primary-color) !important;
+    /* color: var(--primary-color) !important; */
+    color: #cbdaec !important;
     text-decoration: none;
 }
 
