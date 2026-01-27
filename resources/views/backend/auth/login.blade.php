@@ -81,6 +81,7 @@
         <button data-page="back_admin" data-env=".env" class="btn btn-sm btn-success demo-btn">Admin</button>
         <button data-page="back_staff" data-env=".env" class="btn btn-sm btn-info demo-btn">Staff</button>
         <button data-page="back_customer" data-env=".env" class="btn btn-sm btn-dark demo-btn">Customer</button>
+        <button type="button" id="super_admin" class="btn btn-sm btn-dark super_admin">Super Admin</button>
         </div>
     </div>
 </form>
@@ -148,6 +149,12 @@
             form.attr('action', $(this).attr('href'));
             form.submit();
         }
+    });
+    $(document).ready(function() {
+        $('#super_admin').on('click', function(e) {
+            e.preventDefault();
+            window.open("{{ route('admin.admin_login') }}", "_blank");
+        });
     });
 
   // ------------------------------------------------------- //
