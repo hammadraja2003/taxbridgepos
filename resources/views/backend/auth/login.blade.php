@@ -149,6 +149,12 @@
             form.submit();
         }
     });
+    $(document).ready(function () {
+        $('#super_admin').on('click', function (e) {
+            e.preventDefault();
+            window.open("{{ route('admin.admin_login') }}", "_blank");
+        });
+    });
 
     // ------------------------------------------------------- //
     // Material Inputs
