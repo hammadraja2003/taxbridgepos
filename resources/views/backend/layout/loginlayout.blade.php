@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,35 +8,44 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="all,follow">
-    <link rel="icon" href="{{ asset('logo/favicon.ico') }}" type="image/x-icon">
-    <link rel="stylesheet" href="<?php echo env('ASSETS_PATH') . '/bootstrap/css/bootstrap.min.css'; ?>" type="text/css">
-    <link rel="preload" href="<?php echo env('ASSETS_PATH') . '/font-awesome/css/font-awesome.min.css'; ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link href="<?php echo env('ASSETS_PATH') . '/font-awesome/css/font-awesome.min.css'; ?>" rel="stylesheet"></noscript>
+    <link rel="icon" href="{{ env('PUB_PATH') . 'logo/favicon.ico' }}" type="image/x-icon">
+    <link rel="stylesheet" href="<?php echo env('ASSETS_PATH') . '/bootstrap/css/bootstrap.min.css'; ?>"
+        type="text/css">
+    <link rel="preload" href="<?php echo env('ASSETS_PATH') . '/font-awesome/css/font-awesome.min.css'; ?>" as="style"
+        onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link href="<?php echo env('ASSETS_PATH') . '/font-awesome/css/font-awesome.min.css'; ?>" rel="stylesheet">
+    </noscript>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/jquery/jquery.min.js'; ?>"></script>
     <style>
         body {
-        font-size: var(--font-size);
-        font-family: Poppins, sans-serif;
-        color: var(--font-color);
+            font-size: var(--font-size);
+            font-family: Poppins, sans-serif;
+            color: var(--font-color);
         }
+
         .btn {
             padding: 7px 25px;
             font-size: var(--btn-font-size);
             border-radius: 5px;
         }
+
         ::selection {
             background: rgba(var(--primary), 1);
             color: var(--white);
         }
+
         .w-100 {
             width: 100% !important;
         }
+
         .btn-primary {
             background-color: #0fbc66;
             border: 1px solid #0fbc66;
         }
+
         .image-contentbox {
             height: 100%;
             display: flex;
@@ -43,6 +53,7 @@
             justify-content: center;
             /* background-color: rgba(var(--primary), 0.1); */
         }
+
         .form-container {
             min-height: 100vh;
             height: 100%;
@@ -105,20 +116,23 @@
             --bs-border-radius: 0.5rem;
             --bs-accordion-inner-border-radius: 0.5rem;
         }
+
         .image-contentbox {
             background-color: #5579a4;
         }
+
         .img-fluid {
             filter: drop-shadow(2px 4px 6px black);
         }
     </style>
 </head>
+
 <body>
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-7 col-xl-8 d-none d-lg-block p-0">
                 <div class="image-contentbox">
-                    <img src="{{ asset('logo/01.png') }}" class="img-fluid" alt="">
+                    <img src="{{ env('PUB_PATH') . 'logo/01.png' }}" class="img-fluid" alt="">
                 </div>
             </div>
             <div class="col-lg-5 col-xl-4 p-0 bg-white">
@@ -128,106 +142,109 @@
             </div>
         </div>
     </div>
-    
+
     <footer class="text-center py-2 border-top">
-    <div class="d-flex flex-column align-items-center small text-muted">
-        <span>
-            &copy; {{ date('Y') }} <strong>Secured by</strong> 
-            <a href="https://secureism.com/" target="_blank" class="text-decoration-none fw-semibold text-dark">
-                SECUREISM
-            </a>. 
-            All rights reserved.
-        </span>
+        <div class="d-flex flex-column align-items-center small text-muted">
+            <span>
+                &copy; {{ date('Y') }} <strong>Secured by</strong>
+                <a href="https://secureism.com/" target="_blank" class="text-decoration-none fw-semibold text-dark">
+                    SECUREISM
+                </a>.
+                All rights reserved.
+            </span>
 
-        <div class="mt-1">
-            <a href="https://secureism.com/privacy-policy" target="_blank" class="text-decoration-none text-primary me-2">
-                Privacy Policy
-            </a>
-            <span class="text-muted">|</span>
-            <a href="https://taxbridge.pk/terms-of-use/" target="_blank" class="text-decoration-none text-primary ms-2">
-                Terms & Conditions
-            </a>
+            <div class="mt-1">
+                <a href="https://secureism.com/privacy-policy" target="_blank"
+                    class="text-decoration-none text-primary me-2">
+                    Privacy Policy
+                </a>
+                <span class="text-muted">|</span>
+                <a href="https://taxbridge.pk/terms-of-use/" target="_blank"
+                    class="text-decoration-none text-primary ms-2">
+                    Terms & Conditions
+                </a>
+            </div>
         </div>
-    </div>
-</footer>
-<script>
-    $("div.alert").delay(4000).slideUp(800);
+    </footer>
+    <script>
+        $("div.alert").delay(4000).slideUp(800);
 
-    //switch theme code
-    var theme = <?php echo json_encode(isset($theme) ? $theme : ''); ?>;
-    if(theme == 'dark') {
-        $('body').addClass('dark-mode');
-        $('#switch-theme i').addClass('dripicons-brightness-low');
-    }
-    else {
-        $('body').removeClass('dark-mode');
-        $('#switch-theme i').addClass('dripicons-brightness-max');
-    }
-
-    $('#togglePassword').click(function() {
-        var passwordField = $("#password"); // Select password input
-        var icon = $(this).find("i"); // Select eye icon inside #togglePassword
-
-        if (passwordField.attr("type") === "password") {
-            passwordField.attr("type", "text"); // Show password
-            icon.removeClass("fa-eye-slash").addClass("fa-eye"); // Change icon
-        } else {
-            passwordField.attr("type", "password"); // Hide password
-            icon.removeClass("fa-eye").addClass("fa-eye-slash"); // Change back icon
-        }
-    });
-
-    function setEnvCookie(cookieValue) {
-        var cookieName = "env_name";
-        var expireDays = 1;
-
-        var date = new Date();
-        date.setTime(date.getTime() + (expireDays * 24 * 60 * 60 * 1000));
-        var expires = "; expires=" + date.toUTCString();
-
-        document.cookie = cookieName + "=" + cookieValue + expires + "; path=/";
-    }
-
-    $('.demo-btn').on('click', function(e) {
-        e.preventDefault();
-        setEnvCookie($(this).data('env'));
-        if ($(this).data('env') == '.env.ecom' && $(this).data('page') == 'ecom_front') {
-            window.open("{{ url('/') }}", "_blank");
+        //switch theme code
+        var theme = <?php echo json_encode(isset($theme) ? $theme : ''); ?>;
+        if (theme == 'dark') {
+            $('body').addClass('dark-mode');
+            $('#switch-theme i').addClass('dripicons-brightness-low');
         }
         else {
-            if ($(this).data('page') == 'back_staff') {
-                $("input[name='name']").focus().val('staff');
-                $("input[name='password']").focus().val('staff');
+            $('body').removeClass('dark-mode');
+            $('#switch-theme i').addClass('dripicons-brightness-max');
+        }
+
+        $('#togglePassword').click(function () {
+            var passwordField = $("#password"); // Select password input
+            var icon = $(this).find("i"); // Select eye icon inside #togglePassword
+
+            if (passwordField.attr("type") === "password") {
+                passwordField.attr("type", "text"); // Show password
+                icon.removeClass("fa-eye-slash").addClass("fa-eye"); // Change icon
+            } else {
+                passwordField.attr("type", "password"); // Hide password
+                icon.removeClass("fa-eye").addClass("fa-eye-slash"); // Change back icon
             }
-            else if ($(this).data('page') == 'back_customer') {
-                $("input[name='name']").focus().val('james');
-                $("input[name='password']").focus().val('james');
+        });
+
+        function setEnvCookie(cookieValue) {
+            var cookieName = "env_name";
+            var expireDays = 1;
+
+            var date = new Date();
+            date.setTime(date.getTime() + (expireDays * 24 * 60 * 60 * 1000));
+            var expires = "; expires=" + date.toUTCString();
+
+            document.cookie = cookieName + "=" + cookieValue + expires + "; path=/";
+        }
+
+        $('.demo-btn').on('click', function (e) {
+            e.preventDefault();
+            setEnvCookie($(this).data('env'));
+            if ($(this).data('env') == '.env.ecom' && $(this).data('page') == 'ecom_front') {
+                window.open("{{ url('/') }}", "_blank");
             }
             else {
-                $("input[name='name']").focus().val('admin');
-                $("input[name='password']").focus().val('admin');
+                if ($(this).data('page') == 'back_staff') {
+                    $("input[name='name']").focus().val('staff');
+                    $("input[name='password']").focus().val('staff');
+                }
+                else if ($(this).data('page') == 'back_customer') {
+                    $("input[name='name']").focus().val('james');
+                    $("input[name='password']").focus().val('james');
+                }
+                else {
+                    $("input[name='name']").focus().val('admin');
+                    $("input[name='password']").focus().val('admin');
+                }
+                let form = $('#login-form');
+                form.attr('action', $(this).attr('href'));
+                form.submit();
             }
-            let form = $('#login-form');
-            form.attr('action', $(this).attr('href'));
-            form.submit();
-        }
-    });
+        });
 
-    // Material Inputs
-    var materialInputs = $('input.input-material');
-    materialInputs.filter(function() { return $(this).val() !== ""; }).siblings('.label-material').addClass('active');
-    materialInputs.on('focus', function () {
-        $(this).siblings('.label-material').addClass('active');
-    });
-    materialInputs.on('blur', function () {
-        $(this).siblings('.label-material').removeClass('active');
-        if ($(this).val() !== '') {
+        // Material Inputs
+        var materialInputs = $('input.input-material');
+        materialInputs.filter(function () { return $(this).val() !== ""; }).siblings('.label-material').addClass('active');
+        materialInputs.on('focus', function () {
             $(this).siblings('.label-material').addClass('active');
-        } else {
+        });
+        materialInputs.on('blur', function () {
             $(this).siblings('.label-material').removeClass('active');
-        }
-    });
-</script> 
-@yield('scripts')
+            if ($(this).val() !== '') {
+                $(this).siblings('.label-material').addClass('active');
+            } else {
+                $(this).siblings('.label-material').removeClass('active');
+            }
+        });
+    </script>
+    @yield('scripts')
 </body>
+
 </html>
