@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="all,follow">
-    <link rel="icon" href="{{ env('PUB_PATH') . 'logo/favicon.ico' }}" type="image/x-icon">
+    <link rel="icon" href="{{ env('PUB_PATH') . '/logo/favicon.ico' }}" type="image/x-icon">
     <link rel="stylesheet" href="<?php echo env('ASSETS_PATH') . '/bootstrap/css/bootstrap.min.css'; ?>"
         type="text/css">
     <link rel="preload" href="<?php echo env('ASSETS_PATH') . '/font-awesome/css/font-awesome.min.css'; ?>" as="style"
@@ -132,7 +132,7 @@
         <div class="row">
             <div class="col-lg-7 col-xl-8 d-none d-lg-block p-0">
                 <div class="image-contentbox">
-                    <img src="{{ env('PUB_PATH') . 'logo/01.png' }}" class="img-fluid" alt="">
+                    <img src="{{ env('PUB_PATH') . '/logo/01.png' }}" class="img-fluid" alt="">
                 </div>
             </div>
             <div class="col-lg-5 col-xl-4 p-0 bg-white">

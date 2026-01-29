@@ -7,7 +7,7 @@
             <div class="col-12">
                 <div class="mb-5 text-center text-lg-start">
                     <div class="d-flex justify-content-center align-items-center my-2">
-                        <img src="{{ env('PUB_PATH') . 'logo/tax-bridgePOS-logo.svg' }}" alt="Logo" class="dark-logo">
+                        <img src="{{ env('PUB_PATH') . '/logo/tax-bridgePOS-logo.svg' }}" alt="Logo" class="dark-logo">
 
                     </div>
                 </div>
