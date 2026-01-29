@@ -560,7 +560,6 @@
 
             if(payment_status == 3 || payment_status == 4){
                 var balance = $('#account_id option:selected').data('total_balance');
-                alert(balance);
                 var currency_rate = $('#currency-id option:selected').data('rate');
                 let grandTotal = parseFloat($('#grand_total').text()) || 0;
                 balance = currency_rate * balance;
