@@ -20,7 +20,7 @@
                                         <div class="form-group">
                                             <label>{{__('db.Warehouse')}} *</label>
                                             <input type="hidden" name="warehouse_id_hidden" value="{{$lims_quotation_data->warehouse_id}}" />
-                                            <select required name="warehouse_id" class="selectpicker form-control" data-live-search="true" title="Select warehouse...">
+                                            <select required name="warehouse_id" class="selectpicker form-control" data-live-search="true" title="Select store...">
                                                 @foreach($lims_warehouse_list as $warehouse)
                                                 <option value="{{$warehouse->id}}">{{$warehouse->name}}</option>
                                                 @endforeach
@@ -99,61 +99,59 @@
                                                     ?>
                                                     @foreach($lims_product_quotation_data as $product_quotation)
                                                     <?php
-                                                        $product_data = DB::table('products')->find($product_quotation->product_id);
+                                                    $product_data = DB::table('products')->find($product_quotation->product_id);
 
-                                                        if($product_quotation->variant_id) {
-                                                            $product_variant_data = \App\Models\ProductVariant::select('item_code', 'additional_cost')->FindExactProduct($product_quotation->product_id, $product_quotation->variant_id)->first();
+                                                    if ($product_quotation->variant_id) {
+                                                        $product_variant_data = \App\Models\ProductVariant::select('item_code', 'additional_cost')->FindExactProduct($product_quotation->product_id, $product_quotation->variant_id)->first();
 
-                                                            $product_data->code = $product_variant_data->item_code;
-                                                            $product_data->cost += $product_variant_data->additional_cost;
-                                                        }
+                                                        $product_data->code = $product_variant_data->item_code;
+                                                        $product_data->cost += $product_variant_data->additional_cost;
+                                                    }
                                                     ?>
                                                     @if($product_data->type == 'standard')
                                                     <tr>
                                                         <?php
-                                                            $product_cost = $product_data->cost;
-                                                            $tax_data = DB::table('taxes')->where('rate', $product_quotation->tax_rate)->first();
-                                                            $units = DB::table('units')->where('base_unit', $product_data->unit_id)->orWhere('id', $product_data->unit_id)->get();
+                                                        $product_cost = $product_data->cost;
+                                                        $tax_data = DB::table('taxes')->where('rate', $product_quotation->tax_rate)->first();
+                                                        $units = DB::table('units')->where('base_unit', $product_data->unit_id)->orWhere('id', $product_data->unit_id)->get();
 
-                                                            $unit_name = array();
-                                                            $unit_operator = array();
-                                                            $unit_operation_value = array();
+                                                        $unit_name = array();
+                                                        $unit_operator = array();
+                                                        $unit_operation_value = array();
 
-                                                            foreach($units as $unit) {
-                                                                if($product_quotation->sale_unit_id == $unit->id) {
-                                                                    array_unshift($unit_name, $unit->unit_name);
-                                                                    array_unshift($unit_operator, $unit->operator);
-                                                                    array_unshift($unit_operation_value, $unit->operation_value);
-                                                                }
-                                                                else {
-                                                                    $unit_name[]  = $unit->unit_name;
-                                                                    $unit_operator[] = $unit->operator;
-                                                                    $unit_operation_value[] = $unit->operation_value;
-                                                                }
-                                                            }
-                                                            if ($unit_operator[0] == '*') {
-                                                                $row_product_cost = $product_cost * $unit_operation_value[0];
+                                                        foreach ($units as $unit) {
+                                                            if ($product_quotation->sale_unit_id == $unit->id) {
+                                                                array_unshift($unit_name, $unit->unit_name);
+                                                                array_unshift($unit_operator, $unit->operator);
+                                                                array_unshift($unit_operation_value, $unit->operation_value);
                                                             } else {
-                                                                $row_product_cost = $product_cost / $unit_operation_value[0];
+                                                                $unit_name[] = $unit->unit_name;
+                                                                $unit_operator[] = $unit->operator;
+                                                                $unit_operation_value[] = $unit->operation_value;
                                                             }
-                                                            if($product_data->tax_method == 1){
-                                                                $net_unit_cost = ($product_data->cost * $unit_operation_value[0]) - ($product_quotation->discount / $product_quotation->qty);
-                                                                $tax = $net_unit_cost * $product_quotation->qty * ($product_quotation->tax_rate / 100);
-                                                                $sub_total = ($net_unit_cost * $product_quotation->qty) + $tax;
-                                                            }
-                                                            else{
-                                                                $sub_total_unit = ($product_data->cost * $unit_operation_value[0]) - ($product_quotation->discount / $product_quotation->qty);
-                                                                $net_unit_cost = (100 / (100 + $product_quotation->tax_rate)) * $sub_total_unit;
-                                                                $tax = ($sub_total_unit - $net_unit_cost) * $product_quotation->qty;
-                                                                $sub_total = $sub_total_unit * $product_quotation->qty;
-                                                            }
+                                                        }
+                                                        if ($unit_operator[0] == '*') {
+                                                            $row_product_cost = $product_cost * $unit_operation_value[0];
+                                                        } else {
+                                                            $row_product_cost = $product_cost / $unit_operation_value[0];
+                                                        }
+                                                        if ($product_data->tax_method == 1) {
+                                                            $net_unit_cost = ($product_data->cost * $unit_operation_value[0]) - ($product_quotation->discount / $product_quotation->qty);
+                                                            $tax = $net_unit_cost * $product_quotation->qty * ($product_quotation->tax_rate / 100);
+                                                            $sub_total = ($net_unit_cost * $product_quotation->qty) + $tax;
+                                                        } else {
+                                                            $sub_total_unit = ($product_data->cost * $unit_operation_value[0]) - ($product_quotation->discount / $product_quotation->qty);
+                                                            $net_unit_cost = (100 / (100 + $product_quotation->tax_rate)) * $sub_total_unit;
+                                                            $tax = ($sub_total_unit - $net_unit_cost) * $product_quotation->qty;
+                                                            $sub_total = $sub_total_unit * $product_quotation->qty;
+                                                        }
 
-                                                            $temp_unit_name = $unit_name = implode(",",$unit_name) . ',';
+                                                        $temp_unit_name = $unit_name = implode(',', $unit_name) . ',';
 
-                                                            $temp_unit_operator = $unit_operator = implode(",",$unit_operator) .',';
+                                                        $temp_unit_operator = $unit_operator = implode(',', $unit_operator) . ',';
 
-                                                            $temp_unit_operation_value = $unit_operation_value =  implode(",",$unit_operation_value) . ',';
-                                                            $product_batch_data = \App\Models\ProductBatch::select('batch_no', 'expired_date')->find($product_quotation->product_batch_id);
+                                                        $temp_unit_operation_value = $unit_operation_value = implode(',', $unit_operation_value) . ',';
+                                                        $product_batch_data = \App\Models\ProductBatch::select('batch_no', 'expired_date')->find($product_quotation->product_batch_id);
                                                         ?>
                                                         <td>{{$product_data->name}} <button type="button" class="edit-product btn btn-link" data-toggle="modal" data-target="#editModal"> <i class="dripicons-document-edit"></i></button> </td>
                                                         <td>{{$product_data->code}}</td>
@@ -352,12 +350,12 @@
                                 <input type="number" name="edit_unit_cost" class="form-control" step="any">
                             </div>
                             <?php
-                                $tax_name_all[] = 'No Tax';
-                                $tax_rate_all[] = 0;
-                                foreach($lims_tax_list as $tax) {
-                                    $tax_name_all[] = $tax->name;
-                                    $tax_rate_all[] = $tax->rate;
-                                }
+                            $tax_name_all[] = 'No Tax';
+                            $tax_rate_all[] = 0;
+                            foreach ($lims_tax_list as $tax) {
+                                $tax_name_all[] = $tax->name;
+                                $tax_rate_all[] = $tax->rate;
+                            }
                             ?>
                             <div class="col-md-4 form-group">
                                 <label>{{__('db.Tax Rate')}}</label>
@@ -485,16 +483,16 @@ $('select[name="status"]').on('change', function() {
 var lims_product_code = [
     @foreach($lims_product_list_without_variant as $product)
         <?php
-            $productArray[] = $product->code . '|' . $product->name;
+        $productArray[] = $product->code . '|' . $product->name;
         ?>
     @endforeach
     @foreach($lims_product_list_with_variant as $product)
         <?php
-            $productArray[] = $product->item_code . '|' . $product->name;
+        $productArray[] = $product->item_code . '|' . $product->name;
         ?>
     @endforeach
         <?php
-        echo  '"'.implode('","', $productArray).'"';
+        echo '"' . implode('","', $productArray) . '"';
         ?>
 ];
 
@@ -523,7 +521,7 @@ var lims_product_code = [
 $('body').on('focus',".expired-date", function() {
     $(this).datepicker({
         format: "yyyy-mm-dd",
-        startDate: "<?php echo date("Y-m-d", strtotime('+ 1 days')) ?>",
+        startDate: "<?php echo date('Y-m-d', strtotime('+ 1 days')) ?>",
         autoclose: true,
         todayHighlight: true
     });

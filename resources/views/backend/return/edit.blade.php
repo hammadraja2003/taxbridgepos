@@ -455,7 +455,7 @@
                             <div class="col-md-6 form-group warehouse-section">
                                 <label>{{ __('db.Warehouse') }} *</strong> </label>
                                 <select required name="warehouse_id" class="selectpicker form-control"
-                                    data-live-search="true" data-live-search-style="begins" title="Select warehouse...">
+                                    data-live-search="true" data-live-search-style="begins" title="Select store...">
                                     @foreach ($lims_warehouse_list as $warehouse)
                                         <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
                                     @endforeach

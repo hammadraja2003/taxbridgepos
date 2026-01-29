@@ -733,7 +733,8 @@ Route::group(['middleware' => ['auth', 'settenantconnection', 'common', 'active'
         Route::prefix('notifications')->group(function () {
             Route::get('/', 'index')->name('notifications.index');
             Route::post('store', 'store')->name('notifications.store');
-            Route::get('mark-as-read', 'markAsRead');
+            // Route::get('mark-as-read', 'markAsRead');
+            Route::get('read/{id}', 'markAsRead')->name('notification.read');
         });
     });
 

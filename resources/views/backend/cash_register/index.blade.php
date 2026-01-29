@@ -77,11 +77,11 @@
                                   <td>{{__('db.Cash Payment')}}:</td>
                                   <td id="cash_payment" class="text-right"></td>
                                 </tr>
-                                <!-- <tr>
+                                 <tr>
                                   <td>{{__('db.Credit Card Payment')}}:</td>
                                   <td id="credit_card_payment" class="text-right"></td>
                                 </tr>
-                                <tr>
+                               <!-- <tr>
                                   <td>{{__('db.Cheque Payment')}}:</td>
                                   <td id="cheque_payment" class="text-right"></td>
                                 </tr>

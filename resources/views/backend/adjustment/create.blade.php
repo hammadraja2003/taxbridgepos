@@ -20,7 +20,7 @@
                                                 <label>{{__('db.Warehouse')}} *</label>
                                                 <select required id="warehouse_id" name="warehouse_id"
                                                     class="selectpicker form-control" data-live-search="true"
-                                                    data-live-search-style="begins" title="Select warehouse...">
+                                                    data-live-search-style="begins" title="Select store...">
                                                     @foreach($lims_warehouse_list as $warehouse)
                                                         <option value="{{$warehouse->id}}">{{$warehouse->name}}</option>
                                                     @endforeach

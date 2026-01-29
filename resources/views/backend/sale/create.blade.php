@@ -156,7 +156,7 @@
                                                     @endphp
                                                     <select required name="warehouse_id" id="warehouse_id"
                                                         class="selectpicker form-control" data-live-search="true"
-                                                        data-live-search-style="begins" title="Select warehouse...">
+                                                        data-live-search-style="begins" title="Select store...">
                                                         @foreach($lims_warehouse_list as $warehouse)
                                                             <option value="{{$warehouse->id}}" @if($warehouse->id == $warehouse_id)
                                                             selected @endif>{{$warehouse->name}}</option>
@@ -667,15 +667,15 @@
                                     </div>
                                     <div class=" row">
                                         <div class="col-md-6">
-                                            <div class="form-group mt-3">
+                                            <div class="form-group">
                                                 <input type="hidden" name="draft" value="0" />
                                                 <button id="submit-button" type="button"
                                                     class="btn btn-primary mt-3">{{__('db.submit')}}</button>
                                             </div>
                                         </div>
-                                        <div class="col-md-6 mt-3">
+                                        <div class="col-md-6">
                                             <div class="form-group text-right">
-                                                <button type="button" class="btn btn-warning" disabled="true"
+                                                <button type="button" class="btn btn-warning mt-3" disabled="true"
                                                     id="installmentPlanBtn">
                                                     <i class="bi bi-credit-card"></i> Installment
                                                     Plan

@@ -580,32 +580,32 @@
                                     <a class="dropdown-item" target="_blank"
                                         href="{{url('/dashboard')}}">{{__('db.dashboard')}}</a>
                                     <?php
-    $product_permission_active = $role_has_permissions_list->where('name', 'products-index')->first();
-                                                            ?>
+                                    $product_permission_active = $role_has_permissions_list->where('name', 'products-index')->first();
+                                    ?>
                                     @if($product_permission_active)
                                         <a class="dropdown-item" target="_blank"
                                             href="{{route('products.index')}}">{{__('db.product_list')}}</a>
                                     @endif
 
                                     <?php
-    $sale_permission_active = $role_has_permissions_list->where('name', 'sales-index')->first();
-                                                            ?>
+                                    $sale_permission_active = $role_has_permissions_list->where('name', 'sales-index')->first();
+                                    ?>
                                     @if($sale_permission_active)
                                         <a class="dropdown-item" target="_blank"
                                             href="{{route('sales.index')}}">{{__('db.Sale List')}}</a>
                                     @endif
 
                                     <?php
-    $purchase_permission_active = $role_has_permissions_list->where('name', 'sales-index')->first();
-                                                            ?>
+                                    $purchase_permission_active = $role_has_permissions_list->where('name', 'sales-index')->first();
+                                    ?>
                                     @if($purchase_permission_active)
                                         <a class="dropdown-item" target="_blank"
                                             href="{{route('purchases.index')}}">{{__('db.Purchase List')}}</a>
                                     @endif
 
                                     <?php
-    $transfer_permission_active = $role_has_permissions_list->where('name', 'transfers-index')->first();
-                                                            ?>
+                                    $transfer_permission_active = $role_has_permissions_list->where('name', 'transfers-index')->first();
+                                    ?>
                                     @if($transfer_permission_active)
                                         <a class="dropdown-item" target="_blank"
                                             href="{{route('transfers.index')}}">{{__('db.Transfer List')}}</a>
@@ -728,18 +728,18 @@
                                     </li>
                                 @endif
                                 <?php
-    $today_sale_permission = $permission_list->where('name', 'today_sale')->first();
-    $today_sale_permission_active = DB::connection('master')->table('role_has_permissions')->where([
-        ['permission_id', $today_sale_permission->id],
-        ['role_id', Auth::user()->role_id]
-    ])->first();
+                                $today_sale_permission = $permission_list->where('name', 'today_sale')->first();
+                                $today_sale_permission_active = DB::connection('master')->table('role_has_permissions')->where([
+                                    ['permission_id', $today_sale_permission->id],
+                                    ['role_id', Auth::user()->role_id]
+                                ])->first();
 
-    $today_profit_permission = $permission_list->where('name', 'today_profit')->first();
-    $today_profit_permission_active = DB::connection('master')->table('role_has_permissions')->where([
-        ['permission_id', $today_profit_permission->id],
-        ['role_id', Auth::user()->role_id]
-    ])->first();
-                                                        ?>
+                                $today_profit_permission = $permission_list->where('name', 'today_profit')->first();
+                                $today_profit_permission_active = DB::connection('master')->table('role_has_permissions')->where([
+                                    ['permission_id', $today_profit_permission->id],
+                                    ['role_id', Auth::user()->role_id]
+                                ])->first();
+                                ?>
 
                                 @if($today_sale_permission_active)
                                     <li class="nav-item d-none d-lg-block">
@@ -810,8 +810,8 @@
                                                 </svg> {{__('db.profile')}}</a>
                                         </li>
                                         <?php
-    $add_expense_permission = $role_has_permissions_list->where('name', 'expenses-add')->first();
-                                                                ?>
+                                        $add_expense_permission = $role_has_permissions_list->where('name', 'expenses-add')->first();
+                                        ?>
                                         @if($add_expense_permission)
                                             <li>
                                                 <a href="" data-toggle="modal" data-target="#expense-modal"><svg
@@ -823,8 +823,8 @@
                                             </li>
                                         @endif
                                         <?php
-    $add_payment_permission = $role_has_permissions_list->where('name', 'purchase-payment-add')->first();
-                                                                ?>
+                                        $add_payment_permission = $role_has_permissions_list->where('name', 'purchase-payment-add')->first();
+                                        ?>
                                         @if($add_payment_permission)
                                             <li>
                                                 <a href="" class="add-supplier-payment" data-toggle="modal"
@@ -837,21 +837,21 @@
                                             </li>
                                         @endif
                                         <?php
-    $general_setting_permission = $permission_list->where('name', 'general_setting')->first();
-    $general_setting_permission_active = DB::connection('master')->table('role_has_permissions')->where([
-        ['permission_id', $general_setting_permission->id],
-        ['role_id', Auth::user()->role_id]
-    ])->first();
+                                        $general_setting_permission = $permission_list->where('name', 'general_setting')->first();
+                                        $general_setting_permission_active = DB::connection('master')->table('role_has_permissions')->where([
+                                            ['permission_id', $general_setting_permission->id],
+                                            ['role_id', Auth::user()->role_id]
+                                        ])->first();
 
-    $pos_setting_permission = $permission_list->where('name', 'pos_setting')->first();
+                                        $pos_setting_permission = $permission_list->where('name', 'pos_setting')->first();
 
-    $pos_setting_permission_active = DB::connection('master')->table('role_has_permissions')->where([
-        ['permission_id', $pos_setting_permission->id],
-        ['role_id', Auth::user()->role_id]
-    ])->first();
+                                        $pos_setting_permission_active = DB::connection('master')->table('role_has_permissions')->where([
+                                            ['permission_id', $pos_setting_permission->id],
+                                            ['role_id', Auth::user()->role_id]
+                                        ])->first();
 
-    $authUser = Auth::user()->role_type;
-                                                                ?>
+                                        $authUser = Auth::user()->role_type;
+                                        ?>
                                         @if($pos_setting_permission_active)
                                             <li><a href="{{route('setting.pos')}}" title="{{__('db.POS Setting')}}"><svg
                                                         xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -1088,7 +1088,7 @@
                                             @endphp
                                             <select required id="warehouse_id" name="warehouse_id"
                                                 class="selectpicker form-control" data-live-search="true"
-                                                data-live-search-style="begins" title="Select warehouse...">
+                                                data-live-search-style="begins" title="Select store...">
                                                 @foreach($lims_warehouse_list as $warehouse)
                                                     <option value="{{$warehouse->id}}" @if($warehouse->id == $warehouse_id) selected
                                                     @endif>{{$warehouse->name}}</option>
@@ -1185,8 +1185,8 @@
                             <div class="card card-body">
                                 <div class="row">
                                     <?php
-    $accountSelection = $role_has_permissions_list->where('name', 'account-selection')->first();
-                                                            ?>
+                                    $accountSelection = $role_has_permissions_list->where('name', 'account-selection')->first();
+                                    ?>
                                     @if ($accountSelection)
                                         <!-- New Account Selection Field -->
                                         <div class="col-md-3 col-6">
@@ -1267,7 +1267,7 @@
                                                             @if($field->is_required){{'required'}}@endif></textarea>
                                                     @elseif($field->type == 'checkbox')
                                                         <br>
-                                                        <?php            $option_values = explode(',', $field->option_value); ?>
+                                                        <?php $option_values = explode(',', $field->option_value); ?>
                                                         @foreach($option_values as $value)
                                                             <label>
                                                                 <input type="checkbox"
@@ -1279,7 +1279,7 @@
                                                         @endforeach
                                                     @elseif($field->type == 'radio_button')
                                                         <br>
-                                                        <?php            $option_values = explode(',', $field->option_value); ?>
+                                                        <?php $option_values = explode(',', $field->option_value); ?>
                                                         @foreach($option_values as $value)
                                                             <label class="radio-inline">
                                                                 <input type="radio"
@@ -1290,7 +1290,7 @@
                                                             &nbsp;
                                                         @endforeach
                                                     @elseif($field->type == 'select')
-                                                        <?php            $option_values = explode(',', $field->option_value); ?>
+                                                        <?php $option_values = explode(',', $field->option_value); ?>
                                                         <select class="form-control"
                                                             name="{{str_replace(' ', '_', strtolower($field->name))}}"
                                                             @if($field->is_required){{'required'}}@endif>
@@ -1301,7 +1301,7 @@
                                                             @endforeach
                                                         </select>
                                                     @elseif($field->type == 'multi_select')
-                                                        <?php            $option_values = explode(',', $field->option_value); ?>
+                                                        <?php $option_values = explode(',', $field->option_value); ?>
                                                         <select class="form-control"
                                                             name="{{str_replace(' ', '_', strtolower($field->name))}}[]"
                                                             @if($field->is_required){{'required'}}@endif multiple>
@@ -1515,9 +1515,9 @@
                                 </button>
                                 <div class="">
                                     @if(in_array("card", $options))
-                                        <!-- <div class="column-5">
-                                                                                            <button style="background: #0984e3" type="button" class="btn btn-sm btn-custom payment-btn" data-toggle="modal" data-target="#add-payment" id="credit-card-btn" disabled="true"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" /></svg> {{__('db.Card')}}</button>
-                                                                                        </div> -->
+                                    <div class="column-5">
+                                        <button style="background: #0984e3" type="button" class="btn btn-sm btn-custom payment-btn" data-toggle="modal" data-target="#add-payment" id="credit-card-btn" disabled="true"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" /></svg> {{__('db.Card')}}</button>
+                                    </div>
                                     @endif
                                     @if(in_array("cash", $options))
                                         <div class="column-5">
@@ -1615,12 +1615,12 @@
                             </div>
                         </div>
                         <?php
-    $fixed_methods = ['cash', 'card', 'cheque', 'gift_card', 'deposit', 'pesapal'];
-    $payment_methods = explode(',', $lims_pos_setting_data->payment_options);
+                        $fixed_methods = ['cash', 'card', 'cheque', 'gift_card', 'deposit', 'pesapal'];
+                        $payment_methods = explode(',', $lims_pos_setting_data->payment_options);
 
-    $payment_methods = array_diff($payment_methods, $fixed_methods);
-    $payment_methods = array_values($payment_methods);
-                                                ?>
+                        $payment_methods = array_diff($payment_methods, $fixed_methods);
+                        $payment_methods = array_values($payment_methods);
+                        ?>
                         @if (count($payment_methods))
                             <!-- <div class="column-5">
                                                                                 <div class="btn-group" role="group">
@@ -1676,7 +1676,7 @@
                                 </div>
                                 <div class="modal-body">
                                     <div class="row">
-                                        <div class="col-md-10" id="payment-select-row">
+                                        <div class="col-md-8" id="payment-select-row">
                                             <div class="row">
                                                 <div class="col-md-3 col-6 mt-1 paying-amount-container">
                                                     <label>{{__('db.Paying Amount')}} *</label>
@@ -1749,7 +1749,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-2 p-2 bg-info text-light pt-4 pb-4 payment-info">
+                                        <div class="col-md-4 p-2 bg-info text-light pt-4 pb-4 payment-info">
                                             <div class="mt-4">
                                                 <h2>{{__('db.Total Payable')}}</h2>
                                                 <p class="total_payable text-light"></p>
@@ -1999,13 +1999,13 @@
                                                     step="any">
                                             </div>
                                             <?php
-    $tax_name_all[] = 'No Tax';
-    $tax_rate_all[] = 0;
-    foreach ($lims_tax_list as $tax) {
-        $tax_name_all[] = $tax->name;
-        $tax_rate_all[] = $tax->rate;
-    }
-                                                                    ?>
+                                            $tax_name_all[] = 'No Tax';
+                                            $tax_rate_all[] = 0;
+                                            foreach ($lims_tax_list as $tax) {
+                                                $tax_name_all[] = $tax->name;
+                                                $tax_rate_all[] = $tax->rate;
+                                            }
+                                            ?>
                                             <div class="col-md-4 form-group">
                                                 <label>{{__('db.Tax Rate')}}</label>
                                                 <select name="edit_tax_rate" class="form-control selectpicker">
@@ -2300,7 +2300,7 @@
                                                     </svg></span></button>
                                         </div>
                                         <div class="col-md-4 text-left">
-                                            <img src="{{env('PUB_PATH') . 'logo/' . $general_setting->site_logo}}"
+                                            <img src="{{env('PUB_PATH') . '/logo/' . $general_setting->site_logo}}"
                                                 width="90px;">
                                         </div>
                                         <div class="col-md-4 text-center">
@@ -2365,18 +2365,18 @@
                                                         <td>{{__('db.Cash Payment')}}:</td>
                                                         <td class="cash_payment text-right"></td>
                                                     </tr>
-                                                    <!-- <tr>
-                                                                                <td>{{__('db.Credit Card Payment')}}:</td>
-                                                                                <td class="credit_card_payment text-right"></td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td>{{__('db.Cheque Payment')}}:</td>
-                                                                                <td class="cheque_payment text-right"></td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td>{{__('db.Gift Card Payment')}}:</td>
-                                                                                <td class="gift_card_payment text-right"></td>
-                                                                            </tr> -->
+                                                    <tr>
+                                                        <td>{{__('db.Credit Card Payment')}}:</td>
+                                                        <td class="credit_card_payment text-right"></td>
+                                                    </tr>
+                                                    <!--    <tr>
+                                                        <td>{{__('db.Cheque Payment')}}:</td>
+                                                        <td class="cheque_payment text-right"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>{{__('db.Gift Card Payment')}}:</td>
+                                                        <td class="gift_card_payment text-right"></td>
+                                                    </tr> -->
                                                     <tr>
                                                         <td>{{__('db.Deposit Payment')}}:</td>
                                                         <td class="deposit_payment text-right"></td>
@@ -2484,16 +2484,16 @@
                         </p>
                         {!! Form::open(['route' => 'expenses.store', 'method' => 'post']) !!}
                         <?php
-    $lims_expense_category_list = DB::table('expense_categories')->where('is_active', true)->get();
-    if (Auth::user()->role_type > 2)
-        $lims_warehouse_list = DB::table('warehouses')->where([
-            ['is_active', true],
-            ['id', Auth::user()->warehouse_id]
-        ])->get();
-    else
-        $lims_warehouse_list = DB::table('warehouses')->where('is_active', true)->get();
-    $lims_account_list = \App\Models\Account::where('is_active', true)->get();
-                                    ?>
+                        $lims_expense_category_list = DB::table('expense_categories')->where('is_active', true)->get();
+                        if (Auth::user()->role_type > 2)
+                            $lims_warehouse_list = DB::table('warehouses')->where([
+                                ['is_active', true],
+                                ['id', Auth::user()->warehouse_id]
+                            ])->get();
+                        else
+                            $lims_warehouse_list = DB::table('warehouses')->where('is_active', true)->get();
+                        $lims_account_list = \App\Models\Account::where('is_active', true)->get();
+                        ?>
                         <div class="row">
                             <div class="col-md-6 form-group">
                                 <label>{{ __('Date') }}</label>
@@ -2516,7 +2516,7 @@
                             <div class="col-md-6 form-group">
                                 <label>{{ __('Warehouse') }} *</label>
                                 <select name="warehouse_id" class="selectpicker form-control" required
-                                    data-live-search="true" data-live-search-style="begins" title="Select Warehouse...">
+                                    data-live-search="true" data-live-search-style="begins" title="Select store...">
                                     @foreach($lims_warehouse_list as $warehouse)
                                         <option value="{{$warehouse->id}}">{{$warehouse->name}}</option>
                                     @endforeach
@@ -2617,7 +2617,7 @@
                                 <div class="col-md-6 form-group warehouse-section">
                                     <label>{{__('db.Warehouse')}} *</strong> </label>
                                     <select required name="warehouse_id" class="selectpicker form-control"
-                                        data-live-search="true" data-live-search-style="begins" title="Select warehouse...">
+                                        data-live-search="true" data-live-search-style="begins" title="Select store...">
                                         @foreach($lims_warehouse_list as $warehouse)
                                             <option value="{{$warehouse->id}}">{{$warehouse->name}}</option>
                                         @endforeach
@@ -2679,22 +2679,22 @@
                                                     </tr>
                                                 @endif
                                                 @if(in_array("card", $options))
-                                                    <!-- <tr>
-                                                                                                                                <td>{{__('db.Credit Card Payment')}}:</td>
-                                                                                                                                <td id="credit_card_payment" class="text-right"></td>
-                                                                                                                            </tr> -->
+                                                    <tr>
+                                                    <td>{{__('db.Credit Card Payment')}}:</td>
+                                                    <td id="credit_card_payment" class="text-right"></td>
+                                                    </tr>
                                                 @endif
                                                 @if(in_array("cheque", $options))
                                                     <!-- <tr>
-                                                                                                                                <td>{{__('db.Cheque Payment')}}:</td>
-                                                                                                                                <td id="cheque_payment" class="text-right"></td>
-                                                                                                                            </tr> -->
+                                                    <td>{{__('db.Cheque Payment')}}:</td>
+                                                    <td id="cheque_payment" class="text-right"></td>
+                                                    </tr> -->
                                                 @endif
                                                 @if(in_array("gift_card", $options))
-                                                    <!-- <tr>
-                                                                                                                                <td>{{__('db.Gift Card Payment')}}:</td>
-                                                                                                                                <td id="gift_card_payment" class="text-right"></td>
-                                                                                                                            </tr> -->
+                                                <!-- <tr>
+                                                <td>{{__('db.Gift Card Payment')}}:</td>
+                                                <td id="gift_card_payment" class="text-right"></td>
+                                                </tr> -->
                                                 @endif
                                                 @if(in_array("deposit", $options))
                                                     <tr>
@@ -3182,7 +3182,7 @@
 
 
         @if($lims_pos_setting_data)
-            var public_key = <?php    echo json_encode($lims_pos_setting_data->stripe_public_key) ?>;
+            var public_key = <?php echo json_encode($lims_pos_setting_data->stripe_public_key) ?>;
         @endif
                                 var without_stock = <?php echo json_encode($general_setting->without_stock) ?>;
         var alert_product = <?php echo json_encode($alert_product) ?>;
@@ -3225,7 +3225,7 @@
         var reward_point_setting = <?php echo json_encode($lims_reward_point_setting_data) ?>;
 
         @if($lims_pos_setting_data)
-            var product_row_number = <?php    echo json_encode($lims_pos_setting_data->product_number) ?>;
+            var product_row_number = <?php echo json_encode($lims_pos_setting_data->product_number) ?>;
         @endif
                                 var rowindex;
         var customer_group_rate;
@@ -4340,7 +4340,7 @@
                 htmltext += '<strong>{{__("db.Attach Document")}}: </strong><a href="documents/sale/' + sale[30] + '">Download</a><br>';
 
             htmltext += '<br><div class="row"><div class="col-md-6"><strong>{{__("db.From")}}:</strong><br>' + sale[3] + '<br>' + sale[4] + '<br>' + sale[5] + '<br>' + sale[6] + '<br>' + sale[7] + '<br>' + sale[8] +
-                '</div><div class="col-md-6"><div class="float-right"><strong>{{__("db.To")}}:</strong><br>' + sale[9] + '<br>' + sale[10] + '<br>' + sale[11] + '<br>' + sale[12] + '</div></div></div>';
+                '</div><div class="col-md-6"><div><strong>{{__("db.To")}}:</strong><br>' + sale[9] + '<br>' + sale[10] + '<br>' + sale[11] + '<br>' + sale[12] + '</div></div></div>';
 
             $.get('{{ url("sales/product_sale") }}/' + sale[13], function (data) {
                 $(".product-sale-list tbody").remove();
@@ -4907,7 +4907,7 @@
                         currency: "INR",
                         name: "{{ config('site_title') }}",
                         description: "Order Payment",
-                        image: "{{ asset('logo/' . config('site_logo')) }}",
+                        image: "{{ env('PUB_PATH') . '/logo/'. config('site_logo') }}",
                         order_id: res.order_id,
                         prefill: {
                             name: data.name,

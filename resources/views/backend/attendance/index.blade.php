@@ -62,7 +62,7 @@
                             <!-- Warehouse -->
                             <div class="col-md-3 mb-3">
                                 <label>{{ __('db.Warehouse') }}</label>
-                                <select name="warehouse" class="form-control selectpicker" id="filterWarehouse" data-live-search="true" title="Select Warehouse...">
+                                <select name="warehouse" class="form-control selectpicker" id="filterWarehouse" data-live-search="true" title="Select store...">
                                     <option value="">All</option>
                                     @foreach($lims_warehouse_list as $warehouse)
                                         <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>

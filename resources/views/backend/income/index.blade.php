@@ -91,14 +91,14 @@
               <p class="italic"><small>{{__('db.The field labels marked with * are required input fields')}}.</small></p>
                 {!! Form::open(['route' => ['incomes.update', 1], 'method' => 'put']) !!}
                 <?php
-                    $lims_income_category_list = DB::table('income_categories')->where('is_active', true)->get();
-                    if(Auth::user()->role_type > 2)
-                        $lims_warehouse_list = DB::table('warehouses')->where([
-                            ['is_active', true],
-                            ['id', Auth::user()->warehouse_id]
-                        ])->get();
-                    else
-                        $lims_warehouse_list = DB::table('warehouses')->where('is_active', true)->get();
+                $lims_income_category_list = DB::table('income_categories')->where('is_active', true)->get();
+                if (Auth::user()->role_type > 2)
+                    $lims_warehouse_list = DB::table('warehouses')->where([
+                        ['is_active', true],
+                        ['id', Auth::user()->warehouse_id]
+                    ])->get();
+                else
+                    $lims_warehouse_list = DB::table('warehouses')->where('is_active', true)->get();
                 ?>
                   <div class="form-group">
                       <input type="hidden" name="income_id">
@@ -120,7 +120,7 @@
                         </div>
                         <div class="col-md-6 form-group">
                             <label>{{__('db.Warehouse')}} *</label>
-                            <select name="warehouse_id" class="selectpicker form-control" required data-live-search="true" data-live-search-style="begins" title="Select Warehouse...">
+                            <select name="warehouse_id" class="selectpicker form-control" required data-live-search="true" data-live-search-style="begins" title="Select store...">
                                 @foreach($lims_warehouse_list as $warehouse)
                                 <option value="{{$warehouse->id}}">{{$warehouse->name}}</option>
                                 @endforeach

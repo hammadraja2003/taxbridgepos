@@ -251,7 +251,7 @@
             $total_notifications = $alert_product + $dso_alert_product_no + $expire_alert_products;
             @endphp
 
-            <li class="nav-item" id="notification-icon">
+            <li class="nav-item">
 
                 <a rel="nofollow" data-toggle="tooltip" title="{{ __('Notifications') }}" class="nav-link dropdown-item">
                     <i class="dripicons-bell"></i>
@@ -292,7 +292,7 @@
                         @if($expire_alert_products > 0)
                         <li class="notifications">
                             <a href="{{ route('report.productExpiry') }}" class="btn btn-link">
-                                {{ $expire_alert_products }} product will expire within {{ $product_qty_alert_active->expiry_alert_days ?? 0  }} days
+                                {{ $expire_alert_products }} product will expire within {{ $general_setting->expiry_alert_days ?? 0  }} days
                             </a>
                         </li>
                         @endif
@@ -304,6 +304,67 @@
 
                 </ul>
             </li>
+
+            @php
+                $my_notifications = Auth::user()->unreadNotifications()->latest()->take(10)->get();
+                $unread_count = Auth::user()->unreadNotifications->count();
+            @endphp
+            <li class="nav-item">
+                <a rel="nofollow" data-toggle="tooltip" title="{{ __('Notifications') }}" class="nav-link dropdown-item">
+                    <i class="dripicons-bell"></i>
+
+                     @if($unread_count > 0)
+                        <span class="badge badge-danger notification-number">{{ $unread_count }}</span>
+                    @endif
+                </a>
+
+                <ul class="right-sidebar">
+                    <li class="notifications text-center font-weight-bold border-bottom py-2">
+                        My Notifications
+                    </li>
+
+                    @if($my_notifications->count() == 0)
+                        <li class="notifications text-center">
+                            <span class="text-muted">No notifications available</span>
+                        </li>
+                    @else
+                        @foreach($my_notifications as $notification)
+                            <li class="notifications {{ is_null($notification->read_at) ? 'bg-light' : '' }}" id="notification-{{ $notification->id }}">
+                                <a href="javascript:void(0);"
+                                  class="d-flex justify-content-between align-items-start text-decoration-none text-dark p-1 notification-link"
+                                  data-id="{{ $notification->id }}"
+                                  data-toggle="popover"
+                                  data-trigger="hover"
+                                  data-placement="top"
+                                  title="{{ $notification->data['message'] ?? 'Notification' }}"
+                                  data-content="{{ $notification->data['message'] ?? 'Notification' }}">
+
+                                    {{-- Left side: Message --}}
+                                    <div class="text-truncate" style="max-width: 85%;">
+                                        {{ $notification->data['message'] ?? '' }}
+                                    </div>
+
+                                    {{-- Right side: Time --}}
+                                    <small class="text-muted flex-shrink-0 ml-2">
+                                        {{ $notification->created_at->diffForHumans() }}
+                                    </small>
+                                </a>
+                            </li>
+                        @endforeach
+
+
+                        {{-- Footer --}}
+                        <li class="notifications text-center border-top pt-2">
+                            <a href="{{ route('notifications.index') }}" class="btn btn-sm btn-primary">
+                                View All Notifications
+                            </a>
+                        </li>
+
+                    @endif
+
+                </ul>
+            </li>
+
             <!-- <li class="nav-item">
               <a rel="nofollow" title="{{ __('db.language') }}" data-toggle="tooltip" class="nav-link dropdown-item"><i class="dripicons-web"></i></a>
               <ul class="right-sidebar">
@@ -334,9 +395,9 @@
                   <a href="{{route('setting.general') }}"><i class="dripicons-gear"></i> {{ __('db.settings') }}</a>
                 </li>
                 @endif
-                <!-- <li>
+                <li>
                   <a href="{{url('my-transactions/'.date('Y').'/'.date('m'))}}"><i class="dripicons-swap"></i> {{ __('db.My Transaction') }}</a>
-                </li> -->
+                </li>
                 @if(Auth::user()->role_type != 4)
                 <!-- <li>
                   <a href="{{url('holidays/my-holiday/'.date('Y').'/'.date('m'))}}"><i class="dripicons-vibrate"></i> {{ __('db.My Holiday') }}</a>
@@ -498,7 +559,7 @@
               </div>
               <div class="col-md-6 form-group">
                 <label>{{ __('Warehouse') }} *</label>
-                <select name="warehouse_id" class="selectpicker form-control" required data-live-search="true" data-live-search-style="begins" title="Select Warehouse...">
+                <select name="warehouse_id" class="selectpicker form-control" required data-live-search="true" data-live-search-style="begins" title="Select store...">
                   @foreach($lims_warehouse_list as $warehouse)
                   <option value="{{$warehouse->id}}">{{$warehouse->name}}</option>
                   @endforeach
@@ -610,7 +671,7 @@
               </div>
               <div class="col-md-6 form-group">
                 <label>{{ __('Warehouse') }} *</label>
-                <select name="warehouse_id" class="selectpicker form-control" required data-live-search="true" data-live-search-style="begins" title="Select Warehouse...">
+                <select name="warehouse_id" class="selectpicker form-control" required data-live-search="true" data-live-search-style="begins" title="Select store...">
                   @foreach($lims_warehouse_list as $warehouse)
                   <option value="{{$warehouse->id}}">{{$warehouse->name}}</option>
                   @endforeach
@@ -799,7 +860,7 @@
 
             <div class="form-group">
               <label>{{ __('Warehouse') }} *</label>
-              <select name="warehouse_id" class="selectpicker form-control" required data-live-search="true" id="warehouse-id" data-live-search-style="begins" title="Select warehouse...">
+              <select name="warehouse_id" class="selectpicker form-control" required data-live-search="true" id="warehouse-id" data-live-search-style="begins" title="Select store...">
                 @foreach($lims_warehouse_list as $warehouse)
                 <option value="{{$warehouse->id}}">{{$warehouse->name}}</option>
                 @endforeach
@@ -1145,9 +1206,9 @@
     }
 
     $("li#notification-icon").on("click", function(argument) {
-      $.get('notifications/mark-as-read', function(data) {
-        $("span.notification-number").text(alert_product);
-      });
+      // $.get('notifications/mark-as-read', function(data) {
+      //   $("span.notification-number").text(alert_product);
+      // });
     });
 
     $("a#add-expense").click(function(e) {
@@ -1295,7 +1356,6 @@
         }
     });
 
-      // Automatically activate sidebar menu based on current URL
       $(document).ready(function() {
           var currentUrl = window.location.href;
           var validLinks = [];
@@ -1311,28 +1371,43 @@
               }
           });
 
-          // Sort by length descending to find the most specific match
           validLinks.sort(function(a, b) {
               return b.length - a.length;
           });
 
           if (validLinks.length > 0) {
               var activeLink = validLinks[0].element;
-              
-              // Add active class to the link's parent li
               activeLink.parent().addClass('active');
-
-              // If it's a submenu item
               if (activeLink.closest('ul').hasClass('collapse')) {
-                  // Expand the parent ul
                   activeLink.closest('ul').addClass('show');
-                  // Mark the parent dropdown as active and expanded
                   activeLink.closest('ul').siblings('a').attr('aria-expanded', 'true');
               }
           }
       });
     </script>
-   
+
+    <script>
+      $(document).ready(function(){
+          $('[data-toggle="popover"]').popover({container: 'body', html: true});
+          $('.notification-link').on('click', function(e){
+              e.preventDefault();
+
+              var id = $(this).data('id');
+              var li = $('#notification-' + id);
+              $.get('/notifications/read/' + id, function(response){
+                  if(response.success){
+                      li.removeClass('bg-light');
+                      li.fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+                  }
+              });
+              var url = li.find('a').data('url');
+              if(url){
+                  window.location.href = url;
+              }
+          });
+
+      });
+    </script>
 </body>
 
 </html>

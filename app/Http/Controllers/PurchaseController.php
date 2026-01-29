@@ -2,42 +2,42 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
-use Stripe\Stripe;
-use App\Models\Tax;
-use App\Models\Sale;
-use App\Models\Unit;
-use App\Models\User;
-use App\Models\Account;
-use App\Models\Payment;
-use App\Models\Product;
-use App\Models\Variant;
-use App\Models\Currency;
-use App\Models\Purchase;
-use App\Models\Supplier;
-use App\Models\Warehouse;
-use App\Models\PosSetting;
-use App\Traits\TenantInfo;
 use App\Helpers\DateHelper;
-use App\Models\CustomField;
-use App\Traits\StaffAccess;
-use App\Models\Product_Sale;
-use App\Models\ProductBatch;
-use Illuminate\Http\Request;
-use App\Models\GeneralSetting;
-use App\Models\ProductVariant;
-use App\Models\ProductPurchase;
-use App\Services\PaymentService;
-use App\Models\PaymentWithCheque;
-use App\Models\Product_Warehouse;
-use Illuminate\Support\Facades\DB;
-use App\Models\Roles as Role;
-use Illuminate\Support\Facades\Auth;
-use App\Models\PaymentWithCreditCard;
-use Spatie\Permission\Models\Permission;
-use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\Purchase\StorePurchaseRequest;
 use App\Http\Requests\Purchase\UpdatePurchaseRequest;
+use App\Models\Account;
+use App\Models\Currency;
+use App\Models\CustomField;
+use App\Models\GeneralSetting;
+use App\Models\Payment;
+use App\Models\PaymentWithCheque;
+use App\Models\PaymentWithCreditCard;
+use App\Models\PosSetting;
+use App\Models\Product;
+use App\Models\Product_Sale;
+use App\Models\Product_Warehouse;
+use App\Models\ProductBatch;
+use App\Models\ProductPurchase;
+use App\Models\ProductVariant;
+use App\Models\Purchase;
+use App\Models\Roles as Role;
+use App\Models\Sale;
+use App\Models\Supplier;
+use App\Models\Tax;
+use App\Models\Unit;
+use App\Models\User;
+use App\Models\Variant;
+use App\Models\Warehouse;
+use App\Services\PaymentService;
+use App\Traits\StaffAccess;
+use App\Traits\TenantInfo;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Spatie\Permission\Models\Permission;
+use Stripe\Stripe;
 
 class PurchaseController extends Controller
 {
@@ -66,8 +66,8 @@ class PurchaseController extends Controller
                 $starting_date = $request->input('starting_date');
                 $ending_date = $request->input('ending_date');
             } else {
-                $starting_date = date("Y-m-d", strtotime(date('Y-m-d', strtotime('-1 year', strtotime(date('Y-m-d'))))));
-                $ending_date = date("Y-m-d");
+                $starting_date = date('Y-m-d', strtotime(date('Y-m-d', strtotime('-1 year', strtotime(date('Y-m-d'))))));
+                $ending_date = date('Y-m-d');
             }
             $permissions = Role::findByName($role->name)->permissions;
             foreach ($permissions as $permission)
@@ -83,7 +83,7 @@ class PurchaseController extends Controller
             ])->pluck('name');
             $field_name = [];
             foreach ($custom_fields as $fieldName) {
-                $field_name[] = str_replace(" ", "_", strtolower($fieldName));
+                $field_name[] = str_replace(' ', '_', strtolower($fieldName));
             }
             $currency_list = Currency::where('is_active', true)->get();
             return view('backend.purchase.index', compact('lims_account_list', 'lims_warehouse_list', 'all_permission', 'lims_pos_setting_data', 'warehouse_id', 'starting_date', 'ending_date', 'purchase_status', 'payment_status', 'custom_fields', 'field_name', 'currency_list'));
@@ -148,7 +148,7 @@ class PurchaseController extends Controller
             $data['user_id'] = Auth::user()->id;
 
             if (!isset($data['reference_no'])) {
-                $data['reference_no'] = 'pr-' . date("Ymd") . '-' . date("his");
+                $data['reference_no'] = 'PR-' . date('Ymd') . '-' . date('his');
             }
 
             $document = $request->document;
@@ -166,7 +166,7 @@ class PurchaseController extends Controller
                     return redirect()->back()->withErrors($v->errors());
 
                 $ext = pathinfo($document->getClientOriginalName(), PATHINFO_EXTENSION);
-                $documentName = date("Ymdhis");
+                $documentName = date('Ymdhis');
                 if (!config('database.connections.saleprosaas_landlord')) {
                     $documentName = $documentName . '.' . $ext;
                     $document->move(public_path('documents/purchase'), $documentName);
@@ -183,19 +183,19 @@ class PurchaseController extends Controller
                 $data['created_at'] = date('Y-m-d H:i:s');
             }
 
-            $data['paid_amount'] = 0; // important as paid amount will be updated by PaymentService
+            $data['paid_amount'] = 0;  // important as paid amount will be updated by PaymentService
 
             // return dd($data);
             $lims_purchase_data = Purchase::create($data);
             // return $lims_purchase_data;
-            //inserting data for custom fields
+            // inserting data for custom fields
             $custom_field_data = [];
             $custom_fields = CustomField::where('belongs_to', 'purchase')->select('name', 'type')->get();
             foreach ($custom_fields as $type => $custom_field) {
                 $field_name = str_replace(' ', '_', strtolower($custom_field->name));
                 if (isset($data[$field_name])) {
                     if ($custom_field->type == 'checkbox' || $custom_field->type == 'multi_select')
-                        $custom_field_data[$field_name] = implode(",", $data[$field_name]);
+                        $custom_field_data[$field_name] = implode(',', $data[$field_name]);
                     else
                         $custom_field_data[$field_name] = $data[$field_name];
                 }
@@ -232,7 +232,7 @@ class PurchaseController extends Controller
                 }
                 $lims_product_data = Product::find($id);
                 $price = $lims_product_data->price;
-                //dealing with product barch
+                // dealing with product barch
                 if (isset($batch_no[$i])) {
                     $product_batch_data = ProductBatch::where([
                         ['product_id', $lims_product_data->id],
@@ -262,13 +262,13 @@ class PurchaseController extends Controller
                         ['warehouse_id', $data['warehouse_id']]
                     ])->first();
                     $product_purchase['variant_id'] = $lims_product_variant_data->variant_id;
-                    //add quantity to product variant table
+                    // add quantity to product variant table
                     $lims_product_variant_data->qty += $quantity;
                     $lims_product_variant_data->save();
                 } else {
                     $product_purchase['variant_id'] = null;
                     if ($product_purchase['product_batch_id']) {
-                        //checking for price
+                        // checking for price
                         $lims_product_warehouse_data = Product_Warehouse::where([
                             ['product_id', $id],
                             ['warehouse_id', $data['warehouse_id']],
@@ -292,7 +292,7 @@ class PurchaseController extends Controller
                         ])->first();
                     }
                 }
-                //add quantity to product table
+                // add quantity to product table
                 $lims_product_data->qty = $lims_product_data->qty + $quantity;
                 // update cost, profit margin, and price
 
@@ -303,7 +303,7 @@ class PurchaseController extends Controller
                 $lims_product_data->price = $net_unit_price[$i];
 
                 $lims_product_data->save();
-                //add quantity to warehouse
+                // add quantity to warehouse
                 if ($lims_product_warehouse_data) {
                     $lims_product_warehouse_data->qty = $lims_product_warehouse_data->qty + $quantity;
                     $lims_product_warehouse_data->product_batch_id = $product_purchase['product_batch_id'];
@@ -333,7 +333,7 @@ class PurchaseController extends Controller
                             return redirect('purchases/create')->with('not_permitted', __('db.Duplicate IMEI not allowed!'));
                         }
                     }
-                    //added imei numbers to product_warehouse table
+                    // added imei numbers to product_warehouse table
                     if ($lims_product_warehouse_data->imei_number)
                         $lims_product_warehouse_data->imei_number .= ',' . $imei_numbers[$i];
                     else
@@ -380,8 +380,6 @@ class PurchaseController extends Controller
                     'payment_at' => $data['payment_at']
                 ];
 
-
-
                 $response = (new PaymentService())->payForPurchase($pay_data);
 
                 if (!$response['status']) {
@@ -390,7 +388,7 @@ class PurchaseController extends Controller
                 }
             }
 
-            //creating log
+            // creating log
             $log_data['action'] = 'Purchase Created';
             $log_data['user_id'] = Auth::id();
             $log_data['reference_no'] = $lims_purchase_data->reference_no;
@@ -431,10 +429,10 @@ class PurchaseController extends Controller
 
         try {
             // return dd($request->all());
-            //get the file
+            // get the file
             $upload = $request->file('file');
             $ext = pathinfo($upload->getClientOriginalName(), PATHINFO_EXTENSION);
-            //checking if this is a CSV file
+            // checking if this is a CSV file
             if ($ext != 'csv')
                 return redirect()->back()->with('message', __('db.Please upload a CSV file'));
 
@@ -446,7 +444,7 @@ class PurchaseController extends Controller
             $tax = [];
             $discount = [];
             $counter = 1;
-            //validate the file
+            // validate the file
             while (!feof($file_handle)) {
                 $current_line = fgetcsv($file_handle);
                 if ($current_line && $i > 0) {
@@ -464,7 +462,7 @@ class PurchaseController extends Controller
                         throw new \Exception(__('db.Purchase unit does not exist!'));
                         // return redirect()->back()->with('message', __('db.Purchase unit does not exist!'));
                     }
-                    if (strtolower($current_line[5]) != "no tax") {
+                    if (strtolower($current_line[5]) != 'no tax') {
                         $tax[] = Tax::where('name', $current_line[5])->first();
                         if (!$tax[$i - 1]) {
                             throw new \Exception(__('db.Tax name does not exist!'));
@@ -487,15 +485,15 @@ class PurchaseController extends Controller
 
             $data = $request->except('file');
             if (isset($data['created_at'])) {
-                $dateNow = str_replace("/", "-", $data['created_at']);
-                $data['created_at'] = date("Y-m-d H:i:s", strtotime($dateNow));
-                $data['updated_at'] = date("Y-m-d H:i:s", strtotime($dateNow));
+                $dateNow = str_replace('/', '-', $data['created_at']);
+                $data['created_at'] = date('Y-m-d H:i:s', strtotime($dateNow));
+                $data['updated_at'] = date('Y-m-d H:i:s', strtotime($dateNow));
             } else {
-                $data['created_at'] = date("Y-m-d H:i:s");
-                $data['updated_at'] = date("Y-m-d H:i:s");
+                $data['created_at'] = date('Y-m-d H:i:s');
+                $data['updated_at'] = date('Y-m-d H:i:s');
             }
             if (!isset($data['reference_no'])) {
-                $data['reference_no'] = 'pr-' . date("Ymd") . '-' . date("his");
+                $data['reference_no'] = 'PR-' . date('Ymd') . '-' . date('his');
             }
 
             $document = $request->document;
@@ -514,7 +512,7 @@ class PurchaseController extends Controller
                 }
 
                 $ext = pathinfo($document->getClientOriginalName(), PATHINFO_EXTENSION);
-                $documentName = date("Ymdhis");
+                $documentName = date('Ymdhis');
                 if (!config('database.connections.saleprosaas_landlord')) {
                     $documentName = $documentName . '.' . $ext;
                     $document->move(public_path('documents/purchase'), $documentName);
@@ -539,9 +537,9 @@ class PurchaseController extends Controller
                         // return redirect('purchases/purchase_by_csv')->with('not_permitted', __('db.Duplicate IMEI not allowed!'));
                     }
                 }
-                $qty[$key] = (int) str_replace(",", "", $qty[$key]);
-                $cost[$key] = (float) str_replace(",", "", $cost[$key]);
-                $discount[$key] = (float) str_replace(",", "", $discount[$key]);
+                $qty[$key] = (int) str_replace(',', '', $qty[$key]);
+                $cost[$key] = (float) str_replace(',', '', $cost[$key]);
+                $discount[$key] = (float) str_replace(',', '', $discount[$key]);
                 if ($product['tax_method'] == 1) {
                     // return dd($cost);
                     $net_unit_cost = $cost[$key] - $discount[$key];
@@ -658,7 +656,7 @@ class PurchaseController extends Controller
         $payment_status = $request->input('payment_status');
 
         $q = Purchase::whereDate('created_at', '>=', $request->input('starting_date'))->whereDate('created_at', '<=', $request->input('ending_date'));
-        //check staff access
+        // check staff access
         $this->staffAccessCheck($q);
         if ($warehouse_id)
             $q = $q->where('warehouse_id', $warehouse_id);
@@ -677,14 +675,14 @@ class PurchaseController extends Controller
         $start = $request->input('start');
         $order = 'purchases.' . $columns[$request->input('order.0.column')];
         $dir = $request->input('order.0.dir');
-        //fetching custom fields data
+        // fetching custom fields data
         $custom_fields = CustomField::where([
             ['belongs_to', 'purchase'],
             ['is_table', true]
         ])->pluck('name');
         $field_names = [];
         foreach ($custom_fields as $fieldName) {
-            $field_names[] = str_replace(" ", "_", strtolower($fieldName));
+            $field_names[] = str_replace(' ', '_', strtolower($fieldName));
         }
         if (empty($request->input('search.value'))) {
             $q = Purchase::with('supplier', 'warehouse', 'products')
@@ -693,7 +691,7 @@ class PurchaseController extends Controller
                 ->offset($start)
                 ->limit($limit)
                 ->orderBy($order, $dir);
-            //check staff access
+            // check staff access
             $this->staffAccessCheck($q);
             if ($warehouse_id)
                 $q = $q->where('warehouse_id', $warehouse_id);
@@ -740,12 +738,12 @@ class PurchaseController extends Controller
 
             // ✅ SAFE SEARCH GROUP
             $q->where(function ($query) use ($search, $searchDate, $field_names) {
-
                 if (strtotime($searchDate)) {
                     $query->orWhereDate('purchases.created_at', $searchDate);
                 }
 
-                $query->orWhere('purchases.reference_no', 'LIKE', "%{$search}%")
+                $query
+                    ->orWhere('purchases.reference_no', 'LIKE', "%{$search}%")
                     ->orWhere('suppliers.name', 'LIKE', "%{$search}%")
                     ->orWhere('product_purchases.imei_number', 'LIKE', "%{$search}%")
                     ->orWhere('products.name', 'LIKE', "%{$search}%");
@@ -753,7 +751,6 @@ class PurchaseController extends Controller
                 foreach ($field_names as $field_name) {
                     $query->orWhere('purchases.' . $field_name, 'LIKE', "%{$search}%");
                 }
-
             });
 
             // ✅ COUNT
@@ -763,7 +760,8 @@ class PurchaseController extends Controller
             $q->orderBy($order, $dir);
 
             // ✅ FETCH
-            $purchases = $q->select('purchases.*')
+            $purchases = $q
+                ->select('purchases.*')
                 ->groupBy('purchases.id')
                 ->skip($start)
                 ->take($limit)
@@ -802,7 +800,7 @@ class PurchaseController extends Controller
                 }
 
                 $nestedData['supplier'] = $purchase->supplier->name ?? '';  // supplier name safely
-                $nestedData['products'] = implode('', $productNames);      // no commas, just join directly
+                $nestedData['products'] = implode('', $productNames);  // no commas, just join directly
                 $nestedData['products_qty'] = implode('', $productQtys);
 
                 if ($purchase->status == 1) {
@@ -831,13 +829,14 @@ class PurchaseController extends Controller
                         ->join('product_purchases as pp', 'pp.purchase_id', '=', 'p.id')
                         ->leftJoin('return_purchases as rp', 'rp.purchase_id', '=', 'p.id')
                         ->leftJoin('product_returns as pr', function ($join) {
-                            $join->on('pr.return_id', '=', 'rp.id')
+                            $join
+                                ->on('pr.return_id', '=', 'rp.id')
                                 ->on('pr.product_id', '=', 'pp.product_id');
                         })
                         ->where('p.id', $purchase->id)
                         ->groupBy('p.id')
                         ->first();
-                    if (!empty($purchase_return_partially->return_status == "Partially Returned")) {
+                    if (!empty($purchase_return_partially->return_status == 'Partially Returned')) {
                         $nestedData['purchase_status'] = '<div class="badge badge-danger">' . $purchase_return_partially->return_status . '</div>';
                         $purchase_status = $purchase_return_partially->return_status;
                     } else {
@@ -862,12 +861,12 @@ class PurchaseController extends Controller
                     max(0, ($purchase->grand_total - $returned_amount - $purchase->paid_amount) / $purchase->exchange_rate),
                     config('decimal')
                 );
-                //fetching custom fields data
+                // fetching custom fields data
                 foreach ($field_names as $field_name) {
                     $nestedData[$field_name] = $purchase->$field_name;
                 }
                 $nestedData['options'] = '<div class="btn-group">
-                            <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' . __("db.action") . '
+                            <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' . __('db.action') . '
                               <span class="caret"></span>
                               <span class="sr-only">Toggle Dropdown</span>
                             </button>
@@ -875,23 +874,23 @@ class PurchaseController extends Controller
                                 <li>
                                     <button type="button" class="btn btn-link view"><i class="fa fa-eye"></i> ' . __('db.View') . '</button>
                                 </li>';
-                if (in_array("purchases-add", $request['all_permission']))
+                if (in_array('purchases-add', $request['all_permission']))
                     $nestedData['options'] .= '<li>
                         <a href="' . route('purchase.duplicate', $purchase->id) . '" class="btn btn-link"><i class="fa fa-copy"></i> ' . __('db.Duplicate') . '</a>
                         </li>';
-                if (in_array("purchases-edit", $request['all_permission']))
+                if (in_array('purchases-edit', $request['all_permission']))
                     if ($purchase->payment_status == 1) {
                         $nestedData['options'] .= '<li>
                             <a href="' . route('purchases.edit', $purchase->id) . '" class="btn btn-link"><i class="dripicons-document-edit"></i> ' . __('db.edit') . '</a>
                             </li>';
                     }
-                if (in_array("purchase-payment-index", $request['all_permission']))
+                if (in_array('purchase-payment-index', $request['all_permission']))
                     $nestedData['options'] .=
                         '<li>
                             <button type="button" class="get-payment btn btn-link" data-id = "' . $purchase->id . '"><i class="fa fa-money"></i> ' . __('db.View Payment') . '</button>
                         </li>';
 
-                if (in_array("purchase-payment-add", $request['all_permission'])) {
+                if (in_array('purchase-payment-add', $request['all_permission'])) {
                     // if($purchase->payment_status == 1){
                     $currency_code_name = $purchase->currency->code ?? 'USD';
                     $nestedData['options'] .=
@@ -910,15 +909,15 @@ class PurchaseController extends Controller
                         </li>';
                     // }
                 }
-                if (in_array("purchases-delete", $request['all_permission']))
-                    $nestedData['options'] .= \Form::open(["route" => ["purchases.destroy", $purchase->id], "method" => "DELETE"]) . '
+                if (in_array('purchases-delete', $request['all_permission']))
+                    $nestedData['options'] .= \Form::open(['route' => ['purchases.destroy', $purchase->id], 'method' => 'DELETE']) . '
                             <li>
-                              <button type="submit" class="btn btn-link" onclick="return confirmDelete()"><i class="dripicons-trash"></i> ' . __("db.delete") . '</button>
+                              <button type="submit" class="btn btn-link" onclick="return confirmDelete()"><i class="dripicons-trash"></i> ' . __('db.delete') . '</button>
                             </li>' . \Form::close() . '
                         </ul>
                     </div>';
 
-                // data for purchase details by one click                
+                // data for purchase details by one click
                 if ($purchase->currency_id) {
                     $currency = Currency::select('code')->find($purchase->currency_id);
                     if ($currency)
@@ -933,12 +932,12 @@ class PurchaseController extends Controller
                     ' "' . $purchase->id . '"',
                     ' "' . $purchase->warehouse->name . '"',
                     ' "' . $purchase->warehouse->phone . '"',
-                    ' "' . preg_replace('/\s+/S', " ", $purchase->warehouse->address) . '"',
+                    ' "' . preg_replace('/\s+/S', ' ', $purchase->warehouse->address) . '"',
                     ' "' . $supplier->name . '"',
                     ' "' . $supplier->company_name . '"',
                     ' "' . $supplier->email . '"',
                     ' "' . $supplier->phone_number . '"',
-                    ' "' . preg_replace('/\s+/S', " ", $supplier->address) . '"',
+                    ' "' . preg_replace('/\s+/S', ' ', $supplier->address) . '"',
                     ' "' . $supplier->city . '"',
                     ' "' . $purchase->total_tax . '"',
                     ' "' . $purchase->total_discount . '"',
@@ -949,7 +948,7 @@ class PurchaseController extends Controller
                     ' "' . $purchase->shipping_cost . '"',
                     ' "' . $purchase->grand_total . '"',
                     ' "' . $purchase->paid_amount . '"',
-                    ' "' . preg_replace('/\s+/S', " ", $purchase->note) . '"',
+                    ' "' . preg_replace('/\s+/S', ' ', $purchase->note) . '"',
                     ' "' . $user->name . '"',
                     ' "' . $user->email . '"',
                     ' "' . $purchase->document . '"',
@@ -961,10 +960,10 @@ class PurchaseController extends Controller
         }
 
         $json_data = array(
-            "draw" => intval($request->input('draw')),
-            "recordsTotal" => intval($totalData),
-            "recordsFiltered" => intval($totalFiltered),
-            "data" => $data
+            'draw' => intval($request->input('draw')),
+            'recordsTotal' => intval($totalData),
+            'recordsFiltered' => intval($totalFiltered),
+            'data' => $data
         );
         echo json_encode($json_data);
     }
@@ -995,7 +994,8 @@ class PurchaseController extends Controller
                         ->where([
                             ['return_purchases.purchase_id', $id],
                             ['purchase_product_return.product_id', $product_purchase_data->product_id]
-                        ])->select('purchase_product_return.imei_number')
+                        ])
+                        ->select('purchase_product_return.imei_number')
                         ->first();
                 }
                 $product_purchase[1][$key] = $product_purchase_data->qty;
@@ -1011,17 +1011,18 @@ class PurchaseController extends Controller
             }
             return $product_purchase;
         } catch (\Exception $e) {
-            /*return response()->json('errors' => [$e->getMessage());*/
-            //return response()->json(['errors' => [$e->getMessage()]], 422);
+            /* return response()->json('errors' => [$e->getMessage()); */
+            // return response()->json(['errors' => [$e->getMessage()]], 422);
             return 'Something is wrong!';
         }
-
     }
 
     public function productWithoutVariant()
     {
-        return Product::ActiveStandard()->select('id', 'name', 'code')
-            ->whereNull('is_variant')->get();
+        return Product::ActiveStandard()
+            ->select('id', 'name', 'code')
+            ->whereNull('is_variant')
+            ->get();
     }
 
     public function productWithVariant()
@@ -1046,8 +1047,8 @@ class PurchaseController extends Controller
     public function limsProductSearch(Request $request)
     {
         // dd($request->all());
-        $product_code = explode("|", $request['data']);
-        $product_code[0] = rtrim($product_code[0], " ");
+        $product_code = explode('|', $request['data']);
+        $product_code[0] = rtrim($product_code[0], ' ');
         $lims_product_data = Product::where([
             ['code', $product_code[0]],
             ['is_active', true]
@@ -1090,7 +1091,7 @@ class PurchaseController extends Controller
         } else if ($cost > 0 && $lims_product_data->profit_margin_type === 'flat') {
             $calculatedMargin = $price - $cost;
         } else {
-            $calculatedMargin = 0; // or null, or skip updating
+            $calculatedMargin = 0;  // or null, or skip updating
         }
 
         if (round($calculatedMargin, 2) != round((float) $lims_product_data->profit_margin, 2)) {
@@ -1107,7 +1108,7 @@ class PurchaseController extends Controller
         }
         $product[] = $lims_product_data->tax_method;
 
-        $units = Unit::where("base_unit", $lims_product_data->unit_id)
+        $units = Unit::where('base_unit', $lims_product_data->unit_id)
             ->orWhere('id', $lims_product_data->unit_id)
             ->get();
         $unit_name = array();
@@ -1125,9 +1126,9 @@ class PurchaseController extends Controller
             }
         }
 
-        $product[] = implode(",", $unit_name) . ',';
-        $product[] = implode(",", $unit_operator) . ',';
-        $product[] = implode(",", $unit_operation_value) . ',';
+        $product[] = implode(',', $unit_name) . ',';
+        $product[] = implode(',', $unit_operator) . ',';
+        $product[] = implode(',', $unit_operation_value) . ',';
         $product[] = $lims_product_data->id;
         $product[] = $lims_product_data->is_batch;
         $product[] = $lims_product_data->is_imei;
@@ -1176,7 +1177,6 @@ class PurchaseController extends Controller
             return view('backend.purchase.edit', compact('lims_warehouse_list', 'lims_supplier_list', 'lims_product_list_without_variant', 'lims_product_list_with_variant', 'lims_tax_list', 'lims_purchase_data', 'lims_product_purchase_data', 'currency_list', 'currency_exchange_rate', 'custom_fields'));
         } else
             return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
-
     }
 
     public function update(UpdatePurchaseRequest $request, $id)
@@ -1199,7 +1199,7 @@ class PurchaseController extends Controller
             $this->fileDelete(public_path('documents/purchase/'), $lims_purchase_data->document);
 
             $ext = pathinfo($document->getClientOriginalName(), PATHINFO_EXTENSION);
-            $documentName = date("Ymdhis");
+            $documentName = date('Ymdhis');
             if (!config('database.connections.saleprosaas_landlord')) {
                 $documentName = $documentName . '.' . $ext;
                 $document->move(public_path('documents/purchase'), $documentName);
@@ -1209,7 +1209,7 @@ class PurchaseController extends Controller
             }
             $data['document'] = $documentName;
         }
-        //return dd($data);
+        // return dd($data);
         DB::beginTransaction();
 
         try {
@@ -1221,7 +1221,7 @@ class PurchaseController extends Controller
             }
             $lims_product_purchase_data = ProductPurchase::where('purchase_id', $id)->get();
 
-            $data['created_at'] = date("Y-m-d", strtotime(str_replace("/", "-", $data['created_at']))) . ' ' . date("H:i:s");
+            $data['created_at'] = date('Y-m-d', strtotime(str_replace('/', '-', $data['created_at']))) . ' ' . date('H:i:s');
             $product_id = $data['product_id'];
             $product_code = $data['product_code'];
             $qty = $data['qty'];
@@ -1242,7 +1242,6 @@ class PurchaseController extends Controller
             $product_purchase = [];
 
             foreach ($lims_product_purchase_data as $i => $product_purchase_data) {
-
                 $old_recieved_value = $product_purchase_data->recieved;
                 $lims_purchase_unit_data = Unit::find($product_purchase_data->purchase_unit_id);
 
@@ -1280,8 +1279,8 @@ class PurchaseController extends Controller
                 if ($product_purchase_data->imei_number) {
                     $position = array_search($lims_product_data->id, $product_id);
                     if ($imei_number[$position]) {
-                        $prev_imei_numbers = explode(",", $product_purchase_data->imei_number);
-                        $new_imei_numbers = explode(",", $imei_number[$position]);
+                        $prev_imei_numbers = explode(',', $product_purchase_data->imei_number);
+                        $new_imei_numbers = explode(',', $imei_number[$position]);
                         $temp_imeis = explode(',', $lims_product_warehouse_data->imei_number);
                         foreach ($prev_imei_numbers as $prev_imei_number) {
                             $pos = array_search($prev_imei_number, $temp_imeis);
@@ -1293,7 +1292,7 @@ class PurchaseController extends Controller
                         // return dd($prev_imei_number, $temp_imeis);
                         $lims_product_warehouse_data->imei_number = !empty($temp_imeis) ? implode(',', $temp_imeis) : null;
 
-                        $new_imei_number[$position] = implode(",", $new_imei_numbers);
+                        $new_imei_number[$position] = implode(',', $new_imei_numbers);
                     }
                 }
                 $lims_product_data->qty -= $old_recieved_value;
@@ -1324,7 +1323,7 @@ class PurchaseController extends Controller
 
                 $lims_product_data = Product::find($pro_id);
                 $price = null;
-                //dealing with product barch
+                // dealing with product barch
                 if ($batch_no[$key]) {
                     $product_batch_data = ProductBatch::where([
                         ['product_id', $lims_product_data->id],
@@ -1354,13 +1353,13 @@ class PurchaseController extends Controller
                         ['warehouse_id', $data['warehouse_id']]
                     ])->first();
                     $product_purchase['variant_id'] = $lims_product_variant_data->variant_id;
-                    //add quantity to product variant table
+                    // add quantity to product variant table
                     $lims_product_variant_data->qty += $new_recieved_value;
                     $lims_product_variant_data->save();
                 } else {
                     $product_purchase['variant_id'] = null;
                     if ($product_purchase['product_batch_id']) {
-                        //checking for price
+                        // checking for price
                         $lims_product_warehouse_data = Product_Warehouse::where([
                             ['product_id', $pro_id],
                             ['warehouse_id', $data['warehouse_id']],
@@ -1399,7 +1398,7 @@ class PurchaseController extends Controller
                     if ($price)
                         $lims_product_warehouse_data->price = $price;
                 }
-                //dealing with imei numbers
+                // dealing with imei numbers
                 if ($new_imei_number[$key]) {
                     // prevent duplication
                     $imeis = explode(',', $new_imei_number[$key]);
@@ -1444,7 +1443,7 @@ class PurchaseController extends Controller
 
             $lims_purchase_data->update($data);
 
-            //creating log
+            // creating log
             $log_data['action'] = 'Purchase Updated';
             $log_data['user_id'] = Auth::id();
             $log_data['reference_no'] = $lims_purchase_data->reference_no;
@@ -1457,14 +1456,14 @@ class PurchaseController extends Controller
             // $log_data['mail_setting'] = $mail_setting = MailSetting::latest()->first();
             $this->createActivityLog($log_data);
 
-            //inserting data for custom fields
+            // inserting data for custom fields
             $custom_field_data = [];
             $custom_fields = CustomField::where('belongs_to', 'purchase')->select('name', 'type')->get();
             foreach ($custom_fields as $type => $custom_field) {
                 $field_name = str_replace(' ', '_', strtolower($custom_field->name));
                 if (isset($data[$field_name])) {
                     if ($custom_field->type == 'checkbox' || $custom_field->type == 'multi_select')
-                        $custom_field_data[$field_name] = implode(",", $data[$field_name]);
+                        $custom_field_data[$field_name] = implode(',', $data[$field_name]);
                     else
                         $custom_field_data[$field_name] = $data[$field_name];
                 }
@@ -1473,17 +1472,17 @@ class PurchaseController extends Controller
                 DB::table('purchases')->where('id', $lims_purchase_data->id)->update($custom_field_data);
 
             DB::commit();
-            //return redirect()->route('purchases.edit', $id)->with('message', __('db.Purchase update successfully!'));
+            // return redirect()->route('purchases.edit', $id)->with('message', __('db.Purchase update successfully!'));
 
             $lims_purchase_data->update($data);
-            //inserting data for custom fields
+            // inserting data for custom fields
             $custom_field_data = [];
             $custom_fields = CustomField::where('belongs_to', 'purchase')->select('name', 'type')->get();
             foreach ($custom_fields as $type => $custom_field) {
                 $field_name = str_replace(' ', '_', strtolower($custom_field->name));
                 if (isset($data[$field_name])) {
                     if ($custom_field->type == 'checkbox' || $custom_field->type == 'multi_select')
-                        $custom_field_data[$field_name] = implode(",", $data[$field_name]);
+                        $custom_field_data[$field_name] = implode(',', $data[$field_name]);
                     else
                         $custom_field_data[$field_name] = $data[$field_name];
                 }
@@ -1516,7 +1515,6 @@ class PurchaseController extends Controller
             return view('backend.purchase.duplicate', compact('lims_warehouse_list', 'lims_supplier_list', 'lims_product_list_without_variant', 'lims_product_list_with_variant', 'lims_tax_list', 'lims_purchase_data', 'lims_product_purchase_data', 'currency_exchange_rate', 'custom_fields'));
         } else
             return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
-
     }
 
     public function addPayment(Request $request)
@@ -1613,7 +1611,7 @@ class PurchaseController extends Controller
         $data = $request->all();
         $lims_payment_data = Payment::find($data['payment_id']);
         $lims_purchase_data = Purchase::find($lims_payment_data->purchase_id);
-        //updating purchase table
+        // updating purchase table
         $amount_dif = $lims_payment_data->amount - $data['edit_amount'];
         $lims_purchase_data->paid_amount = $lims_purchase_data->paid_amount - $amount_dif;
         $balance = $lims_purchase_data->grand_total - $lims_purchase_data->paid_amount;
@@ -1629,7 +1627,7 @@ class PurchaseController extends Controller
             $data['payment_at'] = date('Y-m-d H:i:s');
         }
 
-        //updating payment data
+        // updating payment data
         $lims_payment_data->account_id = $data['account_id'];
         $lims_payment_data->amount = $data['edit_amount'];
         $lims_payment_data->change = $data['edit_paying_amount'] - $data['edit_amount'];
@@ -1650,7 +1648,7 @@ class PurchaseController extends Controller
                 $lims_payment_with_credit_card_data = PaymentWithCreditCard::where('payment_id', $lims_payment_data->id)->first();
 
                 \Stripe\Refund::create(array(
-                    "charge" => $lims_payment_with_credit_card_data->charge_id,
+                    'charge' => $lims_payment_with_credit_card_data->charge_id,
                 ));
 
                 $charge = \Stripe\Charge::create([
@@ -1706,7 +1704,7 @@ class PurchaseController extends Controller
             $lims_payment_with_credit_card_data = PaymentWithCreditCard::where('payment_id', $request['id'])->first();
             \Stripe\Stripe::setApiKey($lims_pos_setting_data->stripe_secret_key);
             \Stripe\Refund::create(array(
-                "charge" => $lims_payment_with_credit_card_data->charge_id,
+                'charge' => $lims_payment_with_credit_card_data->charge_id,
             ));
 
             $lims_payment_with_credit_card_data->delete();
@@ -1756,7 +1754,6 @@ class PurchaseController extends Controller
 
                     $this->fileDelete(public_path('documents/purchase/'), $lims_purchase_data->document);
 
-
                     $lims_payment_data = Payment::where('purchase_id', $id)->get();
                     $log_data['item_description'] = '';
                     foreach ($lims_product_purchase_data as $product_purchase_data) {
@@ -1786,16 +1783,16 @@ class PurchaseController extends Controller
                             $lims_product_warehouse_data = Product_Warehouse::FindProductWithoutVariant($product_purchase_data->product_id, $lims_purchase_data->warehouse_id)
                                 ->first();
                         }
-                        //deduct imei number if available
-                        if ($product_purchase_data->imei_number && !str_contains($product_purchase_data->imei_number, "null")) {
-                            $imei_numbers = explode(",", $product_purchase_data->imei_number);
-                            $all_imei_numbers = explode(",", $lims_product_warehouse_data->imei_number);
+                        // deduct imei number if available
+                        if ($product_purchase_data->imei_number && !str_contains($product_purchase_data->imei_number, 'null')) {
+                            $imei_numbers = explode(',', $product_purchase_data->imei_number);
+                            $all_imei_numbers = explode(',', $lims_product_warehouse_data->imei_number);
                             foreach ($imei_numbers as $number) {
                                 if (($j = array_search($number, $all_imei_numbers)) !== false) {
                                     unset($all_imei_numbers[$j]);
                                 }
                             }
-                            $lims_product_warehouse_data->imei_number = !empty($all_imei_numbers) ? implode(",", $all_imei_numbers) : null;
+                            $lims_product_warehouse_data->imei_number = !empty($all_imei_numbers) ? implode(',', $all_imei_numbers) : null;
                         }
 
                         $lims_product_data->qty -= $recieved_qty;
@@ -1810,14 +1807,14 @@ class PurchaseController extends Controller
                     }
                     $lims_pos_setting_data = PosSetting::latest()->first();
                     foreach ($lims_payment_data as $payment_data) {
-                        if ($payment_data->paying_method == "Cheque") {
+                        if ($payment_data->paying_method == 'Cheque') {
                             $payment_with_cheque_data = PaymentWithCheque::where('payment_id', $payment_data->id)->first();
                             $payment_with_cheque_data->delete();
-                        } elseif ($payment_data->paying_method == "Credit Card" && $lims_pos_setting_data->stripe_secret_key) {
+                        } elseif ($payment_data->paying_method == 'Credit Card' && $lims_pos_setting_data->stripe_secret_key) {
                             $payment_with_credit_card_data = PaymentWithCreditCard::where('payment_id', $payment_data->id)->first();
                             \Stripe\Stripe::setApiKey($lims_pos_setting_data->stripe_secret_key);
                             \Stripe\Refund::create(array(
-                                "charge" => $payment_with_credit_card_data->charge_id,
+                                'charge' => $payment_with_credit_card_data->charge_id,
                             ));
 
                             $payment_with_credit_card_data->delete();
@@ -1828,7 +1825,7 @@ class PurchaseController extends Controller
                     $lims_purchase_data->deleted_by = Auth::id();
                     $lims_purchase_data->save();
 
-                    //creating log
+                    // creating log
                     $log_data['action'] = 'Purchase Deleted';
                     $log_data['user_id'] = Auth::id();
                     $log_data['reference_no'] = $lims_purchase_data->reference_no;
@@ -1895,16 +1892,16 @@ class PurchaseController extends Controller
                     $lims_product_warehouse_data = Product_Warehouse::FindProductWithoutVariant($product_purchase_data->product_id, $lims_purchase_data->warehouse_id)
                         ->first();
                 }
-                //deduct imei number if available
-                if ($product_purchase_data->imei_number && !str_contains($product_purchase_data->imei_number, "null")) {
-                    $imei_numbers = explode(",", $product_purchase_data->imei_number);
-                    $all_imei_numbers = explode(",", $lims_product_warehouse_data->imei_number);
+                // deduct imei number if available
+                if ($product_purchase_data->imei_number && !str_contains($product_purchase_data->imei_number, 'null')) {
+                    $imei_numbers = explode(',', $product_purchase_data->imei_number);
+                    $all_imei_numbers = explode(',', $lims_product_warehouse_data->imei_number);
                     foreach ($imei_numbers as $number) {
                         if (($j = array_search($number, $all_imei_numbers)) !== false) {
                             unset($all_imei_numbers[$j]);
                         }
                     }
-                    $lims_product_warehouse_data->imei_number = !empty($all_imei_numbers) ? implode(",", $all_imei_numbers) : null;
+                    $lims_product_warehouse_data->imei_number = !empty($all_imei_numbers) ? implode(',', $all_imei_numbers) : null;
                 }
 
                 $lims_product_data->qty -= $recieved_qty;
@@ -1919,14 +1916,14 @@ class PurchaseController extends Controller
             }
             $lims_pos_setting_data = PosSetting::latest()->first();
             foreach ($lims_payment_data as $payment_data) {
-                if ($payment_data->paying_method == "Cheque") {
+                if ($payment_data->paying_method == 'Cheque') {
                     $payment_with_cheque_data = PaymentWithCheque::where('payment_id', $payment_data->id)->first();
                     $payment_with_cheque_data->delete();
-                } elseif ($payment_data->paying_method == "Credit Card" && $lims_pos_setting_data->stripe_secret_key) {
+                } elseif ($payment_data->paying_method == 'Credit Card' && $lims_pos_setting_data->stripe_secret_key) {
                     $payment_with_credit_card_data = PaymentWithCreditCard::where('payment_id', $payment_data->id)->first();
                     \Stripe\Stripe::setApiKey($lims_pos_setting_data->stripe_secret_key);
                     \Stripe\Refund::create(array(
-                        "charge" => $payment_with_credit_card_data->charge_id,
+                        'charge' => $payment_with_credit_card_data->charge_id,
                     ));
 
                     $payment_with_credit_card_data->delete();
@@ -1937,7 +1934,7 @@ class PurchaseController extends Controller
             $lims_purchase_data->deleted_by = Auth::id();
             $lims_purchase_data->save();
 
-            //creating log
+            // creating log
             $log_data['action'] = 'Purchase Deleted';
             $log_data['user_id'] = Auth::id();
             $log_data['reference_no'] = $lims_purchase_data->reference_no;
@@ -1955,7 +1952,6 @@ class PurchaseController extends Controller
 
             return redirect('purchases')->with('not_permitted', __('db.Purchase deleted successfully'));
         }
-
     }
 
     public function updateFromClient(Request $request, $id)
@@ -1975,7 +1971,7 @@ class PurchaseController extends Controller
                 return redirect()->back()->withErrors($v->errors());
 
             $ext = pathinfo($document->getClientOriginalName(), PATHINFO_EXTENSION);
-            $documentName = date("Ymdhis");
+            $documentName = date('Ymdhis');
             if (!config('database.connections.saleprosaas_landlord')) {
                 $documentName = $documentName . '.' . $ext;
                 $document->move(public_path('documents/purchase'), $documentName);
@@ -1985,7 +1981,7 @@ class PurchaseController extends Controller
             }
             $data['document'] = $documentName;
         }
-        //return dd($data);
+        // return dd($data);
         DB::beginTransaction();
         try {
             $balance = $data['grand_total'] - $data['paid_amount'];
@@ -1997,7 +1993,7 @@ class PurchaseController extends Controller
             $lims_purchase_data = Purchase::find($id);
             $lims_product_purchase_data = ProductPurchase::where('purchase_id', $id)->get();
 
-            $data['created_at'] = date("Y-m-d", strtotime(str_replace("/", "-", $data['created_at'])));
+            $data['created_at'] = date('Y-m-d', strtotime(str_replace('/', '-', $data['created_at'])));
             $product_id = $data['product_id'];
             $product_code = $data['product_code'];
             $qty = $data['qty'];
@@ -2015,7 +2011,6 @@ class PurchaseController extends Controller
             $lims_product_warehouse_data = null;
 
             foreach ($lims_product_purchase_data as $product_purchase_data) {
-
                 $old_recieved_value = $product_purchase_data->recieved;
                 $lims_purchase_unit_data = Unit::find($product_purchase_data->purchase_unit_id);
 
@@ -2055,14 +2050,14 @@ class PurchaseController extends Controller
                 if ($product_purchase_data->imei_number) {
                     $position = array_search($lims_product_data->id, $product_id);
                     if ($imei_number[$position]) {
-                        $prev_imei_numbers = explode(",", $product_purchase_data->imei_number);
-                        $new_imei_numbers = explode(",", $imei_number[$position]);
+                        $prev_imei_numbers = explode(',', $product_purchase_data->imei_number);
+                        $new_imei_numbers = explode(',', $imei_number[$position]);
                         foreach ($prev_imei_numbers as $prev_imei_number) {
                             if (($pos = array_search($prev_imei_number, $new_imei_numbers)) !== false) {
                                 unset($new_imei_numbers[$pos]);
                             }
                         }
-                        $new_imei_number[$position] = implode(",", $new_imei_numbers);
+                        $new_imei_number[$position] = implode(',', $new_imei_numbers);
                     }
                 }
                 $lims_product_data->qty -= $old_recieved_value;
@@ -2084,7 +2079,7 @@ class PurchaseController extends Controller
                 }
 
                 $lims_product_data = Product::find($pro_id);
-                //dealing with product barch
+                // dealing with product barch
                 if ($batch_no[$key]) {
                     $product_batch_data = ProductBatch::where([
                         ['product_id', $lims_product_data->id],
@@ -2115,14 +2110,14 @@ class PurchaseController extends Controller
                             ['warehouse_id', $data['warehouse_id']]
                         ])->first();
                         $product_purchase['variant_id'] = $lims_product_variant_data->variant_id;
-                        //add quantity to product variant table
+                        // add quantity to product variant table
                         $lims_product_variant_data->qty += $new_recieved_value;
                         $lims_product_variant_data->save();
                     }
                 } else {
                     $product_purchase['variant_id'] = null;
                     if ($product_purchase['product_batch_id']) {
-                        //checking for price
+                        // checking for price
                         $lims_product_warehouse_data = Product_Warehouse::where([
                             ['product_id', $pro_id],
                             ['warehouse_id', $data['warehouse_id']],
@@ -2161,7 +2156,7 @@ class PurchaseController extends Controller
                     if ($price)
                         $lims_product_warehouse_data->price = $price;
                 }
-                //dealing with imei numbers
+                // dealing with imei numbers
                 if ($imei_number[$key]) {
                     if ($lims_product_warehouse_data->imei_number) {
                         $lims_product_warehouse_data->imei_number .= ',' . $new_imei_number[$key];
@@ -2230,8 +2225,9 @@ class PurchaseController extends Controller
                     default => 'Ordered',
                 };
 
-                $paymentStatus = $purchase->paid_amount >= $purchase->grand_total ? 'Paid' :
-                    ($purchase->paid_amount > 0 ? 'Partial' : 'Due');
+                $paymentStatus = $purchase->paid_amount >= $purchase->grand_total
+                    ? 'Paid'
+                    : ($purchase->paid_amount > 0 ? 'Partial' : 'Due');
 
                 $paymentDue = number_format($purchase->grand_total - $purchase->paid_amount, 2);
 
@@ -2256,7 +2252,6 @@ class PurchaseController extends Controller
                     'supplier_address' => $supplier->address ?? '-',
                 ];
             });
-
 
         return response()->json(['data' => $purchases]);
     }
@@ -2310,14 +2305,14 @@ class PurchaseController extends Controller
         $start = $request->input('start');
         $order = 'sales.' . $columns[$request->input('order.0.column')];
         $dir = $request->input('order.0.dir');
-        //fetching custom fields data
+        // fetching custom fields data
         $custom_fields = CustomField::where([
             ['belongs_to', 'sale'],
             ['is_table', true]
         ])->pluck('name');
         $field_names = [];
         foreach ($custom_fields as $fieldName) {
-            $field_names[] = str_replace(" ", "_", strtolower($fieldName));
+            $field_names[] = str_replace(' ', '_', strtolower($fieldName));
         }
         if (empty($request->input('search.value'))) {
             $q = Sale::with('biller', 'customer', 'warehouse', 'user')
@@ -2366,7 +2361,8 @@ class PurchaseController extends Controller
                 ->limit($limit)
                 ->orderBy($order, $dir);
             if (Auth::user()->role_type > 2 && config('staff_access') == 'own') {
-                $q = $q->select('sales.*')
+                $q = $q
+                    ->select('sales.*')
                     ->with('biller', 'customer', 'warehouse', 'user')
                     ->where('sales.user_id', Auth::id())
                     ->orwhere([
@@ -2396,7 +2392,8 @@ class PurchaseController extends Controller
                     ]);
                 }
             } elseif (Auth::user()->role_type > 2 && config('staff_access') == 'warehouse') {
-                $q = $q->select('sales.*')
+                $q = $q
+                    ->select('sales.*')
                     ->with('biller', 'customer', 'warehouse', 'user')
                     ->where('sales.user_id', Auth::id())
                     ->orwhere([
@@ -2426,7 +2423,8 @@ class PurchaseController extends Controller
                     ]);
                 }
             } else {
-                $q = $q->select('sales.*')
+                $q = $q
+                    ->select('sales.*')
                     ->with('biller', 'customer', 'warehouse', 'user')
                     ->orwhere('sales.reference_no', 'LIKE', "%{$search}%")
                     ->orwhere('customers.name', 'LIKE', "%{$search}%")
@@ -2451,7 +2449,8 @@ class PurchaseController extends Controller
                     ->where([
                         ['reference_type', 'sale'],
                         ['reference_id', $sale->id]
-                    ])->first();
+                    ])
+                    ->first();
                 if ($lims_installment_plan_data) {
                     // dd($lims_installment_plan_data);
                 }
@@ -2465,9 +2464,9 @@ class PurchaseController extends Controller
                 $nestedData['id'] = $sale->id;
                 $nestedData['key'] = $key;
                 $nestedData['date'] = date(config('date_format') . ' h:i:s a', strtotime($sale->created_at));
-                //$nestedData['date'] = $sale->created_at;
+                // $nestedData['date'] = $sale->created_at;
                 $nestedData['reference_no'] = $sale->reference_no;
-                //$nestedData['biller'] = $sale->biller->name;
+                // $nestedData['biller'] = $sale->biller->name;
                 $nestedData['customer'] = $sale->customer->name . '<br>' . $sale->customer->phone_number . '<input type="hidden" class="deposit" value="' . ($sale->customer->deposit - $sale->customer->expense) . '" />' . '<input type="hidden" class="points" value="' . $sale->customer->points . '" />';
                 // new column warehouse added in sale list. [09.02.2025]
                 $warehouse = Warehouse::select('name')->where('id', $sale->warehouse_id)->first();
@@ -2505,8 +2504,8 @@ class PurchaseController extends Controller
 
                 $payments = Payment::where('sale_id', $sale->id)->select('amount', 'paying_method')->get();
                 $paymentMethods = $payments->map(function ($payment) use ($sale) {
-                    return ucfirst($payment->paying_method ?? '') .
-                        '(' . number_format($payment->amount / $sale->exchange_rate, config('decimal')) . ')';
+                    return ucfirst($payment->paying_method ?? '')
+                        . '(' . number_format($payment->amount / $sale->exchange_rate, config('decimal')) . ')';
                 })->implode(', ');
 
                 $nestedData['payment_method'] = $paymentMethods;
@@ -2558,12 +2557,12 @@ class PurchaseController extends Controller
                 $nestedData['returned_amount'] = number_format($returned_amount / $sale->exchange_rate, config('decimal'));
                 $nestedData['paid_amount'] = number_format($sale->paid_amount / $sale->exchange_rate, config('decimal'));
                 $nestedData['due'] = number_format(($sale->grand_total - $returned_amount - $sale->paid_amount) / $sale->exchange_rate, config('decimal'));
-                //fetching custom fields data
+                // fetching custom fields data
                 foreach ($field_names as $field_name) {
                     $nestedData[$field_name] = $sale->$field_name;
                 }
                 $nestedData['options'] = '<div class="btn-group">
-                            <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' . __("db.action") . '
+                            <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' . __('db.action') . '
                               <span class="caret"></span>
                               <span class="sr-only">Toggle Dropdown</span>
                             </button>
@@ -2572,7 +2571,7 @@ class PurchaseController extends Controller
                                 <li>
                                     <button type="button" class="btn btn-link view"><i class="fa fa-eye"></i> ' . __('db.View') . '</button>
                                 </li>';
-                if (in_array("sales-edit", $request['all_permission'])) {
+                if (in_array('sales-edit', $request['all_permission'])) {
                     if ($sale->sale_status != 3)
                         $nestedData['options'] .= '<li>
                             <a href="' . route('sales.edit', $sale->id) . '" class="btn btn-link"><i class="dripicons-document-edit"></i> ' . __('db.edit') . '</a>
@@ -2587,18 +2586,18 @@ class PurchaseController extends Controller
                         <a href="' . route('installmentplan.show', $lims_installment_plan_data->id) . '" class="btn btn-link"><i class="fa fa-info-circle"></i> ' . __('db.Installment Plan') . '</a>
                     </li>';
                 }
-                if (config('is_packing_slip') && in_array("packing_slip_challan", $request['all_permission']) && ($sale->sale_status == 2 || $sale->sale_status == 5)) {
+                if (config('is_packing_slip') && in_array('packing_slip_challan', $request['all_permission']) && ($sale->sale_status == 2 || $sale->sale_status == 5)) {
                     $nestedData['options'] .=
                         '<li>
                         <button type="button" class="create-packing-slip-btn btn btn-link" data-id = "' . $sale->id . '" data-toggle="modal" data-target="#packing-slip-modal"><i class="dripicons-box"></i> ' . __('db.Create Packing Slip') . '</button>
                     </li>';
                 }
-                if (in_array("sale-payment-index", $request['all_permission']))
+                if (in_array('sale-payment-index', $request['all_permission']))
                     $nestedData['options'] .=
                         '<li>
                             <button type="button" class="get-payment btn btn-link" data-id = "' . $sale->id . '"><i class="fa fa-money"></i> ' . __('db.View Payment') . '</button>
                         </li>';
-                if (in_array("sale-payment-add", $request['all_permission']) && ($sale->payment_status != 4) && ($sale->sale_status != 3)) {
+                if (in_array('sale-payment-add', $request['all_permission']) && ($sale->payment_status != 4) && ($sale->sale_status != 3)) {
                     $currency_code_name = $sale->currency->code ?? 'USD';
                     $nestedData['options'] .=
                         ' <li>
@@ -2642,10 +2641,10 @@ class PurchaseController extends Controller
                     '<li>
                         <button type="button" class="add-delivery btn btn-link" data-id = "' . $sale->id . '"><i class="fa fa-truck"></i> ' . __('db.Add Delivery') . '</button>
                     </li>';
-                if (in_array("sales-delete", $request['all_permission']))
-                    $nestedData['options'] .= \Form::open(["route" => ["sales.destroy", $sale->id], "method" => "DELETE"]) . '
+                if (in_array('sales-delete', $request['all_permission']))
+                    $nestedData['options'] .= \Form::open(['route' => ['sales.destroy', $sale->id], 'method' => 'DELETE']) . '
                             <li>
-                              <button type="submit" class="btn btn-link" onclick="return confirmDelete()"><i class="dripicons-trash"></i> ' . __("db.delete") . '</button>
+                              <button type="submit" class="btn btn-link" onclick="return confirmDelete()"><i class="dripicons-trash"></i> ' . __('db.delete') . '</button>
                             </li>' . \Form::close() . '
                         </ul>
                     </div>';
@@ -2655,8 +2654,6 @@ class PurchaseController extends Controller
                     $coupon_code = $coupon->code;
                 else
                     $coupon_code = null;
-
-
 
                 // table data
                 if (!empty($sale->table_id)) {
@@ -2692,8 +2689,8 @@ class PurchaseController extends Controller
                     ' "' . $sale->shipping_cost . '"',
                     ' "' . $sale->grand_total . '"',
                     ' "' . $sale->paid_amount . '"',
-                    ' "' . preg_replace('/[\n\r]/', "<br>", $sale->sale_note) . '"',
-                    ' "' . preg_replace('/[\n\r]/', "<br>", $sale->staff_note) . '"',
+                    ' "' . preg_replace('/[\n\r]/', '<br>', $sale->sale_note) . '"',
+                    ' "' . preg_replace('/[\n\r]/', '<br>', $sale->staff_note) . '"',
                     ' "' . $sale->user->name . '"',
                     ' "' . $sale->user->email . '"',
                     ' "' . $sale->warehouse->name . '"',
@@ -2708,10 +2705,10 @@ class PurchaseController extends Controller
             }
         }
         $json_data = array(
-            "draw" => intval($request->input('draw')),
-            "recordsTotal" => intval($totalData),
-            "recordsFiltered" => intval($totalFiltered),
-            "data" => $data
+            'draw' => intval($request->input('draw')),
+            'recordsTotal' => intval($totalData),
+            'recordsFiltered' => intval($totalFiltered),
+            'data' => $data
         );
         echo json_encode($json_data);
     }

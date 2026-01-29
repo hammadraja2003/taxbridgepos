@@ -496,7 +496,8 @@ class SaleController extends Controller
                             ->join('product_sales as ps', 'ps.sale_id', '=', 's.id')
                             ->leftJoin('returns as r', 'r.sale_id', '=', 's.id')
                             ->leftJoin('product_returns as pr', function ($join) {
-                                $join->on('pr.return_id', '=', 'r.id')
+                                $join
+                                    ->on('pr.return_id', '=', 'r.id')
                                     ->on('pr.product_id', '=', 'ps.product_id');
                             })
                             ->where('s.id', $sale->id)
@@ -1433,7 +1434,7 @@ class SaleController extends Controller
                 ];
                 $userErrors[] = 'FBR Validation Failed: ' . (
                     $validation['error']
-                    ?? ($validation['invoiceStatuses'][0]['error'] ?? 'Unknown validation error')
+                        ?? ($validation['invoiceStatuses'][0]['error'] ?? 'Unknown validation error')
                 );
                 Log::info('Sale created successfully. FBR Validation Failed. Please check FBR Validation Status.', [
                     'fbrPayload' => $fbrPayload
@@ -1457,7 +1458,7 @@ class SaleController extends Controller
                     ];
                     $userErrors[] = 'FBR Posting Failed: ' . (
                         $posting['error']
-                        ?? ($posting['invoiceStatuses'][0]['error'] ?? 'Unknown posting error')
+                            ?? ($posting['invoiceStatuses'][0]['error'] ?? 'Unknown posting error')
                     );
                     Log::info('Sale created successfully. FBR Validation Passed but Posting Failed. Please check FBR Validation Status.', [
                         'fbrPayload' => $fbrPayload
@@ -2677,6 +2678,7 @@ class SaleController extends Controller
     public function productSaleData($id)
     {
         $lims_product_sale_data = Product_Sale::where('sale_id', $id)->get();
+        $product_sale = [];
         foreach ($lims_product_sale_data as $key => $product_sale_data) {
             $product = Product::find($product_sale_data->product_id);
             if ($product_sale_data->variant_id) {
@@ -3037,7 +3039,6 @@ class SaleController extends Controller
             $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
             cache()->put('tenant_' . session('bus_config_id') . '_general_setting', $general_setting, 60 * 60 * 24);
         }
-
 
         if ($document) {
             $v = Validator::make(
@@ -3509,7 +3510,6 @@ class SaleController extends Controller
             $product_sale['total'] = $mail_data['total'][$key] = $total[$key];
             // return $old_product_variant_id;
 
-
             if ($product_sale['variant_id'] && in_array($product_variant_id[$key], $old_product_variant_id)) {
                 Product_Sale::where([
                     ['product_id', $pro_id],
@@ -3523,7 +3523,6 @@ class SaleController extends Controller
                 ])->update($product_sale);
             } else
                 Product_Sale::create($product_sale);
-
         }
         // return $product_variant_id;
         $lims_sale_data->update($data);
@@ -5287,8 +5286,7 @@ class SaleController extends Controller
         }
         $company = $general_setting->company_name;
 
-        $APP_ENVIROMENT = $results['Mode'];
-        ;
+        $APP_ENVIROMENT = $results['Mode'];;
         $token = $this->accessToken();
         $ipnData = $this->registerIPN();
 

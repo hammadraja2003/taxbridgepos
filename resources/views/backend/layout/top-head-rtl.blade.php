@@ -65,7 +65,7 @@
     <script type="text/javascript" src="<?php echo asset('vendor/jquery.cookie/jquery.cookie.js') ?>">
     </script>
     <script type="text/javascript" src="<?php echo asset('vendor/jquery-validation/jquery.validate.min.js') ?>"></script>
-    <script type="text/javascript" src="<?php echo asset('vendor/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js')?>"></script>
+    <script type="text/javascript" src="<?php echo asset('vendor/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js') ?>"></script>
     <script type="text/javascript" src="<?php echo asset('js/front.js') ?>"></script>
     <script type="text/javascript" src="<?php echo asset('vendor/daterange/js/moment.min.js') ?>"></script>
     <script type="text/javascript" src="<?php echo asset('vendor/daterange/js/knockout-3.4.2.js') ?>"></script>
@@ -75,7 +75,7 @@
     <!-- <script type="text/javascript" src="{{ asset('js/barcode-qrcode-scanner_plugin.js') }}"></script> -->
     <link rel="stylesheet" href="<?php echo asset('vendor/bootstrap/css/bootstrap-rtl.min.css') ?>" type="text/css">
     <!-- Custom stylesheet - for your changes-->
-    <link rel="stylesheet" href="<?php echo asset('css/custom-'.$general_setting->theme) ?>" type="text/css" id="custom-style">
+    <link rel="stylesheet" href="<?php echo asset('css/custom-' . $general_setting->theme) ?>" type="text/css" id="custom-style">
     <link rel="stylesheet" href="<?php echo asset('css/custom-rtl.css') ?>" type="text/css" id="custom-style">
   </head>
   <body class="pos-page" onload="myFunction()">
@@ -98,10 +98,10 @@
                     {!! Form::open(['route' => 'notifications.store', 'method' => 'post']) !!}
                       <div class="row">
                           <?php
-                              $lims_user_list = DB::connection('master')->table('users')->where([
-                                ['is_active', true],
-                                ['id', '!=', \Auth::user()->id]
-                              ])->get();
+                          $lims_user_list = DB::connection('master')->table('users')->where([
+                            ['is_active', true],
+                            ['id', '!=', \Auth::user()->id]
+                          ])->get();
                           ?>
                           <div class="col-md-6 form-group">
                               <label>{{__('db.User')}} *</label>
@@ -138,15 +138,15 @@
                   <p class="italic"><small>{{__('db.The field labels marked with * are required input fields')}}.</small></p>
                     {!! Form::open(['route' => 'expenses.store', 'method' => 'post']) !!}
                     <?php
-                      $lims_expense_category_list = DB::table('expense_categories')->where('is_active', true)->get();
-                      if(Auth::user()->role_type > 2)
-                        $lims_warehouse_list = DB::table('warehouses')->where([
-                          ['is_active', true],
-                          ['id', Auth::user()->warehouse_id]
-                        ])->get();
-                      else
-                        $lims_warehouse_list = DB::table('warehouses')->where('is_active', true)->get();
-                      $lims_account_list = \App\Models\Account::where('is_active', true)->get();
+                    $lims_expense_category_list = DB::table('expense_categories')->where('is_active', true)->get();
+                    if (Auth::user()->role_type > 2)
+                      $lims_warehouse_list = DB::table('warehouses')->where([
+                        ['is_active', true],
+                        ['id', Auth::user()->warehouse_id]
+                      ])->get();
+                    else
+                      $lims_warehouse_list = DB::table('warehouses')->where('is_active', true)->get();
+                    $lims_account_list = \App\Models\Account::where('is_active', true)->get();
 
                     ?>
                       <div class="row">
@@ -160,7 +160,7 @@
                         </div>
                         <div class="col-md-6 form-group">
                             <label>{{__('db.Warehouse')}} *</label>
-                            <select name="warehouse_id" class="selectpicker form-control" required data-live-search="true" data-live-search-style="begins" title="Select Warehouse...">
+                            <select name="warehouse_id" class="selectpicker form-control" required data-live-search="true" data-live-search-style="begins" title="Select store...">
                                 @foreach($lims_warehouse_list as $warehouse)
                                 <option value="{{$warehouse->id}}">{{$warehouse->name}}</option>
                                 @endforeach
@@ -209,11 +209,11 @@
                   <p class="italic"><small>{{__('db.The field labels marked with * are required input fields')}}.</small></p>
                     {!! Form::open(['route' => 'report.warehouse', 'method' => 'post']) !!}
                     <?php
-                      $lims_warehouse_list = DB::table('warehouses')->where('is_active', true)->get();
+                    $lims_warehouse_list = DB::table('warehouses')->where('is_active', true)->get();
                     ?>
                       <div class="form-group">
                           <label>{{__('db.Warehouse')}} *</label>
-                          <select name="warehouse_id" class="selectpicker form-control" required data-live-search="true" id="warehouse-id" data-live-search-style="begins" title="Select warehouse...">
+                          <select name="warehouse_id" class="selectpicker form-control" required data-live-search="true" id="warehouse-id" data-live-search-style="begins" title="Select store...">
                               @foreach($lims_warehouse_list as $warehouse)
                               <option value="{{$warehouse->id}}">{{$warehouse->name}}</option>
                               @endforeach
@@ -245,7 +245,7 @@
                   <p class="italic"><small>{{__('db.The field labels marked with * are required input fields')}}.</small></p>
                     {!! Form::open(['route' => 'report.user', 'method' => 'post']) !!}
                     <?php
-                      $lims_user_list = DB::connection('master')->table('users')->where('is_active', true)->get();
+                    $lims_user_list = DB::connection('master')->table('users')->where('is_active', true)->get();
                     ?>
                       <div class="form-group">
                           <label>{{__('db.User')}} *</label>
@@ -281,7 +281,7 @@
                   <p class="italic"><small>{{__('db.The field labels marked with * are required input fields')}}.</small></p>
                     {!! Form::open(['route' => 'report.customer', 'method' => 'post']) !!}
                     <?php
-                      $lims_customer_list = DB::table('customers')->where('is_active', true)->get();
+                    $lims_customer_list = DB::table('customers')->where('is_active', true)->get();
                     ?>
                       <div class="form-group">
                           <label>{{__('db.customer')}} *</label>
@@ -317,7 +317,7 @@
                   <p class="italic"><small>{{__('db.The field labels marked with * are required input fields')}}.</small></p>
                     {!! Form::open(['route' => 'report.supplier', 'method' => 'post']) !!}
                     <?php
-                      $lims_supplier_list = DB::table('suppliers')->where('is_active', true)->get();
+                    $lims_supplier_list = DB::table('suppliers')->where('is_active', true)->get();
                     ?>
                       <div class="form-group">
                           <label>{{__('db.Supplier')}} *</label>
