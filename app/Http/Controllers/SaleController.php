@@ -464,6 +464,10 @@ class SaleController extends Controller
 
                 // Status logic (Sale Status)
                 $sale_status_text = '';
+                if ($sale->qty == 0) {
+                    $nestedData['sale_status'] = '<div class="badge badge-danger">' . __('db.Partially Returned') . '</div>';
+                    $sale_status_text = __('db.Partially Returned');
+                }
                 switch ($sale->sale_status) {
                     case 1:
                         $nestedData['sale_status'] = '<div class="badge badge-success">' . __('db.Completed') . '</div>';
@@ -478,8 +482,33 @@ class SaleController extends Controller
                         $sale_status_text = __('db.Draft');
                         break;
                     case 4:
-                        $nestedData['sale_status'] = '<div class="badge badge-danger">' . __('db.Returned') . '</div>';
-                        $sale_status_text = __('db.Returned');
+                        $sale_return_partially = DB::table('sales as s')
+                            ->select(
+                                's.id as sale_id',
+                                DB::raw("
+                                CASE
+                                    WHEN IFNULL(SUM(pr.qty), 0) = 0 THEN 'Not Returned'
+                                    WHEN IFNULL(SUM(pr.qty), 0) < SUM(ps.qty) THEN 'Partially Returned'
+                                    WHEN IFNULL(SUM(pr.qty), 0) >= SUM(ps.qty) THEN 'Returned'
+                                END AS return_status
+                            ")
+                            )
+                            ->join('product_sales as ps', 'ps.sale_id', '=', 's.id')
+                            ->leftJoin('returns as r', 'r.sale_id', '=', 's.id')
+                            ->leftJoin('product_returns as pr', function ($join) {
+                                $join->on('pr.return_id', '=', 'r.id')
+                                    ->on('pr.product_id', '=', 'ps.product_id');
+                            })
+                            ->where('s.id', $sale->id)
+                            ->groupBy('s.id')
+                            ->first();
+                        if (!empty($sale_return_partially)) {
+                            $nestedData['sale_status'] = '<div class="badge badge-danger">' . $sale_return_partially->return_status . '</div>';
+                            $sale_status_text = $sale_return_partially->return_status;
+                        } else {
+                            $nestedData['sale_status'] = '<div class="badge badge-danger">' . __('db.Returned') . '</div>';
+                            $sale_status_text = __('db.Returned');
+                        }
                         break;
                     case 5:
                         $nestedData['sale_status'] = '<div class="badge badge-info">' . __('db.Processing') . '</div>';
