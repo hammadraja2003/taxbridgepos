@@ -13,59 +13,56 @@
   <link rel="icon" type="image/png"
     href="{{env('PUB_PATH') . 'logo/' . $general_setting->favicon ?? $general_setting->site_logo}}" />
   <!-- Bootstrap CSS-->
-  <link rel="stylesheet" href="<?php echo env('ASSETS_PATH') . '/bootstrap/css/bootstrap.min.css' ?>" type="text/css">
-  <link rel="preload" href="<?php echo env('ASSETS_PATH') . '/bootstrap/css/bootstrap-datepicker.min.css' ?>" as="style"
+  <link rel="stylesheet" href="{{ env('ASSETS_PATH') . '/bootstrap/css/bootstrap.min.css' }}" type="text/css">
+  <link rel="preload" href="{{ env('ASSETS_PATH') . '/bootstrap/css/bootstrap-datepicker.min.css' }}" as="style"
     onload="this.onload=null;this.rel='stylesheet'">
   <noscript>
-    <link href="<?php echo env('ASSETS_PATH') . '/bootstrap/css/bootstrap-datepicker.min.css' ?>" rel="stylesheet">
+    <link href="{{ env('ASSETS_PATH') . '/bootstrap/css/bootstrap-datepicker.min.css' }}" rel="stylesheet">
   </noscript>
-  <link rel="preload" href="<?php echo env('ASSETS_PATH') . '/bootstrap/css/awesome-bootstrap-checkbox.css' ?>"
-    as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript>
-    <link href="<?php echo env('ASSETS_PATH') . '/bootstrap/css/awesome-bootstrap-checkbox.css' ?>" rel="stylesheet">
-  </noscript>
-  <link rel="preload" href="<?php echo env('ASSETS_PATH') . '/bootstrap/css/bootstrap-select.min.css' ?>" as="style"
+  <link rel="preload" href="{{ env('ASSETS_PATH') . '/bootstrap/css/awesome-bootstrap-checkbox.css' }}" as="style"
     onload="this.onload=null;this.rel='stylesheet'">
   <noscript>
-    <link href="<?php echo env('ASSETS_PATH') . '/bootstrap/css/bootstrap-select.min.css' ?>" rel="stylesheet">
+    <link href="{{ env('ASSETS_PATH') . '/bootstrap/css/awesome-bootstrap-checkbox.css' }}" rel="stylesheet">
+  </noscript>
+  <link rel="preload" href="{{ env('ASSETS_PATH') . '/bootstrap/css/bootstrap-select.min.css' }}" as="style"
+    onload="this.onload=null;this.rel='stylesheet'">
+  <noscript>
+    <link href="{{ env('ASSETS_PATH') . '/bootstrap/css/bootstrap-select.min.css' }}" rel="stylesheet">
   </noscript>
   <!-- Font Awesome CSS-->
-  <link rel="preload" href="<?php echo env('ASSETS_PATH') . '/font-awesome/css/font-awesome.min.css' ?>" as="style"
+  <link rel="preload" href="{{ env('ASSETS_PATH') . '/font-awesome/css/font-awesome.min.css' }}" as="style"
     onload="this.onload=null;this.rel='stylesheet'">
   <noscript>
-    <link href="<?php echo env('ASSETS_PATH') . '/font-awesome/css/font-awesome.min.css' ?>" rel="stylesheet">
+    <link href="{{ env('ASSETS_PATH') . '/font-awesome/css/font-awesome.min.css' }}" rel="stylesheet">
   </noscript>
   <!-- Drip icon font-->
-  <link rel="preload" href="<?php echo env('ASSETS_PATH') . '/dripicons/webfont.css' ?>" as="style"
+  <link rel="preload" href="{{ env('ASSETS_PATH') . '/dripicons/webfont.css' }}" as="style"
     onload="this.onload=null;this.rel='stylesheet'">
   <noscript>
-    <link href="<?php echo env('ASSETS_PATH') . '/dripicons/webfont.css' ?>" rel="stylesheet">
+    <link href="{{ env('ASSETS_PATH') . '/dripicons/webfont.css' }}" rel="stylesheet">
   </noscript>
   <!-- Custom Scrollbar-->
-  <link rel="preload"
-    href="<?php echo env('ASSETS_PATH') . '/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css' ?>" as="style"
-    onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="{{ env('ASSETS_PATH') . '/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css' }}"
+    as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript>
-    <link href="<?php echo env('ASSETS_PATH') . '/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css' ?>"
+    <link href="{{ env('ASSETS_PATH') . '/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css' }}"
       rel="stylesheet">
   </noscript>
   <!-- virtual keybord stylesheet-->
-  <link rel="preload" href="<?php echo env('ASSETS_PATH') . '/keyboard/css/keyboard.css' ?>" as="style"
+  <link rel="preload" href="{{ env('ASSETS_PATH') . '/keyboard/css/keyboard.css' }}" as="style"
     onload="this.onload=null;this.rel='stylesheet'">
   <noscript>
-    <link href="<?php echo env('ASSETS_PATH') . '/keyboard/css/keyboard.css' ?>" rel="stylesheet">
+    <link href="{{ env('ASSETS_PATH') . '/keyboard/css/keyboard.css' }}" rel="stylesheet">
   </noscript>
-  <link rel="stylesheet" href="<?php echo env('ASSETS_PATH') . '/css/style.default.css' ?>" id="theme-stylesheet"
+  <link rel="stylesheet" href="{{ env('ASSETS_PATH') . '/css/style.default.css' }}" id="theme-stylesheet"
     type="text/css">
   <!-- Custom stylesheet - for your changes-->
-  <link rel="stylesheet" href="<?php echo env('ASSETS_PATH') . '/css/custom-' . $general_setting->theme ?>"
-    type="text/css" id="custom-style">
+  <link rel="stylesheet" href="{{ env('ASSETS_PATH') . '/css/custom-' . $general_setting->theme }}" type="text/css"
+    id="custom-style">
   @if(Config::get('app.locale') == 'ar' || $general_setting->is_rtl)
     <!-- RTL css -->
-    <link rel="stylesheet" href="<?php  echo env('ASSETS_PATH') . '/bootstrap/css/bootstrap-rtl.min.css' ?>"
-      type="text/css">
-    <link rel="stylesheet" href="<?php  echo env('ASSETS_PATH') . '/css/custom-rtl.css' ?>" type="text/css"
-      id="custom-style">
+    <link rel="stylesheet" href="{{ env('ASSETS_PATH') . '/bootstrap/css/bootstrap-rtl.min.css' }}" type="text/css">
+    <link rel="stylesheet" href="{{ env('ASSETS_PATH') . '/css/custom-rtl.css' }}" type="text/css" id="custom-style">
   @endif
 
 
@@ -89,38 +86,34 @@
     @yield('content')
   </div>
 
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/jquery/jquery.min.js' ?>"></script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/jquery/jquery-ui.min.js' ?>"></script>
-  <script type="text/javascript"
-    src="<?php echo env('ASSETS_PATH') . '/jquery/bootstrap-datepicker.min.js' ?>"></script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/jquery/jquery.timepicker.min.js' ?>"></script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/popper.js/umd/popper.min.js' ?>">
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/jquery/jquery.min.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/jquery/jquery-ui.min.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/jquery/bootstrap-datepicker.min.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/jquery/jquery.timepicker.min.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/popper.js/umd/popper.min.js' }}">
   </script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/bootstrap/js/bootstrap.min.js' ?>"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/bootstrap/js/bootstrap.min.js' }}"></script>
   <script type="text/javascript"
-    src="<?php echo env('ASSETS_PATH') . '/bootstrap-toggle/js/bootstrap-toggle.min.js' ?>"></script>
+    src="{{ env('ASSETS_PATH') . '/bootstrap-toggle/js/bootstrap-toggle.min.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/bootstrap/js/bootstrap-select.min.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/keyboard/js/jquery.keyboard.js' }}"></script>
   <script type="text/javascript"
-    src="<?php echo env('ASSETS_PATH') . '/bootstrap/js/bootstrap-select.min.js' ?>"></script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/keyboard/js/jquery.keyboard.js' ?>"></script>
+    src="{{ env('ASSETS_PATH') . '/keyboard/js/jquery.keyboard.extension-autocomplete.js' }}"></script>
   <script type="text/javascript"
-    src="<?php echo env('ASSETS_PATH') . '/keyboard/js/jquery.keyboard.extension-autocomplete.js' ?>"></script>
-  <script type="text/javascript"
-    src="<?php echo env('ASSETS_PATH') . '/js/grasp_mobile_progress_circle-1.0.0.min.js' ?>"></script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/jquery.cookie/jquery.cookie.js' ?>">
+    src="{{ env('ASSETS_PATH') . '/js/grasp_mobile_progress_circle-1.0.0.min.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/jquery.cookie/jquery.cookie.js' }}">
   </script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/jquery-validation/jquery.validate.min.js' }}"></script>
   <script type="text/javascript"
-    src="<?php echo env('ASSETS_PATH') . '/jquery-validation/jquery.validate.min.js' ?>"></script>
-  <script type="text/javascript"
-    src="<?php echo env('ASSETS_PATH') . '/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js' ?>"></script>
+    src="{{ env('ASSETS_PATH') . '/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js' }}"></script>
   @if(Config::get('app.locale') == 'ar' || $general_setting->is_rtl)
-    <script type="text/javascript" src="<?php  echo env('ASSETS_PATH') . '/js/front_rtl.js' ?>"></script>
+    <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/js/front_rtl.js' }}"></script>
   @else
-    <script type="text/javascript" src="<?php  echo env('ASSETS_PATH') . '/js/front.js' ?>"></script>
+    <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/js/front.js' }}"></script>
   @endif
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/daterange/js/moment.min.js' ?>"></script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/daterange/js/knockout-3.4.2.js' ?>"></script>
-  <script type="text/javascript"
-    src="<?php echo env('ASSETS_PATH') . '/daterange/js/daterangepicker.min.js' ?>"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/daterange/js/moment.min.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/daterange/js/knockout-3.4.2.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/daterange/js/daterangepicker.min.js' }}"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
   <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 

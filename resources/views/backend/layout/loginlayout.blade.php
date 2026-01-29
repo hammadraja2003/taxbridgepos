@@ -9,16 +9,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="all,follow">
     <link rel="icon" href="{{ env('PUB_PATH') . '/logo/favicon.ico' }}" type="image/x-icon">
-    <link rel="stylesheet" href="<?php echo env('ASSETS_PATH') . '/bootstrap/css/bootstrap.min.css'; ?>"
-        type="text/css">
-    <link rel="preload" href="<?php echo env('ASSETS_PATH') . '/font-awesome/css/font-awesome.min.css'; ?>" as="style"
+    <link rel="stylesheet" href="{{ env('ASSETS_PATH') . '/bootstrap/css/bootstrap.min.css' }}" type="text/css">
+    <link rel="preload" href="{{ env('ASSETS_PATH') . '/font-awesome/css/font-awesome.min.css' }}" as="style"
         onload="this.onload=null;this.rel='stylesheet'">
     <noscript>
-        <link href="<?php echo env('ASSETS_PATH') . '/font-awesome/css/font-awesome.min.css'; ?>" rel="stylesheet">
+        <link href="{{ env('ASSETS_PATH') . '/font-awesome/css/font-awesome.min.css' }}" rel="stylesheet">
     </noscript>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/jquery/jquery.min.js'; ?>"></script>
+    <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/jquery/jquery.min.js' }}"></script>
     <style>
         body {
             font-size: var(--font-size);

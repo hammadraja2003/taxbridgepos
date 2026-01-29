@@ -110,7 +110,7 @@
 
 
 @push('scripts')
-    <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/emoji/vanillaEmojiPicker.js' ?>"></script>
+    <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/emoji/vanillaEmojiPicker.js' }}"></script>
 
 
     <script type="text/javascript">
