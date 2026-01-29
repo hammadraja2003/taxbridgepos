@@ -75,7 +75,7 @@
                                         <label class="mt-2"><strong>{{__('db.Active')}}</strong></label>
                                     </div>
                                     <div class="form-group">
-                                        <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">
+                                        <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary mt-3">
                                     </div>
                                 </div>
                                 <div class="col-md-6">

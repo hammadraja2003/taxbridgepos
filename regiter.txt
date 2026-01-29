@@ -16,3 +16,10 @@ Payment Status
 Quotation_status
 1 = Pending
 2 = Sent
+
+Purchase Status
+1 = Recieved
+2 = Partial
+3 = Pending
+4 = Ordered
+5 =Returned

@@ -95,57 +95,51 @@
                                                     @foreach($lims_product_return_data as $product_return)
                                                     <tr>
                                                     <?php
-                                                        $product_data = DB::table('products')->find($product_return->product_id);
-                                                        if($product_return->variant_id) {
-                                                            $product_variant_data = \App\Models\ProductVariant::select('id', 'item_code')->FindExactProduct($product_return->product_id, $product_return->variant_id)->first();
-                                                            $product_data->code = $product_variant_data->item_code;
-                                                            $product_variant_id = $product_variant_data->id;
-                                                        }
-                                                        else
-                                                            $product_variant_id = null;
-                                                        if($product_data->tax_method == 1){
-                                                            $product_cost = $product_return->net_unit_cost + ($product_return->discount / $product_return->qty);
-                                                        }
-                                                        elseif ($product_data->tax_method == 2) {
-                                                            $product_cost =($product_return->total / $product_return->qty) + ($product_return->discount / $product_return->qty);
-                                                        }
+                                                    $product_data = DB::table('products')->find($product_return->product_id);
+                                                    if ($product_return->variant_id) {
+                                                        $product_variant_data = \App\Models\ProductVariant::select('id', 'item_code')->FindExactProduct($product_return->product_id, $product_return->variant_id)->first();
+                                                        $product_data->code = $product_variant_data->item_code;
+                                                        $product_variant_id = $product_variant_data->id;
+                                                    } else
+                                                        $product_variant_id = null;
+                                                    if ($product_data->tax_method == 1) {
+                                                        $product_cost = $product_return->net_unit_cost + ($product_return->discount / $product_return->qty);
+                                                    } elseif ($product_data->tax_method == 2) {
+                                                        $product_cost = ($product_return->total / $product_return->qty) + ($product_return->discount / $product_return->qty);
+                                                    }
 
-                                                        $tax = DB::table('taxes')->where('rate',$product_return->tax_rate)->first();
-                                                        $unit_name = array();
-                                                        $unit_operator = array();
-                                                        $unit_operation_value = array();
-                                                        if($product_data->type == 'standard'){
-                                                            $units = DB::table('units')->where('base_unit', $product_data->unit_id)->orWhere('id', $product_data->unit_id)->get();
+                                                    $tax = DB::table('taxes')->where('rate', $product_return->tax_rate)->first();
+                                                    $unit_name = array();
+                                                    $unit_operator = array();
+                                                    $unit_operation_value = array();
+                                                    if ($product_data->type == 'standard') {
+                                                        $units = DB::table('units')->where('base_unit', $product_data->unit_id)->orWhere('id', $product_data->unit_id)->get();
 
-                                                            foreach($units as $unit) {
-                                                                if($product_return->purchase_unit_id == $unit->id) {
-                                                                    array_unshift($unit_name, $unit->unit_name);
-                                                                    array_unshift($unit_operator, $unit->operator);
-                                                                    array_unshift($unit_operation_value, $unit->operation_value);
-                                                                }
-                                                                else {
-                                                                    $unit_name[]  = $unit->unit_name;
-                                                                    $unit_operator[] = $unit->operator;
-                                                                    $unit_operation_value[] = $unit->operation_value;
-                                                                }
+                                                        foreach ($units as $unit) {
+                                                            if ($product_return->purchase_unit_id == $unit->id) {
+                                                                array_unshift($unit_name, $unit->unit_name);
+                                                                array_unshift($unit_operator, $unit->operator);
+                                                                array_unshift($unit_operation_value, $unit->operation_value);
+                                                            } else {
+                                                                $unit_name[] = $unit->unit_name;
+                                                                $unit_operator[] = $unit->operator;
+                                                                $unit_operation_value[] = $unit->operation_value;
                                                             }
-                                                            if($unit_operator[0] == '*'){
-                                                                $product_cost = $product_cost / $unit_operation_value[0];
-                                                            }
-                                                            elseif($unit_operator[0] == '/'){
-                                                                $product_cost = $product_cost * $unit_operation_value[0];
-                                                            }
-
                                                         }
-                                                        else {
-                                                            $unit_name[] = 'n/a'. ',';
-                                                            $unit_operator[] = 'n/a'. ',';
-                                                            $unit_operation_value[] = 'n/a'. ',';
+                                                        if ($unit_operator[0] == '*') {
+                                                            $product_cost = $product_cost / $unit_operation_value[0];
+                                                        } elseif ($unit_operator[0] == '/') {
+                                                            $product_cost = $product_cost * $unit_operation_value[0];
                                                         }
-                                                        $temp_unit_name = $unit_name = implode(",",$unit_name) . ',';
-                                                        $temp_unit_operator = $unit_operator = implode(",",$unit_operator) .',';
-                                                        $temp_unit_operation_value = $unit_operation_value =  implode(",",$unit_operation_value) . ',';
-                                                        $product_batch_data = \App\Models\ProductBatch::select('batch_no')->find($product_return->product_batch_id);
+                                                    } else {
+                                                        $unit_name[] = 'n/a' . ',';
+                                                        $unit_operator[] = 'n/a' . ',';
+                                                        $unit_operation_value[] = 'n/a' . ',';
+                                                    }
+                                                    $temp_unit_name = $unit_name = implode(',', $unit_name) . ',';
+                                                    $temp_unit_operator = $unit_operator = implode(',', $unit_operator) . ',';
+                                                    $temp_unit_operation_value = $unit_operation_value = implode(',', $unit_operation_value) . ',';
+                                                    $product_batch_data = \App\Models\ProductBatch::select('batch_no')->find($product_return->product_batch_id);
                                                     ?>
                                                         <td>{{$product_data->name}} <button type="button" class="edit-product btn btn-link" data-toggle="modal" data-target="#editModal"> <i class="dripicons-document-edit"></i></button> </td>
                                                         <td>{{$product_data->code}}</td>
@@ -276,7 +270,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary" id="submit-button">
+                                    <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary mt-3" id="submit-button">
                                 </div>
                             </div>
                         </div>
@@ -326,12 +320,12 @@
                                 <input type="number" name="edit_unit_cost" class="form-control" step="any">
                             </div>
                             <?php
-                                $tax_name_all[] = 'No Tax';
-                                $tax_rate_all[] = 0;
-                                foreach($lims_tax_list as $tax) {
-                                    $tax_name_all[] = $tax->name;
-                                    $tax_rate_all[] = $tax->rate;
-                                }
+                            $tax_name_all[] = 'No Tax';
+                            $tax_rate_all[] = 0;
+                            foreach ($lims_tax_list as $tax) {
+                                $tax_name_all[] = $tax->name;
+                                $tax_rate_all[] = $tax->rate;
+                            }
                             ?>
                             <div class="col-md-4 form-group">
                                 <label>{{__('db.Tax Rate')}}</label>

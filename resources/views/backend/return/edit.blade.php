@@ -74,7 +74,7 @@
                                                                 }
 
                                                                 // Avoid division by zero
-                                                                $qty = $product_return->qty > 0 ? $product_return->qty : 1; // Use 1 temporarily for safe calculation
+                                                                $qty = $product_return->qty > 0 ? $product_return->qty : 1;  // Use 1 temporarily for safe calculation
 
                                                                 // Calculate product price safely
                                                                 if ($product_data->tax_method == 1) {
@@ -346,7 +346,7 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <input type="submit" value="{{ __('db.submit') }}" class="btn btn-primary"
+                                        <input type="submit" value="{{ __('db.submit') }}" class="btn btn-primary mt-3"
                                             id="submit-button">
                                     </div>
                                 </div>

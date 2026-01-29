@@ -404,7 +404,7 @@
               </div>
             </div>
             <div class="form-group">
-              <button type="submit" class="btn btn-primary ">{{ __('submit') }}</button>
+              <button type="submit" class="btn btn-primary mt-3">{{ __('submit') }}</button>
             </div>
             {{ Form::close() }}
           </div>
@@ -451,7 +451,7 @@
 
             <div class="form-group">
               <input type="hidden" class="category-ajax-check" name="ajax" value="0">
-              <button type="submit" class="btn btn-primary category-submit-btn">{{ __('submit') }}</button>
+              <button type="submit" class="btn btn-primary category-submit-btn mt-3">{{ __('submit') }}</button>
             </div>
           </div>
           {{ Form::close() }}
@@ -565,7 +565,7 @@
               <textarea name="note" rows="3" class="form-control"></textarea>
             </div>
             <div class="form-group">
-              <button type="submit" class="btn btn-primary">{{ __('submit') }}</button>
+              <button type="submit" class="btn btn-primary mt-3">{{ __('submit') }}</button>
             </div>
             {{ Form::close() }}
           </div>
@@ -638,7 +638,7 @@
               <textarea name="note" rows="3" class="form-control"></textarea>
             </div>
             <div class="form-group">
-              <button type="submit" class="btn btn-primary">{{ __('submit') }}</button>
+              <button type="submit" class="btn btn-primary mt-3">{{ __('submit') }}</button>
             </div>
             {{ Form::close() }}
           </div>
@@ -666,7 +666,7 @@
                 </div>
               </div>
             </div>
-            {{Form::submit('Submit', ['class' => 'btn btn-primary'])}}
+            {{Form::submit('Submit', ['class' => 'btn btn-primary mt-3'])}}
           </div>
           {!! Form::close() !!}
         </div>
@@ -693,7 +693,7 @@
                 </div>
               </div>
             </div>
-            {{Form::submit('Submit', ['class' => 'btn btn-primary'])}}
+            {{Form::submit('Submit', ['class' => 'btn btn-primary mt-3'])}}
           </div>
           {!! Form::close() !!}
         </div>
@@ -729,7 +729,7 @@
               <textarea name="note" rows="3" class="form-control"></textarea>
             </div>
             <div class="form-group">
-              <button type="submit" class="btn btn-primary">{{ __('submit') }}</button>
+              <button type="submit" class="btn btn-primary mt-3">{{ __('submit') }}</button>
             </div>
             {{ Form::close() }}
           </div>
@@ -776,7 +776,7 @@
               </div>
             </div>
             <div class="form-group">
-              <button type="submit" class="btn btn-primary">{{ __('submit') }}</button>
+              <button type="submit" class="btn btn-primary mt-3">{{ __('submit') }}</button>
             </div>
             {{ Form::close() }}
           </div>
@@ -810,7 +810,7 @@
             <input type="hidden" name="end_date" value="{{date('Y-m-d') }}" />
 
             <div class="form-group">
-              <button type="submit" class="btn btn-primary">{{ __('submit') }}</button>
+              <button type="submit" class="btn btn-primary mt-3">{{ __('submit') }}</button>
             </div>
             {{ Form::close() }}
           </div>
@@ -850,7 +850,7 @@
             <input type="hidden" name="end_date" value="{{date('Y-m-d') }}" />
 
             <div class="form-group">
-              <button type="submit" class="btn btn-primary">{{ __('submit') }}</button>
+              <button type="submit" class="btn btn-primary mt-3">{{ __('submit') }}</button>
             </div>
             {{ Form::close() }}
           </div>
@@ -886,7 +886,7 @@
             <input type="hidden" name="end_date" value="{{date('Y-m-d') }}" />
 
             <div class="form-group">
-              <button type="submit" class="btn btn-primary">{{ __('submit') }}</button>
+              <button type="submit" class="btn btn-primary mt-3">{{ __('submit') }}</button>
             </div>
             {{ Form::close() }}
           </div>
@@ -922,7 +922,7 @@
             <input type="hidden" name="end_date" value="{{date('Y-m-d') }}" />
 
             <div class="form-group">
-              <button type="submit" class="btn btn-primary">{{ __('submit') }}</button>
+              <button type="submit" class="btn btn-primary mt-3">{{ __('submit') }}</button>
             </div>
             {{ Form::close() }}
           </div>
@@ -958,7 +958,7 @@
             <input type="hidden" name="end_date" value="{{date('Y-m-d') }}" />
 
             <div class="form-group">
-              <button type="submit" class="btn btn-primary">{{ __('submit') }}</button>
+              <button type="submit" class="btn btn-primary mt-3">{{ __('submit') }}</button>
             </div>
             {{ Form::close() }}
           </div>
@@ -994,7 +994,7 @@
             <input type="hidden" name="end_date" value="{{date('Y-m-d') }}" />
 
             <div class="form-group">
-              <button type="submit" class="btn btn-primary">{{ __('submit') }}</button>
+              <button type="submit" class="btn btn-primary mt-3">{{ __('submit') }}</button>
             </div>
             {{ Form::close() }}
           </div>

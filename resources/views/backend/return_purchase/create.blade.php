@@ -38,30 +38,27 @@
                                                     @foreach($lims_product_purchase_data as $product_purchase)
                                                     <tr>
                                                     <?php
-                                                        $product_data = DB::table('products')->find($product_purchase->product_id);
-                                                        if($product_purchase->variant_id) {
-                                                            $product_variant_data = \App\Models\ProductVariant::select('id', 'item_code')->FindExactProduct($product_data->id, $product_purchase->variant_id)->first();
-                                                            $product_variant_id = $product_variant_data->id;
-                                                            $product_data->code = $product_variant_data->item_code;
-                                                        }
-                                                        else
-                                                            $product_variant_id = null;
-                                                        if($product_data->tax_method == 1){
-                                                            $product_cost = $product_purchase->net_unit_cost + ($product_purchase->discount / $product_purchase->qty);
-                                                        }
-                                                        elseif ($product_data->tax_method == 2) {
-                                                            $product_cost =($product_purchase->total / $product_purchase->qty) + ($product_purchase->discount / $product_purchase->qty);
-                                                        }
+                                                    $product_data = DB::table('products')->find($product_purchase->product_id);
+                                                    if ($product_purchase->variant_id) {
+                                                        $product_variant_data = \App\Models\ProductVariant::select('id', 'item_code')->FindExactProduct($product_data->id, $product_purchase->variant_id)->first();
+                                                        $product_variant_id = $product_variant_data->id;
+                                                        $product_data->code = $product_variant_data->item_code;
+                                                    } else
+                                                        $product_variant_id = null;
+                                                    if ($product_data->tax_method == 1) {
+                                                        $product_cost = $product_purchase->net_unit_cost + ($product_purchase->discount / $product_purchase->qty);
+                                                    } elseif ($product_data->tax_method == 2) {
+                                                        $product_cost = ($product_purchase->total / $product_purchase->qty) + ($product_purchase->discount / $product_purchase->qty);
+                                                    }
 
-                                                        $tax = DB::table('taxes')->where('rate',$product_purchase->tax_rate)->first();
-                                                        if($product_data->type == 'standard'){
-                                                            $unit = DB::table('units')->select('unit_name')->find($product_data->unit_id);
-                                                           $unit_name = $unit->unit_name;
-                                                        }
-                                                        else {
-                                                            $unit_name = 'n/a';
-                                                        }
-                                                        $product_batch_data = \App\Models\ProductBatch::select('batch_no')->find($product_purchase->product_batch_id);
+                                                    $tax = DB::table('taxes')->where('rate', $product_purchase->tax_rate)->first();
+                                                    if ($product_data->type == 'standard') {
+                                                        $unit = DB::table('units')->select('unit_name')->find($product_data->unit_id);
+                                                        $unit_name = $unit->unit_name;
+                                                    } else {
+                                                        $unit_name = 'n/a';
+                                                    }
+                                                    $product_batch_data = \App\Models\ProductBatch::select('batch_no')->find($product_purchase->product_batch_id);
                                                     ?>
                                                         <td>{{$product_data->name}}</td>
                                                         <td>{{$product_data->code}}</td>
@@ -196,7 +193,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary" id="submit-button">
+                                    <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary mt-3" id="submit-button">
                                 </div>
                             </div>
                         </div>

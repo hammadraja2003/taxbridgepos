@@ -391,7 +391,7 @@
                                                                 @if($field->is_required){{'required'}}@endif></textarea>
                                                         @elseif($field->type == 'checkbox')
                                                             <br>
-                                                            <?php            $option_values = explode(',', $field->option_value); ?>
+                                                            <?php $option_values = explode(',', $field->option_value); ?>
                                                             @foreach($option_values as $value)
                                                                 <label>
                                                                     <input type="checkbox"
@@ -404,7 +404,7 @@
                                                             @endforeach
                                                         @elseif($field->type == 'radio_button')
                                                             <br>
-                                                            <?php            $option_values = explode(',', $field->option_value); ?>
+                                                            <?php $option_values = explode(',', $field->option_value); ?>
                                                             @foreach($option_values as $value)
                                                                 <label class="radio-inline">
                                                                     <input type="radio"
@@ -416,7 +416,7 @@
                                                                 &nbsp;
                                                             @endforeach
                                                         @elseif($field->type == 'select')
-                                                            <?php            $option_values = explode(',', $field->option_value); ?>
+                                                            <?php $option_values = explode(',', $field->option_value); ?>
                                                             <select class="form-control"
                                                                 name="{{str_replace(' ', '_', strtolower($field->name))}}"
                                                                 @if($field->is_required){{'required'}}@endif>
@@ -427,7 +427,7 @@
                                                                 @endforeach
                                                             </select>
                                                         @elseif($field->type == 'multi_select')
-                                                            <?php            $option_values = explode(',', $field->option_value); ?>
+                                                            <?php $option_values = explode(',', $field->option_value); ?>
                                                             <select class="form-control"
                                                                 name="{{str_replace(' ', '_', strtolower($field->name))}}[]"
                                                                 @if($field->is_required){{'required'}}@endif multiple>
@@ -483,8 +483,8 @@
                                             </div>
                                         </div>
                                         <?php
-    $accountSelection = $role_has_permissions_list->where('name', 'account-selection')->first();
-                                                            ?>
+                                        $accountSelection = $role_has_permissions_list->where('name', 'account-selection')->first();
+                                        ?>
                                         @if ($accountSelection)
                                             <!-- New Account Selection Field -->
                                             <div id="account-list" class="col-md-3 col-6" hidden>
@@ -670,7 +670,7 @@
                                             <div class="form-group mt-3">
                                                 <input type="hidden" name="draft" value="0" />
                                                 <button id="submit-button" type="button"
-                                                    class="btn btn-primary">{{__('db.submit')}}</button>
+                                                    class="btn btn-primary mt-3">{{__('db.submit')}}</button>
                                             </div>
                                         </div>
                                         <div class="col-md-6 mt-3">
@@ -728,13 +728,13 @@
                                     <input type="number" name="edit_unit_price" class="form-control numkey" step="any">
                                 </div>
                                 <?php
-    $tax_name_all[] = 'No Tax';
-    $tax_rate_all[] = 0;
-    foreach ($lims_tax_list as $tax) {
-        $tax_name_all[] = $tax->name;
-        $tax_rate_all[] = $tax->rate;
-    }
-                                                    ?>
+                                $tax_name_all[] = 'No Tax';
+                                $tax_rate_all[] = 0;
+                                foreach ($lims_tax_list as $tax) {
+                                    $tax_name_all[] = $tax->name;
+                                    $tax_rate_all[] = $tax->rate;
+                                }
+                                ?>
                                 <div class="col-md-4 form-group">
                                     <label>{{__('db.Tax Rate')}}</label>
                                     <select name="edit_tax_rate" class="form-control selectpicker">
@@ -1237,7 +1237,7 @@
         $("ul#sale #sale-create-menu").addClass("active");
 
         @if($lims_pos_setting_data)
-            var public_key = <?php    echo json_encode($lims_pos_setting_data->stripe_public_key) ?>;
+            var public_key = <?php echo json_encode($lims_pos_setting_data->stripe_public_key) ?>;
         @endif
                             var currency = <?php echo json_encode($currency) ?>;
         var currencyChange = false;
@@ -1333,7 +1333,7 @@
         var points = <?php echo json_encode($points) ?>;
 
         @if($lims_reward_point_setting_data)
-            var reward_point_setting = <?php    echo json_encode($lims_reward_point_setting_data) ?>;
+            var reward_point_setting = <?php echo json_encode($lims_reward_point_setting_data) ?>;
         @endif
 
                         var rowindex;
