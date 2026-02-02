@@ -27,18 +27,9 @@ class DataRetrievalService
 {
     public function getAllUnits()
     {
-        $role = Role::find(Auth::user()->role_id);
+        $units = Unit::where('is_active', true)->get();
 
-        if ($role->hasPermissionTo('unit')) {
-            $units = Unit::where('is_active', true)->get();
-
-            return UnitResource::collection($units);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized access to units.',
-            ], 403);
-        }
+        return UnitResource::collection($units);
     }
 
     public function getAllBrands()
