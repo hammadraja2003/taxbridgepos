@@ -5,7 +5,7 @@
 
 <section>
     <div class="container-fluid">
-        <a href="{{route('discounts.create')}}" class="btn btn-primary"><i class="dripicons-plus"></i> {{__('db.Create Discount')}}</a>&nbsp;
+        <a href="{{route('discounts.create')}}" class="btn btn-primary btn-sm"><i class="dripicons-plus"></i> {{__('db.Create Discount')}}</a>&nbsp;
     </div>
     <div class="table-responsive">
         <table id="discount-table" class="table">
@@ -41,7 +41,7 @@
                     <td>{{ $discount->days }}</td>
                     <td>
                         @if($discount->product_list)
-                            <?php $products = \App\Models\Product::select('name', 'code')->whereIn('id', explode(",", $discount->product_list))->get(); ?>
+                            <?php $products = \App\Models\Product::select('name', 'code')->whereIn('id', explode(',', $discount->product_list))->get(); ?>
                             @foreach($products as $index => $product)
                                 @if($index)
                                     {{', '.$product->name.'['.$product->code.']'}}

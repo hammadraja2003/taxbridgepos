@@ -12,8 +12,8 @@
             {!! Form::open(['route' => 'incomes.index', 'method' => 'get']) !!}
             <div class="row mb-3">
                 <div class="col-md-4 offset-md-2 mt-3">
-                    <div class="form-group row">
-                        <label class="d-tc mt-2"><strong>{{__('db.Choose Your Date')}}</strong> &nbsp;</label>
+                    <div class="form-group">
+                        <label class="mt-2"><strong>{{__('db.Choose Your Date')}}</strong> &nbsp;</label>
                         <div class="d-tc">
                             <div class="input-group">
                                 <input type="text" class="daterangepicker-field form-control" value="{{$starting_date}} To {{$ending_date}}" required />
@@ -24,8 +24,8 @@
                     </div>
                 </div>
                 <div class="col-md-4 mt-3 @if(\Auth::user()->role_type > 2){{'d-none'}}@endif">
-                    <div class="form-group row">
-                        <label class="d-tc mt-2"><strong>{{__('db.Choose Warehouse')}}</strong> &nbsp;</label>
+                    <div class="form-group">
+                        <label class="mt-2"><strong>{{__('db.Choose Warehouse')}}</strong> &nbsp;</label>
                         <div class="d-tc">
                             <select id="warehouse_id" name="warehouse_id" class="selectpicker form-control" data-live-search="true" data-live-search-style="begins" >
                                 <option value="0">{{__('db.All Warehouse')}}</option>
@@ -49,7 +49,7 @@
             {!! Form::close() !!}
         </div>
         @if(in_array("incomes-add", $all_permission))
-            <button class="btn btn-primary" data-toggle="modal" data-target="#income-modal"><i class="dripicons-plus"></i> {{__('db.Add Income')}}</button>
+            <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#income-modal"><i class="dripicons-plus"></i> {{__('db.Add Income')}}</button>
         @endif
     </div>
     <div class="table-responsive">
@@ -91,14 +91,14 @@
               <p class="italic"><small>{{__('db.The field labels marked with * are required input fields')}}.</small></p>
                 {!! Form::open(['route' => ['incomes.update', 1], 'method' => 'put']) !!}
                 <?php
-                    $lims_income_category_list = DB::table('income_categories')->where('is_active', true)->get();
-                    if(Auth::user()->role_type > 2)
-                        $lims_warehouse_list = DB::table('warehouses')->where([
-                            ['is_active', true],
-                            ['id', Auth::user()->warehouse_id]
-                        ])->get();
-                    else
-                        $lims_warehouse_list = DB::table('warehouses')->where('is_active', true)->get();
+                $lims_income_category_list = DB::table('income_categories')->where('is_active', true)->get();
+                if (Auth::user()->role_type > 2)
+                    $lims_warehouse_list = DB::table('warehouses')->where([
+                        ['is_active', true],
+                        ['id', Auth::user()->warehouse_id]
+                    ])->get();
+                else
+                    $lims_warehouse_list = DB::table('warehouses')->where('is_active', true)->get();
                 ?>
                   <div class="form-group">
                       <input type="hidden" name="income_id">
@@ -120,7 +120,7 @@
                         </div>
                         <div class="col-md-6 form-group">
                             <label>{{__('db.Warehouse')}} *</label>
-                            <select name="warehouse_id" class="selectpicker form-control" required data-live-search="true" data-live-search-style="begins" title="Select Warehouse...">
+                            <select name="warehouse_id" class="selectpicker form-control" required data-live-search="true" data-live-search-style="begins" title="Select store...">
                                 @foreach($lims_warehouse_list as $warehouse)
                                 <option value="{{$warehouse->id}}">{{$warehouse->name}}</option>
                                 @endforeach
@@ -148,7 +148,7 @@
                       <textarea name="note" rows="3" class="form-control"></textarea>
                   </div>
                   <div class="form-group">
-                      <button type="submit" class="btn btn-primary">{{__('db.submit')}}</button>
+                      <button type="submit" class="btn btn-primary mt-3">{{__('db.submit')}}</button>
                   </div>
                 {{ Form::close() }}
             </div>

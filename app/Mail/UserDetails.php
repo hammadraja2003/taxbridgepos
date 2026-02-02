@@ -31,6 +31,6 @@ class UserDetails extends Mailable
     public function build()
     {
         $user_data = $this->data;
-        return $this->view('backend.mail.user_details',compact('user_data'))->subject('User Credentials');
+        return $this->view('admin.mail.user_details',compact('user_data'))->subject('User Credentials');
     }
 }

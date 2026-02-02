@@ -5,7 +5,7 @@
 
 <section>
     <div class="container-fluid mb-2">
-        <button class="btn btn-primary" data-toggle="modal" data-target="#createModal">
+        <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#createModal">
             <i class="dripicons-plus"></i> {{__('db.Add Holiday')}}
         </button>
     </div>
@@ -115,7 +115,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary">{{__('db.submit')}}</button>
+                    <button type="submit" class="btn btn-primary mt-3">{{__('db.submit')}}</button>
                 </div>
             </div>
             {!! Form::close() !!}
@@ -160,7 +160,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary">{{__('db.submit')}}</button>
+                    <button type="submit" class="btn btn-primary mt-3">{{__('db.submit')}}</button>
                 </div>
             </div>
             {!! Form::close() !!}

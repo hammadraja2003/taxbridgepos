@@ -79,6 +79,7 @@ $(document).ready(function () {
             $(".page").toggleClass("active");
         } else {
             $("nav.side-navbar").toggleClass("shrink");
+            $("nav.side-navbar").toggleClass("show-sm");
             $(".page").toggleClass("active-sm");
         }
     });
@@ -89,6 +90,7 @@ $(document).ready(function () {
     }
     $(document).on("click", "nav.side-navbar .close", function () {
         $("nav.side-navbar").addClass("shrink");
+        $("nav.side-navbar").removeClass("show-sm");
     });
 
     $(".pos-page nav.side-navbar").addClass("shrink");

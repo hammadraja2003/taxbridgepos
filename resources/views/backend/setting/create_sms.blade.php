@@ -26,6 +26,7 @@
                                         </select>
                                     </div>
                                     <div class="form-group">
+                                        <label>Customer Name or Mobile No</label>
                                         <input type="text" class="form-control" name="lims_customerSearch" id="lims_customerSearch" placeholder="{{ __('db.Please type customer name or mobile no and select') }}" />
                                     </div>
                                     <div class="form-group twilio">
@@ -37,7 +38,7 @@
                                         <textarea name="message" class="form-control message" rows="3" required></textarea>
                                     </div>
                                     <div class="form-group">
-                                        <button type="submit" class="btn btn-primary"><i class="fa fa-paper-plane"></i> {{__('db.Send SMS')}}</button>
+                                        <button type="submit" class="btn btn-primary mt-3"><i class="fa fa-paper-plane"></i> {{__('db.Send SMS')}}</button>
                                     </div>
                                 </div>
                             </div>
@@ -61,11 +62,11 @@
     <?php $customerArray = []; ?>
     var customer = [ @foreach($lims_customer_list as $customer)
         <?php
-            $customerArray[] = $customer->name . ' [' . $customer->phone_number . ']';
+        $customerArray[] = $customer->name . ' [' . $customer->phone_number . ']';
         ?>
          @endforeach
             <?php
-            echo  '"'.implode('","', $customerArray).'"';
+            echo '"' . implode('","', $customerArray) . '"';
             ?> ];
 
     var lims_customerSearch = $('#lims_customerSearch');

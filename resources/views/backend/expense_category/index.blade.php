@@ -6,8 +6,8 @@
 
 <section>
     <div class="container-fluid">
-        <button class="btn btn-primary" data-toggle="modal" data-target="#createModal"><i class="dripicons-plus"></i> {{__('db.Add Expense Category')}}</button>&nbsp;
-        <button class="btn btn-primary import-btn" data-toggle="modal" data-target="#importExpenseCategory"><i class="dripicons-copy"></i> {{__('db.Import Expense Category')}}</button>
+        <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#createModal"><i class="dripicons-plus"></i> {{__('db.Add Expense Category')}}</button>&nbsp;
+        <button class="btn btn-primary import-btn btn-sm" data-toggle="modal" data-target="#importExpenseCategory"><i class="dripicons-copy"></i> {{__('db.Import Expense Category')}}</button>
     </div>
     <div class="table-responsive">
         <table id="expense_category-table" class="table">
@@ -74,7 +74,7 @@
             </div>
             <input type="hidden" name="is_active" value="1">
             <div class="form-group">
-              <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">
+              <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary mt-3">
             </div>
         </div>
         {{ Form::close() }}
@@ -102,7 +102,7 @@
             </div>
         <input type="hidden" name="expense_category_id">
         <div class="form-group">
-            <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">
+            <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary mt-3">
           </div>
         </div>
       {{ Form::close() }}
@@ -136,7 +136,7 @@
                     </div>
                 </div>
             </div>
-            <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">
+            <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary mt-3">
         </div>
         {{ Form::close() }}
       </div>

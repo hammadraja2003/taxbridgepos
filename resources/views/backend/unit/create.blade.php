@@ -87,10 +87,8 @@
             </table>
         </div>
     </section>
+
     <!-- Modal -->
-
-
-
     <div id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"
         class="modal fade text-left">
         <div role="document" class="modal-dialog">

@@ -8,7 +8,7 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>Languages</h2>
             @if (count($languages))
-                <a href="{{ route('translations') }}" class="btn btn-primary">Manage Translations</a>
+                <a href="{{ route('translations') }}" class="btn btn-primary btn-sm">Manage Translations</a>
             @endif
         </div>
 

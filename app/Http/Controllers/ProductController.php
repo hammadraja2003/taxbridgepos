@@ -508,7 +508,6 @@ class ProductController extends Controller
 
         $data['name'] = preg_replace('/[\n\r]/', '<br>', htmlspecialchars(trim($data['name']), ENT_QUOTES));
 
-
         if ($data['type'] == 'combo' || (isset($data['is_recipe']) && $data['is_recipe'] == 1)) {
             $data['product_list'] = implode(',', $data['product_id']);
             $data['variant_list'] = implode(',', $data['variant_id']);
@@ -689,7 +688,7 @@ class ProductController extends Controller
 
     public function autoPurchase($product_data, $warehouse_id, $stock)
     {
-        $data['reference_no'] = 'pr-' . date('Ymd') . '-' . date('his');
+        $data['reference_no'] = 'PR-' . date('Ymd') . '-' . date('his');
         $data['user_id'] = Auth::id();
         $data['warehouse_id'] = $warehouse_id;
         $data['item'] = 1;
@@ -1886,8 +1885,6 @@ class ProductController extends Controller
                     'is_active' => true,
                     'image' => $data['image'] ?? 'zummXD2dvAtI.png',
                 ]);
-
-                
 
                 $image_names = [];
                 if (!empty($data['image']) && $data['image'] != 'zummXD2dvAtI.png') {

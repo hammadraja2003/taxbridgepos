@@ -7,7 +7,7 @@
 
 <section>
     <div class="container-fluid">
-        <a href="#" data-toggle="modal" data-target="#createModal" class="btn btn-primary"><i class="dripicons-plus"></i> {{__('db.Add Role')}} </a>
+        <a href="#" data-toggle="modal" data-target="#createModal" class="btn btn-primary btn-sm"><i class="dripicons-plus"></i> {{__('db.Add Role')}} </a>
     </div>
     <div class="table-responsive">
         <table id="role-table" class="table table-hover">
@@ -84,7 +84,7 @@
                     </div>
                     <input type="hidden" name="is_active" value="1">
                     <input type="hidden" name="guard_name" value="web">
-                    <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">
+                    <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary mt-3">
             	</form>
         	</div>
         {{ Form::close() }}
@@ -116,7 +116,7 @@
 		                <label>{{__('db.Description')}}</label>
 		                {{Form::textarea('description',null,array('rows'=> 5, 'class' => 'form-control'))}}
 		            </div>
-		            <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">
+		            <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary mt-3">
 		        </form>
 		    </div>
 		    {{ Form::close() }}

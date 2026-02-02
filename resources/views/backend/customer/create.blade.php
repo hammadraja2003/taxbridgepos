@@ -168,7 +168,7 @@
                                                 <textarea rows="5" name="{{str_replace(' ', '_', strtolower($field->name))}}" value="{{$field->default_value}}" class="form-control" @if($field->is_required){{'required'}}@endif></textarea>
                                             @elseif($field->type == 'checkbox')
                                                 <br>
-                                                <?php $option_values = explode(",", $field->option_value); ?>
+                                                <?php $option_values = explode(',', $field->option_value); ?>
                                                 @foreach($option_values as $value)
                                                     <label>
                                                         <input type="checkbox" name="{{str_replace(' ', '_', strtolower($field->name))}}[]" value="{{$value}}" @if($value == $field->default_value){{'checked'}}@endif @if($field->is_required){{'required'}}@endif> {{$value}}
@@ -177,7 +177,7 @@
                                                 @endforeach
                                             @elseif($field->type == 'radio_button')
                                                 <br>
-                                                <?php $option_values = explode(",", $field->option_value); ?>
+                                                <?php $option_values = explode(',', $field->option_value); ?>
                                                 @foreach($option_values as $value)
                                                     <label class="radio-inline">
                                                         <input type="radio" name="{{str_replace(' ', '_', strtolower($field->name))}}" value="{{$value}}" @if($value == $field->default_value){{'checked'}}@endif @if($field->is_required){{'required'}}@endif> {{$value}}
@@ -185,14 +185,14 @@
                                                     &nbsp;
                                                 @endforeach
                                             @elseif($field->type == 'select')
-                                                <?php $option_values = explode(",", $field->option_value); ?>
+                                                <?php $option_values = explode(',', $field->option_value); ?>
                                                 <select class="form-control" name="{{str_replace(' ', '_', strtolower($field->name))}}" @if($field->is_required){{'required'}}@endif>
                                                     @foreach($option_values as $value)
                                                         <option value="{{$value}}" @if($value == $field->default_value){{'selected'}}@endif>{{$value}}</option>
                                                     @endforeach
                                                 </select>
                                             @elseif($field->type == 'multi_select')
-                                                <?php $option_values = explode(",", $field->option_value); ?>
+                                                <?php $option_values = explode(',', $field->option_value); ?>
                                                 <select class="form-control" name="{{str_replace(' ', '_', strtolower($field->name))}}[]" @if($field->is_required){{'required'}}@endif multiple>
                                                     @foreach($option_values as $value)
                                                         <option value="{{$value}}" @if($value == $field->default_value){{'selected'}}@endif>{{$value}}</option>
@@ -268,7 +268,7 @@
                         </div>
                         <div class="form-group">
                             <input type="hidden" name="pos" value="0">
-                            <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">
+                            <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary mt-3">
                         </div>
                         {!! Form::close() !!}
                     </div>

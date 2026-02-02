@@ -5,7 +5,7 @@
 
 <section>
     <div class="container-fluid">
-        <a href="{{route('custom-fields.create')}}" class="btn btn-primary"><i class="dripicons-plus"></i> {{__('db.Create Custom Field')}}</a>&nbsp;
+        <a href="{{route('custom-fields.create')}}" class="btn btn-primary btn-sm"><i class="dripicons-plus"></i> {{__('db.Create Custom Field')}}</a>&nbsp;
     </div>
     <div class="table-responsive">
         <table id="custom-field-table" class="table">

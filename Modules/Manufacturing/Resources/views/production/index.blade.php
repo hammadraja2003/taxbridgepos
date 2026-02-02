@@ -50,7 +50,7 @@
             </div>
             {{-- {!! Form::close() !!} --}}
         </div>
-        <a href="{{route('productions.create')}}" class="btn btn-primary"><i class="dripicons-plus"></i> {{__('db.Add Production')}}</a>&nbsp;
+        <a href="{{route('productions.create')}}" class="btn btn-primary btn-sm"><i class="dripicons-plus"></i> {{__('db.Add Production')}}</a>&nbsp;
     </div>
     <div class="table-responsive">
         <table id="production-table" class="table production-list" style="width: 100%">

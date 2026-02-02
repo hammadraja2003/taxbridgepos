@@ -166,8 +166,8 @@
                                     </div>
                                     <div class="clearfix"></div>
 
-                                    <div class="col-sm-12 text-center">
-                                        <button type="submit" class="btn btn-primary btn-big">{{ __('db.update') }}</button>
+                                    <div class="col-sm-12">
+                                        <button type="submit" class="btn btn-primary btn-big mt-3">{{ __('db.update') }}</button>
                                     </div>
                                 </div>
                             </div>

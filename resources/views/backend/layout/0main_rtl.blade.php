@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel="icon" type="image/png" href="{{url('favicon.ico')}}" />
+      <link rel="icon" type="image/png" href="{{ env('PUB_PATH') . '/logo/favicon.ico' }}" />
     <title>{{$general_setting->site_title}}</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1155,7 +1155,7 @@ $adjustment_active = DB::connection('master')->table('role_has_permissions')->wh
                         </div>
                         <div class="col-md-6 form-group">
                             <label>{{__('db.Warehouse')}} *</label>
-                            <select name="warehouse_id" class="selectpicker form-control" required data-live-search="true" data-live-search-style="begins" title="Select Warehouse...">
+                            <select name="warehouse_id" class="selectpicker form-control" required data-live-search="true" data-live-search-style="begins" title="Select store...">
                                 @foreach($lims_warehouse_list as $warehouse)
                                 <option value="{{$warehouse->id}}">{{$warehouse->name}}</option>
                                 @endforeach
@@ -1292,7 +1292,7 @@ $adjustment_active = DB::connection('master')->table('role_has_permissions')->wh
                     ?>
                       <div class="form-group">
                           <label>{{__('db.Warehouse')}} *</label>
-                          <select name="warehouse_id" class="selectpicker form-control" required data-live-search="true" id="warehouse-id" data-live-search-style="begins" title="Select warehouse...">
+                          <select name="warehouse_id" class="selectpicker form-control" required data-live-search="true" id="warehouse-id" data-live-search-style="begins" title="Select store...">
                               @foreach($lims_warehouse_list as $warehouse)
                               <option value="{{$warehouse->id}}">{{$warehouse->name}}</option>
                               @endforeach

@@ -7,8 +7,8 @@
 
 <section>
     <div class="container-fluid">
-        <a href="#" data-toggle="modal" data-target="#createModal" class="btn btn-primary"><i class="dripicons-plus"></i> {{__('db.Add Customer Group')}}</a>
-        <a href="#" data-toggle="modal" data-target="#importcustomer_group" class="btn btn-primary"><i class="dripicons-copy"></i> {{__('db.Import Customer Group')}}</a>
+        <a href="#" data-toggle="modal" data-target="#createModal" class="btn btn-primary btn-sm"><i class="dripicons-plus"></i> {{__('db.Add Customer Group')}}</a>
+        <a href="#" data-toggle="modal" data-target="#importcustomer_group" class="btn btn-primary btn-sm"><i class="dripicons-copy"></i> {{__('db.Import Customer Group')}}</a>
     </div>
     <div class="table-responsive">
         <table id="customer-grp-table" class="table">
@@ -73,7 +73,7 @@
           <input type="number" min="0" name="percentage" required="required" class="form-control">
         </div>
         <div class="form-group">
-          <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">
+          <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary mt-3">
         </div>
       </form>
     </div>
@@ -103,7 +103,7 @@
           <input type="text" name="percentage" required="required" class="form-control">
         </div>
         <div class="form-group">
-          <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">
+          <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary mt-3">
         </div>
     </div>
     {{ Form::close() }}
@@ -137,7 +137,7 @@
             </div>
       </div>
 
-        <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">
+        <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary mt-3">
     </div>
     {{ Form::close() }}
   </div>

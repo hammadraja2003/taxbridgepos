@@ -8,7 +8,7 @@
 
         <!-- Buttons -->
         <div class="mb-3 d-flex">
-            <button class="btn btn-primary mr-2" data-toggle="modal" data-target="#createModal">
+            <button class="btn btn-primary mr-2 btn-sm" data-toggle="modal" data-target="#createModal">
                 <i class="dripicons-plus"></i> {{ __('db.Add Attendance') }}
             </button>
 
@@ -139,7 +139,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary">{{__('db.submit')}}</button>
+                    <button type="submit" class="btn btn-primary mt-3">{{__('db.submit')}}</button>
                 </div>
                 {{ Form::close() }}
             </div>

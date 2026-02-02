@@ -27,12 +27,12 @@
                 <tbody>
                     @foreach($lims_stock_count_all as $key => $stock_count)
                                     <?php
-                        $warehouse = DB::table('warehouses')->find($stock_count->warehouse_id);
-                        $category_name = [];
-                        $brand_name = [];
-                        $initial_file = 'stock_count/' . $stock_count->initial_file;
-                        $final_file = 'stock_count/' . $stock_count->final_file;
-                                                                                                ?>
+                                    $warehouse = DB::table('warehouses')->find($stock_count->warehouse_id);
+                                    $category_name = [];
+                                    $brand_name = [];
+                                    $initial_file = 'stock_count/' . $stock_count->initial_file;
+                                    $final_file = 'stock_count/' . $stock_count->final_file;
+                                    ?>
                                     <tr>
                                         <td>{{$key}}</td>
                                         <td>{{ date($general_setting->date_format, strtotime($stock_count->created_at->toDateString())) . ' ' . $stock_count->created_at->toTimeString() }}
@@ -138,7 +138,7 @@
                         <div class="col-md-4 form-group">
                             <label>{{__('db.Warehouse')}} *</label>
                             <select required name="warehouse_id" id="warehouse_id" class="selectpicker form-control"
-                                data-live-search="true" data-live-search-style="begins" title="Select warehouse...">
+                                data-live-search="true" data-live-search-style="begins" title="Select store...">
                                 @foreach($lims_warehouse_list as $warehouse)
                                     <option value="{{$warehouse->id}}">{{$warehouse->name}}</option>
                                 @endforeach
@@ -172,7 +172,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">
+                        <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary mt-3">
                     </div>
                 </div>
                 {{ Form::close() }}

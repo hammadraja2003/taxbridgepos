@@ -5,63 +5,63 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   @if(!config('database.connections.saleprosaas_landlord'))
-  <link rel="icon" type="image/png" href="{{url('logo', $general_setting->favicon ?? $general_setting->site_logo)}}" />
+  <link rel="icon" type="image/png" href="{{ env('PUB_PATH') . '/logo/'. $general_setting->favicon ?? $general_setting->site_logo}}" />
   <title>{{$general_setting->site_title}}</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="all,follow">
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <!-- Bootstrap CSS-->
-  <link rel="stylesheet" href="<?php echo env('ASSETS_PATH') . '/bootstrap/css/bootstrap.min.css' ?>" type="text/css">
-  <link rel="preload" href="<?php echo env('ASSETS_PATH') . '/bootstrap-toggle/css/bootstrap-toggle.min.css' ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="stylesheet" href="{{ env('ASSETS_PATH') . '/bootstrap/css/bootstrap.min.css' }}" type="text/css">
+  <link rel="preload" href="{{ env('ASSETS_PATH') . '/bootstrap-toggle/css/bootstrap-toggle.min.css' }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript>
-    <link href="<?php echo env('ASSETS_PATH') . '/bootstrap-toggle/css/bootstrap-toggle.min.css' ?>" rel="stylesheet">
+    <link href="{{ env('ASSETS_PATH') . '/bootstrap-toggle/css/bootstrap-toggle.min.css' }}" rel="stylesheet">
   </noscript>
-  <link rel="preload" href="<?php echo env('ASSETS_PATH') . '/bootstrap/css/bootstrap-datepicker.min.css' ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <link rel="preload" href="<?php echo env('ASSETS_PATH') . '/jquery-timepicker/jquery.timepicker.min.css' ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="{{ env('ASSETS_PATH') . '/bootstrap/css/bootstrap-datepicker.min.css' }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="{{ env('ASSETS_PATH') . '/jquery-timepicker/jquery.timepicker.min.css' }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript>
-    <link href="<?php echo env('ASSETS_PATH') . '/jquery-timepicker/jquery.timepicker.min.css' ?>" rel="stylesheet">
+    <link href="{{ env('ASSETS_PATH') . '/jquery-timepicker/jquery.timepicker.min.css' }}" rel="stylesheet">
   </noscript>
-  <link rel="preload" href="<?php echo env('ASSETS_PATH') . '/bootstrap/css/awesome-bootstrap-checkbox.css' ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="{{ env('ASSETS_PATH') . '/bootstrap/css/awesome-bootstrap-checkbox.css' }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript>
-    <link href="<?php echo env('ASSETS_PATH') . '/bootstrap/css/awesome-bootstrap-checkbox.css' ?>" rel="stylesheet">
+    <link href="{{ env('ASSETS_PATH') . '/bootstrap/css/awesome-bootstrap-checkbox.css' }}" rel="stylesheet">
   </noscript>
-  <link rel="preload" href="<?php echo env('ASSETS_PATH') . '/bootstrap/css/bootstrap-select.min.css' ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="{{ env('ASSETS_PATH') . '/bootstrap/css/bootstrap-select.min.css' }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript>
-    <link href="<?php echo env('ASSETS_PATH') . '/bootstrap/css/bootstrap-select.min.css' ?>" rel="stylesheet">
+    <link href="{{ env('ASSETS_PATH') . '/bootstrap/css/bootstrap-select.min.css' }}" rel="stylesheet">
   </noscript>
   <!-- Font Awesome CSS-->
-  <link rel="preload" href="<?php echo env('ASSETS_PATH') . '/font-awesome/css/font-awesome.min.css' ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="{{ env('ASSETS_PATH') . '/font-awesome/css/font-awesome.min.css' }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript>
-    <link href="<?php echo env('ASSETS_PATH') . '/font-awesome/css/font-awesome.min.css' ?>" rel="stylesheet">
+    <link href="{{ env('ASSETS_PATH') . '/font-awesome/css/font-awesome.min.css' }}" rel="stylesheet">
   </noscript>
   <!-- Drip icon font-->
-  <link rel="preload" href="<?php echo env('ASSETS_PATH') . '/dripicons/webfont.css' ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="{{ env('ASSETS_PATH') . '/dripicons/webfont.css' }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript>
-    <link href="<?php echo env('ASSETS_PATH') . '/dripicons/webfont.css' ?>" rel="stylesheet">
+    <link href="{{ env('ASSETS_PATH') . '/dripicons/webfont.css' }}" rel="stylesheet">
   </noscript>
 
   <!-- jQuery Circle-->
-  <link rel="preload" href="<?php echo env('ASSETS_PATH') . '/css/grasp_mobile_progress_circle-1.0.0.min.css' ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="{{ env('ASSETS_PATH') . '/css/grasp_mobile_progress_circle-1.0.0.min.css' }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript>
-    <link href="<?php echo env('ASSETS_PATH') . '/css/grasp_mobile_progress_circle-1.0.0.min.css' ?>" rel="stylesheet">
+    <link href="{{ env('ASSETS_PATH') . '/css/grasp_mobile_progress_circle-1.0.0.min.css' }}" rel="stylesheet">
   </noscript>
   <!-- Custom Scrollbar-->
-  <link rel="preload" href="<?php echo env('ASSETS_PATH') . '/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css' ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="{{ env('ASSETS_PATH') . '/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css' }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript>
-    <link href="<?php echo env('ASSETS_PATH') . '/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css' ?>" rel="stylesheet">
+    <link href="{{ env('ASSETS_PATH') . '/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css' }}" rel="stylesheet">
   </noscript>
 
   @if(Route::current()->getName() != '/')
   <!-- date range stylesheet-->
-  <link rel="preload" href="<?php echo env('ASSETS_PATH') . '/daterange/css/daterangepicker.min.css' ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="{{ env('ASSETS_PATH') . '/daterange/css/daterangepicker.min.css' }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript>
-    <link href="<?php echo env('ASSETS_PATH') . '/daterange/css/daterangepicker.min.css' ?>" rel="stylesheet">
+    <link href="{{ env('ASSETS_PATH') . '/daterange/css/daterangepicker.min.css' }}" rel="stylesheet">
   </noscript>
   <!-- table sorter stylesheet-->
-  <link rel="preload" href="<?php echo env('ASSETS_PATH') . '/datatable/dataTables.bootstrap4.min.css' ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="{{ env('ASSETS_PATH') . '/datatable/dataTables.bootstrap4.min.css' }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript>
-    <link href="<?php echo env('ASSETS_PATH') . '/datatable/dataTables.bootstrap4.min.css' ?>" rel="stylesheet">
+    <link href="{{ env('ASSETS_PATH') . '/datatable/dataTables.bootstrap4.min.css' }}" rel="stylesheet">
   </noscript>
   <link rel="preload" href="https://cdn.datatables.net/fixedheader/3.1.6/css/fixedHeader.bootstrap.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript>
@@ -73,15 +73,15 @@
   </noscript>
   @endif
 
-  <link rel="stylesheet" href="<?php echo env('ASSETS_PATH') . '/css/style.default.css' ?>" id="theme-stylesheet" type="text/css">
-  <link rel="stylesheet" href="<?php echo env('ASSETS_PATH') . '/css/dropzone.css' ?>">
+  <link rel="stylesheet" href="{{ env('ASSETS_PATH') . '/css/style.default.css' }}" id="theme-stylesheet" type="text/css">
+  <link rel="stylesheet" href="{{ env('ASSETS_PATH') . '/css/dropzone.css' }}">
   <!-- Custom stylesheet - for your changes-->
-  <link rel="stylesheet" href="<?php echo env('ASSETS_PATH') . '/css/custom-' . $general_setting->theme ?>" type="text/css" id="custom-style">
+  <link rel="stylesheet" href="{{ env('ASSETS_PATH') . '/css/custom-' . $general_setting->theme }}" type="text/css" id="custom-style">
 
   @if( Config::get('app.locale') == 'ar' || $general_setting->is_rtl)
   <!-- RTL css -->
-  <link rel="stylesheet" href="<?php echo env('ASSETS_PATH') . '/bootstrap/css/bootstrap-rtl.min.css' ?>" type="text/css">
-  <link rel="stylesheet" href="<?php echo env('ASSETS_PATH') . '/css/custom-rtl.css' ?>" type="text/css" id="custom-style">
+  <link rel="stylesheet" href="{{ env('ASSETS_PATH') . '/bootstrap/css/bootstrap-rtl.min.css' }}" type="text/css">
+  <link rel="stylesheet" href="{{ env('ASSETS_PATH') . '/css/custom-rtl.css' }}" type="text/css" id="custom-style">
   @endif
   
   @endif
@@ -97,7 +97,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap" rel="stylesheet">
   @endif
 
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/jquery/jquery.min.js' ?>"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/jquery/jquery.min.js' }}"></script>
   @stack('css')
 
   <!-- Custom CSS from general settings -->
@@ -115,7 +115,7 @@
     <span class="brand-big">
       <a href="{{url('/dashboard') }}">
       @if($general_setting->site_logo)
-      <img src="{{url('logo', $general_setting->site_logo)}}" width="115">
+      <img src="{{env('PUB_PATH') . '/logo/'. $general_setting->site_logo}}" width="115">
       @else
         <h1 class="d-inline">{{$general_setting->site_title}}</h1>
       @endif
@@ -251,7 +251,7 @@
             $total_notifications = $alert_product + $dso_alert_product_no + $expire_alert_products;
             @endphp
 
-            <li class="nav-item" id="notification-icon">
+            <li class="nav-item">
 
                 <a rel="nofollow" data-toggle="tooltip" title="{{ __('Notifications') }}" class="nav-link dropdown-item">
                     <i class="dripicons-bell"></i>
@@ -292,7 +292,7 @@
                         @if($expire_alert_products > 0)
                         <li class="notifications">
                             <a href="{{ route('report.productExpiry') }}" class="btn btn-link">
-                                {{ $expire_alert_products }} product will expire within {{ $product_qty_alert_active->expiry_alert_days ?? 0  }} days
+                                {{ $expire_alert_products }} product will expire within {{ $general_setting->expiry_alert_days ?? 0  }} days
                             </a>
                         </li>
                         @endif
@@ -304,6 +304,67 @@
 
                 </ul>
             </li>
+
+            @php
+                $my_notifications = Auth::user()->unreadNotifications()->latest()->take(10)->get();
+                $unread_count = Auth::user()->unreadNotifications->count();
+            @endphp
+            <li class="nav-item">
+                <a rel="nofollow" data-toggle="tooltip" title="{{ __('Notifications') }}" class="nav-link dropdown-item">
+                    <i class="dripicons-bell"></i>
+
+                     @if($unread_count > 0)
+                        <span class="badge badge-danger notification-number">{{ $unread_count }}</span>
+                    @endif
+                </a>
+
+                <ul class="right-sidebar">
+                    <li class="notifications text-center font-weight-bold border-bottom py-2">
+                        My Notifications
+                    </li>
+
+                    @if($my_notifications->count() == 0)
+                        <li class="notifications text-center">
+                            <span class="text-muted">No notifications available</span>
+                        </li>
+                    @else
+                        @foreach($my_notifications as $notification)
+                            <li class="notifications {{ is_null($notification->read_at) ? 'bg-light' : '' }}" id="notification-{{ $notification->id }}">
+                                <a href="javascript:void(0);"
+                                  class="d-flex justify-content-between align-items-start text-decoration-none text-dark p-1 notification-link"
+                                  data-id="{{ $notification->id }}"
+                                  data-toggle="popover"
+                                  data-trigger="hover"
+                                  data-placement="top"
+                                  title="{{ $notification->data['message'] ?? 'Notification' }}"
+                                  data-content="{{ $notification->data['message'] ?? 'Notification' }}">
+
+                                    {{-- Left side: Message --}}
+                                    <div class="text-truncate" style="max-width: 85%;">
+                                        {{ $notification->data['message'] ?? '' }}
+                                    </div>
+
+                                    {{-- Right side: Time --}}
+                                    <small class="text-muted flex-shrink-0 ml-2">
+                                        {{ $notification->created_at->diffForHumans() }}
+                                    </small>
+                                </a>
+                            </li>
+                        @endforeach
+
+
+                        {{-- Footer --}}
+                        <li class="notifications text-center border-top pt-2">
+                            <a href="{{ route('notifications.index') }}" class="btn btn-sm btn-primary">
+                                View All Notifications
+                            </a>
+                        </li>
+
+                    @endif
+
+                </ul>
+            </li>
+
             <!-- <li class="nav-item">
               <a rel="nofollow" title="{{ __('db.language') }}" data-toggle="tooltip" class="nav-link dropdown-item"><i class="dripicons-web"></i></a>
               <ul class="right-sidebar">
@@ -334,9 +395,9 @@
                   <a href="{{route('setting.general') }}"><i class="dripicons-gear"></i> {{ __('db.settings') }}</a>
                 </li>
                 @endif
-                <!-- <li>
+                <li>
                   <a href="{{url('my-transactions/'.date('Y').'/'.date('m'))}}"><i class="dripicons-swap"></i> {{ __('db.My Transaction') }}</a>
-                </li> -->
+                </li>
                 @if(Auth::user()->role_type != 4)
                 <!-- <li>
                   <a href="{{url('holidays/my-holiday/'.date('Y').'/'.date('m'))}}"><i class="dripicons-vibrate"></i> {{ __('db.My Holiday') }}</a>
@@ -404,7 +465,7 @@
               </div>
             </div>
             <div class="form-group">
-              <button type="submit" class="btn btn-primary ">{{ __('submit') }}</button>
+              <button type="submit" class="btn btn-primary mt-3">{{ __('submit') }}</button>
             </div>
             {{ Form::close() }}
           </div>
@@ -451,7 +512,7 @@
 
             <div class="form-group">
               <input type="hidden" class="category-ajax-check" name="ajax" value="0">
-              <button type="submit" class="btn btn-primary category-submit-btn">{{ __('submit') }}</button>
+              <button type="submit" class="btn btn-primary category-submit-btn mt-3">{{ __('submit') }}</button>
             </div>
           </div>
           {{ Form::close() }}
@@ -498,7 +559,7 @@
               </div>
               <div class="col-md-6 form-group">
                 <label>{{ __('Warehouse') }} *</label>
-                <select name="warehouse_id" class="selectpicker form-control" required data-live-search="true" data-live-search-style="begins" title="Select Warehouse...">
+                <select name="warehouse_id" class="selectpicker form-control" required data-live-search="true" data-live-search-style="begins" title="Select store...">
                   @foreach($lims_warehouse_list as $warehouse)
                   <option value="{{$warehouse->id}}">{{$warehouse->name}}</option>
                   @endforeach
@@ -565,7 +626,7 @@
               <textarea name="note" rows="3" class="form-control"></textarea>
             </div>
             <div class="form-group">
-              <button type="submit" class="btn btn-primary">{{ __('submit') }}</button>
+              <button type="submit" class="btn btn-primary mt-3">{{ __('submit') }}</button>
             </div>
             {{ Form::close() }}
           </div>
@@ -610,7 +671,7 @@
               </div>
               <div class="col-md-6 form-group">
                 <label>{{ __('Warehouse') }} *</label>
-                <select name="warehouse_id" class="selectpicker form-control" required data-live-search="true" data-live-search-style="begins" title="Select Warehouse...">
+                <select name="warehouse_id" class="selectpicker form-control" required data-live-search="true" data-live-search-style="begins" title="Select store...">
                   @foreach($lims_warehouse_list as $warehouse)
                   <option value="{{$warehouse->id}}">{{$warehouse->name}}</option>
                   @endforeach
@@ -638,7 +699,7 @@
               <textarea name="note" rows="3" class="form-control"></textarea>
             </div>
             <div class="form-group">
-              <button type="submit" class="btn btn-primary">{{ __('submit') }}</button>
+              <button type="submit" class="btn btn-primary mt-3">{{ __('submit') }}</button>
             </div>
             {{ Form::close() }}
           </div>
@@ -666,7 +727,7 @@
                 </div>
               </div>
             </div>
-            {{Form::submit('Submit', ['class' => 'btn btn-primary'])}}
+            {{Form::submit('Submit', ['class' => 'btn btn-primary mt-3'])}}
           </div>
           {!! Form::close() !!}
         </div>
@@ -693,7 +754,7 @@
                 </div>
               </div>
             </div>
-            {{Form::submit('Submit', ['class' => 'btn btn-primary'])}}
+            {{Form::submit('Submit', ['class' => 'btn btn-primary mt-3'])}}
           </div>
           {!! Form::close() !!}
         </div>
@@ -729,7 +790,7 @@
               <textarea name="note" rows="3" class="form-control"></textarea>
             </div>
             <div class="form-group">
-              <button type="submit" class="btn btn-primary">{{ __('submit') }}</button>
+              <button type="submit" class="btn btn-primary mt-3">{{ __('submit') }}</button>
             </div>
             {{ Form::close() }}
           </div>
@@ -776,7 +837,7 @@
               </div>
             </div>
             <div class="form-group">
-              <button type="submit" class="btn btn-primary">{{ __('submit') }}</button>
+              <button type="submit" class="btn btn-primary mt-3">{{ __('submit') }}</button>
             </div>
             {{ Form::close() }}
           </div>
@@ -799,7 +860,7 @@
 
             <div class="form-group">
               <label>{{ __('Warehouse') }} *</label>
-              <select name="warehouse_id" class="selectpicker form-control" required data-live-search="true" id="warehouse-id" data-live-search-style="begins" title="Select warehouse...">
+              <select name="warehouse_id" class="selectpicker form-control" required data-live-search="true" id="warehouse-id" data-live-search-style="begins" title="Select store...">
                 @foreach($lims_warehouse_list as $warehouse)
                 <option value="{{$warehouse->id}}">{{$warehouse->name}}</option>
                 @endforeach
@@ -810,7 +871,7 @@
             <input type="hidden" name="end_date" value="{{date('Y-m-d') }}" />
 
             <div class="form-group">
-              <button type="submit" class="btn btn-primary">{{ __('submit') }}</button>
+              <button type="submit" class="btn btn-primary mt-3">{{ __('submit') }}</button>
             </div>
             {{ Form::close() }}
           </div>
@@ -850,7 +911,7 @@
             <input type="hidden" name="end_date" value="{{date('Y-m-d') }}" />
 
             <div class="form-group">
-              <button type="submit" class="btn btn-primary">{{ __('submit') }}</button>
+              <button type="submit" class="btn btn-primary mt-3">{{ __('submit') }}</button>
             </div>
             {{ Form::close() }}
           </div>
@@ -886,7 +947,7 @@
             <input type="hidden" name="end_date" value="{{date('Y-m-d') }}" />
 
             <div class="form-group">
-              <button type="submit" class="btn btn-primary">{{ __('submit') }}</button>
+              <button type="submit" class="btn btn-primary mt-3">{{ __('submit') }}</button>
             </div>
             {{ Form::close() }}
           </div>
@@ -922,7 +983,7 @@
             <input type="hidden" name="end_date" value="{{date('Y-m-d') }}" />
 
             <div class="form-group">
-              <button type="submit" class="btn btn-primary">{{ __('submit') }}</button>
+              <button type="submit" class="btn btn-primary mt-3">{{ __('submit') }}</button>
             </div>
             {{ Form::close() }}
           </div>
@@ -958,7 +1019,7 @@
             <input type="hidden" name="end_date" value="{{date('Y-m-d') }}" />
 
             <div class="form-group">
-              <button type="submit" class="btn btn-primary">{{ __('submit') }}</button>
+              <button type="submit" class="btn btn-primary mt-3">{{ __('submit') }}</button>
             </div>
             {{ Form::close() }}
           </div>
@@ -994,7 +1055,7 @@
             <input type="hidden" name="end_date" value="{{date('Y-m-d') }}" />
 
             <div class="form-group">
-              <button type="submit" class="btn btn-primary">{{ __('submit') }}</button>
+              <button type="submit" class="btn btn-primary mt-3">{{ __('submit') }}</button>
             </div>
             {{ Form::close() }}
           </div>
@@ -1029,57 +1090,57 @@
   </footer>
 
   @if(!config('database.connections.saleprosaas_landlord'))
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/jquery/jquery.min.js' ?>"></script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/jquery/jquery-ui.min.js' ?>"></script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/jquery/bootstrap-datepicker.min.js' ?>"></script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/jquery/jquery.timepicker.min.js' ?>"></script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/popper.js/umd/popper.min.js' ?>">
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/jquery/jquery.min.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/jquery/jquery-ui.min.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/jquery/bootstrap-datepicker.min.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/jquery/jquery.timepicker.min.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/popper.js/umd/popper.min.js' }}">
   </script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/bootstrap/js/bootstrap.min.js' ?>"></script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/bootstrap-toggle/js/bootstrap-toggle.min.js' ?>"></script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/bootstrap/js/bootstrap-select.min.js' ?>"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/bootstrap/js/bootstrap.min.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/bootstrap-toggle/js/bootstrap-toggle.min.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/bootstrap/js/bootstrap-select.min.js' }}"></script>
   @if(Route::current()->getName() == 'sale.pos')
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/keyboard/js/jquery.keyboard.js' ?>"></script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/keyboard/js/jquery.keyboard.extension-autocomplete.js' ?>"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/keyboard/js/jquery.keyboard.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/keyboard/js/jquery.keyboard.extension-autocomplete.js' }}"></script>
   @endif
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/js/grasp_mobile_progress_circle-1.0.0.min.js' ?>"></script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/jquery.cookie/jquery.cookie.js' ?>"></script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/chart.js/Chart.min.js' ?>"></script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/js/charts-custom.js' ?>"></script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/jquery-validation/jquery.validate.min.js' ?>"></script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js' ?>"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/js/grasp_mobile_progress_circle-1.0.0.min.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/jquery.cookie/jquery.cookie.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/chart.js/Chart.min.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/js/charts-custom.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/jquery-validation/jquery.validate.min.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js' }}"></script>
   @if( Config::get('app.locale') == 'ar' || $general_setting->is_rtl)
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/js/front_rtl.js' ?>"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/js/front_rtl.js' }}"></script>
   @else
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/js/front.js' ?>"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/js/front.js' }}"></script>
   @endif
 
   @if(Route::current()->getName() != '/')
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/daterange/js/moment.min.js' ?>"></script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/daterange/js/knockout-3.4.2.js' ?>"></script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/daterange/js/daterangepicker.min.js' ?>"></script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/tinymce/js/tinymce/tinymce.min.js' ?>"></script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/js/dropzone.js' ?>"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/daterange/js/moment.min.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/daterange/js/knockout-3.4.2.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/daterange/js/daterangepicker.min.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/tinymce/js/tinymce/tinymce.min.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/js/dropzone.js' }}"></script>
 
   <!-- table sorter js-->
   @if( Config::get('app.locale') == 'ar')
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/datatable/pdfmake_arabic.min.js' ?>"></script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/datatable/vfs_fonts_arabic.js' ?>"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/pdfmake_arabic.min.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/vfs_fonts_arabic.js' }}"></script>
   @else
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/datatable/pdfmake.min.js' ?>"></script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/datatable/vfs_fonts.js' ?>"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/pdfmake.min.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/vfs_fonts.js' }}"></script>
   @endif
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/datatable/jquery.dataTables.min.js' ?>"></script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/datatable/dataTables.bootstrap4.min.js' ?>"></script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/datatable/dataTables.buttons.min.js' ?>"></script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/datatable/jszip.min.js' ?>"></script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/datatable/buttons.bootstrap4.min.js' ?>"></script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/datatable/buttons.colVis.min.js' ?>"></script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/datatable/buttons.html5.min.js' ?>"></script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/datatable/buttons.printnew.js' ?>"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/jquery.dataTables.min.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/dataTables.bootstrap4.min.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/dataTables.buttons.min.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/jszip.min.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/buttons.bootstrap4.min.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/buttons.colVis.min.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/buttons.html5.min.js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/buttons.printnew.js' }}"></script>
 
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/datatable/sum().js' ?>"></script>
-  <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/datatable/dataTables.checkboxes.min.js' ?>"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/sum().js' }}"></script>
+  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/dataTables.checkboxes.min.js' }}"></script>
   <script type="text/javascript" src="https://cdn.datatables.net/fixedheader/3.1.6/js/dataTables.fixedHeader.min.js"></script>
   <script type="text/javascript" src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
   <script type="text/javascript" src="https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap.min.js"></script>
@@ -1145,9 +1206,9 @@
     }
 
     $("li#notification-icon").on("click", function(argument) {
-      $.get('notifications/mark-as-read', function(data) {
-        $("span.notification-number").text(alert_product);
-      });
+      // $.get('notifications/mark-as-read', function(data) {
+      //   $("span.notification-number").text(alert_product);
+      // });
     });
 
     $("a#add-expense").click(function(e) {
@@ -1295,7 +1356,6 @@
         }
     });
 
-      // Automatically activate sidebar menu based on current URL
       $(document).ready(function() {
           var currentUrl = window.location.href;
           var validLinks = [];
@@ -1311,28 +1371,43 @@
               }
           });
 
-          // Sort by length descending to find the most specific match
           validLinks.sort(function(a, b) {
               return b.length - a.length;
           });
 
           if (validLinks.length > 0) {
               var activeLink = validLinks[0].element;
-              
-              // Add active class to the link's parent li
               activeLink.parent().addClass('active');
-
-              // If it's a submenu item
               if (activeLink.closest('ul').hasClass('collapse')) {
-                  // Expand the parent ul
                   activeLink.closest('ul').addClass('show');
-                  // Mark the parent dropdown as active and expanded
                   activeLink.closest('ul').siblings('a').attr('aria-expanded', 'true');
               }
           }
       });
     </script>
-   
+
+    <script>
+      $(document).ready(function(){
+          $('[data-toggle="popover"]').popover({container: 'body', html: true});
+          $('.notification-link').on('click', function(e){
+              e.preventDefault();
+
+              var id = $(this).data('id');
+              var li = $('#notification-' + id);
+              $.get('/notifications/read/' + id, function(response){
+                  if(response.success){
+                      li.removeClass('bg-light');
+                      li.fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+                  }
+              });
+              var url = li.find('a').data('url');
+              if(url){
+                  window.location.href = url;
+              }
+          });
+
+      });
+    </script>
 </body>
 
 </html>

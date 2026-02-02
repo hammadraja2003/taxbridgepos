@@ -7,10 +7,10 @@
 <section>
     <div class="container-fluid">
         @can('billers-add')
-            <a href="{{route('biller.create')}}" class="btn btn-primary"><i class="dripicons-plus"></i> {{__('db.Add Biller')}}</a>&nbsp;
+            <a href="{{route('biller.create')}}" class="btn btn-primary btn-sm"><i class="dripicons-plus"></i> {{__('db.Add Biller')}}</a>&nbsp;
         @endcan
         @can('billers-import')
-            <a href="#" data-toggle="modal" data-target="#importbiller" class="btn btn-primary"><i class="dripicons-copy"></i> {{__('db.Import Biller')}}</a>
+            <a href="#" data-toggle="modal" data-target="#importbiller" class="btn btn-primary btn-sm"><i class="dripicons-copy"></i> {{__('db.Import Biller')}}</a>
         @endcan
     </div>
     <div class="table-responsive">

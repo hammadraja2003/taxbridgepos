@@ -4,13 +4,17 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\UserCredentialsMail;
+use App\Mail\UserDetails;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Crypt;
 use App\Models\User;
 use App\Models\BusinessConfiguration;
+use App\Models\AdminMailSetting;
+use App\Traits\MailInfo;
 use Exception;
 class DatabaseController extends Controller
 {
+    use MailInfo;
     public function showCloneForm()
     {
         $databases = DB::select("SHOW DATABASES");
@@ -60,23 +64,39 @@ class DatabaseController extends Controller
                 ");
                 }
             }
-            // ✅ Get user + business details
-            $user = User::select('users.*', 'business_configurations.db_name')
-                ->join('business_configurations', 'business_configurations.bus_config_id', '=', 'users.tenant_id')
-                ->where('business_configurations.db_name', $newDb)
-                ->first();
-            if (!$user) {
-                return back()->with('error', "User not found for DB: {$newDb}");
+            // ✅ Get business details
+            $business = BusinessConfiguration::where('db_name', $newDb)->first();
+            if (!$business) {
+                return back()->with('error', "Business configuration not found for DB: {$newDb}");
             }
-            $loginUrl = route('login');
+            
+            // ✅ Force update credentials for the cloned business
+            $business->update([
+                'db_username' => 'root',
+                'db_password' => '' // Null/Empty
+            ]);
+
+            // ✅ Get all users related to this business
+            $users = User::where('bus_config_id', $business->bus_config_id)->get();
+
+            $loginUrl = url('/login');
             try {
-                Mail::to($user->email)->send(
-                    new UserCredentialsMail(
-                        $user->name,
-                        $user->email,
-                        $loginUrl
-                    )
-                );
+                // ✅ Fetch the current global mail credentials from Master DB
+                $mail_setting = AdminMailSetting::latest()->first();
+                if ($mail_setting) {
+                    $this->setMailInfo($mail_setting);
+                }
+
+                foreach ($users as $recipient) {
+                    $mailData = [
+                        'name' => $recipient->name,
+                        'email' => $recipient->email,
+                        'password' => Crypt::encryptString('12345678'), 
+                        'login_url' => $loginUrl,
+                        'db_name' => $newDb
+                    ];
+                    Mail::to($recipient->email)->send(new UserDetails((object)$mailData));
+                }
             } catch (Exception $e) {
                 Log::error("❌ Mail sending failed: " . $e->getMessage());
                 return back()->with('error', 'Created but email failed');

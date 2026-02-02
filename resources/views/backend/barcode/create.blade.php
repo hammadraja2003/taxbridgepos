@@ -154,8 +154,8 @@
                                         </div>
                                     </div>
                                     </div>
-                                    <div class="col-sm-12 text-center">
-                                    <button type="submit" class="btn btn-primary btn-big">{{ __('db.save') }}</button>
+                                    <div class="col-sm-12">
+                                    <button type="submit" class="btn btn-primary btn-big mt-3">{{ __('db.save') }}</button>
                                     </div>
                                 </div>
                                 </div>

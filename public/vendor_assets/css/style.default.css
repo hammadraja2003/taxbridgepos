@@ -2207,7 +2207,7 @@ a>code {
 
 .card-header {
     background: 0 0;
-    padding: 15px 0px 0px 25px;
+    /* padding: 15px 0px 0px 25px; */
     border-bottom: none;
 }
 

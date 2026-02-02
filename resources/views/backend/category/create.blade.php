@@ -72,51 +72,52 @@
 
 
                         <div class="form-group">
-                            <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">
+                            <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary mt-3">
                         </div>
                     </div>
                     {{ Form::close() }}
                 </div>
             </div>
         </div>
-        <!-- Import Modal -->
-        <div id="importCategory" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"
-            class="modal fade text-left">
-            <div role="document" class="modal-dialog">
-                <div class="modal-content">
-                    {!! Form::open(['route' => 'category.import', 'method' => 'post', 'files' => true]) !!}
-                    <div class="modal-header">
-                        <h5 id="exampleModalLabel" class="modal-title">{{__('db.Import Category')}}</h5>
-                        <button type="button" data-dismiss="modal" aria-label="Close" class="close"><span
-                                aria-hidden="true"><i class="dripicons-cross"></i></span></button>
-                    </div>
-                    <div class="modal-body">
-                        <p class="italic">
-                            <small>{{__('db.The field labels marked with * are required input fields')}}.</small></p>
-                        <p>{{__('db.The correct column order is')}} (name*, parent_category)
-                            {{__('db.and you must follow this')}}.</p>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>{{__('db.Upload CSV File')}} *</label>
-                                    {{Form::file('file', array('class' => 'form-control', 'required'))}}
-                                    <x-validation-error fieldName="file" />
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label> {{__('db.Sample File')}}</label>
-                                    <a href="sample_file/sample_category.csv" class="btn btn-info"><i
-                                            class="dripicons-download"></i> {{__('db.Download')}}</a>
-                                </div>
+    </div>
+    <!-- Import Modal -->
+    <div id="importCategory" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"
+        class="modal fade text-left">
+        <div role="document" class="modal-dialog">
+            <div class="modal-content">
+                {!! Form::open(['route' => 'category.import', 'method' => 'post', 'files' => true]) !!}
+                <div class="modal-header">
+                    <h5 id="exampleModalLabel" class="modal-title">{{__('db.Import Category')}}</h5>
+                    <button type="button" data-dismiss="modal" aria-label="Close" class="close"><span
+                            aria-hidden="true"><i class="dripicons-cross"></i></span></button>
+                </div>
+                <div class="modal-body">
+                    <p class="italic">
+                        <small>{{__('db.The field labels marked with * are required input fields')}}.</small></p>
+                    <p>{{__('db.The correct column order is')}} (name*, parent_category)
+                        {{__('db.and you must follow this')}}.</p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>{{__('db.Upload CSV File')}} *</label>
+                                {{Form::file('file', array('class' => 'form-control', 'required'))}}
+                                <x-validation-error fieldName="file" />
                             </div>
                         </div>
-                        <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label> {{__('db.Sample File')}}</label>
+                                <a href="sample_file/sample_category.csv" class="btn btn-info"><i
+                                        class="dripicons-download"></i> {{__('db.Download')}}</a>
+                            </div>
+                        </div>
                     </div>
-                    {{ Form::close() }}
+                    <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary mt-3">
                 </div>
+                {{ Form::close() }}
             </div>
         </div>
+    </div>
 
 
 @endsection

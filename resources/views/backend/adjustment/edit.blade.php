@@ -23,7 +23,7 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label>{{__('db.Warehouse')}} *</label>
-                                            <select required id="warehouse_id" name="warehouse_id" class="selectpicker form-control" data-live-search="true" data-live-search-style="begins" title="Select warehouse...">
+                                            <select required id="warehouse_id" name="warehouse_id" class="selectpicker form-control" data-live-search="true" data-live-search-style="begins" title="Select store...">
                                                 @foreach($lims_warehouse_list as $warehouse)
                                                 <option value="{{$warehouse->id}}">{{$warehouse->name}}</option>
                                                 @endforeach
@@ -68,20 +68,19 @@
                                                 	@foreach($lims_product_adjustment_data as $product_adjustment_data)
                                                 	<tr>
                                                 	<?php
-                                                	   $product = DB::table('products')->find($product_adjustment_data->product_id);
-                                                       if($product_adjustment_data->variant_id) {
-                                                            $product_variant = \App\Models\ProductVariant::select('id', 'item_code')->FindExactProduct($product_adjustment_data->product_id, $product_adjustment_data->variant_id)->first();
-                                                            $product->code = $product_variant->item_code;
-                                                            $product_variant_id = $product_variant->id;
-                                                       }
-                                                       else
-                                                            $product_variant_id = null;
+                                                    $product = DB::table('products')->find($product_adjustment_data->product_id);
+                                                    if ($product_adjustment_data->variant_id) {
+                                                        $product_variant = \App\Models\ProductVariant::select('id', 'item_code')->FindExactProduct($product_adjustment_data->product_id, $product_adjustment_data->variant_id)->first();
+                                                        $product->code = $product_variant->item_code;
+                                                        $product_variant_id = $product_variant->id;
+                                                    } else
+                                                        $product_variant_id = null;
 
-                                                        $available_quantity = \App\Models\Product_Warehouse::select('qty')->where([
-                                                            'product_id' => $product_adjustment_data->product_id,
-                                                            'warehouse_id' => $lims_adjustment_data->warehouse_id,
-                                                        ])->first();
-                                                	?>
+                                                    $available_quantity = \App\Models\Product_Warehouse::select('qty')->where([
+                                                        'product_id' => $product_adjustment_data->product_id,
+                                                        'warehouse_id' => $lims_adjustment_data->warehouse_id,
+                                                    ])->first();
+                                                    ?>
                                                 	<td>{{$product->name}}</td>
                                                 	<td>{{$product->code}}</td>
                                                     <td>{{$product_adjustment_data->unit_cost}}<input type="hidden" name="unit_cost[]" value="{{$product_adjustment_data->unit_cost}}" /></td>

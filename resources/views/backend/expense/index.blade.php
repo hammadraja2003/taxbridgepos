@@ -11,8 +11,8 @@
                 {!! Form::open(['route' => 'expenses.index', 'method' => 'get']) !!}
                 <div class="row mb-3">
                     <div class="col-md-4 offset-md-2 mt-3">
-                        <div class="form-group row">
-                            <label class="d-tc mt-2"><strong>{{ __('db.Choose Your Date') }}</strong> &nbsp;</label>
+                        <div class="form-group">
+                            <label class="mb-2"><strong>{{ __('db.Choose Your Date') }}</strong> &nbsp;</label>
                             <div class="d-tc">
                                 <div class="input-group">
                                     <input type="text" class="daterangepicker-field form-control"
@@ -24,8 +24,8 @@
                         </div>
                     </div>
                     <div class="col-md-4 mt-3 @if (\Auth::user()->role_type > 2) {{ 'd-none' }} @endif">
-                        <div class="form-group row">
-                            <label class="d-tc mt-2"><strong>{{ __('db.Choose Warehouse') }}</strong> &nbsp;</label>
+                        <div class="form-group">
+                            <label class="mb-2"><strong>{{ __('db.Choose Warehouse') }}</strong> &nbsp;</label>
                             <div class="d-tc">
                                 <select id="warehouse_id" name="warehouse_id" class="selectpicker form-control"
                                     data-live-search="true" data-live-search-style="begins">
@@ -41,16 +41,16 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-2 mt-3">
-                        <div class="form-group">
-                            <button class="btn btn-primary" type="submit">{{ __('db.submit') }}</button>
+                    <div class="col-md-2 mt-4">
+                        <div class="form-group d-flex align-items-end">
+                            <button class="btn btn-primary mt-3" type="submit">{{ __('db.submit') }}</button>
                         </div>
                     </div>
                 </div>
                 {!! Form::close() !!}
             </div>
             @if (in_array('expenses-add', $all_permission))
-                <button class="btn btn-primary" data-toggle="modal" data-target="#expense-modal"><i class="dripicons-plus"></i>
+                <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#expense-modal"><i class="dripicons-plus"></i>
                     {{ __('db.Add Expense') }}</button>
             @endif
         </div>
@@ -130,7 +130,7 @@
                         <div class="col-md-6 form-group">
                             <label>{{ __('db.Warehouse') }} *</label>
                             <select name="warehouse_id" class="selectpicker form-control" required data-live-search="true"
-                                data-live-search-style="begins" title="Select Warehouse...">
+                                data-live-search-style="begins" title="Select store...">
                                 @foreach ($lims_warehouse_list as $warehouse)
                                     <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
                                 @endforeach
@@ -200,7 +200,7 @@
                         <textarea name="note" rows="3" class="form-control"></textarea>
                     </div>
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary">{{ __('db.submit') }}</button>
+                        <button type="submit" class="btn btn-primary mt-3">{{ __('db.submit') }}</button>
                     </div>
                     {{ Form::close() }}
                 </div>

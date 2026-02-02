@@ -265,7 +265,6 @@ class CategoryController extends Controller
         if (!isset($input['is_sync_disable']) && \Schema::hasColumn('categories', 'is_sync_disable'))
             $input['is_sync_disable'] = null;
 
-
         DB::table('categories')->where('id', $request->category_id)->update($input);
 
         return redirect('category')->with('message', __('db.Category updated successfully'));

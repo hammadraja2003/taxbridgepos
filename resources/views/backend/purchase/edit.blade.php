@@ -36,7 +36,7 @@
                                         <div class="form-group">
                                             <label>{{__('db.Warehouse')}} *</label>
                                             <input type="hidden" name="warehouse_id_hidden" value="{{$lims_purchase_data->warehouse_id}}" />
-                                            <select required name="warehouse_id" class="selectpicker form-control" data-live-search="true" title="Select warehouse..." required>
+                                            <select required name="warehouse_id" class="selectpicker form-control" data-live-search="true" title="Select store..." required>
                                                 @foreach($lims_warehouse_list as $warehouse)
                                                 <option value="{{$warehouse->id}}">{{$warehouse->name}}</option>
                                                 @endforeach
@@ -416,7 +416,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary" id="submit-button">
+                                    <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary mt-3" id="submit-button">
                                 </div>
                             </div>
                         </div>

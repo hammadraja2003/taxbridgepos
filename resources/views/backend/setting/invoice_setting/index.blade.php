@@ -14,9 +14,9 @@
 
 <section>
     <div class="container-fluid">
-        <div class="text-right">
+        <div class="">
             @can('invoice_create_edit_delete')
-            <a class="btn btn-primary" href="{{ route('settings.invoice.create') }}"> <i class="dripicons-plus"></i> {{ __('db.Add New Invoice Setting') }}</a>
+            <a class="btn btn-primary btn-sm" href="{{ route('settings.invoice.create') }}"> <i class="dripicons-plus"></i> {{ __('db.Add New Invoice Setting') }}</a>
             @endcan
         </div>
     </div>

@@ -7,7 +7,7 @@
 
     <section>
         <div class="container-fluid">
-            <a href="#" data-toggle="modal" data-target="#createModal" class="btn btn-primary add-printer-btn"><i
+            <a href="#" data-toggle="modal" data-target="#createModal" class="btn btn-primary add-printer-btn btn-sm"><i
                     class="dripicons-plus"></i> {{ __('db.Add Printer') }}</a>
         </div>
         <div class="table-responsive">
@@ -139,7 +139,7 @@
                           </span>
                     </div>
                     <div class="form-group">
-                        <input type="submit" value="{{ __('db.submit') }}" class="btn btn-primary">
+                        <input type="submit" value="{{ __('db.submit') }}" class="btn btn-primary mt-3">
                     </div>
                 </div>
                 {{ Form::close() }}

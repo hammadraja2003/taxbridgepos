@@ -7,7 +7,7 @@
 
 <section>
     <div class="container-fluid">
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createModal"><i class="dripicons-plus"></i> {{__('db.Add Shift')}}</button>
+        <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#createModal"><i class="dripicons-plus"></i> {{__('db.Add Shift')}}</button>
     </div>
     <div class="table-responsive">
         <table id="shift-table" class="table">
@@ -105,7 +105,7 @@
           </div>
 
           <div class="form-group">
-            <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">
+            <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary mt-3">
           </div>
 
         </div>
@@ -153,7 +153,7 @@
 
         <input type="hidden" name="shift_id">
         <div class="form-group">
-            <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">
+            <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary mt-3">
         </div>
 
       </div>

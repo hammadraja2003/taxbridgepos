@@ -227,8 +227,8 @@
 
                             </div>
 
-                            <div class="form-group">
-                                <input type="submit" value="{{ __('db.submit') }}" class="btn btn-primary">
+                            <div class="form-group"> 
+                                <input type="submit" value="{{ __('db.submit') }}" class="btn btn-primary mt-3">
                             </div>
                             {!! Form::close() !!}
                         </div>

@@ -6,7 +6,7 @@
 
     <section>
         <div class="container-fluid mb-3">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createModal">
+            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#createModal">
                 <i class="dripicons-plus"></i> {{ __('db.Add Leave') }}
             </button>
         </div>
@@ -146,7 +146,7 @@
                         {{-- {{ Form::date('end_date', null, ['class'=>'form-control','required'=>true]) }} --}}
                     </div>
                     <div class="form-group">
-                        <input type="submit" value="{{ __('db.Submit') }}" class="btn btn-primary">
+                        <input type="submit" value="{{ __('db.Submit') }}" class="btn btn-primary mt-3">
                     </div>
                 </div>
                 {!! Form::close() !!}
@@ -190,7 +190,7 @@
                     </div>
                     <input type="hidden" name="leave_id" id="edit_id">
                     <div class="form-group">
-                        <input type="submit" value="{{ __('db.Update') }}" class="btn btn-primary">
+                        <input type="submit" value="{{ __('db.Update') }}" class="btn btn-primary mt-3">
                     </div>
                 </div>
                 {{ Form::close() }}
