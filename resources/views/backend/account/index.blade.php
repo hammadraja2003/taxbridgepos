@@ -6,7 +6,7 @@
 
 <section>
     <div class="container-fluid">
-        <button class="btn btn-primary" data-toggle="modal" data-target="#account-modal"><i class="dripicons-plus"></i> {{__('db.Add Account')}}</button>
+        <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#account-modal"><i class="dripicons-plus"></i> {{__('db.Add Account')}}</button>
     </div>
     <div class="table-responsive">
         <table id="account-table" class="table">
@@ -109,7 +109,7 @@
                         <textarea name="note" rows="3" class="form-control"></textarea>
                     </div>
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary">{{__('db.update')}}</button>
+                        <button type="submit" class="btn btn-primary mt-3">{{__('db.update')}}</button>
                     </div>
                 {{ Form::close() }}
             </div>

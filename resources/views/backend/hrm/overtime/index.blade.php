@@ -6,7 +6,7 @@
 
 <section>
     <div class="container-fluid">
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createModal">
+        <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#createModal">
             <i class="dripicons-plus"></i> {{__('db.Add Overtime')}}
         </button>
     </div>
@@ -98,7 +98,7 @@
                         {{ Form::number('rate', null, ['class'=>'form-control','step'=>'0.01','required'=>true]) }}
                     </div>
                     <div class="col-12 text-end">
-                        <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">
+                        <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary mt-3">
                     </div>
                 </div>
             </div>
@@ -142,7 +142,7 @@
           </div>
           <input type="hidden" name="overtime_id" id="edit_id">
           <div class="col-12 text-end">
-            <input type="submit" value="{{__('db.Update')}}" class="btn btn-primary">
+            <input type="submit" value="{{__('db.Update')}}" class="btn btn-primary mt-3">
           </div>
         </div>
       </div>

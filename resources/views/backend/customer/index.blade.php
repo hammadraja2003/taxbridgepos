@@ -8,10 +8,10 @@
 <section>
     <div class="container-fluid">
         @can('customers-add')
-            <a href="{{route('customer.create')}}" class="btn btn-primary"><i class="dripicons-plus"></i> {{__('db.Add Customer')}}</a>&nbsp;
+            <a href="{{route('customer.create')}}" class="btn btn-primary btn-sm"><i class="dripicons-plus"></i> {{__('db.Add Customer')}}</a>&nbsp;
         @endcan
         @can('customers-import')
-            <a href="#" data-toggle="modal" data-target="#importCustomer" class="btn btn-primary"><i class="dripicons-copy"></i> {{__('db.Import Customer')}}</a>
+            <a href="#" data-toggle="modal" data-target="#importCustomer" class="btn btn-primary btn-sm"><i class="dripicons-copy"></i> {{__('db.Import Customer')}}</a>
         @endcan
     </div>
     <div class="table-responsive">
@@ -196,7 +196,7 @@
                 <label>{{__('db.Note')}}</label>
                 <textarea name="note" rows="4" class="form-control"></textarea>
             </div>
-            <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary" id="submit-button">
+            <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary mt-3" id="submit-button">
         </div>
         {!! Form::close() !!}
       </div>
@@ -220,7 +220,7 @@
                 <label>{{__('db.Note')}}</label>
                 <textarea name="note" id="" cols="30" rows="3" class="form-control"></textarea>
             </div>
-            <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary" id="submit-button">
+            <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary mt-3" id="submit-button">
         </div>
         {!! Form::close() !!}
       </div>

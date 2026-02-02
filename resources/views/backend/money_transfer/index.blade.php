@@ -5,7 +5,7 @@
 
 <section>
     <div class="container-fluid">
-        <button class="btn btn-primary" data-toggle="modal" data-target="#create-money-transfer-modal"><i class="dripicons-plus"></i> {{__('db.Add Money Transfer')}}</button>
+        <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#create-money-transfer-modal"><i class="dripicons-plus"></i> {{__('db.Add Money Transfer')}}</button>
     </div>
     <div class="table-responsive">
         <table id="money-transfer-table" class="table">
@@ -97,7 +97,7 @@
                       </div>
                   </div>
                   <div class="form-group">
-                      <button type="submit" class="btn btn-primary">{{__('db.submit')}}</button>
+                      <button type="submit" class="btn btn-primary mt-3">{{__('db.submit')}}</button>
                   </div>
                 {{ Form::close() }}
             </div>
@@ -146,7 +146,7 @@
                       </div>
                   </div>
                   <div class="form-group">
-                      <button type="submit" class="btn btn-primary">{{__('db.submit')}}</button>
+                      <button type="submit" class="btn btn-primary mt-3">{{__('db.submit')}}</button>
                   </div>
                 {{ Form::close() }}
             </div>

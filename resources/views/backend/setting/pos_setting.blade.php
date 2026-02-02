@@ -220,7 +220,7 @@
                             </div>
                             <div class="form-inline row mt-3">
                                 <div class="form-group col-md-12">
-                                     <button type="button" class="btn btn-primary add-more">+ {{__('db.Add More Payment Option')}}</button>
+                                     <button type="button" class="btn btn-primary add-more btn-sm">+ {{__('db.Add More Payment Option')}}</button>
                                 </div>
                             </div>
                             @if (session('duplicate_message'))

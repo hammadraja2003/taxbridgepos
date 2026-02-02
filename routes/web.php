@@ -577,7 +577,6 @@ Route::group(['middleware' => ['auth', 'settenantconnection', 'common', 'active'
     });
     Route::resource('user', UserController::class);
 
-    // working
     Route::controller(SettingController::class)->group(function () {
         Route::prefix('setting')->group(function () {
             Route::get('activity-log', 'activityLog')->name('setting.activityLog');

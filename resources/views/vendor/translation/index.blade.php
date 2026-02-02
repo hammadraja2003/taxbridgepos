@@ -7,7 +7,7 @@
     <div class="container mt-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>Translations</h2>
-            <a href="{{ route('languages') }}" class="btn btn-primary">Manage Languages</a>
+            <a href="{{ route('languages') }}" class="btn btn-primary btn-sm">Manage Languages</a>
         </div>
 
         <div class="row mb-3">

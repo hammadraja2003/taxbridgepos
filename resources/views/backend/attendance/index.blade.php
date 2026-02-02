@@ -9,11 +9,11 @@
 
         <!-- Buttons -->
         <div class="mb-3 d-flex">
-            <button class="btn btn-primary mr-2" data-toggle="modal" data-target="#createModal">
+            <button class="btn btn-primary mr-2 btn-sm" data-toggle="modal" data-target="#createModal">
                 <i class="dripicons-plus"></i> {{ __('db.Add Attendance') }}
             </button>
 
-            <button class="btn btn-secondary mr-2" type="button" data-toggle="collapse" data-target="#importCsv"
+            <button class="btn btn-secondary mr-2 btn-sm" type="button" data-toggle="collapse" data-target="#importCsv"
                 aria-expanded="false" aria-controls="importCsv">
                 <i class="fa fa-upload"></i> {{ __('db.Import CSV') }}
             </button>

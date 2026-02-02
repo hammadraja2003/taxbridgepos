@@ -7,8 +7,8 @@
 
 <section>
     <div class="container-fluid">
-        <a href="#" data-toggle="modal" data-target="#createModal" class="btn btn-primary add-warehouse-btn"><i class="dripicons-plus"></i> {{__('db.Add Warehouse')}}</a>
-        <a href="#" data-toggle="modal" data-target="#importWarehouse" class="btn btn-primary add-warehouse-btn"><i class="dripicons-copy"></i> {{__('db.Import Warehouse')}}</a>
+        <a href="#" data-toggle="modal" data-target="#createModal" class="btn btn-primary add-warehouse-btn btn-sm"><i class="dripicons-plus"></i> {{__('db.Add Warehouse')}}</a>
+        <a href="#" data-toggle="modal" data-target="#importWarehouse" class="btn btn-primary add-warehouse-btn btn-sm"><i class="dripicons-copy"></i> {{__('db.Import Warehouse')}}</a>
     </div>
     <div class="table-responsive">
         <table id="warehouse-table" class="table">
@@ -109,7 +109,7 @@
               <label>{{__('db.Clone Product')}} <x-info title="If checked, all products will be cloned to this warehouse"/></label>
           </div>
           <div class="form-group">
-            <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">
+            <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary mt-3">
           </div>
       </div>
       {{ Form::close() }}
@@ -149,7 +149,7 @@
             {!! warehouseTypeDropdown('warehouse_type', null, 'warehouse_type', 'form-control', true) !!}
           </div>
           <div class="form-group">
-            <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">
+            <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary mt-3">
           </div>
           
       </div>
@@ -183,7 +183,7 @@
                   </div>
               </div>
         </div>
-        <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">
+        <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary mt-3">
       </div>
       {{ Form::close() }}
     </div>

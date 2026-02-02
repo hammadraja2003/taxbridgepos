@@ -48,7 +48,7 @@
                                 <input type="text" name="encryption" class="form-control" value="@if($mail_setting_data){{$mail_setting_data->encryption}}@endif" required />
                             </div>
                             <div class="col-md-12 form-group">
-                                <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">
+                                <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary mt-3">
                             </div>
                         </div>
                         {!! Form::close() !!}

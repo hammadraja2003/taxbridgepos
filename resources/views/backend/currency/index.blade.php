@@ -7,7 +7,7 @@
 
 <section>
     <div class="container-fluid">
-        <button class="btn btn-primary" data-toggle="modal" data-target="#createModal"><i class="dripicons-plus"></i> {{__('db.Add Currency')}} </button>&nbsp;
+        <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#createModal"><i class="dripicons-plus"></i> {{__('db.Add Currency')}} </button>&nbsp;
     </div>
     <div class="table-responsive">
         <table id="currency-table" class="table">
@@ -92,7 +92,7 @@
                     </div>
 
                     <div class="form-group">
-                        <input type="submit" value="{{ __('db.submit') }}" class="btn btn-primary">
+                        <input type="submit" value="{{ __('db.submit') }}" class="btn btn-primary mt-3">
                     </div>
                 </div>
             </form>
@@ -142,7 +142,7 @@
                     <input type="hidden" name="currency_id">
 
                     <div class="form-group">
-                        <input type="submit" value="{{ __('db.submit') }}" class="btn btn-primary">
+                        <input type="submit" value="{{ __('db.submit') }}" class="btn btn-primary mt-3">
                     </div>
                 </div>
             </form>
