@@ -55,14 +55,27 @@
                                         </span>
                                     </td>
                                     <td class="px-4 py-3">
-                                        <div class="d-flex flex-wrap gap-1">
-                                            @foreach ($package->features->take(3) as $f)
-                                                <span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 0.7rem; font-weight: normal;">
-                                                    {{ $f->feature_key }}: {{ $f->limit_value }}
+                                        <div class="d-flex flex-wrap gap-1 align-items-center">
+                                            @php
+                                                $visibleCount = 3;
+                                                $totalFeatures = $package->features->count();
+                                            @endphp
+                                            
+                                            @foreach ($package->features->take($visibleCount) as $f)
+                                                <span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle px-2 py-1" style="font-size: 0.7rem; font-weight: 500;">
+                                                    {{ ucwords(str_replace('_', ' ', $f->feature_key)) }}
                                                 </span>
                                             @endforeach
-                                            @if($package->features->count() > 3)
-                                                <span class="badge rounded-pill bg-light text-muted border" style="font-size: 0.7rem;">+{{ $package->features->count() - 3 }} more</span>
+                                            
+                                            @if($totalFeatures > $visibleCount)
+                                                <span class="badge rounded-pill bg-info-subtle text-info border border-info-subtle px-2 py-1 position-relative feature-more-badge" 
+                                                      style="font-size: 0.7rem; font-weight: 500; cursor: pointer;"
+                                                      data-bs-toggle="tooltip" 
+                                                      data-bs-html="true"
+                                                      data-bs-placement="top"
+                                                      title="@foreach($package->features->skip($visibleCount) as $feature)<span class='d-block'>• {{ ucwords(str_replace('_', ' ', $feature->feature_key)) }}</span>@endforeach">
+                                                    <i class="ti ti-dots" style="font-size: 0.65rem;"></i> +{{ $totalFeatures - $visibleCount }} more
+                                                </span>
                                             @endif
                                         </div>
                                     </td>
@@ -115,11 +128,43 @@
     .bg-primary-subtle { background-color: rgba(13, 110, 253, 0.1) !important; }
     .text-primary-subtle { color: rgba(13, 110, 253, 0.8) !important; }
     .border-primary-subtle { border-color: rgba(13, 110, 253, 0.2) !important; }
+    .bg-info-subtle { background-color: rgba(13, 202, 240, 0.1) !important; }
+    .text-info-subtle { color: rgba(13, 202, 240, 0.9) !important; }
+    .border-info-subtle { border-color: rgba(13, 202, 240, 0.25) !important; }
     .btn-icon { width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
     .avatar-sm { width: 32px; height: 32px; font-size: 14px; }
     .font-weight-bold { font-weight: 600 !important; }
     .shadow-xs { box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
     .gap-1 { gap: 0.25rem !important; }
     .gap-2 { gap: 0.5rem !important; }
+    .feature-more-badge {
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+    .feature-more-badge:hover {
+        background-color: rgba(13, 202, 240, 0.18) !important;
+        border-color: rgba(13, 202, 240, 0.35) !important;
+    }
+    .tooltip-inner {
+        text-align: left !important;
+        max-width: 300px !important;
+        padding: 0.5rem 0.75rem !important;
+    }
 </style>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Bootstrap tooltips with improved settings
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl, {
+                html: true,
+                trigger: 'hover',
+                delay: { show: 200, hide: 100 },
+                boundary: 'window'
+            });
+        });
+    });
+</script>
+@endpush
 @endsection

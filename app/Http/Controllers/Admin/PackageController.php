@@ -1,10 +1,12 @@
 <?php
 namespace App\Http\Controllers\Admin;
+
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Package;
 use App\Models\PackageFeature;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+
 class PackageController extends Controller
 {
     // ---------------------------
@@ -15,6 +17,7 @@ class PackageController extends Controller
         $packages = Package::paginate(10);
         return view('admin.packages.index', compact('packages'));
     }
+
     // ---------------------------
     // Show form to create package
     // ---------------------------
@@ -22,6 +25,7 @@ class PackageController extends Controller
     {
         return view('admin.packages.create');
     }
+
     // ---------------------------
     // Store new package
     // ---------------------------
@@ -32,10 +36,10 @@ class PackageController extends Controller
             'package_description' => 'nullable|string',
             'package_price' => 'required|numeric|min:0',
             'package_billing_cycle' => 'required|in:monthly,quarterly,yearly,custom',
-            'features.*.feature_key' => 'required|string|max:100',
-            'features.*.limit_type' => 'required|in:monthly,quarterly,yearly,total',
-            'features.*.limit_value' => 'required|integer|min:0',
+            'feature_key' => 'required|array',
+            'feature_key.*' => 'required|string|max:100',
         ]);
+
         DB::transaction(function () use ($request) {
             $package = Package::create([
                 'package_name' => $request->package_name,
@@ -43,19 +47,20 @@ class PackageController extends Controller
                 'package_price' => $request->package_price,
                 'package_billing_cycle' => $request->package_billing_cycle,
             ]);
-            if ($request->has('features')) {
-                foreach ($request->features as $feature) {
+
+            if ($request->has('feature_key') && is_array($request->feature_key)) {
+                foreach ($request->feature_key as $featureKey) {
                     PackageFeature::create([
                         'package_id' => $package->package_id,
-                        'feature_key' => $feature['feature_key'],
-                        'limit_type' => $feature['limit_type'],
-                        'limit_value' => $feature['limit_value'],
+                        'feature_key' => $featureKey
                     ]);
                 }
             }
         });
+
         return redirect()->route('admin.packages.index')->with('success', 'Package created successfully.');
     }
+
     // ---------------------------
     // Show package edit form
     // ---------------------------
@@ -69,6 +74,7 @@ class PackageController extends Controller
         $package = Package::with('features')->findOrFail($id);
         return view('admin.packages.edit', compact('package'));
     }
+
     // ---------------------------
     // Update package
     // ---------------------------
@@ -79,15 +85,16 @@ class PackageController extends Controller
         } catch (\Exception $e) {
             abort(404);
         }
+
         $request->validate([
             'package_name' => 'required|string|max:255',
             'package_description' => 'nullable|string',
             'package_price' => 'required|numeric|min:0',
             'package_billing_cycle' => 'required|in:monthly,quarterly,yearly,custom',
-            'features.*.feature_key' => 'required|string|max:100',
-            'features.*.limit_type' => 'required|in:monthly,quarterly,yearly,total',
-            'features.*.limit_value' => 'required|integer|min:0',
+            'feature_key' => 'required|array',
+            'feature_key.*' => 'required|string|max:100',
         ]);
+
         DB::transaction(function () use ($request, $id) {
             $package = Package::findOrFail($id);
             $package->update([
@@ -96,21 +103,23 @@ class PackageController extends Controller
                 'package_price' => $request->package_price,
                 'package_billing_cycle' => $request->package_billing_cycle,
             ]);
+
             // Delete old features and insert new
             $package->features()->delete();
-            if ($request->has('features')) {
-                foreach ($request->features as $feature) {
+
+            if ($request->has('feature_key') && is_array($request->feature_key)) {
+                foreach ($request->feature_key as $featureKey) {
                     PackageFeature::create([
                         'package_id' => $package->package_id,
-                        'feature_key' => $feature['feature_key'],
-                        'limit_type' => $feature['limit_type'],
-                        'limit_value' => $feature['limit_value'],
+                        'feature_key' => $featureKey
                     ]);
                 }
             }
         });
+
         return redirect()->route('admin.packages.index')->with('success', 'Package updated successfully.');
     }
+
     // ---------------------------
     // Delete package
     // ---------------------------

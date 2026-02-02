@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel="icon" type="image/png" href="{{url('images/logo_2.png')}}" />
+    <link rel="icon" type="image/png" href="{{ env('PUB_PATH') . '/logo/favicon.ico' }}" />
     <title>{{$general_setting->site_title}} | Challan Invoice</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -110,10 +110,10 @@
             <p>Date: {{date($general_setting->date_format, strtotime($challan->created_at->toDateString()))}}</p>
             <p>Courier: {{$challan->courier->name . ' [' . $challan->courier->phone_number . ']'}}</p>
             <?php
-$packing_slip_list = explode(',', $challan->packing_slip_list);
-$amount_list = explode(',', $challan->amount_list);
-$sum = 0;
-        ?>
+            $packing_slip_list = explode(',', $challan->packing_slip_list);
+            $amount_list = explode(',', $challan->amount_list);
+            $sum = 0;
+            ?>
             <table class="table table-bordered">
                 <thead>
                     <tr>
@@ -132,18 +132,18 @@ $sum = 0;
                 <tbody>
                     @foreach($packing_slip_list as $key => $packing_slip_id)
                                         <?php
-                        $packing_slip = \App\Models\PackingSlip::with('sale.customer')->find($packing_slip_id);
-                        $sum += $amount_list[$key];
-                        if ($packing_slip->sale->shipping_address) {
-                            $address = $packing_slip->sale->shipping_address;
-                            $city = $packing_slip->sale->shipping_city;
-                            $phone = $packing_slip->sale->shipping_phone;
-                        } else {
-                            $address = $packing_slip->sale->customer->address;
-                            $city = $packing_slip->sale->customer->city;
-                            $phone = $packing_slip->sale->customer->phone_number;
-                        }
-                                ?>
+                                        $packing_slip = \App\Models\PackingSlip::with('sale.customer')->find($packing_slip_id);
+                                        $sum += $amount_list[$key];
+                                        if ($packing_slip->sale->shipping_address) {
+                                            $address = $packing_slip->sale->shipping_address;
+                                            $city = $packing_slip->sale->shipping_city;
+                                            $phone = $packing_slip->sale->shipping_phone;
+                                        } else {
+                                            $address = $packing_slip->sale->customer->address;
+                                            $city = $packing_slip->sale->customer->city;
+                                            $phone = $packing_slip->sale->customer->phone_number;
+                                        }
+                                        ?>
                                         <tr>
                                             <td>{{$key + 1}}</td>
                                             <!-- <td>P{{$packing_slip->reference_no}}</td> -->

@@ -8,9 +8,8 @@
     <!-- Document Title -->
     <title>419 | Page Expired</title>
 
-
     <!-- Links -->
-    <link rel="icon" type="image/ico" href="{{ asset('frontend/images') }}/{{$ecommerce_setting->favicon ?? ''}}" />
+    <link rel="icon" type="image/png" href="{{ env('PUB_PATH') . '/logo/favicon.ico' }}" />
     <!-- Plugins CSS -->
     <link href="{{ asset('frontend/css/plugins.css') }}" rel="stylesheet" />
 

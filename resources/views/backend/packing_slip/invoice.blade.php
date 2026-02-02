@@ -4,12 +4,11 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel="icon" type="image/png" href="{{url('logo', $general_setting->site_logo)}}" />
+      <link rel="icon" type="image/png" href="{{ env('PUB_PATH') . '/logo/favicon.ico' }}" />
     <title>{{$general_setting->site_title}} | Shipping Label</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="all,follow">
-    <link rel="icon" type="image/png" href="{{url('logo', $general_setting->site_logo)}}" />
     <link rel="stylesheet" href="{{ env('ASSETS_PATH') . '/bootstrap/css/bootstrap.min.css' }}" type="text/css">
 
 
@@ -141,23 +140,23 @@
                     </tr>
                     @foreach($packing_slip_product_data as $key => $packing_slip_product)
                                         <?php
-                        $product = \App\Models\Product::select('name', 'code')->find($packing_slip_product->product_id);
-                        if ($packing_slip_product->variant_id) {
-                            $variant = \App\Models\Variant::select('name')->find($packing_slip_product->variant_id);
-                            $product_variant = \App\Models\ProductVariant::select('item_code')->where([
-                                ['product_id', $packing_slip_product->product_id],
-                                ['variant_id', $packing_slip_product->variant_id]
-                            ])->first();
-                            $product->name .= ' [' . $variant->name . ']';
-                            $product->code = $product_variant->item_code;
-                        }
-                        $sale_product = \App\Models\Product_Sale::select('qty', 'total')
-                            ->where([
-                                ['sale_id', $sale->id],
-                                ['product_id', $packing_slip_product->product_id]
-                            ])
-                            ->first();
-                                    ?>
+                                        $product = \App\Models\Product::select('name', 'code')->find($packing_slip_product->product_id);
+                                        if ($packing_slip_product->variant_id) {
+                                            $variant = \App\Models\Variant::select('name')->find($packing_slip_product->variant_id);
+                                            $product_variant = \App\Models\ProductVariant::select('item_code')->where([
+                                                ['product_id', $packing_slip_product->product_id],
+                                                ['variant_id', $packing_slip_product->variant_id]
+                                            ])->first();
+                                            $product->name .= ' [' . $variant->name . ']';
+                                            $product->code = $product_variant->item_code;
+                                        }
+                                        $sale_product = \App\Models\Product_Sale::select('qty', 'total')
+                                            ->where([
+                                                ['sale_id', $sale->id],
+                                                ['product_id', $packing_slip_product->product_id]
+                                            ])
+                                            ->first();
+                                        ?>
                                         <tr>
                                             <td colspan="2">{{$product->name}} [{{$product->code}}]</td>
                                             <td>{{$sale_product->qty}}</td>

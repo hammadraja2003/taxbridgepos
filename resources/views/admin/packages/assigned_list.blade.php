@@ -17,11 +17,8 @@
 
             <!-- Filter Section -->
             <div class="card shadow-sm border-0 mb-4 overflow-hidden">
-                <div class="card-header bg-light border-bottom py-3 d-flex justify-content-between align-items-center">
+                <div class="card-header bg-light border-bottom py-3">
                     <h6 class="m-0 font-weight-bold text-dark"><i class="ti ti-filter mr-2 text-primary"></i>Refine List</h6>
-                    <button type="button" class="btn btn-sm btn-link text-muted p-0" onclick="toggleFilters()" id="toggleBtn">
-                        <span id="toggleText">Hide Filters</span> <i class="ti ti-chevron-up ml-1" id="toggleIcon"></i>
-                    </button>
                 </div>
                 <div class="card-body p-4" id="filterContainer">
                     <form method="GET" action="{{ route('admin.business_packages.index') }}" id="filterForm">
@@ -140,7 +137,7 @@
                                     <th class="border-0 py-3 text-muted small text-uppercase font-weight-bold">Package / Cycle</th>
                                     <th class="border-0 py-3 text-muted small text-uppercase font-weight-bold">Duration</th>
                                     <th class="border-0 py-3 text-right text-muted small text-uppercase font-weight-bold">Pricing</th>
-                                    <th class="border-0 py-3 px-4 text-muted small text-uppercase font-weight-bold">Usage & Limits</th>
+                                    <th class="border-0 py-3 px-4 text-muted small text-uppercase font-weight-bold">Features</th>
                                     <th class="border-0 py-3 text-center text-muted small text-uppercase font-weight-bold">Action</th>
                                 </tr>
                             </thead>
@@ -199,24 +196,29 @@
                                             @endif
                                         </td>
                                         <td class="px-4" style="min-width: 280px;">
-                                            @foreach ($a->features as $f)
+                                            <div class="d-flex flex-wrap gap-1 align-items-center">
                                                 @php
-                                                    $usage = $a->usage->firstWhere('feature_key', $f->feature_key);
-                                                    $used = $usage->used_count ?? 0;
-                                                    $limit = $f->limit_value;
-                                                    $percent = $limit > 0 ? min(round(($used / $limit) * 100), 100) : 0;
-                                                    $barColor = $percent > 90 ? 'bg-danger' : ($percent > 70 ? 'bg-warning' : 'bg-primary');
+                                                    $visibleCount = 3;
+                                                    $totalFeatures = $a->features->count();
                                                 @endphp
-                                                <div class="mb-2">
-                                                    <div class="d-flex justify-content-between small mb-1">
-                                                        <span class="text-dark font-weight-bold">{{ $f->feature_key }}</span>
-                                                        <span class="text-muted">{{ $used }} / {{ $limit }}</span>
-                                                    </div>
-                                                    <div class="progress shadow-sm" style="height: 6px; border-radius: 10px;">
-                                                        <div class="progress-bar {{ $barColor }}" role="progressbar" style="width: {{ $percent }}%" aria-valuenow="{{ $percent }}" aria-valuemin="0" aria-valuemax="100"></div>
-                                                    </div>
-                                                </div>
-                                            @endforeach
+                                                
+                                                @foreach ($a->features->take($visibleCount) as $f)
+                                                    <span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle px-2 py-1" style="font-size: 0.7rem; font-weight: 500;">
+                                                        {{ ucwords(str_replace('_', ' ', $f->feature_key)) }}
+                                                    </span>
+                                                @endforeach
+                                                
+                                                @if($totalFeatures > $visibleCount)
+                                                    <span class="badge rounded-pill bg-info-subtle text-info border border-info-subtle px-2 py-1 position-relative feature-more-badge" 
+                                                          style="font-size: 0.7rem; font-weight: 500; cursor: pointer;"
+                                                          data-bs-toggle="tooltip" 
+                                                          data-bs-html="true"
+                                                          data-bs-placement="top"
+                                                          title="@foreach($a->features->skip($visibleCount) as $feature)<span class='d-block'>• {{ ucwords(str_replace('_', ' ', $feature->feature_key)) }}</span>@endforeach">
+                                                        <i class="ti ti-dots" style="font-size: 0.65rem;"></i> +{{ $totalFeatures - $visibleCount }} more
+                                                    </span>
+                                                @endif
+                                            </div>
                                         </td>
                                         <td class="text-center">
                                             <div class="dropdown">
@@ -285,36 +287,37 @@
     .shadow-sm { box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important; }
     .bg-success-subtle { background-color: rgba(40, 167, 69, 0.1); }
     .bg-danger-subtle { background-color: rgba(220, 53, 69, 0.1); }
-    .bg-info-subtle { background-color: rgba(23, 162, 184, 0.1); }
+    .bg-info-subtle { background-color: rgba(13, 202, 240, 0.1) !important; }
     .bg-secondary-subtle { background-color: rgba(108, 117, 125, 0.1); }
+    .bg-primary-subtle { background-color: rgba(13, 110, 253, 0.1) !important; }
     .text-success { color: #28a745 !important; }
     .text-danger { color: #dc3545 !important; }
-    .text-info { color: #17a2b8 !important; }
+    .text-info { color: rgba(13, 202, 240, 0.9) !important; }
+    .text-primary { color: rgba(13, 110, 253, 0.8) !important; }
+    .border-primary-subtle { border-color: rgba(13, 110, 253, 0.2) !important; }
+    .border-info-subtle { border-color: rgba(13, 202, 240, 0.25) !important; }
     .table-hover tbody tr:hover { background-color: rgba(0,0,0,0.01); }
     .btn-icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; padding: 0; }
     .dropdown-item:hover { background-color: #f8f9fa; }
     .fs-5 { font-size: 1.15rem; }
     .opacity-75 { opacity: 0.75; }
+    .gap-1 { gap: 0.25rem !important; }
+    .feature-more-badge {
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+    .feature-more-badge:hover {
+        background-color: rgba(13, 202, 240, 0.18) !important;
+        border-color: rgba(13, 202, 240, 0.35) !important;
+    }
+    .tooltip-inner {
+        text-align: left !important;
+        max-width: 300px !important;
+        padding: 0.5rem 0.75rem !important;
+    }
 </style>
 
 @push('scripts')
 <script>
-    function toggleFilters() {
-        const container = document.getElementById('filterContainer');
-        const icon = document.getElementById('toggleIcon');
-        const text = document.getElementById('toggleText');
-        
-        if (container.style.display === 'none') {
-            container.style.display = 'block';
-            icon.classList.replace('ti-chevron-down', 'ti-chevron-up');
-            text.textContent = 'Hide Filters';
-        } else {
-            container.style.display = 'none';
-            icon.classList.replace('ti-chevron-up', 'ti-chevron-down');
-            text.textContent = 'Show Filters';
-        }
-    }
-
     function toggleAdvancedFilters() {
         const advRow = document.getElementById('advancedFiltersRow');
         const text = document.getElementById('advText');
@@ -340,8 +343,18 @@
         if (hasAdvanced) {
             toggleAdvancedFilters();
         }
+
+        // Initialize Bootstrap tooltips with improved settings
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl, {
+                html: true,
+                trigger: 'hover',
+                delay: { show: 200, hide: 100 },
+                boundary: 'window'
+            });
+        });
     });
 </script>
 @endpush
 @endsection
-

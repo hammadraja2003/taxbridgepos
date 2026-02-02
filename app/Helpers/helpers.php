@@ -1,10 +1,10 @@
 <?php
 
+use App\Models\BusinessConfiguration;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use App\Models\BusinessConfiguration;
 
 if (!function_exists('normalize_to_sql_datetime')) {
     function normalize_to_sql_datetime($input, $useCurrentTime = false)
@@ -53,7 +53,7 @@ if (!function_exists('normalize_to_sql_datetime')) {
             if ($useCurrentTime) {
                 $date->setTimeFrom(Carbon::now());
             }
-            return $date->format('Y-m-d').' '.date('H:i:s');
+            return $date->format('Y-m-d') . ' ' . date('H:i:s');
         } catch (\Exception $e) {
             // totally failed → return current datetime
             return Carbon::now()->format('Y-m-d H:i:s');
@@ -61,10 +61,10 @@ if (!function_exists('normalize_to_sql_datetime')) {
     }
 }
 if (!function_exists('getTenantUnreadNotificationsByDate')) {
- function getTenantUnreadNotificationsByDate($date, $user = null)
+    function getTenantUnreadNotificationsByDate($date, $user = null)
     {
         $user = $user ?? Auth::user();
-        
+
         if (!$user) {
             return 0;
         }
@@ -72,7 +72,7 @@ if (!function_exists('getTenantUnreadNotificationsByDate')) {
         return DB::connection('tenant')
             ->table('notifications')
             ->where('notifiable_id', $user->id)
-            ->where('notifiable_type', 'App\\Models\\User')
+            ->where('notifiable_type', 'App\Models\User')
             ->whereNull('read_at')
             ->where('data->reminder_date', $date)
             ->count();
@@ -84,7 +84,7 @@ if (!function_exists('getGeneralSetting')) {
         $bus_config_id = session()->get('bus_config_id');
         $key_prefix = 'tenant_' . $bus_config_id . '_';
         $general_setting = cache()->get($key_prefix . 'general_setting');
-        
+
         if (!$general_setting) {
             // Fallback to master connection
             $general_setting = DB::connection('master')
@@ -93,7 +93,7 @@ if (!function_exists('getGeneralSetting')) {
                 ->latest()
                 ->first();
         }
-        
+
         return $general_setting;
     }
 }
@@ -103,7 +103,7 @@ if (!function_exists('getConnectionName')) {
         if (is_string($model)) {
             $model = app($model);
         }
-        if (! $model instanceof Model) {
+        if (!$model instanceof Model) {
             throw new InvalidArgumentException('Invalid model provided');
         }
 
@@ -112,7 +112,6 @@ if (!function_exists('getConnectionName')) {
     }
 }
 if (!function_exists('getProductTypeDropdown')) {
-
     function getProductTypeDropdown(
         $name,
         $class = 'form-control selectpicker',
@@ -134,13 +133,12 @@ if (!function_exists('getProductTypeDropdown')) {
             $html .= "<option value=\"{$value}\" {$selected}>{$label}</option>";
         }
 
-        $html .= "</select>";
+        $html .= '</select>';
 
         return $html;
     }
 }
 if (!function_exists('getRoleTypeDropdown')) {
-
     function getRoleTypeDropdown(
         $name,
         $class = 'form-control selectpicker',
@@ -161,19 +159,18 @@ if (!function_exists('getRoleTypeDropdown')) {
         $html = "<select name=\"{$name}\" class=\"{$class}\" {$idAttr} {$requiredAttr}>";
 
         foreach ($types as $key => $value) {
-            $selected = ((string)$key === (string)trim($selectedValue)) ? 'selected' : '';
+            $selected = ((string) $key === (string) trim($selectedValue)) ? 'selected' : '';
             $label = ucfirst($value);
 
             $html .= "<option value=\"{$key}\" {$selected}>{$label}</option>";
         }
 
-        $html .= "</select>";
+        $html .= '</select>';
 
         return $html;
     }
 }
 if (!function_exists('getRoleType')) {
-
     function getRoleType(
         $role_type
     ) {
@@ -182,7 +179,6 @@ if (!function_exists('getRoleType')) {
             2 => 'owner',
             3 => 'staff',
             4 => 'customer'
-
         ];
 
         return $types[$role_type];
@@ -203,8 +199,8 @@ if (!function_exists('businessLogo')) {
             } catch (\Throwable $e) {
                 \Log::error('Error fetching business logo', [
                     'error' => $e->getMessage(),
-                    'path'  => $config->bus_logo,
-                    'disk'  => $disk,
+                    'path' => $config->bus_logo,
+                    'disk' => $disk,
                 ]);
             }
         }
@@ -226,13 +222,13 @@ if (!function_exists('provinceOptions')) {
     function provinceOptions($selected = null)
     {
         $provinces = [
-            "BALOCHISTAN",
-            "AZAD JAMMU AND KASHMIR",
-            "CAPITAL TERRITORY",
-            "KHYBER PAKHTUNKHWA",
-            "PUNJAB",
-            "SINDH",
-            "GILGIT BALTISTAN",
+            'BALOCHISTAN',
+            'AZAD JAMMU AND KASHMIR',
+            'CAPITAL TERRITORY',
+            'KHYBER PAKHTUNKHWA',
+            'PUNJAB',
+            'SINDH',
+            'GILGIT BALTISTAN',
         ];
         $html = '<option value="">-- Select Province --</option>';
         foreach ($provinces as $province) {
@@ -243,7 +239,7 @@ if (!function_exists('provinceOptions')) {
     }
 }
 if (!function_exists('getMyScenarioOptions')) {
-   function getMyScenarioOptions($selectedCode = null)
+    function getMyScenarioOptions($selectedCode = null)
     {
         $bus_config_id = session('bus_config_id');
 
@@ -258,7 +254,6 @@ if (!function_exists('getMyScenarioOptions')) {
             ->orderBy('ss.scenario_code', 'asc')
             ->get();
 
-
         $html = '<option value="">-- Select Scenario --</option>';
         foreach ($scenarios as $scenario) {
             $isSelected = ($selectedCode === $scenario->scenario_id) ? 'selected' : '';
@@ -268,12 +263,11 @@ if (!function_exists('getMyScenarioOptions')) {
     }
 }
 if (!function_exists('fbrPostDropdown')) {
-
     function fbrPostDropdown($name = 'fbr_posting', $selected = null, $id = null, $class = 'form-control', $required = true)
     {
         $fbr_posts = [
-            "1" => "POST TO FBR",
-            "0" => "DON'T POST TO FBR"
+            '1' => 'POST TO FBR',
+            '0' => "DON'T POST TO FBR"
         ];
 
         $idAttribute = $id ? "id=\"{$id}\"" : '';
@@ -316,12 +310,11 @@ if (!function_exists('getFbrEnv')) {
     }
 }
 if (!function_exists('warehouseTypeDropdown')) {
-
     function warehouseTypeDropdown($name = 'warehouse_type', $selected = null, $id = null, $class = 'form-control', $required = true)
     {
         $warehouse_types = [
-            "1" => "Warehouse",
-            "2" => "Store"
+            '1' => 'Warehouse',
+            '2' => 'Store'
         ];
 
         $idAttribute = $id ? "id=\"{$id}\"" : '';
@@ -341,13 +334,69 @@ if (!function_exists('warehouseTypeDropdown')) {
     }
 }
 if (!function_exists('getWarehouseType')) {
-
     function getWarehouseType($type)
     {
         $warehouse_types = [
-            "1" => "Warehouse",
-            "2" => "Store"
+            '1' => 'Warehouse',
+            '2' => 'Store'
         ];
         return $warehouse_types[$type];
+    }
+}
+
+if (!function_exists('getAllFeatures')) {
+    function getAllFeatures()
+    {
+        return [
+            'product_and_categories' => 'Product and Categories',
+            'purchase_and_sale' => 'Purchase and Sale',
+            'sale_return' => 'Sale Return',
+            'purchase_return' => 'Purchase Return',
+            'expense' => 'Expense',
+            'income' => 'Income',
+            'stock_transfer' => 'Stock Transfer',
+            'quotation' => 'Quotation',
+            'product_delivery' => 'Product Delivery',
+            'stock_count_and_adjustment' => 'Stock Count and Adjustment',
+            'report' => 'Report',
+            'hrm' => 'HRM',
+            'accounting' => 'Accounting',
+            'manufacturing' => 'Manufacturing',
+        ];
+    }
+}
+
+if (!function_exists('getFeatureType')) {
+    function getFeatureType($name = 'feature_type', $selected = [], $id = null, $class = 'form-control', $required = true, $multiple = true)
+    {
+        $features = getAllFeatures();
+
+        // Ensure selected is an array
+        if (!is_array($selected)) {
+            $selected = $selected ? [$selected] : [];
+        }
+
+        // Build attributes
+        $idAttribute = $id ? "id=\"{$id}\"" : '';
+        $requiredAttribute = $required ? 'required' : '';
+        $multipleAttribute = $multiple ? 'multiple' : '';
+
+        // Add array notation to name if multiple is enabled
+        $nameAttribute = $multiple ? "{$name}[]" : $name;
+
+        $html = "<select name=\"{$nameAttribute}\" class=\"{$class}\" {$idAttribute} {$requiredAttribute} {$multipleAttribute}>";
+
+        if (!$multiple) {
+            $html .= '<option value="">-- Select Feature --</option>';
+        }
+
+        foreach ($features as $key => $label) {
+            $isSelected = in_array($key, $selected) ? 'selected' : '';
+            $html .= "<option value=\"{$key}\" {$isSelected}>{$label}</option>";
+        }
+
+        $html .= '</select>';
+
+        return $html;
     }
 }

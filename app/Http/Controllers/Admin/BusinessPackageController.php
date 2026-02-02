@@ -1,17 +1,19 @@
 <?php
 namespace App\Http\Controllers\Admin;
+
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\BusinessConfiguration;
-use App\Models\Package;
-use App\Models\PackageFeature;
+use App\Models\BusinessFeatureUsage;
 use App\Models\BusinessPackage;
 use App\Models\BusinessPackageFeature;
-use App\Models\BusinessFeatureUsage;
+use App\Models\Package;
+use App\Models\PackageFeature;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
 use DB;
+
 class BusinessPackageController extends Controller
 {
     public function index(Request $request)
@@ -19,10 +21,7 @@ class BusinessPackageController extends Controller
         $query = BusinessPackage::with([
             'business',
             'package',
-            'features',
-            'usage' => function ($q) {
-                $q->where('period_end_date', '>=', now());
-            }
+            'features'
         ]);
         // Filter by Business
         if ($request->filled('business_id')) {
@@ -36,8 +35,9 @@ class BusinessPackageController extends Controller
         if ($request->filled('status')) {
             switch ($request->status) {
                 case 'active':
-                    $query->where('is_active', 1)
-                          ->where('end_date', '>=', now());
+                    $query
+                        ->where('is_active', 1)
+                        ->where('end_date', '>=', now());
                     break;
                 case 'inactive':
                     $query->where('is_active', 0);
@@ -49,12 +49,14 @@ class BusinessPackageController extends Controller
                     $query->where('is_trial', 1);
                     break;
                 case 'trial_active':
-                    $query->where('is_trial', 1)
-                          ->where('trial_end_date', '>=', now());
+                    $query
+                        ->where('is_trial', 1)
+                        ->where('trial_end_date', '>=', now());
                     break;
                 case 'trial_expired':
-                    $query->where('is_trial', 1)
-                          ->where('trial_end_date', '<', now());
+                    $query
+                        ->where('is_trial', 1)
+                        ->where('trial_end_date', '<', now());
                     break;
             }
         }
@@ -75,9 +77,10 @@ class BusinessPackageController extends Controller
         // Filter by Expiring Soon (e.g., within 7 or 30 days)
         if ($request->filled('expiring_soon')) {
             $days = (int) $request->expiring_soon;
-            $query->where('end_date', '>=', now())
-                  ->where('end_date', '<=', now()->addDays($days))
-                  ->where('is_active', 1);
+            $query
+                ->where('end_date', '>=', now())
+                ->where('end_date', '<=', now()->addDays($days))
+                ->where('is_active', 1);
         }
         // Filter by Discount Range
         if ($request->filled('discount_min')) {
@@ -93,7 +96,8 @@ class BusinessPackageController extends Controller
         if ($request->filled('price_max')) {
             $query->where('price_after_discout', '<=', $request->price_max);
         }
-        $assigned = $query->orderBy('business_id')
+        $assigned = $query
+            ->orderBy('business_id')
             ->orderByDesc('is_active')
             ->get();
         // Get data for filter dropdowns
@@ -101,15 +105,17 @@ class BusinessPackageController extends Controller
         $packages = Package::all();
         return view('admin.packages.assigned_list', compact('assigned', 'businesses', 'packages'));
     }
+
     /**
      * Show assign package form
      */
     public function showAssignForm()
     {
         $businesses = BusinessConfiguration::all();
-        $packages = Package::all();
+        $packages = Package::with('features')->get();
         return view('admin.packages.assign', compact('businesses', 'packages'));
     }
+
     /**
      * Assign package to business and snapshot features
      */
@@ -117,22 +123,23 @@ class BusinessPackageController extends Controller
     {
         $request->validate([
             'business_id' => 'required|exists:business_configurations,bus_config_id',
-            'package_id'  => 'required|exists:packages,package_id',
-            'features'    => 'required|array',
-            'features.*.feature_key' => 'required|string',
-            'features.*.limit_type'  => 'required|string',
-            'features.*.limit_value' => 'required|numeric|min:0',
-            'is_trial'               => 'nullable', 
-            'trial_days'             => 'required_if:is_trial,on,1,true|integer|min:1',
+            'package_id' => 'required|exists:packages,package_id',
+            'feature_key' => 'required|array',
+            'feature_key.*' => 'required|string',
+            'is_trial' => 'nullable',
+            'trial_days' => 'required_if:is_trial,on,1,true|integer|min:1',
         ]);
+
         DB::beginTransaction();
         try {
             $business = BusinessConfiguration::findOrFail($request->business_id);
-            $package  = Package::findOrFail($request->package_id);
+            $package = Package::findOrFail($request->package_id);
+
             // 🔥 Auto deactivate previously active package
             BusinessPackage::where('business_id', $request->business_id)
                 ->where('is_active', true)
                 ->update(['is_active' => false]);
+
             switch ($package->package_billing_cycle) {
                 case 'monthly':
                     $calculatedEndDate = now()->addMonth()->toDateString();
@@ -147,14 +154,13 @@ class BusinessPackageController extends Controller
                     $calculatedEndDate = now()->addMonth()->toDateString();
                     break;
             }
+
             $discount = $request->discount ?? 0;
             $finalPrice = $request->price_after_discount ?? $package->package_price;
             $isTrial = $request->boolean('is_trial');
-            // If trial_days is missing for some reason despite validation, default to 7
             $trialDays = $isTrial ? (int) ($request->trial_days ?? 7) : 0;
-            
+
             $startDate = now()->toDateString();
-            // Calculate end date: Start Date + Trial Days
             $endDate = $isTrial ? now()->addDays($trialDays)->toDateString() : $calculatedEndDate;
 
             $businessPackage = BusinessPackage::create([
@@ -168,30 +174,29 @@ class BusinessPackageController extends Controller
                 'is_trial' => $isTrial ? 1 : 0,
                 'trial_end_date' => $isTrial ? $endDate : null,
             ]);
-            foreach ($request->features as $f) {
-                BusinessPackageFeature::create([
-                    'business_package_id' => $businessPackage->business_packages_id,
-                    'feature_key' => $f['feature_key'],
-                    'limit_type' => $f['limit_type'],
-                    'limit_value' => $f['limit_value'],
-                ]);
-                BusinessFeatureUsage::create([
-                    'business_id' => $business->bus_config_id,
-                    'business_package_id' => $businessPackage->business_packages_id,
-                    'feature_key' => $f['feature_key'],
-                    'period_start_date' => $startDate,
-                    'period_end_date' => $endDate,
-                    'used_count' => 0,
-                ]);
+
+            // Create features from the selected feature_key array
+            if ($request->has('feature_key') && is_array($request->feature_key)) {
+                foreach ($request->feature_key as $featureKey) {
+                    BusinessPackageFeature::create([
+                        'business_package_id' => $businessPackage->business_packages_id,
+                        'feature_key' => $featureKey,
+                        'limit_type' => 'monthly',  // Default value
+                        'limit_value' => 0,  // Default unlimited or set a default value
+                    ]);
+                }
             }
+
             DB::commit();
-            return redirect()->route('admin.business_packages.index')
+            return redirect()
+                ->route('admin.business_packages.index')
                 ->with('success', 'Package assigned successfully!');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withErrors(['toast_error' => 'Something went wrong: ' . $e->getMessage()]);
         }
     }
+
     public function renew(Request $request)
     {
         $id = Crypt::decryptString($request->business_packages_id);
@@ -202,42 +207,42 @@ class BusinessPackageController extends Controller
         $startDate = now()->toDateString();
         // Determine end date
         $endDate = match ($package->package_billing_cycle) {
-            'monthly'   => now()->addMonth()->toDateString(),
+            'monthly' => now()->addMonth()->toDateString(),
             'quarterly' => now()->addMonths(3)->toDateString(),
-            'yearly'    => now()->addYear()->toDateString(),
-            default     => now()->addMonth()->toDateString(),
+            'yearly' => now()->addYear()->toDateString(),
+            default => now()->addMonth()->toDateString(),
         };
         DB::beginTransaction();
         try {
             // Create new business package
             $newPackage = BusinessPackage::create([
-                'business_id'          => $oldPackage->business_id,
-                'package_id'           => $package->package_id,
-                'start_date'           => $startDate,
-                'end_date'             => $endDate,
-                'discount'             => $oldPackage->discount,
+                'business_id' => $oldPackage->business_id,
+                'package_id' => $package->package_id,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'discount' => $oldPackage->discount,
                 'price_after_discout' => $oldPackage->price_after_discout,
-                'is_active'            => true,
-                'is_trial'             => 0,
-                'trial_end_date'       => null,
+                'is_active' => true,
+                'is_trial' => 0,
+                'trial_end_date' => null,
             ]);
             // Copy features + create fresh usage rows
             foreach ($oldPackage->packageFeatures as $feature) {
                 // Insert new package feature row
                 BusinessPackageFeature::create([
                     'business_package_id' => $newPackage->business_packages_id,
-                    'feature_key'         => $feature->feature_key,
-                    'limit_type'          => $feature->limit_type,
-                    'limit_value'         => $feature->limit_value,
+                    'feature_key' => $feature->feature_key,
+                    'limit_type' => $feature->limit_type,
+                    'limit_value' => $feature->limit_value,
                 ]);
                 // Insert new usage row
                 BusinessFeatureUsage::create([
-                    'business_id'          => $oldPackage->business_id,
-                    'business_package_id'  => $newPackage->business_packages_id,
-                    'feature_key'          => $feature->feature_key,
-                    'period_start_date'    => $startDate,
-                    'period_end_date'      => $endDate,
-                    'used_count'           => 0,
+                    'business_id' => $oldPackage->business_id,
+                    'business_package_id' => $newPackage->business_packages_id,
+                    'feature_key' => $feature->feature_key,
+                    'period_start_date' => $startDate,
+                    'period_end_date' => $endDate,
+                    'used_count' => 0,
                 ]);
             }
             DB::commit();
@@ -248,6 +253,7 @@ class BusinessPackageController extends Controller
             return back()->withErrors(['toast_error' => $e->getMessage()]);
         }
     }
+
     public function toggleActive(Request $request)
     {
         $request->validate([

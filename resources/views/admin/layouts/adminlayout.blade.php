@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   @if(!config('database.connections.saleprosaas_landlord'))
-  <link rel="icon" type="image/png" href="{{url('logo/taxbridge.png')}}" />
-  <title>{{ config('app.name', 'TaxBridge') }}</title>
+  <link rel="icon" type="image/png" href="{{ env('PUB_PATH') . '/logo/favicon.ico' }}" />
+  <title>{{ config('app.name', 'SalesBridgePOS') }}</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="all,follow">
@@ -134,9 +134,6 @@
               <a rel="nofollow" data-toggle="tooltip" class="nav-link dropdown-item"><i class="dripicons-user"></i> <span>{{ucfirst(Auth::user()->name)}}</span> <i class="fa fa-angle-down"></i>
               </a>
               <ul class="right-sidebar">
-                <li>
-                  <a href="{{route('user.profile', ['id' => Auth::id()])}}"><i class="dripicons-user"></i> {{ __('Profile') }}</a>
-                </li>
                 <li>
                   <a href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();"><i class="dripicons-power"></i>{{ __('logout') }}</a>
                   <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
