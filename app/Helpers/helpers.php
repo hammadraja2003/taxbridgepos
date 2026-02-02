@@ -362,6 +362,9 @@ if (!function_exists('getAllFeatures')) {
             'hrm' => 'HRM',
             'accounting' => 'Accounting',
             'manufacturing' => 'Manufacturing',
+            'people' => 'People',
+            'whatsapp' => 'Whatsapp',
+            'settings' => 'Settings',
         ];
     }
 }
@@ -399,4 +402,9 @@ if (!function_exists('getFeatureType')) {
 
         return $html;
     }
+}
+
+function packageHasFeature($feature)
+{
+    return in_array($feature, session('features', []));
 }

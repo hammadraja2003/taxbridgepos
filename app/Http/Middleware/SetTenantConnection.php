@@ -59,9 +59,22 @@ class SetTenantConnection
                     return redirect()->route('login')->withErrors([
                         'delete_message' => 'Your business does not have an active package. Please contact admin.'
                     ]);
-                }
+                } else {
+                    $business_package_features = DB::connection('master')
+                        ->table('business_package_features')
+                        ->where('business_package_id', $activePackage->business_packages_id)
+                        ->pluck('feature_key');
 
-                app(TenantManager::class)->setTenant($bus_config_id);
+                    session([
+                        'is_trial' => $activePackage->is_trial,
+                        'trial_end_date' => $activePackage->trial_end_date,
+                        'start_date' => $activePackage->start_date,
+                        'end_date' => $activePackage->end_date,
+                        'features' => $business_package_features->toArray(),
+                    ]);
+
+                    app(TenantManager::class)->setTenant($bus_config_id);
+                }
             } catch (\Exception $e) {
                 auth()->logout();
                 session()->invalidate();
