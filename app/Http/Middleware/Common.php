@@ -107,30 +107,11 @@ class Common
         View::share('currency', $currency);
         config(['staff_access' => $general_setting->staff_access, 'is_packing_slip' => $general_setting->is_packing_slip, 'date_format' => $general_setting->date_format, 'currency' => $currency->symbol ?? $currency->code, 'currency_position' => $general_setting->currency_position, 'decimal' => $general_setting->decimal, 'is_zatca' => $general_setting->is_zatca, 'company_name' => $general_setting->company_name, 'vat_registration_number' => $general_setting->vat_registration_number, 'without_stock' => $general_setting->without_stock, 'addons' => $general_setting->modules]);
 
-        $alert_product = DB::table('products')->where('is_active', true)->whereColumn('alert_quantity', '>', 'qty')->count();
-
-        $dso_alert_product = DB::table('dso_alerts')->select('number_of_products')->whereDate('created_at', date('Y-m-d'))->first();
-        if ($dso_alert_product)
-            $dso_alert_product_no = $dso_alert_product->number_of_products;
-        else
-            $dso_alert_product_no = 0;
-
-        // Dynamic days from settings
-        $days = $general_setting->expiry_alert_days ?? 0;
-        // dd($days);
-
-        $expire_alert_products = DB::table('product_batches')
-            ->join('products', 'products.id', '=', 'product_batches.product_id')
-            ->where('products.is_active', true)
-            ->where('product_batches.qty', '>', 0)
-            ->whereDate('product_batches.expired_date', '<=', now()->addDays($days)->format('Y-m-d'))
-            ->count();
-
         // View share (exact same style)
         View::share([
-            'alert_product' => $alert_product,
-            'dso_alert_product_no' => $dso_alert_product_no,
-            'expire_alert_products' => $expire_alert_products,
+            'alert_product' => 0,
+            'dso_alert_product_no' => 0,
+            'expire_alert_products' => 0,
         ]);
 
         $role = Cache::remember($key_prefix . 'user_role', 60 * 60 * 24 * 365, function () {

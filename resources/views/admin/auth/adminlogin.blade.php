@@ -1,116 +1,170 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+@extends('admin.layouts.loginlayout')
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="description"
-        content="TaxBridge Invoicing Management System - Manage invoices, clients, and FBR compliance efficiently.">
-    <title>{{ config('app.name', 'TaxBridge | Invoicing Management System') }}</title>
-    <link rel="icon" href="{{ asset('assets/images/logo/favicon.ico.png') }}" type="image/x-icon">
-    <link rel="shortcut icon" href="{{ asset('assets/images/logo/favicon.ico.png') }}" type="image/x-icon">
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendor/bootstrap/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/cleaned/style-BVr_C8ru.css') }}" />
-    <script src="{{ asset('assets/js/jquery-3.6.3.min.js') }}"></script>
-    <style>
-        body {
-            background: #f5f7fa;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(to right, #dbfae7, #eef7ff);
-        }
+@section('content')
+<form class="app-form needs-validation" novalidate method="POST" action="{{ route('admin.admin_login.submit') }}" id="login-form">
+    @csrf
+    <div class="row">
+        <div class="col-12">
+            <div class="mb-5 text-center text-lg-start">
+                <div class="d-flex justify-content-center align-items-center my-2">
+                    <img src="{{ asset('logo/tax-bridgePOS-logo.svg') }}"  alt="Logo" class="dark-logo">
 
-        .login-card {
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-            padding: 2.5rem;
-            width: 600px;
-        }
-
-        .form-control {
-            border-radius: 8px;
-            padding: 10px 14px;
-            border: 1px solid #d1d5db;
-        }
-
-        .btn-primary {
-            background-color: #1d61d8;
-            border: none;
-            border-radius: 8px;
-            padding: 10px 0;
-            width: 100%;
-            font-weight: 600;
-        }
-
-        .login-card h2 {
-            text-align: center;
-            color: #808080;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            border: solid 1px;
-            width: fit-content;
-            margin: auto;
-            padding: 11px;
-            border-left: 0;
-            border-right: 0;
-        }
-    </style>
-</head>
-
-<body>
-    <div class="login-card">
-        <div class="text-center mb-3">
-            <img src="{{ asset('assets/images/logo/' . config('app.logo')) }}" alt="TaxBridge" width="300">
+                </div>
+            </div>
         </div>
-        <h2>Admin Login</h2>
-        {{-- Validation Errors --}}
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul class="m-0">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-        <form method="POST" action="{{ route('admin.admin_login.submit') }}">
-            @csrf
+        <div class="col-12">
             <div class="mb-3">
-                <label for="email" class="form-label fw-semibold">Email</label>
-                <input type="email" name="email" id="email"  class="form-control"
-                    required autofocus>
+                <label for="username" class="form-label">Email</label>
+                <input class="form-control" required type="email" placeholder="Enter Your Email"
+                    name="email" value="{{ old('email') }}" autofocus autocomplete="email" />
+                <div class="invalid-feedback">
+                    Please enter your email.
+                </div>
             </div>
-            <div class="mb-4">
-                <label for="password" class="form-label fw-semibold">Password</label>
-                <input type="password" name="password" id="password" class="form-control" required>
+        </div>
+        <div class="col-12 mt-2">
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+               
+                <div class="input-group">
+                    <input type="password" name="password" required class="form-control"
+                        placeholder="Enter Your Password" id="password">
+                    <span class="input-group-text" id="togglePassword" style="cursor: pointer;">
+                        <i class="fa fa-eye-slash"></i>
+                    </span>
+                </div>
+                <div class="invalid-feedback">
+                    Please enter your password.
+                </div>
             </div>
-            <button type="submit" class="btn btn-primary">Login</button>
-        </form>
+        </div>
     </div>
-    {{-- Scripts --}}
-    <script src="{{ asset('assets/vendor/bootstrap/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('assets/js/formvalidation.js') }}"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const alerts = document.querySelectorAll(".alert");
-            alerts.forEach(function(alert) {
-                setTimeout(function() {
-                    alert.style.transition = "opacity 0.5s ease";
-                    alert.style.opacity = "0";
-                    setTimeout(function() {
-                        if (alert.parentNode) {
-                            alert.parentNode.removeChild(alert);
-                        }
-                    }, 500); 
-                }, 3000);
-            });
-        });
-    </script>
-</body>
+    @if(session()->has('delete_message'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session()->get('delete_message') }}
+            <button type="button" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+    @if(session()->has('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session()->get('error') }}
+            <button type="button" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+    @if(session()->has('not_permitted'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session()->get('not_permitted') }}
+            <button type="button" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+    @if(session()->has('message'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {!! session()->get('message') !!}
+            <button type="button" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            @foreach ($errors->all() as $error)
+                <div>{{ $error }}</div>
+            @endforeach
+        </div>
+    @endif
+    <div class="col-12 mt-2">
+        <div class="mb-3">
+            <button type="submit" role="button" class="btn btn-primary w-100">Sign In</button>
+        </div>
+    </div>
+   
+</form>
+@endsection
+<script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/jquery/jquery.min.js'; ?>"></script>
+<script>
 
-</html>
+    $("div.alert").delay(4000).slideUp(800);
+
+    //switch theme code
+    var theme = <?php echo json_encode($theme); ?>;
+    if(theme == 'dark') {
+        $('body').addClass('dark-mode');
+        $('#switch-theme i').addClass('dripicons-brightness-low');
+    }
+    else {
+        $('body').removeClass('dark-mode');
+        $('#switch-theme i').addClass('dripicons-brightness-max');
+    }
+
+    $('#togglePassword').click(function() {
+        var passwordField = $("#password"); // Select password input
+        var icon = $(this).find("i"); // Select eye icon inside #togglePassword
+
+        if (passwordField.attr("type") === "password") {
+            passwordField.attr("type", "text"); // Show password
+            icon.removeClass("fa-eye-slash").addClass("fa-eye"); // Change icon
+        } else {
+            passwordField.attr("type", "password"); // Hide password
+            icon.removeClass("fa-eye").addClass("fa-eye-slash"); // Change back icon
+        }
+    });
+
+    function setEnvCookie(cookieValue) {
+        var cookieName = "env_name";
+        var expireDays = 1;
+
+        var date = new Date();
+        date.setTime(date.getTime() + (expireDays * 24 * 60 * 60 * 1000));
+        var expires = "; expires=" + date.toUTCString();
+
+        document.cookie = cookieName + "=" + cookieValue + expires + "; path=/";
+    }
+
+    $('.demo-btn').on('click', function(e) {
+        e.preventDefault();
+        setEnvCookie($(this).data('env'));
+        if ($(this).data('env') == '.env.ecom' && $(this).data('page') == 'ecom_front') {
+            window.open("{{ url('/') }}", "_blank");
+        }
+        else {
+            if ($(this).data('page') == 'back_staff') {
+                $("input[name='name']").focus().val('staff');
+                $("input[name='password']").focus().val('staff');
+            }
+            else if ($(this).data('page') == 'back_customer') {
+                $("input[name='name']").focus().val('james');
+                $("input[name='password']").focus().val('james');
+            }
+            else {
+                $("input[name='name']").focus().val('admin');
+                $("input[name='password']").focus().val('admin');
+            }
+            let form = $('#login-form');
+            form.attr('action', $(this).attr('href'));
+            form.submit();
+        }
+    });
+
+  // ------------------------------------------------------- //
+    // Material Inputs
+    // ------------------------------------------------------ //
+
+    var materialInputs = $('input.input-material');
+
+    // activate labels for prefilled values
+    materialInputs.filter(function() { return $(this).val() !== ""; }).siblings('.label-material').addClass('active');
+
+    // move label on focus
+    materialInputs.on('focus', function () {
+        $(this).siblings('.label-material').addClass('active');
+    });
+
+    // remove/keep label on blur
+    materialInputs.on('blur', function () {
+        $(this).siblings('.label-material').removeClass('active');
+
+        if ($(this).val() !== '') {
+            $(this).siblings('.label-material').addClass('active');
+        } else {
+            $(this).siblings('.label-material').removeClass('active');
+        }
+    });
+</script>

@@ -5,6 +5,11 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 class LogController extends Controller
 {
+    public function index(Request $request)
+    {
+        return $this->show($request);
+    }
+
     public function show(Request $request)
     {
         $logPath = storage_path('logs/laravel.log');
@@ -28,8 +33,9 @@ class LogController extends Controller
         try {
             $lines = (int)200;
             File::put($logPath, '');
-            $logs = $this->tailLog($logPath, $lines);
-            return view('admin.logs.show', ['log' => $logs]);
+            // $logs = $this->tailLog($logPath, $lines);
+            // return view('admin.logs.show', ['log' => $logs]);
+            return response()->json(['message' => 'Logs cleared successfully']);
        } catch (\Exception $e) {
             return response()->json(['message' => '❌ Failed to clear log file: ' . $e->getMessage()]);
         }

@@ -61,6 +61,11 @@ class PackageController extends Controller
     // ---------------------------
     public function edit($id)
     {
+        try {
+            $id = decrypt($id);
+        } catch (\Exception $e) {
+            abort(404);
+        }
         $package = Package::with('features')->findOrFail($id);
         return view('admin.packages.edit', compact('package'));
     }
@@ -69,6 +74,11 @@ class PackageController extends Controller
     // ---------------------------
     public function update(Request $request, $id)
     {
+        try {
+            $id = decrypt($id);
+        } catch (\Exception $e) {
+            abort(404);
+        }
         $request->validate([
             'package_name' => 'required|string|max:255',
             'package_description' => 'nullable|string',
@@ -106,6 +116,11 @@ class PackageController extends Controller
     // ---------------------------
     public function destroy($id)
     {
+        try {
+            $id = decrypt($id);
+        } catch (\Exception $e) {
+            abort(404);
+        }
         $package = Package::findOrFail($id);
         $package->delete();
         return redirect()->route('admin.packages.index')->with('success', 'Package deleted successfully.');

@@ -14,6 +14,10 @@ class Authenticate extends Middleware
      */
     protected function redirectTo($request)
     {
+        if ($request->is('admin/*') || $request->is('admin')) {
+            return route('admin.admin_login');
+        }
+
         if(!config('database.connections.saleprosaas_landlord') && empty(env('DB_DATABASE'))) {
             return route('install-step-1');
         }

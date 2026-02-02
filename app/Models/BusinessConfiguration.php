@@ -35,6 +35,10 @@ class BusinessConfiguration extends Model
     // {
     //     return $this->hasMany(Invoice::class, 'seller_id', 'bus_config_id');
     // }
+    public function users()
+    {
+        return $this->hasMany(User::class, 'bus_config_id', 'bus_config_id');
+    }
     public function scenarios()
     {
         return $this->belongsToMany(

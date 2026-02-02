@@ -1319,3 +1319,23 @@ canvas#cashFlow {
 .dataTable {
     box-shadow: 0px 2px 10px #cad5e38f;
 }
+
+@media (max-width: 1199px) {
+    .app-header {
+        background-color: #5579a4 !important;
+        box-shadow: none !important;
+    }
+    .app-header h5, 
+    .app-header .navbar-nav a span,
+    .app-header .navbar-nav a i,
+    .app-header .navbar-nav li a {
+        color: #fff !important;
+    }
+    .app-header .menu-btn {
+        border-color: #fff !important;
+        color: #fff !important;
+    }
+    .app-header .menu-btn:hover {
+        background: rgba(255, 255, 255, 0.1) !important;
+    }
+}
