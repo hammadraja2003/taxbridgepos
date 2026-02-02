@@ -6,10 +6,10 @@
 <section>
     <div class="container-fluid">
         @can('suppliers-add')
-            <a href="{{route('supplier.create')}}" class="btn btn-primary"><i class="dripicons-plus"></i> {{__('db.Add Supplier')}}</a>
+            <a href="{{route('supplier.create')}}" class="btn btn-primary btn-sm"><i class="dripicons-plus"></i> {{__('db.Add Supplier')}}</a>
         @endcan
         @can('suppliers-import')
-            <a href="#" data-toggle="modal" data-target="#importSupplier" class="btn btn-primary"><i class="dripicons-copy"></i> {{__('db.Import Supplier')}}</a>
+            <a href="#" data-toggle="modal" data-target="#importSupplier" class="btn btn-primary btn-sm"><i class="dripicons-copy"></i> {{__('db.Import Supplier')}}</a>
         @endcan
     </div>
     <div class="table-responsive">
@@ -152,7 +152,7 @@
                 <label>{{__('db.Note')}}</label>
                 <textarea name="note" rows="4" class="form-control"></textarea>
             </div>
-            <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary" id="submit-button">
+            <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary mt-3" id="submit-button">
         </div>
         {!! Form::close() !!}
       </div>

@@ -2,11 +2,11 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Models\Product;
-use App\Models\Purchase;
-use App\Models\ProductPurchase;
 use App\Models\Product_Warehouse;
+use App\Models\ProductPurchase;
+use App\Models\Purchase;
+use Illuminate\Console\Command;
 use DB;
 
 class AutoPurchase extends Command
@@ -43,21 +43,23 @@ class AutoPurchase extends Command
     public function handle()
     {
         $product_data = Product::where('is_active', true)
-                        ->whereColumn('alert_quantity', '>', 'qty')
-                        ->whereNull(['is_variant', 'is_batch'])
-                        ->get();
-        if(count($product_data)) {
+            ->whereColumn('alert_quantity', '>', 'qty')
+            ->whereNull(['is_variant', 'is_batch'])
+            ->get();
+        if (count($product_data)) {
             $pos_setting_data = DB::table('pos_setting')
-                                ->select('warehouse_id')
-                                ->latest()
-                                ->first();
-            $user_data = DB::connection('master')->table('users')
-                        ->select('id')
-                        ->where([
-                            ['is_active', true],
-                            ['role_id', 1]
-                        ])->first();
-            $data['reference_no'] = 'pr-' . date("Ymd") . '-'. date("his");
+                ->select('warehouse_id')
+                ->latest()
+                ->first();
+            $user_data = DB::connection('master')
+                ->table('users')
+                ->select('id')
+                ->where([
+                    ['is_active', true],
+                    ['role_id', 1]
+                ])
+                ->first();
+            $data['reference_no'] = 'PR-' . date('Ymd') . '-' . date('his');
             $data['user_id'] = $user_data->id;
             $data['warehouse_id'] = $pos_setting_data->warehouse_id;
             $data['item'] = count($product_data);
@@ -68,15 +70,14 @@ class AutoPurchase extends Command
             $data['payment_status'] = 1;
             $data['total_tax'] = 0;
             $data['total_cost'] = 0;
-            foreach($product_data as $key => $product) {
-                if($product->tax_id) {
+            foreach ($product_data as $key => $product) {
+                if ($product->tax_id) {
                     $tax_data = DB::table('taxes')->select('rate')->find($product->tax_id);
-                    if($product->tax_method == 1) {
+                    if ($product->tax_method == 1) {
                         $net_unit_cost = number_format($product->cost, 2, '.', '');
                         $tax = number_format($product->cost * 10 * ($tax_data->rate / 100), 2, '.', '');
                         $cost = number_format(($product->cost * 10) + $tax, 2, '.', '');
-                    }
-                    else {
+                    } else {
                         $net_unit_cost = number_format((100 / (100 + $tax_data->rate)) * $product->cost, 2, '.', '');
                         $tax = number_format(($product->cost - $net_unit_cost) * 10, 2, '.', '');
                         $cost = number_format($product->cost * 10, 2, '.', '');
@@ -84,13 +85,12 @@ class AutoPurchase extends Command
                     $tax_rate = $tax_data->rate;
                     $data['total_tax'] += $tax;
                     $data['total_cost'] += $cost;
-                }
-                else {
-                    $data['total_tax'] += 0.00;
+                } else {
+                    $data['total_tax'] += 0.0;
                     $data['total_cost'] += number_format($product->cost * 10, 2, '.', '');
                     $net_unit_cost = number_format($product->cost, 2, '.', '');
-                    $tax_rate = 0.00;
-                    $tax = 0.00;
+                    $tax_rate = 0.0;
+                    $tax = 0.0;
                     $cost = number_format($product->cost * 10, 2, '.', '');
                 }
 
@@ -102,15 +102,15 @@ class AutoPurchase extends Command
                 $data['total'][$key] = $cost;
 
                 $product_warehouse_data = Product_Warehouse::select('id', 'qty')
-                                        ->where([
-                                            ['product_id', $product->id],
-                                            ['warehouse_id', $pos_setting_data->warehouse_id]
-                                        ])->first();
-                if($product_warehouse_data) {
+                    ->where([
+                        ['product_id', $product->id],
+                        ['warehouse_id', $pos_setting_data->warehouse_id]
+                    ])
+                    ->first();
+                if ($product_warehouse_data) {
                     $product_warehouse_data->qty += 10;
                     $product_warehouse_data->save();
-                }
-                else {
+                } else {
                     $lims_product_warehouse_data = new Product_Warehouse();
                     $lims_product_warehouse_data->product_id = $product->id;
                     $lims_product_warehouse_data->warehouse_id = $data['warehouse_id'];

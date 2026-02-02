@@ -55,7 +55,6 @@
     filter: brightness(0.95);
 }
 
-/* Optional: disable text selection */
 .custom-control-label {
     user-select: none;
 }
@@ -67,23 +66,10 @@
 <x-error-message key="message3" />
 <x-error-message key="not_permitted" />
 
-<!-- @if(session()->has('message1'))
-    <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{!! session()->get('message1') !!}</div>
-@endif
-@if(session()->has('message2'))
-    <div class="alert alert-success alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('message2') }}</div>
-@endif
-@if(session()->has('message3'))
-    <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('message3') }}</div>
-@endif
-@if(session()->has('not_permitted'))
-    <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('not_permitted') }}</div>
-@endif -->
-
 <section>
     @if(in_array("users-add", $all_permission))
         <div class="container-fluid">
-            <a href="{{route('user.create')}}" class="btn btn-primary"><i class="dripicons-plus"></i> {{__('db.Add User')}}</a>
+            <a href="{{route('user.create')}}" class="btn btn-primary btn-sm"><i class="dripicons-plus"></i> {{__('db.Add User')}}</a>
         </div>
     @endif
     <div class="table-responsive">

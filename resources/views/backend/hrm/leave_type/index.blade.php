@@ -6,7 +6,7 @@
 
 <section>
     <div class="container-fluid">
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createModal">
+        <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#createModal">
             <i class="dripicons-plus"></i> {{__('db.Add Leave Type')}}
         </button>
     </div>
@@ -98,7 +98,7 @@
                 </div>
 
                 <div class="form-group">
-                    <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">
+                    <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary mt-3">
                 </div>
 
             </div>
@@ -140,7 +140,7 @@
 
         <input type="hidden" name="leave_types" id="edit_id">
         <div class="form-group">
-            <input type="submit" value="{{__('db.Update')}}" class="btn btn-primary">
+            <input type="submit" value="{{__('db.Update')}}" class="btn btn-primary mt-3">
         </div>
       </div>
       {{ Form::close() }}

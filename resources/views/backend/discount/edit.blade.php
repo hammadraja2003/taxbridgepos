@@ -124,7 +124,7 @@
                                 	</ul>
                                 </div>
                                 <div class="col-md-12 mt-2">
-                                    <button type="submit" class="btn btn-primary">{{__('db.submit')}}</button>
+                                    <button type="submit" class="btn btn-primary mt-3">{{__('db.submit')}}</button>
                                 </div>
                             </div>
                         {!! Form::close() !!}

@@ -36,7 +36,7 @@
                                     <div class="col-md-3">
                                         <div class="form-group">
                                             <label>{{__('db.Warehouse')}} *</label>
-                                            <select name="warehouse_id" class="form-control" data-live-search="true" title="Select warehouse..." required>
+                                            <select name="warehouse_id" class="form-control" data-live-search="true" title="Select store..." required>
                                                 <option value="">Select warehouse</option>
                                                 @foreach($lims_warehouse_list as $warehouse)
                                                 <option value="{{$warehouse->id}}">{{$warehouse->name}}</option>
@@ -560,7 +560,6 @@
 
             if(payment_status == 3 || payment_status == 4){
                 var balance = $('#account_id option:selected').data('total_balance');
-                alert(balance);
                 var currency_rate = $('#currency-id option:selected').data('rate');
                 let grandTotal = parseFloat($('#grand_total').text()) || 0;
                 balance = currency_rate * balance;

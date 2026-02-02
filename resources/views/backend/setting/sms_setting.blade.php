@@ -80,7 +80,7 @@
                                         <label class="mt-2"><strong>{{__('db.Default')}}</strong></label>
                                       </div>
                                     <div class="form-group">
-                                        <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">
+                                        <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary mt-3">
                                         <a href="https://sms.tonkra.com/account/top-up" type="button" target="_blank" class="btn btn-secondary tonkra">{{ __('db.Top Up') }}</a>
                                     </div>
                                 </div>

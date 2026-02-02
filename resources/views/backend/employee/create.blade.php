@@ -107,7 +107,7 @@
                             <div class="col-md-4" id="warehouse">
                                 <div class="form-group">
                                     <label>{{__('db.Warehouse')}} *</label>
-                                    <select name="warehouse_id" class="selectpicker form-control" data-live-search="true" data-live-search-style="begins" title="Select Warehouse...">
+                                    <select name="warehouse_id" class="selectpicker form-control" data-live-search="true" data-live-search-style="begins" title="Select store...">
                                         @foreach($lims_warehouse_list as $warehouse)
                                         <option value="{{$warehouse->id}}">{{$warehouse->name}}</option>
                                         @endforeach
@@ -289,7 +289,7 @@
                 {{Form::text('name',null,['required'=>'required','class'=>'form-control','placeholder'=>__('db.Type department name')])}}
             </div>
             <div class="form-group">
-                <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">
+                <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary mt-3">
             </div>
         </div>
         {{ Form::close() }}
@@ -320,7 +320,7 @@
                 {{Form::time('end_time',null,['required'=>'required','class'=>'form-control'])}}
             </div>
             <div class="form-group">
-                <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">
+                <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary mt-3">
             </div>
         </div>
         {{ Form::close() }}
@@ -343,7 +343,7 @@
                 {{Form::text('name',null,['required'=>'required','class'=>'form-control','placeholder'=>__('db.Type designation name')])}}
             </div>
             <div class="form-group">
-                <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">
+                <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary mt-3">
             </div>
         </div>
         {{ Form::close() }}

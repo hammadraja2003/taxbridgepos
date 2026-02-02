@@ -47,7 +47,7 @@
                                         @if($lims_pos_setting_data)
                                         <input type="hidden" name="warehouse_id_hidden" value="{{$lims_pos_setting_data->warehouse_id}}">
                                         @endif
-                                        <select required name="warehouse_id" class="selectpicker form-control" data-live-search="true" data-live-search-style="begins" title="Select warehouse...">
+                                        <select required name="warehouse_id" class="selectpicker form-control" data-live-search="true" data-live-search-style="begins" title="Select store...">
                                             @foreach($lims_warehouse_list as $warehouse)
                                             <option value="{{$warehouse->id}}">{{$warehouse->name}}</option>
                                             @endforeach
@@ -220,7 +220,7 @@
                             </div>
                             <div class="form-inline row mt-3">
                                 <div class="form-group col-md-12">
-                                     <button type="button" class="btn btn-primary add-more">+ {{__('db.Add More Payment Option')}}</button>
+                                     <button type="button" class="btn btn-primary add-more btn-sm">+ {{__('db.Add More Payment Option')}}</button>
                                 </div>
                             </div>
                             @if (session('duplicate_message'))

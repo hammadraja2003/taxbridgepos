@@ -9,7 +9,7 @@
 <section>
     @if (in_array('sale-agents', $all_permission))
         <div class="container-fluid">
-            <a href="{{ route('sale-agents.create') }}" class="btn btn-primary"><i class="dripicons-plus"></i>
+            <a href="{{ route('sale-agents.create') }}" class="btn btn-primary btn-sm"><i class="dripicons-plus"></i>
                 {{ __('db.Add Sale Agent') }}</a>
         </div>
     @endif

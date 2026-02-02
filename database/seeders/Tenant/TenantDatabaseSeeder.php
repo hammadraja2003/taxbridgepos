@@ -4,11 +4,10 @@ namespace Database\Seeders\Tenant;
 
 use Database\Seeders\Tenant\BarcodeSeeder;
 use Database\Seeders\Tenant\ExternalServicesSeeder;
+use Database\Seeders\Tenant\InvoiceSettingsSeeder;
 use Database\Seeders\Tenant\LanguagesTableSeeder;
 use Database\Seeders\Tenant\TranslationsTableSeeder;
-use Database\Seeders\Tenant\InvoiceSettingsSeeder;
 use Illuminate\Database\Seeder;
-
 use Illuminate\Support\Facades\DB;
 
 class TenantDatabaseSeeder extends Seeder
@@ -32,7 +31,7 @@ class TenantDatabaseSeeder extends Seeder
             DB::table('general_settings')->insert([
                 [
                     'id' => 1,
-                    'site_title' => !empty(self::$tenantData) ? self::$tenantData['site_title'] : 'TaxBridge POS SaaS',
+                    'site_title' => !empty(self::$tenantData) ? self::$tenantData['site_title'] : 'SalesBridge POS SaaS',
                     'site_logo' => !empty(self::$tenantData) ? self::$tenantData['site_logo'] : '20250102042651.png',
                     'is_rtl' => 0,
                     'currency' => '1',
@@ -41,7 +40,7 @@ class TenantDatabaseSeeder extends Seeder
                     'staff_access' => 'own',
                     'without_stock' => 'no',
                     'date_format' => 'd/m/Y',
-                    'developed_by' => !empty(self::$tenantData) ? self::$tenantData['developed_by'] : 'TaxBridge POS SaaS',
+                    'developed_by' => !empty(self::$tenantData) ? self::$tenantData['developed_by'] : 'SalesBridge POS SaaS',
                     'invoice_format' => 'standard',
                     'decimal' => 2,
                     'state' => 1,
@@ -68,7 +67,7 @@ class TenantDatabaseSeeder extends Seeder
                     'password' => !empty(self::$tenantData) ? self::$tenantData['password'] : '$2y$10$DWAHTfjcvwCpOCXaJg11MOhsqns03uvlwiSUOQwkHL2YYrtrXPcL6',
                     'remember_token' => '6mN44MyRiQZfCi0QvFFIYAU9LXIUz9CdNIlrRS5Lg8wBoJmxVu8auzTP42ZW',
                     'phone' => !empty(self::$tenantData) ? self::$tenantData['phone'] : '12112',
-                    'company_name' => !empty(self::$tenantData) ? self::$tenantData['company_name'] : 'TaxBridge POS',
+                    'company_name' => !empty(self::$tenantData) ? self::$tenantData['company_name'] : 'SalesBridge POS',
                     'role_id' => 1,
                     'biller_id' => NULL,
                     'warehouse_id' => NULL,
@@ -111,10 +110,11 @@ class TenantDatabaseSeeder extends Seeder
             ]);
         }
 
-        ///permissions table data insert start///
-        $existing_permissions = DB::connection('master')->table('permissions')
-        ->select('name', 'guard_name')
-        ->get();
+        // /permissions table data insert start///
+        $existing_permissions = DB::connection('master')
+            ->table('permissions')
+            ->select('name', 'guard_name')
+            ->get();
 
         $existingMap = [];
 
@@ -123,876 +123,876 @@ class TenantDatabaseSeeder extends Seeder
         }
 
         $permission_data = [
-                [
-                    'id' => 4,
-                    'name' => 'products-edit',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 5,
-                    'name' => 'products-delete',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 6,
-                    'name' => 'products-add',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 7,
-                    'name' => 'products-index',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 8,
-                    'name' => 'purchases-index',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 9,
-                    'name' => 'purchases-add',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 10,
-                    'name' => 'purchases-edit',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 11,
-                    'name' => 'purchases-delete',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 12,
-                    'name' => 'sales-index',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 13,
-                    'name' => 'sales-add',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 14,
-                    'name' => 'sales-edit',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 15,
-                    'name' => 'sales-delete',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 16,
-                    'name' => 'quotes-index',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 17,
-                    'name' => 'quotes-add',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 18,
-                    'name' => 'quotes-edit',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 19,
-                    'name' => 'quotes-delete',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 20,
-                    'name' => 'transfers-index',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 21,
-                    'name' => 'transfers-add',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 22,
-                    'name' => 'transfers-edit',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 23,
-                    'name' => 'transfers-delete',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 24,
-                    'name' => 'returns-index',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 25,
-                    'name' => 'returns-add',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 26,
-                    'name' => 'returns-edit',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 27,
-                    'name' => 'returns-delete',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 28,
-                    'name' => 'customers-index',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 29,
-                    'name' => 'customers-add',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 30,
-                    'name' => 'customers-edit',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 31,
-                    'name' => 'customers-delete',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 32,
-                    'name' => 'suppliers-index',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 33,
-                    'name' => 'suppliers-add',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 34,
-                    'name' => 'suppliers-edit',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 35,
-                    'name' => 'suppliers-delete',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 36,
-                    'name' => 'product-report',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 37,
-                    'name' => 'purchase-report',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 38,
-                    'name' => 'sale-report',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 39,
-                    'name' => 'customer-report',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 40,
-                    'name' => 'due-report',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 41,
-                    'name' => 'users-index',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 42,
-                    'name' => 'users-add',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 43,
-                    'name' => 'users-edit',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 44,
-                    'name' => 'users-delete',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 45,
-                    'name' => 'profit-loss',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 46,
-                    'name' => 'best-seller',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 47,
-                    'name' => 'daily-sale',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 48,
-                    'name' => 'monthly-sale',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 49,
-                    'name' => 'daily-purchase',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 50,
-                    'name' => 'monthly-purchase',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 51,
-                    'name' => 'payment-report',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 52,
-                    'name' => 'warehouse-stock-report',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 53,
-                    'name' => 'product-qty-alert',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 54,
-                    'name' => 'supplier-report',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 55,
-                    'name' => 'expenses-index',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 56,
-                    'name' => 'expenses-add',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 57,
-                    'name' => 'expenses-edit',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 58,
-                    'name' => 'expenses-delete',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 59,
-                    'name' => 'general_setting',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 60,
-                    'name' => 'mail_setting',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 61,
-                    'name' => 'pos_setting',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 62,
-                    'name' => 'hrm_setting',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 63,
-                    'name' => 'purchase-return-index',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 64,
-                    'name' => 'purchase-return-add',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 65,
-                    'name' => 'purchase-return-edit',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 66,
-                    'name' => 'purchase-return-delete',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 67,
-                    'name' => 'account-index',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 68,
-                    'name' => 'balance-sheet',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 69,
-                    'name' => 'account-statement',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 70,
-                    'name' => 'department',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 71,
-                    'name' => 'attendance',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 72,
-                    'name' => 'payroll',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 73,
-                    'name' => 'employees-index',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 74,
-                    'name' => 'employees-add',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 75,
-                    'name' => 'employees-edit',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 76,
-                    'name' => 'employees-delete',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 77,
-                    'name' => 'user-report',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 78,
-                    'name' => 'stock_count',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 79,
-                    'name' => 'adjustment',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 80,
-                    'name' => 'sms_setting',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 81,
-                    'name' => 'create_sms',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 82,
-                    'name' => 'print_barcode',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 83,
-                    'name' => 'empty_database',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 84,
-                    'name' => 'customer_group',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 85,
-                    'name' => 'unit',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 86,
-                    'name' => 'tax',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 87,
-                    'name' => 'gift_card',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 88,
-                    'name' => 'coupon',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 89,
-                    'name' => 'holiday',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 90,
-                    'name' => 'warehouse-report',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 91,
-                    'name' => 'warehouse',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 92,
-                    'name' => 'brand',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 93,
-                    'name' => 'billers-index',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 94,
-                    'name' => 'billers-add',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 95,
-                    'name' => 'billers-edit',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 96,
-                    'name' => 'billers-delete',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 97,
-                    'name' => 'money-transfer',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 98,
-                    'name' => 'category',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 99,
-                    'name' => 'delivery',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 100,
-                    'name' => 'send_notification',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 101,
-                    'name' => 'today_sale',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 102,
-                    'name' => 'today_profit',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 103,
-                    'name' => 'currency',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 104,
-                    'name' => 'backup_database',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 105,
-                    'name' => 'reward_point_setting',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 106,
-                    'name' => 'revenue_profit_summary',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 107,
-                    'name' => 'cash_flow',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 108,
-                    'name' => 'monthly_summary',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 109,
-                    'name' => 'yearly_report',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 110,
-                    'name' => 'discount_plan',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 111,
-                    'name' => 'discount',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 112,
-                    'name' => 'product-expiry-report',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 113,
-                    'name' => 'purchase-payment-index',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 114,
-                    'name' => 'purchase-payment-add',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 115,
-                    'name' => 'purchase-payment-edit',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 116,
-                    'name' => 'purchase-payment-delete',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 117,
-                    'name' => 'sale-payment-index',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 118,
-                    'name' => 'sale-payment-add',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 119,
-                    'name' => 'sale-payment-edit',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 120,
-                    'name' => 'sale-payment-delete',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 121,
-                    'name' => 'all_notification',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 122,
-                    'name' => 'sale-report-chart',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 123,
-                    'name' => 'dso-report',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 124,
-                    'name' => 'product_history',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 125,
-                    'name' => 'supplier-due-report',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 126,
-                    'name' => 'custom_field',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 127,
-                    'name' => 'incomes-index',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 128,
-                    'name' => 'incomes-add',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 129,
-                    'name' => 'incomes-edit',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 130,
-                    'name' => 'incomes-delete',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 131,
-                    'name' => 'packing_slip_challan',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 132,
-                    'name' => 'biller-report',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 133,
-                    'name' => 'payment_gateway_setting',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 134,
-                    'name' => 'barcode_setting',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 135,
-                    'name' => 'language_setting',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 136,
-                    'name' => 'addons',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 137,
-                    'name' => 'account-selection',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 138,
-                    'name' => 'invoice_setting',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 139,
-                    'name' => 'invoice_create_edit_delete',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 140,
-                    'name' => 'handle_discount',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 145,
-                    'name' => 'products-import',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 146,
-                    'name' => 'purchases-import',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 147,
-                    'name' => 'sales-import',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 148,
-                    'name' => 'customers-import',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 149,
-                    'name' => 'billers-import',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 150,
-                    'name' => 'suppliers-import',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 151,
-                    'name' => 'categories-add',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 152,
-                    'name' => 'categories-import',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 153,
-                    'name' => 'categories-index',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 154,
-                    'name' => 'categories-edit',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 155,
-                    'name' => 'categories-delete',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 156,
-                    'name' => 'role_permission',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 157,
-                    'name' => 'cart-product-update',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 158,
-                    'name' => 'transfers-import',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 159,
-                    'name' => 'change_sale_date',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 160,
-                    'name' => 'sidebar_product',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 161,
-                    'name' => 'sidebar_purchase',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 162,
-                    'name' => 'sidebar_sale',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 163,
-                    'name' => 'sidebar_quotation',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 164,
-                    'name' => 'sidebar_transfer',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 165,
-                    'name' => 'sidebar_expense',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 166,
-                    'name' => 'sidebar_income',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 167,
-                    'name' => 'sidebar_accounting',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 168,
-                    'name' => 'sidebar_hrm',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 169,
-                    'name' => 'sidebar_people',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 170,
-                    'name' => 'sidebar_reports',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 171,
-                    'name' => 'sidebar_settings',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 172,
-                    'name' => 'sale_export',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 173,
-                    'name' => 'product_export',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 174,
-                    'name' => 'purchase_export',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 175,
-                    'name' => 'designations',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 176,
-                    'name' => 'shift',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 177,
-                    'name' => 'overtime',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 178,
-                    'name' => 'leave-type',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 179,
-                    'name' => 'leave',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 180,
-                    'name' => 'hrm-panel',
-                    'guard_name' => 'web',
-                ],
-                [
-                    'id' => 181,
-                    'name' => 'sale-agents',
-                    'guard_name' => 'web',
-                ],
+            [
+                'id' => 4,
+                'name' => 'products-edit',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 5,
+                'name' => 'products-delete',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 6,
+                'name' => 'products-add',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 7,
+                'name' => 'products-index',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 8,
+                'name' => 'purchases-index',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 9,
+                'name' => 'purchases-add',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 10,
+                'name' => 'purchases-edit',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 11,
+                'name' => 'purchases-delete',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 12,
+                'name' => 'sales-index',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 13,
+                'name' => 'sales-add',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 14,
+                'name' => 'sales-edit',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 15,
+                'name' => 'sales-delete',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 16,
+                'name' => 'quotes-index',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 17,
+                'name' => 'quotes-add',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 18,
+                'name' => 'quotes-edit',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 19,
+                'name' => 'quotes-delete',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 20,
+                'name' => 'transfers-index',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 21,
+                'name' => 'transfers-add',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 22,
+                'name' => 'transfers-edit',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 23,
+                'name' => 'transfers-delete',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 24,
+                'name' => 'returns-index',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 25,
+                'name' => 'returns-add',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 26,
+                'name' => 'returns-edit',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 27,
+                'name' => 'returns-delete',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 28,
+                'name' => 'customers-index',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 29,
+                'name' => 'customers-add',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 30,
+                'name' => 'customers-edit',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 31,
+                'name' => 'customers-delete',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 32,
+                'name' => 'suppliers-index',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 33,
+                'name' => 'suppliers-add',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 34,
+                'name' => 'suppliers-edit',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 35,
+                'name' => 'suppliers-delete',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 36,
+                'name' => 'product-report',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 37,
+                'name' => 'purchase-report',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 38,
+                'name' => 'sale-report',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 39,
+                'name' => 'customer-report',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 40,
+                'name' => 'due-report',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 41,
+                'name' => 'users-index',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 42,
+                'name' => 'users-add',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 43,
+                'name' => 'users-edit',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 44,
+                'name' => 'users-delete',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 45,
+                'name' => 'profit-loss',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 46,
+                'name' => 'best-seller',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 47,
+                'name' => 'daily-sale',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 48,
+                'name' => 'monthly-sale',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 49,
+                'name' => 'daily-purchase',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 50,
+                'name' => 'monthly-purchase',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 51,
+                'name' => 'payment-report',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 52,
+                'name' => 'warehouse-stock-report',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 53,
+                'name' => 'product-qty-alert',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 54,
+                'name' => 'supplier-report',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 55,
+                'name' => 'expenses-index',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 56,
+                'name' => 'expenses-add',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 57,
+                'name' => 'expenses-edit',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 58,
+                'name' => 'expenses-delete',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 59,
+                'name' => 'general_setting',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 60,
+                'name' => 'mail_setting',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 61,
+                'name' => 'pos_setting',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 62,
+                'name' => 'hrm_setting',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 63,
+                'name' => 'purchase-return-index',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 64,
+                'name' => 'purchase-return-add',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 65,
+                'name' => 'purchase-return-edit',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 66,
+                'name' => 'purchase-return-delete',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 67,
+                'name' => 'account-index',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 68,
+                'name' => 'balance-sheet',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 69,
+                'name' => 'account-statement',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 70,
+                'name' => 'department',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 71,
+                'name' => 'attendance',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 72,
+                'name' => 'payroll',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 73,
+                'name' => 'employees-index',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 74,
+                'name' => 'employees-add',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 75,
+                'name' => 'employees-edit',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 76,
+                'name' => 'employees-delete',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 77,
+                'name' => 'user-report',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 78,
+                'name' => 'stock_count',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 79,
+                'name' => 'adjustment',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 80,
+                'name' => 'sms_setting',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 81,
+                'name' => 'create_sms',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 82,
+                'name' => 'print_barcode',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 83,
+                'name' => 'empty_database',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 84,
+                'name' => 'customer_group',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 85,
+                'name' => 'unit',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 86,
+                'name' => 'tax',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 87,
+                'name' => 'gift_card',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 88,
+                'name' => 'coupon',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 89,
+                'name' => 'holiday',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 90,
+                'name' => 'warehouse-report',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 91,
+                'name' => 'warehouse',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 92,
+                'name' => 'brand',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 93,
+                'name' => 'billers-index',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 94,
+                'name' => 'billers-add',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 95,
+                'name' => 'billers-edit',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 96,
+                'name' => 'billers-delete',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 97,
+                'name' => 'money-transfer',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 98,
+                'name' => 'category',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 99,
+                'name' => 'delivery',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 100,
+                'name' => 'send_notification',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 101,
+                'name' => 'today_sale',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 102,
+                'name' => 'today_profit',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 103,
+                'name' => 'currency',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 104,
+                'name' => 'backup_database',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 105,
+                'name' => 'reward_point_setting',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 106,
+                'name' => 'revenue_profit_summary',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 107,
+                'name' => 'cash_flow',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 108,
+                'name' => 'monthly_summary',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 109,
+                'name' => 'yearly_report',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 110,
+                'name' => 'discount_plan',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 111,
+                'name' => 'discount',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 112,
+                'name' => 'product-expiry-report',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 113,
+                'name' => 'purchase-payment-index',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 114,
+                'name' => 'purchase-payment-add',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 115,
+                'name' => 'purchase-payment-edit',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 116,
+                'name' => 'purchase-payment-delete',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 117,
+                'name' => 'sale-payment-index',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 118,
+                'name' => 'sale-payment-add',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 119,
+                'name' => 'sale-payment-edit',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 120,
+                'name' => 'sale-payment-delete',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 121,
+                'name' => 'all_notification',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 122,
+                'name' => 'sale-report-chart',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 123,
+                'name' => 'dso-report',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 124,
+                'name' => 'product_history',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 125,
+                'name' => 'supplier-due-report',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 126,
+                'name' => 'custom_field',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 127,
+                'name' => 'incomes-index',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 128,
+                'name' => 'incomes-add',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 129,
+                'name' => 'incomes-edit',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 130,
+                'name' => 'incomes-delete',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 131,
+                'name' => 'packing_slip_challan',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 132,
+                'name' => 'biller-report',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 133,
+                'name' => 'payment_gateway_setting',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 134,
+                'name' => 'barcode_setting',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 135,
+                'name' => 'language_setting',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 136,
+                'name' => 'addons',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 137,
+                'name' => 'account-selection',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 138,
+                'name' => 'invoice_setting',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 139,
+                'name' => 'invoice_create_edit_delete',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 140,
+                'name' => 'handle_discount',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 145,
+                'name' => 'products-import',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 146,
+                'name' => 'purchases-import',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 147,
+                'name' => 'sales-import',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 148,
+                'name' => 'customers-import',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 149,
+                'name' => 'billers-import',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 150,
+                'name' => 'suppliers-import',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 151,
+                'name' => 'categories-add',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 152,
+                'name' => 'categories-import',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 153,
+                'name' => 'categories-index',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 154,
+                'name' => 'categories-edit',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 155,
+                'name' => 'categories-delete',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 156,
+                'name' => 'role_permission',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 157,
+                'name' => 'cart-product-update',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 158,
+                'name' => 'transfers-import',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 159,
+                'name' => 'change_sale_date',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 160,
+                'name' => 'sidebar_product',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 161,
+                'name' => 'sidebar_purchase',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 162,
+                'name' => 'sidebar_sale',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 163,
+                'name' => 'sidebar_quotation',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 164,
+                'name' => 'sidebar_transfer',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 165,
+                'name' => 'sidebar_expense',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 166,
+                'name' => 'sidebar_income',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 167,
+                'name' => 'sidebar_accounting',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 168,
+                'name' => 'sidebar_hrm',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 169,
+                'name' => 'sidebar_people',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 170,
+                'name' => 'sidebar_reports',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 171,
+                'name' => 'sidebar_settings',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 172,
+                'name' => 'sale_export',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 173,
+                'name' => 'product_export',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 174,
+                'name' => 'purchase_export',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 175,
+                'name' => 'designations',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 176,
+                'name' => 'shift',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 177,
+                'name' => 'overtime',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 178,
+                'name' => 'leave-type',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 179,
+                'name' => 'leave',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 180,
+                'name' => 'hrm-panel',
+                'guard_name' => 'web',
+            ],
+            [
+                'id' => 181,
+                'name' => 'sale-agents',
+                'guard_name' => 'web',
+            ],
         ];
 
         $insertData = [];
@@ -1012,12 +1012,13 @@ class TenantDatabaseSeeder extends Seeder
         if (!empty($insertData)) {
             DB::connection('master')->table('permissions')->insert($insertData);
         }
-        ///permissions table data insert end///
+        // /permissions table data insert end///
 
-        ///role_has_permissions table data insert start///
-        $existing_role_has_permissions = DB::connection('master')->table('role_has_permissions')
-        ->select('permission_id', 'role_id')
-        ->get();
+        // /role_has_permissions table data insert start///
+        $existing_role_has_permissions = DB::connection('master')
+            ->table('role_has_permissions')
+            ->select('permission_id', 'role_id')
+            ->get();
 
         $existingMap = [];
 
@@ -1027,15 +1028,14 @@ class TenantDatabaseSeeder extends Seeder
 
         $basic_permissions_role = [];
 
-        if(!config('database.connections.saleprosaas_landlord')) {
+        if (!config('database.connections.saleprosaas_landlord')) {
             foreach ($permission_data as $row) {
                 $basic_permissions_role[] = [
                     'permission_id' => $row['id'],
                     'role_id' => 1,
                 ];
             }
-        }
-        else {
+        } else {
             $basic_permissions_role = [
                 [
                     'permission_id' => 4,
@@ -1406,7 +1406,7 @@ class TenantDatabaseSeeder extends Seeder
         if (!empty($insertData)) {
             DB::connection('master')->table('role_has_permissions')->insert($insertData);
         }
-        ///role_has_permissions table data insert end///
+        // /role_has_permissions table data insert end///
 
         if (!DB::table('accounts')->count()) {
             DB::table('accounts')->insert([

@@ -66,7 +66,7 @@
                                         <div class="form-group">
                                             <label>{{__('db.Warehouse')}} *</label>
                                             <input type="hidden" name="warehouse_id_hidden" value="{{$lims_sale_data->warehouse_id}}" />
-                                            <select required id="warehouse_id" name="warehouse_id" class="selectpicker form-control" data-live-search="true" data-live-search-style="begins" title="Select warehouse...">
+                                            <select required id="warehouse_id" name="warehouse_id" class="selectpicker form-control" data-live-search="true" data-live-search-style="begins" title="Select store...">
                                                 @foreach($lims_warehouse_list as $warehouse)
                                                 <option value="{{$warehouse->id}}">{{$warehouse->name}}</option>
                                                 @endforeach
@@ -473,10 +473,33 @@
                                         </div>
                                         <x-validation-error fieldName="payment_status" />
                                     </div>
+                                    <div class="col-md-12">
+                                        <table class="table table-bordered table-condensed totals">
+                                            <td><strong>{{__('db.Items')}}</strong>
+                                                <span class="pull-right" id="item">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
+                                            </td>
+                                            <td><strong>{{__('db.Total')}}</strong>
+                                                <span class="pull-right" id="subtotal">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
+                                            </td>
+                                            <td><strong>{{__('db.Order Tax')}}</strong>
+                                                <span class="pull-right" id="order_tax">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
+                                            </td>
+                                            <td><strong>{{__('db.Order Discount')}}</strong>
+                                                <span class="pull-right" id="order_discount">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
+                                            </td>
+                                            <td><strong>{{__('db.Shipping Cost')}}</strong>
+                                                <span class="pull-right" id="shipping_cost">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
+                                            </td>
+                                            <td><strong>{{__('db.grand total')}}</strong>
+                                                <span class="pull-right" id="grand_total">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
+                                            </td>
+                                        </table>
+                                    </div>
+
                                 </div>
                                 <div class="form-group">
                                     <input type="hidden" name="draft" value="0" />
-                                    <button id="submit-button" type="submit" class="btn btn-primary">{{__('db.submit')}}</button>
+                                    <button id="submit-button" type="submit" class="btn btn-primary mt-3">{{__('db.submit')}}</button>
                                 </div>
                             </div>
                         </div>
@@ -485,28 +508,6 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div class="container-fluid">
-        <table class="table table-bordered table-condensed totals">
-            <td><strong>{{__('db.Items')}}</strong>
-                <span class="pull-right" id="item">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
-            </td>
-            <td><strong>{{__('db.Total')}}</strong>
-                <span class="pull-right" id="subtotal">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
-            </td>
-            <td><strong>{{__('db.Order Tax')}}</strong>
-                <span class="pull-right" id="order_tax">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
-            </td>
-            <td><strong>{{__('db.Order Discount')}}</strong>
-                <span class="pull-right" id="order_discount">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
-            </td>
-            <td><strong>{{__('db.Shipping Cost')}}</strong>
-                <span class="pull-right" id="shipping_cost">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
-            </td>
-            <td><strong>{{__('db.grand total')}}</strong>
-                <span class="pull-right" id="grand_total">{{number_format(0, $general_setting->decimal, '.', '')}}</span>
-            </td>
-        </table>
     </div>
 
     <div id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" class="modal fade text-left">

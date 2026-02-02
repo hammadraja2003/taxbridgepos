@@ -46,7 +46,7 @@
                                     <input type="text" name="company_name" value="{{$lims_user_data->company_name}}" class="form-control" />
                                 </div>
                                 <div class="form-group">
-                                    <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">
+                                    <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary mt-3">
                                 </div>
                             </div>
                         </div>
@@ -81,7 +81,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary">
+                                    <input type="submit" value="{{__('db.submit')}}" class="btn btn-primary mt-3">
                                 </div>
                             </div>
                         </div>

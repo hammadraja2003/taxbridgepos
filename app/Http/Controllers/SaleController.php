@@ -464,6 +464,10 @@ class SaleController extends Controller
 
                 // Status logic (Sale Status)
                 $sale_status_text = '';
+                if ($sale->qty == 0) {
+                    $nestedData['sale_status'] = '<div class="badge badge-danger">' . __('db.Partially Returned') . '</div>';
+                    $sale_status_text = __('db.Partially Returned');
+                }
                 switch ($sale->sale_status) {
                     case 1:
                         $nestedData['sale_status'] = '<div class="badge badge-success">' . __('db.Completed') . '</div>';
@@ -478,8 +482,34 @@ class SaleController extends Controller
                         $sale_status_text = __('db.Draft');
                         break;
                     case 4:
-                        $nestedData['sale_status'] = '<div class="badge badge-danger">' . __('db.Returned') . '</div>';
-                        $sale_status_text = __('db.Returned');
+                        $sale_return_partially = DB::table('sales as s')
+                            ->select(
+                                's.id as sale_id',
+                                DB::raw("
+                                CASE
+                                    WHEN IFNULL(SUM(pr.qty), 0) = 0 THEN 'Not Returned'
+                                    WHEN IFNULL(SUM(pr.qty), 0) < SUM(ps.qty) THEN 'Partially Returned'
+                                    WHEN IFNULL(SUM(pr.qty), 0) >= SUM(ps.qty) THEN 'Returned'
+                                END AS return_status
+                            ")
+                            )
+                            ->join('product_sales as ps', 'ps.sale_id', '=', 's.id')
+                            ->leftJoin('returns as r', 'r.sale_id', '=', 's.id')
+                            ->leftJoin('product_returns as pr', function ($join) {
+                                $join
+                                    ->on('pr.return_id', '=', 'r.id')
+                                    ->on('pr.product_id', '=', 'ps.product_id');
+                            })
+                            ->where('s.id', $sale->id)
+                            ->groupBy('s.id')
+                            ->first();
+                        if (!empty($sale_return_partially)) {
+                            $nestedData['sale_status'] = '<div class="badge badge-danger">' . $sale_return_partially->return_status . '</div>';
+                            $sale_status_text = $sale_return_partially->return_status;
+                        } else {
+                            $nestedData['sale_status'] = '<div class="badge badge-danger">' . __('db.Returned') . '</div>';
+                            $sale_status_text = __('db.Returned');
+                        }
                         break;
                     case 5:
                         $nestedData['sale_status'] = '<div class="badge badge-info">' . __('db.Processing') . '</div>';
@@ -723,7 +753,9 @@ class SaleController extends Controller
         if (isset($request->reference_no)) {
             $this->validate($request, [
                 'reference_no' => [
-                    'max:191', 'required', 'unique:sales'
+                    'max:191',
+                    'required',
+                    'unique:sales'
                 ],
             ]);
         }
@@ -851,10 +883,12 @@ class SaleController extends Controller
         // Fetch latest reward point settings
         $lims_reward_point_setting_data = RewardPointSetting::latest()->first();
         // Check if reward points system is active and order total is eligible
-        if ($lims_reward_point_setting_data &&
-                $lims_reward_point_setting_data->is_active &&
-                !request()->has('redeem_point') &&
-                $data['grand_total'] >= $lims_reward_point_setting_data->minimum_amount) {
+        if (
+            $lims_reward_point_setting_data &&
+            $lims_reward_point_setting_data->is_active &&
+            !request()->has('redeem_point') &&
+            $data['grand_total'] >= $lims_reward_point_setting_data->minimum_amount
+        ) {
             // Check if customer is regular
             if ($lims_customer_data->type == CustomerTypeEnum::REGULAR->value) {
                 // Check if sale is not a draft and not paid using points
@@ -2174,7 +2208,7 @@ class SaleController extends Controller
                 $variables[] = 'draft_product_data';
                 $variables[] = 'draft_product_discount';
             }
-           
+
             return view('backend.sale.pos', compact(...$variables));
         } else
             return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
@@ -2188,7 +2222,7 @@ class SaleController extends Controller
             $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
             cache()->put('tenant_' . session('bus_config_id') . '_general_setting', $general_setting, 60 * 60 * 24);
         }
-   
+
         if (Auth::user()->role_type > 2 && config('staff_access') == 'own') {
             $recent_sale = Sale::join('customers', 'sales.customer_id', '=', 'customers.id')->select('sales.id', 'sales.reference_no', 'sales.customer_id', 'sales.grand_total', 'sales.created_at', 'customers.name')->where([
                 ['sales.sale_status', 1],
@@ -2297,7 +2331,16 @@ class SaleController extends Controller
                 'products.is_variant'
             )  // Fetch required fields
             ->orderBy('products.name', 'asc')  // Sort by name
-            ->groupBy('products.id')
+            ->groupBy(
+                'products.id',
+                'products.code',
+                'products.name',
+                'products.is_imei',
+                'products.is_embeded',
+                'products.image',
+                'products.qty',
+                'products.is_variant'
+            )
             ->paginate(15);  // Paginate results
 
         $index = 0;
@@ -2403,9 +2446,28 @@ class SaleController extends Controller
             $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
             cache()->put('tenant_' . session('bus_config_id') . '_general_setting', $general_setting, 60 * 60 * 24);
         }
-        
+
         // Try to find base product
-        $product = Product::select('id', 'name', 'code', 'is_variant', 'is_batch', 'is_imei', 'qty', 'price', 'wholesale_price', 'cost', 'promotion', 'promotion_price', 'last_date', 'tax_id', 'tax_method', 'type', 'unit_id', 'sale_unit_id', 'hs_code',
+        $product = Product::select(
+            'id',
+            'name',
+            'code',
+            'is_variant',
+            'is_batch',
+            'is_imei',
+            'qty',
+            'price',
+            'wholesale_price',
+            'cost',
+            'promotion',
+            'promotion_price',
+            'last_date',
+            'tax_id',
+            'tax_method',
+            'type',
+            'unit_id',
+            'sale_unit_id',
+            'hs_code',
             'fixed_notified_value_or_retail_price',
             'sales_tax_withheld_at_source',
             'extra_tax',
@@ -2413,8 +2475,9 @@ class SaleController extends Controller
             'fed_payable',
             'sro_schedule_no',
             'sro_item_serial_no',
-            'is_fbr_invoice_product')->where('code', $code)->where('is_active', true)->first();
-        
+            'is_fbr_invoice_product'
+        )->where('code', $code)->where('is_active', true)->first();
+
         // Try to find variant if base product not found
         if (!$product) {
             $variantProduct = Product::join('product_variants', 'products.id', '=', 'product_variants.product_id')
@@ -2451,16 +2514,18 @@ class SaleController extends Controller
             $applicableDays = explode(',', $discount->days);
             $todayDay = date('D');
 
-            if ((
-                $discount->applicable_for === 'All' ||
-                in_array($product->id, $applicableProducts)
-            ) && (
-                $todayDate >= $discount->valid_from &&
-                $todayDate <= $discount->valid_till &&
-                in_array($todayDay, $applicableDays) &&
-                $qty >= $discount->minimum_qty &&
-                $qty <= $discount->maximum_qty
-            )) {
+            if (
+                (
+                    $discount->applicable_for === 'All' ||
+                    in_array($product->id, $applicableProducts)
+                ) && (
+                    $todayDate >= $discount->valid_from &&
+                    $todayDate <= $discount->valid_till &&
+                    in_array($todayDay, $applicableDays) &&
+                    $qty >= $discount->minimum_qty &&
+                    $qty <= $discount->maximum_qty
+                )
+            ) {
                 $discountedPrice = $discount->type === 'flat'
                     ? $price - $discount->value
                     : $price - ($price * ($discount->value / 100));
@@ -2613,6 +2678,7 @@ class SaleController extends Controller
     public function productSaleData($id)
     {
         $lims_product_sale_data = Product_Sale::where('sale_id', $id)->get();
+        $product_sale = [];
         foreach ($lims_product_sale_data as $key => $product_sale_data) {
             $product = Product::find($product_sale_data->product_id);
             if ($product_sale_data->variant_id) {
@@ -2973,7 +3039,6 @@ class SaleController extends Controller
             $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
             cache()->put('tenant_' . session('bus_config_id') . '_general_setting', $general_setting, 60 * 60 * 24);
         }
-      
 
         if ($document) {
             $v = Validator::make(
@@ -3007,7 +3072,7 @@ class SaleController extends Controller
             $data['payment_status'] = 4;
 
         $lims_product_sale_data = Product_Sale::where('sale_id', $id)->get();
-       
+
         $product_id = $data['product_id'];
         $imei_number = $data['imei_number'];
         if (isset($data['product_batch_id'])) {
@@ -3445,7 +3510,6 @@ class SaleController extends Controller
             $product_sale['total'] = $mail_data['total'][$key] = $total[$key];
             // return $old_product_variant_id;
 
-         
             if ($product_sale['variant_id'] && in_array($product_variant_id[$key], $old_product_variant_id)) {
                 Product_Sale::where([
                     ['product_id', $pro_id],
@@ -3459,7 +3523,6 @@ class SaleController extends Controller
                 ])->update($product_sale);
             } else
                 Product_Sale::create($product_sale);
-            
         }
         // return $product_variant_id;
         $lims_sale_data->update($data);
@@ -3528,9 +3591,9 @@ class SaleController extends Controller
             $general_setting = GeneralSetting::where('bus_config_id', session('bus_config_id'))->latest()->first();
             cache()->put('tenant_' . session('bus_config_id') . '_general_setting', $general_setting, 60 * 60 * 24);
         }
-       
+
         $sale = Sale::where('sale_status', 1)->whereNull('deleted_at')->latest()->first();
-      
+
         return redirect()->route('sale.invoice', $sale->id);
     }
 
@@ -3836,8 +3899,34 @@ class SaleController extends Controller
             }
 
             $supportedIdentifiers = [
-                'al', 'fr_BE', 'pt_BR', 'bg', 'cs', 'dk', 'nl', 'et', 'ka', 'de', 'fr', 'hu', 'id', 'it', 'lt', 'lv',
-                'ms', 'fa', 'pl', 'ro', 'sk', 'es', 'ru', 'sv', 'tr', 'tk', 'ua', 'yo'
+                'al',
+                'fr_BE',
+                'pt_BR',
+                'bg',
+                'cs',
+                'dk',
+                'nl',
+                'et',
+                'ka',
+                'de',
+                'fr',
+                'hu',
+                'id',
+                'it',
+                'lt',
+                'lv',
+                'ms',
+                'fa',
+                'pl',
+                'ro',
+                'sk',
+                'es',
+                'ru',
+                'sv',
+                'tr',
+                'tk',
+                'ua',
+                'yo'
             ];  // ar, az, ku, mk - not supported
 
             $defaultLocale = \App::getLocale();

@@ -59,7 +59,7 @@
                                                 <label>{{__('db.Warehouse')}} *</label>
                                                 <select id="warehouse_id" name="warehouse_id" required
                                                     class="selectpicker form-control" data-live-search="true"
-                                                    title="Select warehouse...">
+                                                    title="Select store...">
                                                     @foreach($lims_warehouse_list as $warehouse)
                                                         <option value="{{$warehouse->id}}">{{$warehouse->name}}</option>
                                                     @endforeach
@@ -271,12 +271,12 @@
                                         <input type="number" name="edit_unit_price" class="form-control" step="any">
                                     </div>
                                     <?php
-    $tax_name_all[] = 'No Tax';
-    $tax_rate_all[] = 0;
-    foreach ($lims_tax_list as $tax) {
-        $tax_name_all[] = $tax->name;
-        $tax_rate_all[] = $tax->rate;
-    }
+                                    $tax_name_all[] = 'No Tax';
+                                    $tax_rate_all[] = 0;
+                                    foreach ($lims_tax_list as $tax) {
+                                        $tax_name_all[] = $tax->name;
+                                        $tax_rate_all[] = $tax->rate;
+                                    }
                                     ?>
                                     <div class="col-md-4 form-group">
                                         <label>{{__('db.Tax Rate')}}</label>

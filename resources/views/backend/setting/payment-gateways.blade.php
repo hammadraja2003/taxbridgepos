@@ -85,7 +85,7 @@
                                 <div class="form-group">
                                     <label>{{$key}}</label>
                                     @if($key == 'Mode')
-                                        <select name="{{$pg->name.'_'.str_replace(' ','_',$key)}}" class="selectpicker form-control">
+                                        <select name="{{$pg->name.'_'.str_replace(' ','_',$key)}}" class="selectpicker form-control select">
                                             <option @if($value == 'sandbox') selected @endif value="sandbox">Sandbox</option>
                                             <option @if($value == 'live') selected @endif value="live">Live</option>
                                         </select>
@@ -126,5 +126,9 @@
             $(this).siblings('input[type="hidden"]').val(0);
         }
     })
+
+    $(document).ready(function() {
+        $('.select').selectpicker('refresh');
+    });
 </script>
 @endpush
