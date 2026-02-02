@@ -12,7 +12,6 @@
  */
 
 use App\Http\Controllers\AccountsController;
-use App\Http\Controllers\AddonInstallController;
 use App\Http\Controllers\AdjustmentController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\BarcodeController;
@@ -41,7 +40,6 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HrmController;
 use App\Http\Controllers\IncomeCategoryController;
 use App\Http\Controllers\IncomeController;
-use App\Http\Controllers\InstallController;
 use App\Http\Controllers\InstallmentPlanController;
 use App\Http\Controllers\InvoiceSettingController;
 use App\Http\Controllers\LabelsController;
@@ -138,14 +136,6 @@ Route::get('clear', function () {
 });
 
 Route::get('update-coupon', [CouponController::class, 'updateCoupon']);
-
-Route::controller(InstallController::class)->group(function () {
-    Route::get('install/step-1', 'installStep1')->name('install-step-1');
-    Route::get('install/step-2', 'installStep2')->name('install-step-2');
-    Route::get('install/step-3', 'installStep3')->name('install-step-3');
-    Route::post('install/process', 'installProcess')->name('install-process');
-    Route::get('install/step-4', 'installStep4')->name('install-step-4');
-});
 
 Auth::routes();
 
@@ -740,13 +730,6 @@ Route::group(['middleware' => ['auth', 'settenantconnection', 'common', 'active'
     Route::resource('currency', CurrencyController::class);
 
     Route::resource('custom-fields', CustomFieldController::class);
-
-    Route::controller(AddonInstallController::class)->group(function () {
-        Route::post('saas-install', 'saasInstall')->name('saas.install');
-        Route::post('ecommerce-install', 'ecommerceInstall')->name('ecommerce.install');
-        Route::post('woocommerce-install', 'woocommerceInstall')->name('woocommerce.install');
-        Route::post('api-install', 'apiInstall')->name('api.install');
-    });
 
     Route::prefix('whatsapp')->group(function () {
         Route::get('/settings', [WhatsappController::class, 'settings'])->name('whatsapp.settings');

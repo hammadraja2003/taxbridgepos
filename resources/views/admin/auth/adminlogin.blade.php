@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="description"
-        content="TaxBridge Invoicing Management System - Manage invoices, clients, and FBR compliance efficiently.">
-    <title>{{ config('app.name', 'TaxBridge | Invoicing Management System') }}</title>
+        content="SalesBridge Invoicing Management System - Manage invoices, clients, and FBR compliance efficiently.">
+    <title>{{ config('app.name', 'SalesBridge | Invoicing Management System') }}</title>
     <link rel="icon" href="{{ asset('assets/images/logo/favicon.ico.png') }}" type="image/x-icon">
     <link rel="shortcut icon" href="{{ asset('assets/images/logo/favicon.ico.png') }}" type="image/x-icon">
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendor/bootstrap/bootstrap.min.css') }}">
@@ -65,7 +65,7 @@
 <body>
     <div class="login-card">
         <div class="text-center mb-3">
-            <img src="{{ asset('assets/images/logo/' . config('app.logo')) }}" alt="TaxBridge" width="300">
+            <img src="{{ asset('assets/images/logo/' . config('app.logo')) }}" alt="SalesBridge" width="300">
         </div>
         <h2>Admin Login</h2>
         {{-- Validation Errors --}}

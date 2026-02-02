@@ -11,7 +11,7 @@
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
   <link rel="icon" type="image/png"
-    href="{{env('PUB_PATH') . 'logo/' . $general_setting->favicon ?? $general_setting->site_logo}}" />
+    href="{{env('PUB_PATH') . '/logo/' . $general_setting->favicon ?? $general_setting->site_logo}}" />
   <!-- Bootstrap CSS-->
   <link rel="stylesheet" href="{{ env('ASSETS_PATH') . '/bootstrap/css/bootstrap.min.css' }}" type="text/css">
   <link rel="preload" href="{{ env('ASSETS_PATH') . '/bootstrap/css/bootstrap-datepicker.min.css' }}" as="style"

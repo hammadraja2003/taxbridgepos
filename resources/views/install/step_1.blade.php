@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>TaxBridgeSaas Installer | Step-1</title>
+    <title>SalesBridgeSaas Installer | Step-1</title>
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('install-assets/images/favicon.ico') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="{{ asset('install-assets/css/bootstrap.min.css') }}" rel="stylesheet">
@@ -13,7 +13,7 @@
 		<div class="wrapper">
 	        <header>
 	            <img src="{{ asset('install-assets/images/logo.png') }}" alt="Logo" style="max-width: 120px;"/>
-	            <h1 class="text-center">TaxBridgeSaas Auto Installer</h1>
+	            <h1 class="text-center">SalesBridgeSaas Auto Installer</h1>
 	        </header>
             <hr>
             <div class="content text-center">
@@ -23,7 +23,7 @@
                     Please contact through support <a target="_blank" href="#">Contact Support</a></h6>
             </div>
             <hr>
-            <footer>Copyright &copy; TaxBridge. All Rights Reserved.</footer>
+            <footer>Copyright &copy; SalesBridge. All Rights Reserved.</footer>
 		</div>
 	</div>
 </body>

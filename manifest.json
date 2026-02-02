@@ -1,7 +1,7 @@
 {
-    "name": "TaxBridge",
-    "short_name": "TaxBridge",
-    "start_url": "/taxbridge/",
+    "name": "SalesBridgePOS",
+    "short_name": "SalesBridgePOS",
+    "start_url": "/SalesBridgePOS/",
     "background_color": "#fff",
     "display": "standalone",
     "orientation": "portrait",

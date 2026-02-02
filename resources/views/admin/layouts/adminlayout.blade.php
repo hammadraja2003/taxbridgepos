@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
   <link rel="icon" type="image/png" href="{{ asset('logo/favicon.ico') }}" />
-  <title>{{ config('app.name', 'TaxBridgePOS') }}</title>
+  <title>{{ config('app.name', 'SalesBridgePOS') }}</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="all,follow">
@@ -75,7 +75,7 @@
   <link rel="stylesheet" href="<?php echo env('ASSETS_PATH') . '/css/dropzone.css' ?>">
 
   <link rel="icon" type="image/png" href="{{ asset('logo/favicon.ico') }}" />
-  <title>{{ config('app.name', 'TaxBridgePOS') }}</title>
+  <title>{{ config('app.name', 'SalesBridgePOS') }}</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="all,follow">
