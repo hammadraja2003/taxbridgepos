@@ -9,7 +9,7 @@
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="all,follow">
-  <link rel="icon" href="{{ asset('logo/favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" type="image/png" href="{{ env('PUB_PATH') . '/logo/favicon.ico' }}" />
   <!-- Bootstrap CSS-->
   <link rel="stylesheet" href="{{ env('ASSETS_PATH') . '/bootstrap/css/bootstrap.min.css' }}" type="text/css">
   <!-- login stylesheet-->

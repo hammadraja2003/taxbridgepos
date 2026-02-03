@@ -53,53 +53,12 @@
                         <div class="border-top pt-4 mb-3">
                             <div class="d-flex align-items-center justify-content-between mb-3">
                                 <h6 class="m-0 font-weight-bold text-dark"><i class="ti ti-list-check mr-2 text-info"></i>Package Features</h6>
-                                <button type="button" id="addFeature" class="btn btn-sm btn-primary-subtle text-primary rounded-pill border-primary-subtle">
-                                    <i class="ti ti-plus mr-1"></i> Add Feature
-                                </button>
                             </div>
                             
                             <div class="bg-light rounded p-3 mb-3 border">
-                                <div class="row g-2 mb-2 text-muted small text-uppercase font-weight-bold px-1">
-                                    <div class="col-5">Feature Key</div>
-                                    <div class="col-3">Limit Type</div>
-                                    <div class="col-3">Limit Value</div>
-                                    <div class="col-1 text-center"></div>
-                                </div>
                                 <div id="featuresWrapper" class="d-flex flex-column gap-2">
-                                    @foreach ($package->features as $idx => $feature)
-                                         <div class="feature-row row g-2 align-items-center bg-white p-2 rounded border shadow-xs mb-2">
-                                             <div class="col-md-5">
-                                                 <div class="input-group input-group-sm">
-                                                     <span class="input-group-text bg-white border-0 ps-2"><i class="ti ti-layout-grid text-primary opacity-75"></i></span>
-                                                     <select name="features[{{ $idx }}][feature_key]" class="form-control form-control-sm border-0 font-weight-600" required>
-                                                         <option value="" disabled>Select Feature</option>
-                                                         @foreach(['Product and Categories', 'Purchase and Sale', 'Sale Return', 'Purchase Return', 'Expense', 'Income', 'Stock Transfer', 'Quotation', 'Product Delivery', 'Stock Count and Adjustment', 'Report', 'HRM', 'Accounting', 'Manufacturing'] as $module)
-                                                             <option value="{{ $module }}" {{ (old("features.$idx.feature_key", $feature->feature_key) == $module) ? 'selected' : '' }}>{{ $module }}</option>
-                                                         @endforeach
-                                                     </select>
-                                                 </div>
-                                             </div>
-                                             <div class="col-md-3">
-                                                 <select name="features[{{ $idx }}][limit_type]" class="form-control form-control-sm border-0 bg-light-subtle" required>
-                                                     <option value="monthly" {{ old("features.$idx.limit_type", $feature->limit_type) == 'monthly' ? 'selected' : '' }}>Monthly</option>
-                                                     <option value="quarterly" {{ old("features.$idx.limit_type", $feature->limit_type) == 'quarterly' ? 'selected' : '' }}>Quarterly</option>
-                                                     <option value="yearly" {{ old("features.$idx.limit_type", $feature->limit_type) == 'yearly' ? 'selected' : '' }}>Yearly</option>
-                                                     <option value="total" {{ old("features.$idx.limit_type", $feature->limit_type) == 'total' ? 'selected' : '' }}>Total</option>
-                                                 </select>
-                                             </div>
-                                             <div class="col-md-3">
-                                                 <div class="input-group input-group-sm">
-                                                     <input type="number" name="features[{{ $idx }}][limit_value]" class="form-control border-0 bg-light-subtle" placeholder="Value" value="{{ old("features.$idx.limit_value", $feature->limit_value) }}" required>
-                                                     <span class="input-group-text bg-transparent border-0 text-muted small px-2">Qty</span>
-                                                 </div>
-                                             </div>
-                                             <div class="col-md-1 text-center">
-                                                 <button type="button" class="btn btn-icon btn-sm text-danger btn-remove p-0" title="Remove">
-                                                     <i class="ti ti-trash fs-5"></i>
-                                                 </button>
-                                             </div>
-                                         </div>
-                                     @endforeach
+                                    <!-- Features multi-select dropdown with pre-selected values -->
+                                    {!! getFeatureType('feature_key', $package->features->pluck('feature_key')->toArray(), 'feature_key', 'form-control select', true, true) !!}
                                 </div>
                             </div>
                         </div>
@@ -130,92 +89,5 @@
 </style>
 
 @push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        let featureIndex = {{ count($package->features) }};
-        const wrapper = document.getElementById('featuresWrapper');
-        const addFeatureBtn = document.getElementById('addFeature');
-
-        // Function to create a new feature row
-        function createFeatureRow(index) {
-            const row = document.createElement('div');
-            row.classList.add('feature-row', 'row', 'g-2', 'align-items-center', 'bg-white', 'p-2', 'rounded', 'border', 'shadow-xs', 'mb-2');
-            
-            row.innerHTML = `
-                <div class="col-md-5">
-                    <div class="input-group input-group-sm">
-                        <span class="input-group-text bg-white border-0 ps-2"><i class="ti ti-layout-grid text-primary opacity-75"></i></span>
-                        <select name="features[${index}][feature_key]" class="form-control form-control-sm border-0 font-weight-600" required>
-                            <option value="" disabled selected>Select Feature</option>
-                            <option value="Product and Categories">Product and Categories</option>
-                            <option value="Purchase and Sale">Purchase and Sale</option>
-                            <option value="Sale Return">Sale Return</option>
-                            <option value="Purchase Return">Purchase Return</option>
-                            <option value="Expense">Expense</option>
-                            <option value="Income">Income</option>
-                            <option value="Stock Transfer">Stock Transfer</option>
-                            <option value="Quotation">Quotation</option>
-                            <option value="Product Delivery">Product Delivery</option>
-                            <option value="Stock Count and Adjustment">Stock Count and Adjustment</option>
-                            <option value="Report">Report</option>
-                            <option value="HRM">HRM</option>
-                            <option value="Accounting">Accounting</option>
-                            <option value="Manufacturing">Manufacturing</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <select name="features[${index}][limit_type]" class="form-control form-control-sm border-0 bg-light-subtle" required>
-                        <option value="monthly">Monthly</option>
-                        <option value="quarterly">Quarterly</option>
-                        <option value="yearly">Yearly</option>
-                        <option value="total">Total</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <div class="input-group input-group-sm">
-                        <input type="number" name="features[${index}][limit_value]" class="form-control border-0 bg-light-subtle" placeholder="Value" required>
-                        <span class="input-group-text bg-transparent border-0 text-muted small px-2">Qty</span>
-                    </div>
-                </div>
-                <div class="col-md-1 text-center">
-                    <button type="button" class="btn btn-icon btn-sm text-danger btn-remove p-0" title="Remove">
-                        <i class="ti ti-trash fs-5"></i>
-                    </button>
-                </div>
-            `;
-            return row;
-        }
-
-        // Add new feature row
-        addFeatureBtn.addEventListener('click', function() {
-            wrapper.appendChild(createFeatureRow(featureIndex));
-            featureIndex++;
-        });
-
-        // Remove feature row (Event delegation)
-        wrapper.addEventListener('click', function(e) {
-            const btn = e.target.closest('.btn-remove');
-            if (btn) {
-                const rows = wrapper.querySelectorAll('.feature-row');
-                if (rows.length > 1) {
-                    btn.closest('.feature-row').remove();
-                } else {
-                     const row = btn.closest('.feature-row');
-                     row.classList.add('shake');
-                     setTimeout(() => row.classList.remove('shake'), 500);
-                }
-            }
-        });
-    });
-</script>
-<style>
-    @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-        20%, 40%, 60%, 80% { transform: translateX(5px); }
-    }
-    .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
-</style>
 @endpush
 @endsection

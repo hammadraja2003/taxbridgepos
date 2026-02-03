@@ -58,13 +58,12 @@
                             
                             <div class="bg-light rounded p-3 mb-3 border">
                                 <div class="row g-2 mb-2 text-muted small text-uppercase font-weight-bold px-1">
-                                    <div class="col-5">Feature Key</div>
-                                    <div class="col-3">Limit Type</div>
-                                    <div class="col-3">Limit Value</div>
+                                    <div class="col-5">Features</div>
                                     <div class="col-1 text-center"></div>
                                 </div>
                                 <div id="featuresWrapper" class="d-flex flex-column gap-2">
                                     <!-- Features will be added here dynamically -->
+                                    {!! getFeatureType('feature_key', null, 'feature_key', 'form-control select', true, true) !!}
                                 </div>
                             </div>
                         </div>
@@ -95,7 +94,7 @@
 </style>
 
 @push('scripts')
-<script>
+<!-- <script>
     document.addEventListener('DOMContentLoaded', function() {
         let featureIndex = 0;
         const wrapper = document.getElementById('featuresWrapper');
@@ -180,7 +179,7 @@
             }
         });
     });
-</script>
+</script> -->
 <style>
     @keyframes shake {
         0%, 100% { transform: translateX(0); }

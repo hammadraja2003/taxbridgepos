@@ -102,22 +102,14 @@
                         <div class="border-top pt-4 mb-3">
                             <div class="d-flex align-items-center justify-content-between mb-3">
                                 <h6 class="m-0 font-weight-bold text-dark"><i class="ti ti-list-check mr-2 text-info"></i>Feature Configuration</h6>
-                                {{-- <button type="button" id="addFeature" class="btn btn-sm btn-primary-subtle text-primary rounded-pill border-primary-subtle">
-                                    <i class="ti ti-plus mr-1"></i> Add Custom Feature
-                                </button> --}}
                             </div>
                             
                             <div class="bg-light rounded p-3 mb-3 border">
-                                <div class="row g-2 mb-2 text-muted small text-uppercase font-weight-bold px-1">
-                                    <div class="col-5">Feature Key</div>
-                                    <div class="col-3">Limit Type</div>
-                                    <div class="col-3">Limit Value</div>
-                                    <div class="col-1 text-center"></div>
-                                </div>
-                                <div id="featuresWrapper" class="d-flex flex-column gap-2 text-center text-muted small py-3" style="min-height: 50px;">
-                                    <div class="empty-state">
+                                <div id="featuresWrapper" class="d-flex flex-column gap-2">
+                                    <!-- Features multi-select dropdown will be loaded here -->
+                                    <div class="text-center text-muted small py-3">
                                         <i class="ti ti-info-circle fs-4 mb-1"></i>
-                                        <p class="mb-0">Select a package to load default features or add custom ones.</p>
+                                        <p class="mb-0">Select a package to load its features.</p>
                                     </div>
                                 </div>
                             </div>
@@ -152,9 +144,7 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        let featureIndex = 0;
         const wrapper = document.getElementById('featuresWrapper');
-        const addFeatureBtn = document.getElementById('addFeature');
         const packageSelect = document.getElementById('packageSelect');
         const isTrialCheckbox = document.getElementById('isTrial');
         const trialDaysInput = document.getElementById('trialDays');
@@ -162,97 +152,49 @@
         const priceInput = document.getElementById('packagePrice');
         const finalPriceInput = document.getElementById('priceAfterDiscount');
 
-        // Feature Keys Options
-        const moduleOptions = [
-            'Product and Categories', 'Purchase and Sale', 'Sale Return', 
-            'Purchase Return', 'Expense', 'Income', 'Stock Transfer', 
-            'Quotation', 'Product Delivery', 'Stock Count and Adjustment', 
-            'Report', 'HRM', 'Accounting', 'Manufacturing'
-        ];
-
-        // Function to create a new feature row
-        function createFeatureRow(key = '', type = 'monthly', value = 0, index) {
-            const row = document.createElement('div');
-            row.classList.add('feature-row', 'row', 'g-2', 'align-items-center', 'bg-white', 'p-2', 'rounded', 'border', 'shadow-xs', 'mb-2');
-            
-            let optionsHtml = '<option value="" disabled>Select Feature</option>';
-            moduleOptions.forEach(opt => {
-                optionsHtml += `<option value="${opt}" ${key === opt ? 'selected' : ''}>${opt}</option>`;
-            });
-
-            row.innerHTML = `
-                <div class="col-md-5">
-                    <div class="input-group input-group-sm">
-                        <span class="input-group-text bg-white border-0 ps-2"><i class="ti ti-layout-grid text-primary opacity-75"></i></span>
-                        <select name="features[${index}][feature_key]" class="form-control form-control-sm border-0 font-weight-600" required>
-                            ${optionsHtml}
-                            ${key && !moduleOptions.includes(key) ? `<option value="${key}" selected>${key}</option>` : ''}
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <select name="features[${index}][limit_type]" class="form-control form-control-sm border-0 bg-light-subtle" required>
-                        <option value="monthly" ${type === 'monthly' ? 'selected' : ''}>Monthly</option>
-                        <option value="quarterly" ${type === 'quarterly' ? 'selected' : ''}>Quarterly</option>
-                        <option value="yearly" ${type === 'yearly' ? 'selected' : ''}>Yearly</option>
-                        <option value="total" ${type === 'total' ? 'selected' : ''}>Total</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <div class="input-group input-group-sm">
-                        <input type="number" name="features[${index}][limit_value]" class="form-control border-0 bg-light-subtle" placeholder="Value" value="${value}" required>
-                        <span class="input-group-text bg-transparent border-0 text-muted small px-2">Qty</span>
-                    </div>
-                </div>
-                <div class="col-md-1 text-center">
-                    <button type="button" class="btn btn-icon btn-sm text-danger btn-remove p-0" title="Remove">
-                        <i class="ti ti-trash fs-5"></i>
-                    </button>
-                </div>
-            `;
-            return row;
-        }
+        // All available features with their display names
+        const allFeatures = @json(getAllFeatures());
 
         // Handle Package Selection
         packageSelect.addEventListener('change', function() {
             const selected = this.options[this.selectedIndex];
             if (!selected.value) {
-                wrapper.innerHTML = '<div class="empty-state text-center text-muted small py-3"><i class="ti ti-info-circle fs-4 mb-1"></i><p class="mb-0">Select a package to load default features or add custom ones.</p></div>';
+                wrapper.innerHTML = '<div class="text-center text-muted small py-3"><i class="ti ti-info-circle fs-4 mb-1"></i><p class="mb-0">Select a package to load its features.</p></div>';
                 priceInput.value = '';
                 finalPriceInput.value = '';
                 return;
             }
 
             const features = selected.dataset.features ? JSON.parse(selected.dataset.features) : [];
-            wrapper.innerHTML = ''; // Clear previous
             
-            features.forEach((f, idx) => {
-                wrapper.appendChild(createFeatureRow(f.feature_key, f.limit_type, f.limit_value, idx));
-                featureIndex = idx + 1;
+            // Get package feature keys
+            const packageFeatures = features.map(f => f.feature_key);
+            
+            if (packageFeatures.length === 0) {
+                wrapper.innerHTML = '<div class="text-center text-muted small py-3"><i class="ti ti-alert-circle fs-4 mb-1 text-warning"></i><p class="mb-0">This package has no features assigned.</p></div>';
+                priceInput.value = selected.dataset.price ? parseFloat(selected.dataset.price) : 0;
+                calculateFinalPrice();
+                return;
+            }
+            
+            // Create multi-select dropdown HTML with ONLY package features
+            let optionsHtml = '';
+            packageFeatures.forEach(featureKey => {
+                const displayName = allFeatures[featureKey] || featureKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                optionsHtml += `<option value="${featureKey}" selected>${displayName}</option>`;
             });
+
+            wrapper.innerHTML = `
+                <select name="feature_key[]" id="feature_key" class="form-control select" multiple required style="height: 200px;">
+                    ${optionsHtml}
+                </select>
+                <small class="text-muted mt-2 d-block">
+                    <i class="ti ti-info-circle"></i> This package includes ${packageFeatures.length} feature(s). All features are pre-selected and required.
+                </small>
+            `;
 
             priceInput.value = selected.dataset.price ? parseFloat(selected.dataset.price) : 0;
             calculateFinalPrice();
-        });
-
-        // Add custom feature - Button removed from UI
-        if(addFeatureBtn) {
-            addFeatureBtn.addEventListener('click', function() {
-                if (wrapper.querySelector('.empty-state')) wrapper.innerHTML = '';
-                wrapper.appendChild(createFeatureRow('', 'monthly', 0, featureIndex));
-                featureIndex++;
-            });
-        }
-
-        // Remove feature
-        wrapper.addEventListener('click', function(e) {
-            const btn = e.target.closest('.btn-remove');
-            if (btn) {
-                btn.closest('.feature-row').remove();
-                if (wrapper.children.length === 0) {
-                    wrapper.innerHTML = '<div class="empty-state text-center text-muted small py-3"><i class="ti ti-info-circle fs-4 mb-1"></i><p class="mb-0">Select a package to load default features or add custom ones.</p></div>';
-                }
-            }
         });
 
         // Trial Toggle Function
@@ -268,8 +210,6 @@
                 finalPriceInput.value = 0;
             } else {
                 trialDaysInput.disabled = true;
-                trialDaysInput.classList.add('bg-light');
-                
                 discountInput.disabled = false;
                 discountInput.classList.remove('bg-light');
                 
@@ -278,8 +218,6 @@
         }
 
         isTrialCheckbox.addEventListener('change', toggleTrialState);
-        
-        // Initialize state on load (in case of validation errors returning old input)
         toggleTrialState();
 
         // Calculations
@@ -293,8 +231,6 @@
             finalPriceInput.value = final.toFixed(2);
         }
     });
-
-    // Simple Shake animation from earlier
 </script>
 <style>
     @keyframes shake {

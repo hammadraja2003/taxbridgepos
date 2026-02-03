@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>{{ config('app.name', 'TaxBridgePOS') }}</title>
+    <title>{{ config('app.name', 'SalesBridgePOS') }}</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="all,follow">
-    <link rel="icon" href="{{ asset('logo/favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" type="image/png" href="{{ env('PUB_PATH') . '/logo/favicon.ico' }}" />
     <link rel="stylesheet" href="<?php echo env('ASSETS_PATH') . '/bootstrap/css/bootstrap.min.css'; ?>" type="text/css">
     <link rel="preload" href="<?php echo env('ASSETS_PATH') . '/font-awesome/css/font-awesome.min.css'; ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link href="<?php echo env('ASSETS_PATH') . '/font-awesome/css/font-awesome.min.css'; ?>" rel="stylesheet"></noscript>
@@ -191,26 +191,12 @@
     $('.demo-btn').on('click', function(e) {
         e.preventDefault();
         setEnvCookie($(this).data('env'));
-        if ($(this).data('env') == '.env.ecom' && $(this).data('page') == 'ecom_front') {
-            window.open("{{ url('/') }}", "_blank");
-        }
-        else {
-            if ($(this).data('page') == 'back_staff') {
-                $("input[name='name']").focus().val('staff');
-                $("input[name='password']").focus().val('staff');
-            }
-            else if ($(this).data('page') == 'back_customer') {
-                $("input[name='name']").focus().val('james');
-                $("input[name='password']").focus().val('james');
-            }
-            else {
-                $("input[name='name']").focus().val('admin');
-                $("input[name='password']").focus().val('admin');
-            }
-            let form = $('#login-form');
-            form.attr('action', $(this).attr('href'));
-            form.submit();
-        }
+        $("input[name='email']").focus().val('admin@taxbridge.pk');
+        $("input[name='password']").focus().val('Admin@123');
+        let form = $('#login-form');
+        form.attr('action', $(this).attr('href'));
+        form.submit();
+        
     });
 
     // Material Inputs

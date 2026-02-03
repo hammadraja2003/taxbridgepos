@@ -75,6 +75,13 @@
             <button type="submit" role="button" class="btn btn-primary w-100">Sign In</button>
         </div>
     </div>
+
+    <div class="row">
+            <div class="col-md-12 text-center">
+                <div class="" style="font-size:11px;color:#666;margin-bottom:15px">Login as</div>
+                <button data-page="super_admin" data-env=".env" class="btn btn-sm btn-success demo-btn">Super Admin</button>
+            </div>
+        </div>
    
 </form>
 @endsection
@@ -117,32 +124,6 @@
 
         document.cookie = cookieName + "=" + cookieValue + expires + "; path=/";
     }
-
-    $('.demo-btn').on('click', function(e) {
-        e.preventDefault();
-        setEnvCookie($(this).data('env'));
-        if ($(this).data('env') == '.env.ecom' && $(this).data('page') == 'ecom_front') {
-            window.open("{{ url('/') }}", "_blank");
-        }
-        else {
-            if ($(this).data('page') == 'back_staff') {
-                $("input[name='name']").focus().val('staff');
-                $("input[name='password']").focus().val('staff');
-            }
-            else if ($(this).data('page') == 'back_customer') {
-                $("input[name='name']").focus().val('james');
-                $("input[name='password']").focus().val('james');
-            }
-            else {
-                $("input[name='name']").focus().val('admin');
-                $("input[name='password']").focus().val('admin');
-            }
-            let form = $('#login-form');
-            form.attr('action', $(this).attr('href'));
-            form.submit();
-        }
-    });
-
   // ------------------------------------------------------- //
     // Material Inputs
     // ------------------------------------------------------ //
