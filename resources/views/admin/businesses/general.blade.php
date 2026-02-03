@@ -167,8 +167,8 @@
                                 <label class="form-label font-weight-bold text-muted small text-uppercase">
                                     Sandbox API Key <span class="text-danger sandbox-required">*</span>
                                 </label>
-                                <input type="text" name="sandbox_api_key" class="form-control shadow-xs" 
-                                    value="{{ old('sandbox_api_key', $business_config->sandbox_api_key ?? '') }}" 
+                                <input type="text" name="fbr_api_token_sandbox" class="form-control shadow-xs" 
+                                    value="{{ old('fbr_api_token_sandbox', $business_config->fbr_api_token_sandbox ?? '') }}" 
                                     placeholder="Enter Sandbox API Key">
                             </div>
                             
@@ -176,8 +176,8 @@
                                 <label class="form-label font-weight-bold text-muted small text-uppercase">
                                     Production API Key <span class="text-danger production-required" style="display:none;">*</span>
                                 </label>
-                                <input type="text" name="production_api_key" class="form-control shadow-xs" 
-                                    value="{{ old('production_api_key', $business_config->production_api_key ?? '') }}" 
+                                <input type="text" name="fbr_api_token_prod" class="form-control shadow-xs" 
+                                    value="{{ old('fbr_api_token_prod', $business_config->fbr_api_token_prod ?? '') }}" 
                                     placeholder="Enter Production API Key">
                             </div>
                             <div class="col-md-6">

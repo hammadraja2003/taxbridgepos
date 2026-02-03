@@ -9,7 +9,6 @@ use App\Http\Controllers\Admin\DatabaseController;
 use App\Http\Controllers\Admin\LogController;
 use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\SupportTicketController;
-use App\Http\Controllers\Admin\AdminSettingController;
 use App\Http\Controllers\Admin\RolePermissionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use Illuminate\Support\Facades\Route;
@@ -100,6 +99,8 @@ Route::middleware(['web'])->prefix('admin')->name('admin.')->group(function () {
             Route::get('/permissions', [RolePermissionController::class, 'permissions'])->name('permissions');
             Route::get('/role/create', [RolePermissionController::class, 'createRole'])->name('create_role');
             Route::post('/role', [RolePermissionController::class, 'storeRole'])->name('store_role');
+            Route::get('/role/{id}/change-permissions', [RolePermissionController::class, 'changePermissions'])->name('change_permissions');
+            Route::post('/role/{id}/update-permissions', [RolePermissionController::class, 'updatePermissions'])->name('update_permissions');
             Route::post('/permission', [RolePermissionController::class, 'storePermission'])->name('store_permission');
             Route::put('/permission/{id}', [RolePermissionController::class, 'updatePermission'])->name('update_permission');
             Route::delete('/permission/{id}', [RolePermissionController::class, 'destroyPermission'])->name('destroy_permission');

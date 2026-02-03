@@ -118,14 +118,14 @@
                                 <span class="text-dark small">{{ $business->db_host }}</span>
                             </div>
                             <hr class="my-2 opacity-25">
-                            <div class="mb-2">
+                            <!-- <div class="mb-2">
                                 <label class="text-xs text-muted mb-0 d-block">Sandbox API Key</label>
                                 <code class="small text-break">{{ $business->sandbox_api_key ?: 'Not Set' }}</code>
                             </div>
                             <div class="mb-2">
                                 <label class="text-xs text-muted mb-0 d-block">Production API Key</label>
                                 <code class="small text-break">{{ $business->production_api_key ?: 'Not Set' }}</code>
-                            </div>
+                            </div> -->
                             <div class="mb-2">
                                 <label class="text-xs text-muted mb-0 d-block">FBR Token (Sandbox)</label>
                                 <code class="small text-break">{{ $business->fbr_api_token_sandbox ?: 'Not Set' }}</code>

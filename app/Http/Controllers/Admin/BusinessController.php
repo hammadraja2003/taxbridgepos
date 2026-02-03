@@ -186,8 +186,8 @@ class BusinessController extends Controller
             'timezone' => 'required',
             'user_email' => $id ? 'nullable|email' : 'required|email|unique:users,email',
             'user_password' => $id ? 'nullable|min:6|confirmed' : 'required|min:6|confirmed',
-            'sandbox_api_key' => 'required_if:fbr_env,sandbox|nullable|string',
-            'production_api_key' => 'required_if:fbr_env,production|nullable|string',
+            'fbr_api_token_sandbox' => 'required_if:fbr_env,sandbox|nullable|string',
+            'fbr_api_token_prod' => 'required_if:fbr_env,production|nullable|string',
             'date_format' => 'required',
             'site_logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'favicon' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:1024',
@@ -212,8 +212,8 @@ class BusinessController extends Controller
             $business->bus_IBAN = $request->bus_IBAN ?? '';
             $business->bus_swift_code = $request->bus_swift_code ?? '';
             $business->fbr_env = $request->fbr_env ?? 'sandbox';
-            $business->sandbox_api_key = $request->sandbox_api_key;
-            $business->production_api_key = $request->production_api_key;
+            $business->fbr_api_token_sandbox = $request->fbr_api_token_sandbox;
+            $business->fbr_api_token_prod = $request->fbr_api_token_prod;
             
             if (!$id) {
                 // Default DB settings for new business

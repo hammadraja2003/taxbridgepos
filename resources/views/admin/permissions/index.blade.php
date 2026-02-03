@@ -6,9 +6,17 @@
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
                     <h5 class="mb-0 fw-bold">Permission Management</h5>
-                    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addPermissionModal">
-                        <i class="ti ti-plus"></i> Add Permission
-                    </button>
+                    <div class="d-flex">
+                        <div class="input-group me-2">
+                            <input type="text" name="search" class="form-control form-control-sm" placeholder="Search permissions..." value="{{ request('search') }}">
+                            <span class="input-group-text bg-white">
+                                <i class="ti ti-search"></i>
+                            </span>
+                        </div>
+                        <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addPermissionModal">
+                            <i class="ti ti-plus"></i> Add Permission
+                        </button>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -22,63 +30,8 @@
                                     <th class="text-end">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                @foreach($permissions as $key => $permission)
-                                <tr>
-                                    <td>{{ $key + 1 }}</td>
-                                    <td class="fw-semibold">{{ $permission->name }}</td>
-                                    <td><span class="badge bg-light text-dark font-monospace">{{ $permission->guard_name }}</span></td>
-                                    <td class="text-muted small">{{ $permission->created_at?->format('d M, Y') ?? 'N/A' }}</td>
-                                    <td class="text-end">
-                                        <div class="dropdown">
-                                            <button class="btn btn-sm btn-icon btn-light" type="button" data-toggle="dropdown">
-                                                <i class="ti ti-dots-vertical"></i>
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
-                                                <li><a class="dropdown-item" href="#" data-toggle="modal" data-target="#editPermissionModal{{ $permission->id }}"><i class="ti ti-edit me-2"></i> Edit</a></li>
-                                                <li><hr class="dropdown-divider"></li>
-                                                <li>
-                                                    <form action="{{ route('admin.roles_permissions.destroy_permission', encrypt($permission->id)) }}" method="POST" class="d-inline">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Are you sure?')">
-                                                            <i class="ti ti-trash me-2"></i> Delete
-                                                        </button>
-                                                    </form>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </td>
-                                </tr>
-
-                                <!-- Edit Modal -->
-                                <div class="modal fade" id="editPermissionModal{{ $permission->id }}" tabindex="-1" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <form action="{{ route('admin.roles_permissions.update_permission', encrypt($permission->id)) }}" method="POST">
-                                                @csrf
-                                                @method('PUT')
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">Edit Permission</h5>
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div class="mb-3">
-                                                        <label class="form-label fw-semibold">Permission Name</label>
-                                                        <input type="text" name="name" class="form-control" value="{{ $permission->name }}" required>
-                                                    </div>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
-                                                    <button type="submit" class="btn btn-primary">Update Permission</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                                @endforeach
+                            <tbody id="permissions_table_body">
+                                @include('admin.permissions.table_body')
                             </tbody>
                         </table>
                     </div>
@@ -114,4 +67,67 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        let timeout = null;
+        
+        // Listen for input on the search field
+        $('input[name="search"]').on('keyup', function() {
+            clearTimeout(timeout);
+            const query = $(this).val();
+
+            timeout = setTimeout(function() {
+                fetchPermissions(query);
+            }, 300); // Debounce for 300ms
+        });
+
+        // Handle clear search button click
+        $(document).on('click', '#clear_search', function(e) {
+            e.preventDefault();
+            $('input[name="search"]').val('');
+            $(this).hide();
+            fetchPermissions('');
+        });
+
+        function fetchPermissions(query) {
+            // Show loading state if needed
+            // $('#permissions_table_body').html('<tr><td colspan="5" class="text-center py-4">Loading...</td></tr>');
+
+            $.ajax({
+                url: "{{ route('admin.roles_permissions.permissions') }}",
+                type: "GET",
+                data: { search: query },
+                success: function(response) {
+                    $('#permissions_table_body').html(response);
+                    
+                    // Toggle clear button visibility
+                    if (query.length > 0) {
+                        if ($('#clear_search').length === 0) {
+                             // Assuming you might want to dynamically add the clear button if it was removed, 
+                             // but for now relying on the input clearing or server side logic isn't enough for just the button.
+                             // Since the button in the header was PHP generated, we might need to handle it in JS or just always show it when typing.
+                             // For simplicity given existing structure:
+                             $('.input-group').find('.btn-outline-danger').remove(); // Remove existing to avoid duplicates if re-adding
+                             if (query) {
+                                 $('.input-group').append('<button type="button" id="clear_search" class="btn btn-outline-danger btn-sm" title="Clear Search"><i class="ti ti-x"></i></button>');
+                             }
+                        } else {
+                            if (query) $('#clear_search').show();
+                            else $('#clear_search').hide();
+                        }
+                    } else {
+                         $('#clear_search').remove();
+                    }
+                },
+                error: function(xhr) {
+                    console.error('Error fetching permissions:', xhr);
+                    $('#permissions_table_body').html('<tr><td colspan="5" class="text-center text-danger py-4">Error loading permissions. Please try again.</td></tr>');
+                }
+            });
+        }
+    });
+</script>
+@endpush
 @endsection
