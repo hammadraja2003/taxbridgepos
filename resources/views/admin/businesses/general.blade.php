@@ -192,7 +192,7 @@
                                     <input type="checkbox" name="is_rtl" class="form-check-input" id="is_rtl" {{ old('is_rtl', $general_setting->is_rtl ?? false) ? 'checked' : '' }}>
                                     <label class="form-check-label font-weight-bold text-muted small text-uppercase" for="is_rtl">Enable RTL Layout</label>
                                 </div>
-                            </div>
+                            
 
                             <!-- Branding -->
                             <div class="col-md-12 my-3"><hr class="text-muted"></div>
@@ -292,6 +292,7 @@
                                     </div>
                                 </div>
                             </div>
+                            </div>
                     </div>
                 </div>
 
@@ -300,9 +301,9 @@
                     <div class="card-header bg-light border-bottom py-3">
                         <h6 class="m-0 font-weight-bold text-dark"><i class="ti ti-layout-grid mr-2 text-warning"></i>Allowed Scenarios</h6>
                     </div>
-                    <div class="card-body p-4">
-                        <div class="row">
-                            <div class="col-md-12">
+                    <div class="card-body p-3">
+                        <div class="">
+                            
                                 <label class="form-label font-weight-bold text-muted small text-uppercase mb-2">Select Accessible Scenarios</label>
                                 <select name="scenarios[]" class="form-control selectpicker shadow-xs" 
                                     multiple="multiple" 
@@ -317,8 +318,8 @@
                                         </option>
                                     @endforeach
                                 </select>
-                                <small class="text-muted mt-2 d-block">Hold Ctrl to select multiple or use the multi-select dropdown features.</small>
-                            </div>
+                                <small class="text-muted d-block">Hold Ctrl to select multiple or use the multi-select dropdown features.</small>
+                            
                         </div>
                     </div>
                 </div>

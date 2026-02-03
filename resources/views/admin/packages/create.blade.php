@@ -39,7 +39,6 @@
                             <div class="col-md-6">
                                 <label class="form-label font-weight-bold text-muted small text-uppercase">Price *</label>
                                 <div class="input-group shadow-xs">
-                                    {{-- <span class="input-group-text bg-light border-end-0 text-muted">$</span> --}}
                                     <input type="number" name="package_price" class="form-control border-start-0 ps-0" step="0.01" placeholder="0.00" value="{{ old('package_price') }}" required>
                                 </div>
                             </div>
@@ -105,42 +104,48 @@
         // Function to create a new feature row
         function createFeatureRow(index) {
             const row = document.createElement('div');
-            row.classList.add('feature-row', 'row', 'g-2', 'align-items-center');
+            row.classList.add('feature-row', 'row', 'g-2', 'align-items-center', 'bg-white', 'p-2', 'rounded', 'border', 'shadow-xs', 'mb-2');
             
             row.innerHTML = `
-                <div class="col-5">
-                    <select name="features[${index}][feature_key]" class="form-control form-control-sm shadow-xs border-0" required>
-                        <option value="" disabled selected>Select Feature</option>
-                        <option value="Product and Categories">Product and Categories</option>
-                        <option value="Purchase and Sale">Purchase and Sale</option>
-                        <option value="Sale Return">Sale Return</option>
-                        <option value="Purchase Return">Purchase Return</option>
-                        <option value="Expense">Expense</option>
-                        <option value="Income">Income</option>
-                        <option value="Stock Transfer">Stock Transfer</option>
-                        <option value="Quotation">Quotation</option>
-                        <option value="Product Delivery">Product Delivery</option>
-                        <option value="Stock Count and Adjustment">Stock Count and Adjustment</option>
-                        <option value="Report">Report</option>
-                        <option value="HRM">HRM</option>
-                        <option value="Accounting">Accounting</option>
-                        <option value="Manufacturing">Manufacturing</option>
-                    </select>
+                <div class="col-md-5">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-white border-0 ps-2"><i class="ti ti-layout-grid text-primary opacity-75"></i></span>
+                        <select name="features[${index}][feature_key]" class="form-control form-control-sm border-0 font-weight-600" required>
+                            <option value="" disabled selected>Select Feature</option>
+                            <option value="Product and Categories">Product and Categories</option>
+                            <option value="Purchase and Sale">Purchase and Sale</option>
+                            <option value="Sale Return">Sale Return</option>
+                            <option value="Purchase Return">Purchase Return</option>
+                            <option value="Expense">Expense</option>
+                            <option value="Income">Income</option>
+                            <option value="Stock Transfer">Stock Transfer</option>
+                            <option value="Quotation">Quotation</option>
+                            <option value="Product Delivery">Product Delivery</option>
+                            <option value="Stock Count and Adjustment">Stock Count and Adjustment</option>
+                            <option value="Report">Report</option>
+                            <option value="HRM">HRM</option>
+                            <option value="Accounting">Accounting</option>
+                            <option value="Manufacturing">Manufacturing</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="col-3">
-                    <select name="features[${index}][limit_type]" class="form-control form-control-sm shadow-xs border-0" required>
+                <div class="col-md-3">
+                    <select name="features[${index}][limit_type]" class="form-control form-control-sm border-0 bg-light-subtle" required>
                         <option value="monthly">Monthly</option>
                         <option value="quarterly">Quarterly</option>
                         <option value="yearly">Yearly</option>
                         <option value="total">Total</option>
                     </select>
                 </div>
-                <div class="col-3">
-                    <input type="number" name="features[${index}][limit_value]" class="form-control form-control-sm shadow-xs border-0" placeholder="e.g. 100" required>
+                <div class="col-md-3">
+                    <div class="input-group input-group-sm">
+                        <input type="number" name="features[${index}][limit_value]" class="form-control border-0 bg-light-subtle" placeholder="Value" required>
+                        <span class="input-group-text bg-transparent border-0 text-muted small px-2">Qty</span>
+                    </div>
                 </div>
-                <div class="col-1 text-center">
+                <div class="col-md-1 text-center">
                     <button type="button" class="btn btn-icon btn-sm text-danger btn-remove p-0" title="Remove">
-                        <i class="ti ti-x fs-5"></i>
+                        <i class="ti ti-trash fs-5"></i>
                     </button>
                 </div>
             `;

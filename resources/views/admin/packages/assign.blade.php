@@ -64,7 +64,7 @@
                         </div>
 
                         <!-- Pricing and Trial -->
-                        <div class="bg-light rounded p-4 mb-4 border shadow-xs">
+                        <div class="rounded p-4 mb-4 border shadow-xs">
                             <div class="row g-3 align-items-end">
                                 <div class="col-md-3">
                                     <div class="form-check form-switch mb-2">
@@ -173,7 +173,7 @@
         // Function to create a new feature row
         function createFeatureRow(key = '', type = 'monthly', value = 0, index) {
             const row = document.createElement('div');
-            row.classList.add('feature-row', 'row', 'g-2', 'align-items-center');
+            row.classList.add('feature-row', 'row', 'g-2', 'align-items-center', 'bg-white', 'p-2', 'rounded', 'border', 'shadow-xs', 'mb-2');
             
             let optionsHtml = '<option value="" disabled>Select Feature</option>';
             moduleOptions.forEach(opt => {
@@ -181,26 +181,32 @@
             });
 
             row.innerHTML = `
-                <div class="col-5">
-                    <select name="features[${index}][feature_key]" class="form-control form-control-sm shadow-xs border-0" required>
-                        ${optionsHtml}
-                        ${key && !moduleOptions.includes(key) ? `<option value="${key}" selected>${key}</option>` : ''}
-                    </select>
+                <div class="col-md-5">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-white border-0 ps-2"><i class="ti ti-layout-grid text-primary opacity-75"></i></span>
+                        <select name="features[${index}][feature_key]" class="form-control form-control-sm border-0 font-weight-600" required>
+                            ${optionsHtml}
+                            ${key && !moduleOptions.includes(key) ? `<option value="${key}" selected>${key}</option>` : ''}
+                        </select>
+                    </div>
                 </div>
-                <div class="col-3">
-                    <select name="features[${index}][limit_type]" class="form-control form-control-sm shadow-xs border-0" required>
+                <div class="col-md-3">
+                    <select name="features[${index}][limit_type]" class="form-control form-control-sm border-0 bg-light-subtle" required>
                         <option value="monthly" ${type === 'monthly' ? 'selected' : ''}>Monthly</option>
                         <option value="quarterly" ${type === 'quarterly' ? 'selected' : ''}>Quarterly</option>
                         <option value="yearly" ${type === 'yearly' ? 'selected' : ''}>Yearly</option>
                         <option value="total" ${type === 'total' ? 'selected' : ''}>Total</option>
                     </select>
                 </div>
-                <div class="col-3">
-                    <input type="number" name="features[${index}][limit_value]" class="form-control form-control-sm shadow-xs border-0" placeholder="e.g. 100" value="${value}" required>
+                <div class="col-md-3">
+                    <div class="input-group input-group-sm">
+                        <input type="number" name="features[${index}][limit_value]" class="form-control border-0 bg-light-subtle" placeholder="Value" value="${value}" required>
+                        <span class="input-group-text bg-transparent border-0 text-muted small px-2">Qty</span>
+                    </div>
                 </div>
-                <div class="col-1 text-center">
+                <div class="col-md-1 text-center">
                     <button type="button" class="btn btn-icon btn-sm text-danger btn-remove p-0" title="Remove">
-                        <i class="ti ti-x fs-5"></i>
+                        <i class="ti ti-trash fs-5"></i>
                     </button>
                 </div>
             `;
@@ -253,16 +259,20 @@
         function toggleTrialState() {
             if (isTrialCheckbox.checked) {
                 trialDaysInput.disabled = false;
+                trialDaysInput.classList.remove('bg-light');
+                
                 discountInput.value = 0;
                 discountInput.disabled = true;
+                discountInput.classList.add('bg-light');
+                
                 finalPriceInput.value = 0;
             } else {
                 trialDaysInput.disabled = true;
-                // Only reset to 7 if disabled, keeping user input if they re-enable? No, UI standard is reset or keep.
-                // Current logic was: trialDaysInput.value = 7; 
-                // Let's keep value as is so it doesn't jarringly change if user misclicks. But strict requirement might imply resetting.
-                // Let's stick to previous behavior of defaulting if needed, but not forcing it constantly.
+                trialDaysInput.classList.add('bg-light');
+                
                 discountInput.disabled = false;
+                discountInput.classList.remove('bg-light');
+                
                 calculateFinalPrice();
             }
         }

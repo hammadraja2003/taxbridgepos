@@ -1,5 +1,4 @@
 @extends('admin.layouts.adminlayout')
-
 @section('content')
 <div class="container-fluid py-4">
     <div class="row">
@@ -7,7 +6,6 @@
             <h3 class="font-weight-bold mb-4">Admin Dashboard</h3>
         </div>
     </div>
-
     <!-- Stats Cards -->
     <div class="row mb-4">
         <div class="col-xl-3 col-md-6 mb-4">

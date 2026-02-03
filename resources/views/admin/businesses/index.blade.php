@@ -1,5 +1,4 @@
 @extends('admin.layouts.adminlayout')
-
 @section('content')
     <div class="container-fluid py-4">
         <div class="row">
@@ -11,7 +10,6 @@
                             <i class="fa fa-plus-circle mr-2"></i> Add New Business
                         </a>
                     </div>
-                    
                     <div class="card-body">
                         <div class="row mb-3">
                             <div class="col-md-4">
@@ -151,24 +149,20 @@
             </div>
         </div>
     </div>
-
     @push('scripts')
     <script>
-        $(document).ready(function() {
-            // Simple front-end search for the demo
+        $(document).ready(function() 
+        {
             $("#businessSearch").on("keyup", function() {
                 var value = $(this).val().toLowerCase();
                 $("#businessData tr").filter(function() {
                     $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
                 });
             });
-            
-            // Re-initialize tooltips if needed
             $('[title]').tooltip();
         });
     </script>
     @endpush
-
     <style>
         .font-weight-600 { font-weight: 600; }
         .shadow-xs { box-shadow: 0 1px 2px rgba(0,0,0,0.05); }

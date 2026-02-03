@@ -95,80 +95,49 @@
                         </div>
                     </div>
 
+                    <!-- FBR & Technical Configuration -->
                     <div class="card shadow-sm border-0 mb-4">
                         <div class="card-header bg-white border-0 py-3">
-                            <h6 class="m-0 font-weight-bold text-dark"><i class="ti ti-database mr-1 text-info"></i> Database Status</h6>
+                            <h6 class="m-0 font-weight-bold text-dark"><i class="ti ti-server mr-1 text-info"></i> FBR & Technical Config</h6>
                         </div>
                         <div class="card-body pt-0">
                             <div class="d-flex justify-content-between mb-2">
-                                <span class="text-muted small">Environment:</span>
+                                <span class="text-muted small">FBR Environment:</span>
                                 @if($business->fbr_env === 'sandbox')
                                     <span class="badge badge-warning text-uppercase px-2" style="font-size: 9px;">Sandbox</span>
                                 @else
                                     <span class="badge badge-success text-uppercase px-2" style="font-size: 9px;">Production</span>
                                 @endif
                             </div>
-                            <div class="d-flex justify-content-between mb-2">
-                                <span class="text-muted small">DB Name:</span>
+                            <div class="mb-2">
+                                <label class="text-xs text-muted mb-0 d-block">Database Name</label>
                                 <span class="text-dark font-weight-600 small">{{ $business->db_name }}</span>
                             </div>
-                            <div class="d-flex justify-content-between">
-                                <span class="text-muted small">Host:</span>
+                            <div class="mb-2">
+                                <label class="text-xs text-muted mb-0 d-block">Database Host</label>
                                 <span class="text-dark small">{{ $business->db_host }}</span>
+                            </div>
+                            <hr class="my-2 opacity-25">
+                            <div class="mb-2">
+                                <label class="text-xs text-muted mb-0 d-block">Sandbox API Key</label>
+                                <code class="small text-break">{{ $business->sandbox_api_key ?: 'Not Set' }}</code>
+                            </div>
+                            <div class="mb-2">
+                                <label class="text-xs text-muted mb-0 d-block">Production API Key</label>
+                                <code class="small text-break">{{ $business->production_api_key ?: 'Not Set' }}</code>
+                            </div>
+                            <div class="mb-2">
+                                <label class="text-xs text-muted mb-0 d-block">FBR Token (Sandbox)</label>
+                                <code class="small text-break">{{ $business->fbr_api_token_sandbox ?: 'Not Set' }}</code>
+                            </div>
+                            <div class="mb-0">
+                                <label class="text-xs text-muted mb-0 d-block">FBR Token (Prod)</label>
+                                <code class="small text-break">{{ $business->fbr_api_token_prod ?: 'Not Set' }}</code>
                             </div>
                         </div>
                     </div>
 
-                    <!-- General Settings -->
-                    <div class="card shadow-sm border-0 mb-4">
-                        <div class="card-header bg-white border-0 py-3">
-                            <h6 class="m-0 font-weight-bold text-dark"><i class="ti ti-settings mr-1 text-secondary"></i> General Settings</h6>
-                        </div>
-                        <div class="card-body pt-0">
-                            @if($general_setting)
-                                <div class="mb-3">
-                                    <label class="text-xs text-uppercase font-weight-bold text-muted mb-1 d-block">Site Title</label>
-                                    <div class="text-dark font-weight-600">{{ $general_setting->site_title }}</div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-6">
-                                        <label class="text-xs text-uppercase font-weight-bold text-muted mb-1 d-block">Currency</label>
-                                        <div class="text-dark small">
-                                            @php
-                                                // Assuming currency ID 1 is USD, 2 is PKR based on controller hint
-                                                $currName = $general_setting->currency == 1 ? 'US Dollar (USD)' : ($general_setting->currency == 2 ? 'Pakistani Rupee (PKR)' : $general_setting->currency);
-                                            @endphp
-                                            {{ $currName }}
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <label class="text-xs text-uppercase font-weight-bold text-muted mb-1 d-block">Timezone</label>
-                                        <div class="text-dark small">{{ $general_setting->timezone }}</div>
-                                    </div>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-6">
-                                        <label class="text-xs text-uppercase font-weight-bold text-muted mb-1 d-block">Date Fmt</label>
-                                        <div class="text-dark small font-monospace">{{ $general_setting->date_format }}</div>
-                                    </div>
-                                    <div class="col-6">
-                                        <label class="text-xs text-uppercase font-weight-bold text-muted mb-1 d-block">Decimal</label>
-                                        <div class="text-dark small">{{ $general_setting->decimal }}</div>
-                                    </div>
-                                </div>
-                                <div class="mb-0">
-                                    <label class="text-xs text-uppercase font-weight-bold text-muted mb-1 d-block">Preferences</label>
-                                    <div class="d-flex flex-wrap gap-2">
-                                        @if($general_setting->is_rtl) <span class="badge badge-light border text-muted">RTL</span> @endif
-                                        @if($general_setting->is_packing_slip) <span class="badge badge-light border text-muted">Packing Slip</span> @endif
-                                        @if($general_setting->without_stock == 'yes') <span class="badge badge-light border text-danger">No Stock Sell</span> @endif
-                                    </div>
-                                </div>
-                            @else
-                                <div class="text-muted small italic">No general settings configured.</div>
-                            @endif
-                        </div>
-                    </div>
+                    
                 </div>
 
                 <!-- Right Column: Users & Scenarios -->
@@ -206,7 +175,7 @@
                                                     <td class="small">{{ $user->email }}</td>
                                                     <td class="small text-muted">{{ $user->created_at?->format('d M, Y') }}</td>
                                                     <td class="text-right px-0">
-                                                        <span class="badge badge-light text-primary border px-2 py-1" style="font-size: 10px;">Admin</span>
+                                                        <span class="badge badge-light text-primary border px-2 py-1" style="font-size: 10px;">{{ $user->role->name ?? 'N/A' }}</span>
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -254,6 +223,137 @@
                                 <div class="text-center py-4 text-muted small italic">
                                     <i class="ti ti-package d-block fa-2x mb-2 opacity-25"></i>
                                     No scenarios assigned.
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                    <!-- General Settings -->
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header bg-white border-0 py-3">
+                            <h6 class="m-0 font-weight-bold text-dark"><i class="ti ti-settings mr-1 text-secondary"></i> Business Preferences & Identity</h6>
+                        </div>
+                        <div class="card-body pt-0">
+                            @if($general_setting)
+                                <div class="row">
+                                    <!-- Brand & Identity -->
+                                    <div class="col-12 mb-4">
+                                        <div class="p-3 bg-light rounded-sm border-left border-primary" style="border-left-width: 3px !important;">
+                                            <div class="row align-items-center">
+                                                <div class="col-md-6 mb-2 mb-md-0">
+                                                    <label class="text-xs text-uppercase font-weight-bold text-muted mb-1 d-block">Site Identity</label>
+                                                    <h5 class="mb-0 font-weight-bold text-primary">{{ $general_setting->site_title }}</h5>
+                                                    <div class="small text-muted">{{ $general_setting->company_name }}</div>
+                                                </div>
+                                                <div class="col-md-6 text-md-right">
+                                                    <div class="small">
+                                                        <span class="text-muted">VAT:</span> <span class="font-weight-600">{{ $general_setting->vat_registration_number ?: 'N/A' }}</span><br>
+                                                        <span class="text-muted">Developer:</span> <span class="font-weight-600">{{ $general_setting->developed_by }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Config Grid -->
+                                    <div class="col-md-6 pr-md-4">
+                                        <h6 class="text-xs font-weight-bold text-uppercase text-primary mb-3"><i class="ti ti-world mr-1"></i> Regional & Format</h6>
+                                        <ul class="list-unstyled mb-4">
+                                            <li class="d-flex justify-content-between mb-2 pb-2 border-bottom border-light">
+                                                <span class="small text-muted">Currency</span>
+                                                <span class="small font-weight-600">{{ $general_setting->currency == 1 ? 'USD' : ($general_setting->currency == 2 ? 'PKR' : $general_setting->currency) }} ({{ $general_setting->currency_position }})</span>
+                                            </li>
+                                            <li class="d-flex justify-content-between mb-2 pb-2 border-bottom border-light">
+                                                <span class="small text-muted">Timezone</span>
+                                                <span class="small font-weight-600">{{ $general_setting->timezone }}</span>
+                                            </li>
+                                            <li class="d-flex justify-content-between mb-2 pb-2 border-bottom border-light">
+                                                <span class="small text-muted">Date Format</span>
+                                                <code class="small text-dark">{{ $general_setting->date_format }}</code>
+                                            </li>
+                                            <li class="d-flex justify-content-between mb-2">
+                                                <span class="small text-muted">Decimal Points</span>
+                                                <span class="small font-weight-600">{{ $general_setting->decimal }}</span>
+                                            </li>
+                                        </ul>
+
+                                        <h6 class="text-xs font-weight-bold text-uppercase text-success mb-3"><i class="ti ti-calendar-event mr-1"></i> Subscription Details</h6>
+                                        <div class="bg-light p-2 rounded small mb-4">
+                                            <div class="d-flex justify-content-between mb-1">
+                                                <span class="text-muted">Valid Until:</span>
+                                                <span class="font-weight-bold {{ $general_setting->expiry_date ? 'text-dark' : 'text-success' }}">{{ $general_setting->expiry_date ?: 'Life-time Access' }}</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between">
+                                                <span class="text-muted">Grace Period:</span>
+                                                <span class="font-weight-600">{{ $general_setting->expiry_alert_days }} Days</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 pl-md-4 border-left">
+                                        <h6 class="text-xs font-weight-bold text-uppercase text-warning mb-3"><i class="ti ti-adjustments-horizontal mr-1"></i> System Behavior</h6>
+                                        <ul class="list-unstyled mb-4">
+                                            <li class="d-flex justify-content-between mb-2 pb-2 border-bottom border-light">
+                                                <span class="small text-muted">Staff Access</span>
+                                                <span class="badge badge-soft-info px-2 py-1" style="font-size: 10px; background: #e0f2fe; color: #0369a1;">{{ ucfirst($general_setting->staff_access) }}</span>
+                                            </li>
+                                            <li class="d-flex justify-content-between mb-2 pb-2 border-bottom border-light">
+                                                <span class="small text-muted">Invoice Layout</span>
+                                                <span class="small font-weight-600">{{ ucfirst($general_setting->invoice_format) }}</span>
+                                            </li>
+                                            <li class="d-flex justify-content-between mb-2 pb-2 border-bottom border-light">
+                                                <span class="small text-muted">Visual Theme</span>
+                                                <span class="small font-weight-600 text-capitalize">{{ $general_setting->theme }}</span>
+                                            </li>
+                                            <li class="d-flex justify-content-between mb-2">
+                                                <span class="small text-muted">Default Margin</span>
+                                                <span class="small font-weight-600">{{ $general_setting->default_margin_value }}%</span>
+                                            </li>
+                                        </ul>
+
+                                        <h6 class="text-xs font-weight-bold text-uppercase text-info mb-3"><i class="ti ti-table mr-1"></i> UX Preferences</h6>
+                                        <div class="small">
+                                            <div class="custom-control custom-checkbox mb-1">
+                                                <input type="checkbox" class="custom-control-input" {{ $general_setting->show_products_details_in_sales_table ? 'checked' : '' }} disabled>
+                                                <label class="custom-control-label">Product Details in Sales</label>
+                                            </div>
+                                            <div class="custom-control custom-checkbox mb-1">
+                                                <input type="checkbox" class="custom-control-input" {{ $general_setting->show_products_details_in_purchase_table ? 'checked' : '' }} disabled>
+                                                <label class="custom-control-label">Product Details in Purchase</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Status Badges -->
+                                    <div class="col-12 mt-2">
+                                        <hr class="my-3 opacity-25">
+                                        <div class="d-flex flex-wrap gap-2">
+                                            @if($general_setting->is_rtl) 
+                                                <div class="badge badge-pill bg-soft-secondary border px-3 py-2 text-muted" style="background:#f1f5f9">
+                                                    <i class="ti ti-text-direction-rtl mr-1"></i> RTL Support
+                                                </div>
+                                            @endif
+                                            @if($general_setting->is_packing_slip) 
+                                                <div class="badge badge-pill bg-soft-secondary border px-3 py-2 text-muted" style="background:#f1f5f9">
+                                                    <i class="ti ti-file-text mr-1"></i> Packing Slips
+                                                </div>
+                                            @endif
+                                            @if($general_setting->without_stock == 'yes') 
+                                                <div class="badge badge-pill bg-soft-danger border px-3 py-2 text-danger" style="background:#fef2f2">
+                                                    <i class="ti ti-package-off mr-1"></i> Negative Stock Sales
+                                                </div>
+                                            @endif
+                                            @if($general_setting->is_zatca) 
+                                                <div class="badge badge-pill bg-soft-primary border px-3 py-2 text-primary" style="background:#eff6ff">
+                                                    <i class="ti ti-shield-check mr-1"></i> ZATCA Integration
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="text-center py-5">
+                                    <i class="ti ti-settings-off fa-3x text-muted opacity-25 mb-3 d-block"></i>
+                                    <p class="text-muted small">No detailed settings have been configured for this tenant yet.</p>
                                 </div>
                             @endif
                         </div>

@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\BusinessPackageController;
 use App\Http\Controllers\Admin\SupportTicketController;
 use App\Http\Controllers\Admin\AdminSettingController;
+use App\Http\Controllers\Admin\RolePermissionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 Route::middleware(['web'])->prefix('admin')->name('admin.')->group(function () {
     // Authentication
@@ -31,7 +32,7 @@ Route::middleware(['web'])->prefix('admin')->name('admin.')->group(function () {
         
         Route::post('configuration', [RegisteredUserController::class, 'store'])->middleware('throttle:5,1');
         // Logout
-        Route::post('admin-logout', LogoutController::class)->name('admin_logout');
+        Route::post('admin-logout', LogoutController::class)->name('logout_admin');
         // Business Management
         Route::get('businesses', [BusinessController::class, 'index'])->name('businesses.index');
         Route::get('businesses/{id}', [BusinessController::class, 'show'])->name('businesses.show');
@@ -81,5 +82,15 @@ Route::middleware(['web'])->prefix('admin')->name('admin.')->group(function () {
         // Global Settings
         Route::get('settings/mail', [AdminSettingController::class, 'mailSetting'])->name('settings.mail');
         Route::post('settings/mail', [AdminSettingController::class, 'mailSettingStore'])->name('settings.mail.store');
+
+        Route::prefix('roles-permissions')->name('roles_permissions.')->group(function () {
+            Route::get('/', [RolePermissionController::class, 'index'])->name('index');
+            Route::get('/permissions', [RolePermissionController::class, 'permissions'])->name('permissions');
+            Route::get('/role/create', [RolePermissionController::class, 'createRole'])->name('create_role');
+            Route::post('/role', [RolePermissionController::class, 'storeRole'])->name('store_role');
+            Route::post('/permission', [RolePermissionController::class, 'storePermission'])->name('store_permission');
+            Route::put('/permission/{id}', [RolePermissionController::class, 'updatePermission'])->name('update_permission');
+            Route::delete('/permission/{id}', [RolePermissionController::class, 'destroyPermission'])->name('destroy_permission');
+        });
     });
 });

@@ -1,5 +1,4 @@
 <html dir="@if( Config::get('app.locale') == 'ar'){{'rtl'}}@endif">
-
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -41,7 +40,6 @@
   </noscript>
   <!-- Tabler Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-
   <!-- jQuery Circle-->
   <link rel="preload" href="<?php echo env('ASSETS_PATH') . '/css/grasp_mobile_progress_circle-1.0.0.min.css' ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript>
@@ -52,7 +50,6 @@
   <noscript>
     <link href="<?php echo env('ASSETS_PATH') . '/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css' ?>" rel="stylesheet">
   </noscript>
-
   @if(Route::current()->getName() != '/')
   <!-- date range stylesheet-->
   <link rel="preload" href="<?php echo env('ASSETS_PATH') . '/daterange/css/daterangepicker.min.css' ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -73,39 +70,29 @@
     <link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.bootstrap.min.css" rel="stylesheet">
   </noscript>
   @endif
-
   <link rel="stylesheet" href="<?php echo env('ASSETS_PATH') . '/css/style.default.css' ?>" id="theme-stylesheet" type="text/css">
   <link rel="stylesheet" href="<?php echo env('ASSETS_PATH') . '/css/dropzone.css' ?>">
   <!-- Custom stylesheet - for your changes-->
   <link rel="stylesheet" href="<?php echo env('ASSETS_PATH') . '/css/custom-default.css' ?>" type="text/css" id="custom-style">
-
   @if( Config::get('app.locale') == 'ar')
   <!-- RTL css -->
   <link rel="stylesheet" href="<?php echo env('ASSETS_PATH') . '/bootstrap/css/bootstrap-rtl.min.css' ?>" type="text/css">
   <link rel="stylesheet" href="<?php echo env('ASSETS_PATH') . '/css/custom-rtl.css' ?>" type="text/css" id="custom-style">
   @endif
-  
   @endif
-
   <!-- Google fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap" rel="stylesheet">
-
   <script type="text/javascript" src="<?php echo env('ASSETS_PATH') . '/jquery/jquery.min.js' ?>"></script>
   @stack('css')
-
   <!-- Custom CSS removed -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
   <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-  
-
 </head>
-
 <body class="@if(Route::current()->getName() == 'sale.pos') pos-page @endif" onload="myFunction()">
   <div id="loader"></div>
   <!-- Side Navbar -->
-  
   <div class="page">
     <!-- navbar-->
     <nav class="side-navbar shrink d-print-none">
@@ -188,7 +175,7 @@
   <footer class="main-footer">
     <div class="container-fluid">
       <div class="row">
-        <div class="col-sm-12">
+        <div class="col-sm-6">
           <p>
               &copy; {{ date('Y') }} <strong>Secured by</strong> 
               <a href="https://secureism.com/" target="_blank" class="external">
@@ -196,6 +183,8 @@
               </a>. 
               All rights reserved.  | V {{env('VERSION') }}
           </p>
+        </div>
+         <div class="col-sm-6">
           <p>
               <a href="https://secureism.com/privacy-policy" target="_blank" class="external">
                   Privacy Policy

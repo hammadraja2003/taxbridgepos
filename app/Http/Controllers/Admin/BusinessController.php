@@ -310,7 +310,7 @@ class BusinessController extends Controller
                 ->withInput()
                 ->withErrors(['toast_error' =>  'Invalid ID']);
         }
-        $business = BusinessConfiguration::with(['users', 'scenarios'])->findOrFail($id);
+        $business = BusinessConfiguration::with(['users.role', 'scenarios'])->findOrFail($id);
         $general_setting = GeneralSetting::where('bus_config_id', $id)->first();
         return view('admin.businesses.show', compact('business', 'general_setting'));
     }

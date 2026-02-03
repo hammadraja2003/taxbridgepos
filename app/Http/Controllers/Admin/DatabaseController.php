@@ -6,11 +6,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\UserDetails;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Crypt;
 use App\Models\User;
 use App\Models\BusinessConfiguration;
 use App\Models\AdminMailSetting;
 use App\Traits\MailInfo;
+use Illuminate\Support\Facades\Crypt;
 use Exception;
 class DatabaseController extends Controller
 {
@@ -64,20 +64,22 @@ class DatabaseController extends Controller
                 ");
                 }
             }
-            // ✅ Get business details
-            $business = BusinessConfiguration::where('db_name', $newDb)->first();
-            if (!$business) {
-                return back()->with('error', "Business configuration not found for DB: {$newDb}");
+            // ✅ Get all business admins (role_id = 1)
+            $admins = User::select('users.*', 'business_configurations.db_name', 'business_configurations.bus_config_id')
+                ->join('business_configurations', 'business_configurations.bus_config_id', '=', 'users.bus_config_id')
+                ->where('business_configurations.db_name', $newDb)
+                ->where('users.role_id', 1)
+                ->get();
+
+            if ($admins->isEmpty()) {
+                return back()->with('error', "No admin users found for DB: {$newDb}");
             }
             
             // ✅ Force update credentials for the cloned business
-            $business->update([
+            BusinessConfiguration::where('bus_config_id', $admins->first()->bus_config_id)->update([
                 'db_username' => 'root',
                 'db_password' => '' // Null/Empty
             ]);
-
-            // ✅ Get all users related to this business
-            $users = User::where('bus_config_id', $business->bus_config_id)->get();
 
             $loginUrl = url('/login');
             try {
@@ -87,19 +89,21 @@ class DatabaseController extends Controller
                     $this->setMailInfo($mail_setting);
                 }
 
-                foreach ($users as $recipient) {
+                $encryptedPassword = Crypt::encryptString('12345678');
+
+                foreach ($admins as $admin) {
                     $mailData = [
-                        'name' => $recipient->name,
-                        'email' => $recipient->email,
-                        'password' => Crypt::encryptString('12345678'), 
+                        'name' => $admin->name,
+                        'email' => $admin->email,
+                        'password' => $encryptedPassword,
                         'login_url' => $loginUrl,
                         'db_name' => $newDb
                     ];
-                    Mail::to($recipient->email)->send(new UserDetails((object)$mailData));
+                    Mail::to($admin->email)->send(new UserDetails((object)$mailData));
                 }
             } catch (Exception $e) {
                 Log::error("❌ Mail sending failed: " . $e->getMessage());
-                return back()->with('error', 'Created but email failed');
+                return back()->with('error', 'Created but email failed: ' . $e->getMessage());
             }
             return back()->with('success', "Database `$newDb` cloned successfully from `$sourceDb` (schema + triggers only, no data).");
         } catch (\Exception $e) {

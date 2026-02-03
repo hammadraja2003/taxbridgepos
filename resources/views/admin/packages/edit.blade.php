@@ -67,33 +67,39 @@
                                 </div>
                                 <div id="featuresWrapper" class="d-flex flex-column gap-2">
                                     @foreach ($package->features as $idx => $feature)
-                                        <div class="feature-row row g-2 align-items-center">
-                                            <div class="col-5">
-                                                <select name="features[{{ $idx }}][feature_key]" class="form-control form-control-sm shadow-xs border-0" required>
-                                                    <option value="" disabled>Select Feature</option>
-                                                    @foreach(['Product and Categories', 'Purchase and Sale', 'Sale Return', 'Purchase Return', 'Expense', 'Income', 'Stock Transfer', 'Quotation', 'Product Delivery', 'Stock Count and Adjustment', 'Report', 'HRM', 'Accounting', 'Manufacturing'] as $module)
-                                                        <option value="{{ $module }}" {{ (old("features.$idx.feature_key", $feature->feature_key) == $module) ? 'selected' : '' }}>{{ $module }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            <div class="col-3">
-                                                <select name="features[{{ $idx }}][limit_type]" class="form-control form-control-sm shadow-xs border-0" required>
-                                                    <option value="monthly" {{ old("features.$idx.limit_type", $feature->limit_type) == 'monthly' ? 'selected' : '' }}>Monthly</option>
-                                                    <option value="quarterly" {{ old("features.$idx.limit_type", $feature->limit_type) == 'quarterly' ? 'selected' : '' }}>Quarterly</option>
-                                                    <option value="yearly" {{ old("features.$idx.limit_type", $feature->limit_type) == 'yearly' ? 'selected' : '' }}>Yearly</option>
-                                                    <option value="total" {{ old("features.$idx.limit_type", $feature->limit_type) == 'total' ? 'selected' : '' }}>Total</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-3">
-                                                <input type="number" name="features[{{ $idx }}][limit_value]" class="form-control form-control-sm shadow-xs border-0" placeholder="e.g. 100" value="{{ old("features.$idx.limit_value", $feature->limit_value) }}" required>
-                                            </div>
-                                            <div class="col-1 text-center">
-                                                <button type="button" class="btn btn-icon btn-sm text-danger btn-remove p-0" title="Remove">
-                                                    <i class="ti ti-x fs-5"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    @endforeach
+                                         <div class="feature-row row g-2 align-items-center bg-white p-2 rounded border shadow-xs mb-2">
+                                             <div class="col-md-5">
+                                                 <div class="input-group input-group-sm">
+                                                     <span class="input-group-text bg-white border-0 ps-2"><i class="ti ti-layout-grid text-primary opacity-75"></i></span>
+                                                     <select name="features[{{ $idx }}][feature_key]" class="form-control form-control-sm border-0 font-weight-600" required>
+                                                         <option value="" disabled>Select Feature</option>
+                                                         @foreach(['Product and Categories', 'Purchase and Sale', 'Sale Return', 'Purchase Return', 'Expense', 'Income', 'Stock Transfer', 'Quotation', 'Product Delivery', 'Stock Count and Adjustment', 'Report', 'HRM', 'Accounting', 'Manufacturing'] as $module)
+                                                             <option value="{{ $module }}" {{ (old("features.$idx.feature_key", $feature->feature_key) == $module) ? 'selected' : '' }}>{{ $module }}</option>
+                                                         @endforeach
+                                                     </select>
+                                                 </div>
+                                             </div>
+                                             <div class="col-md-3">
+                                                 <select name="features[{{ $idx }}][limit_type]" class="form-control form-control-sm border-0 bg-light-subtle" required>
+                                                     <option value="monthly" {{ old("features.$idx.limit_type", $feature->limit_type) == 'monthly' ? 'selected' : '' }}>Monthly</option>
+                                                     <option value="quarterly" {{ old("features.$idx.limit_type", $feature->limit_type) == 'quarterly' ? 'selected' : '' }}>Quarterly</option>
+                                                     <option value="yearly" {{ old("features.$idx.limit_type", $feature->limit_type) == 'yearly' ? 'selected' : '' }}>Yearly</option>
+                                                     <option value="total" {{ old("features.$idx.limit_type", $feature->limit_type) == 'total' ? 'selected' : '' }}>Total</option>
+                                                 </select>
+                                             </div>
+                                             <div class="col-md-3">
+                                                 <div class="input-group input-group-sm">
+                                                     <input type="number" name="features[{{ $idx }}][limit_value]" class="form-control border-0 bg-light-subtle" placeholder="Value" value="{{ old("features.$idx.limit_value", $feature->limit_value) }}" required>
+                                                     <span class="input-group-text bg-transparent border-0 text-muted small px-2">Qty</span>
+                                                 </div>
+                                             </div>
+                                             <div class="col-md-1 text-center">
+                                                 <button type="button" class="btn btn-icon btn-sm text-danger btn-remove p-0" title="Remove">
+                                                     <i class="ti ti-trash fs-5"></i>
+                                                 </button>
+                                             </div>
+                                         </div>
+                                     @endforeach
                                 </div>
                             </div>
                         </div>
@@ -133,42 +139,48 @@
         // Function to create a new feature row
         function createFeatureRow(index) {
             const row = document.createElement('div');
-            row.classList.add('feature-row', 'row', 'g-2', 'align-items-center');
+            row.classList.add('feature-row', 'row', 'g-2', 'align-items-center', 'bg-white', 'p-2', 'rounded', 'border', 'shadow-xs', 'mb-2');
             
             row.innerHTML = `
-                <div class="col-5">
-                    <select name="features[${index}][feature_key]" class="form-control form-control-sm shadow-xs border-0" required>
-                        <option value="" disabled selected>Select Feature</option>
-                        <option value="Product and Categories">Product and Categories</option>
-                        <option value="Purchase and Sale">Purchase and Sale</option>
-                        <option value="Sale Return">Sale Return</option>
-                        <option value="Purchase Return">Purchase Return</option>
-                        <option value="Expense">Expense</option>
-                        <option value="Income">Income</option>
-                        <option value="Stock Transfer">Stock Transfer</option>
-                        <option value="Quotation">Quotation</option>
-                        <option value="Product Delivery">Product Delivery</option>
-                        <option value="Stock Count and Adjustment">Stock Count and Adjustment</option>
-                        <option value="Report">Report</option>
-                        <option value="HRM">HRM</option>
-                        <option value="Accounting">Accounting</option>
-                        <option value="Manufacturing">Manufacturing</option>
-                    </select>
+                <div class="col-md-5">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-white border-0 ps-2"><i class="ti ti-layout-grid text-primary opacity-75"></i></span>
+                        <select name="features[${index}][feature_key]" class="form-control form-control-sm border-0 font-weight-600" required>
+                            <option value="" disabled selected>Select Feature</option>
+                            <option value="Product and Categories">Product and Categories</option>
+                            <option value="Purchase and Sale">Purchase and Sale</option>
+                            <option value="Sale Return">Sale Return</option>
+                            <option value="Purchase Return">Purchase Return</option>
+                            <option value="Expense">Expense</option>
+                            <option value="Income">Income</option>
+                            <option value="Stock Transfer">Stock Transfer</option>
+                            <option value="Quotation">Quotation</option>
+                            <option value="Product Delivery">Product Delivery</option>
+                            <option value="Stock Count and Adjustment">Stock Count and Adjustment</option>
+                            <option value="Report">Report</option>
+                            <option value="HRM">HRM</option>
+                            <option value="Accounting">Accounting</option>
+                            <option value="Manufacturing">Manufacturing</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="col-3">
-                    <select name="features[${index}][limit_type]" class="form-control form-control-sm shadow-xs border-0" required>
+                <div class="col-md-3">
+                    <select name="features[${index}][limit_type]" class="form-control form-control-sm border-0 bg-light-subtle" required>
                         <option value="monthly">Monthly</option>
                         <option value="quarterly">Quarterly</option>
                         <option value="yearly">Yearly</option>
                         <option value="total">Total</option>
                     </select>
                 </div>
-                <div class="col-3">
-                    <input type="number" name="features[${index}][limit_value]" class="form-control form-control-sm shadow-xs border-0" placeholder="e.g. 100" required>
+                <div class="col-md-3">
+                    <div class="input-group input-group-sm">
+                        <input type="number" name="features[${index}][limit_value]" class="form-control border-0 bg-light-subtle" placeholder="Value" required>
+                        <span class="input-group-text bg-transparent border-0 text-muted small px-2">Qty</span>
+                    </div>
                 </div>
-                <div class="col-1 text-center">
+                <div class="col-md-1 text-center">
                     <button type="button" class="btn btn-icon btn-sm text-danger btn-remove p-0" title="Remove">
-                        <i class="ti ti-x fs-5"></i>
+                        <i class="ti ti-trash fs-5"></i>
                     </button>
                 </div>
             `;
