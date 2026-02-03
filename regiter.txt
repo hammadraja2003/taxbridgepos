@@ -23,3 +23,9 @@ Purchase Status
 3 = Pending
 4 = Ordered
 5 =Returned
+
+Role type
+1=Admin
+2=Owner
+3=Staff
+4=Customer
