@@ -1,14 +1,9 @@
 @php
     $db_str = '';
     $isLandlord = 0;
-    if (!config('database.connections.saleprosaas_landlord')) {
-        $layout = 'backend.layout.main';
-        $db_str = 'db.';
-    }
-    else {
-        $isLandlord = 1;
-        $layout = 'landlord.layout.main';
-    }
+    $layout = 'backend.layout.main';
+    $db_str = 'db.';
+    
 @endphp
 
 @extends($layout)

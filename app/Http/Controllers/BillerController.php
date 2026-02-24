@@ -67,13 +67,8 @@ class BillerController extends Controller
         if ($image) {
             $ext = pathinfo($image->getClientOriginalName(), PATHINFO_EXTENSION);
             $imageName = date('Ymdhis');
-            if (!config('database.connections.saleprosaas_landlord')) {
-                $imageName = $imageName . '.' . $ext;
-                $image->move(public_path('images/biller'), $imageName);
-            } else {
-                $imageName = $this->getTenantId() . '_' . $imageName . '.' . $ext;
-                $image->move(public_path('images/biller'), $imageName);
-            }
+            $imageName = $imageName . '.' . $ext;
+            $image->move(public_path('images/biller'), $imageName);
             $lims_biller_data['image'] = $imageName;
         }
         Biller::create($lims_biller_data);
@@ -126,13 +121,8 @@ class BillerController extends Controller
 
             $ext = pathinfo($image->getClientOriginalName(), PATHINFO_EXTENSION);
             $imageName = date('Ymdhis');
-            if (!config('database.connections.saleprosaas_landlord')) {
-                $imageName = $imageName . '.' . $ext;
-                $image->move(public_path('images/biller'), $imageName);
-            } else {
-                $imageName = $this->getTenantId() . '_' . $imageName . '.' . $ext;
-                $image->move(public_path('images/biller'), $imageName);
-            }
+            $imageName = $imageName . '.' . $ext;
+            $image->move(public_path('images/biller'), $imageName);
             $input['image'] = $imageName;
         }
 

@@ -28,7 +28,7 @@
                                     <tr>
                                         <th>Business Info</th>
                                         <th>Contact Details</th>
-                                        <th>Banking Info</th>
+                                        <th>Package Subscription</th>
                                         <th class="text-center">Stats</th>
                                         <th class="text-center">Environment</th>
                                         <th class="text-right">Actions</th>
@@ -51,10 +51,6 @@
                                                                 }
                                                             @endphp
                                                             <img src="{{ $url }}" alt="Logo" class="rounded border shadow-xs" style="width: 45px; height: 45px; object-fit: contain; padding: 2px;">
-                                                        @else
-                                                            <div class="rounded bg-light d-flex align-items-center justify-content-center border" style="width: 45px; height: 45px;">
-                                                                <i class="fa fa-building text-muted"></i>
-                                                            </div>
                                                         @endif
                                                     </div>
                                                     <div>
@@ -73,13 +69,47 @@
                                                 </div>
                                             </td>
 
-                                            <!-- Banking Info -->
+                                            <!-- Package Subscription -->
                                             <td>
-                                                <div class="text-sm">
-                                                    <div class="text-dark">{{ $b->bus_account_title }}</div>
-                                                    <div class="text-muted font-monospace small">{{ $b->bus_account_number }}</div>
-                                                    <small class="text-muted">{{ $b->bus_acc_branch_name }}</small>
-                                                </div>
+                                                @if($b->package_name)
+                                                    <div class="d-flex flex-column">
+                                                        <div class="font-weight-bold text-primary">
+                                                            {{ $b->package_name }}
+                                                            <span class="badge badge-success-soft ml-1" style="font-size: 9px;">Active</span>
+                                                        </div>
+                                                        <div class="small text-muted mt-1">
+                                                            <i class="ti ti-calendar-event mr-1"></i> {{ ucfirst($b->package_billing_cycle) }} 
+                                                            <span class="mx-1">•</span> 
+                                                            {{ $b->duration_days }} Days
+                                                        </div>
+                                                        <div class="mt-1 d-flex align-items-center">
+                                                            @if($b->days_left > 7)
+                                                                <span class="badge badge-success px-2" style="font-size: 10px;">{{ $b->days_left }} Days Left</span>
+                                                            @elseif($b->days_left > 0)
+                                                                <span class="badge badge-warning px-2" style="font-size: 10px;">{{ $b->days_left }} Days Left (Expiring)</span>
+                                                            @else
+                                                                <span class="badge badge-danger px-2" style="font-size: 10px;">Expired ({{ abs($b->days_left) }} days ago)</span>
+                                                            @endif
+                                                        </div>
+                                                        <div class="small fw-bold text-dark mt-1">
+                                                            {{ number_format($b->package_price, 2) }}
+                                                        </div>
+                                                        <div class="mt-2" title="Features: {{ $b->package_features }}">
+                                                            @php
+                                                                $features = explode(', ', $b->package_features);
+                                                                $displayFeatures = array_slice($features, 0, 3);
+                                                            @endphp
+                                                            @foreach($displayFeatures as $feature)
+                                                                <span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle px-2 py-1" style="font-size: 0.7rem; font-weight: 500;">{{ $feature }}</span>
+                                                            @endforeach
+                                                            @if(count($features) > 3)
+                                                                <span class="text-muted" style="font-size: 10px;">+{{ count($features) - 3 }} more</span>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                @else
+                                                    <span class="text-muted italic small">No active package</span>
+                                                @endif
                                             </td>
 
                                             <!-- Stats -->
@@ -116,9 +146,9 @@
                                                        class="btn btn-sm btn-white border-0" title="Edit Configuration">
                                                         <i class="ti ti-pencil text-primary"></i>
                                                     </a>
-                                                    <a href="{{ route('admin.businesses.create-user', \Illuminate\Support\Facades\Crypt::encryptString($b->bus_config_id)) }}"
-                                                       class="btn btn-sm btn-white border-0" title="Manage Users">
-                                                        <i class="ti ti-user text-info"></i>
+                                                    <a href="{{ route('admin.roles_permissions.index') }}"
+                                                       class="btn btn-sm btn-white border-0" title="Roles & Permissions">
+                                                        <i class="ti ti-user-check text-primary"></i>
                                                     </a>
                                                     @if ($b->db_username == 'dummy' || $b->db_password == 'dummy')
                                                         <a href="{{ route('admin.db.clone.form') }}"
@@ -175,5 +205,7 @@
         .badge-secondary { background-color: #f3f4f6; color: #4b5563; }
         .badge-warning { background-color: #fef3c7; color: #92400e; }
         .badge-success { background-color: #dcfce7; color: #166534; }
+        .badge-success-soft { background-color: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+        .badge-outline-primary { border: 1px solid #3b82f6; color: #3b82f6; background: transparent; }
     </style>
 @endsection

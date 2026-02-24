@@ -2,23 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\User;
-use App\Models\Roles;
+use App\Mail\UserDetails;
 use App\Models\Biller;
-use App\Models\Warehouse;
-use App\Models\CustomerGroup;
 use App\Models\Customer;
-use DB;
+use App\Models\CustomerGroup;
+use App\Models\MailSetting;
+use App\Models\Roles;
+use App\Models\Roles as Role;
+use App\Models\User;
+use App\Models\Warehouse;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Spatie\Permission\Models\Permission;
 use Auth;
+use DB;
 use Hash;
 use Keygen;
-use Illuminate\Validation\Rule;
-use App\Models\Roles as Role;
-use Spatie\Permission\Models\Permission;
-use App\Mail\UserDetails;
 use Mail;
-use App\Models\MailSetting;
 
 class UserController extends Controller
 {
@@ -27,30 +27,28 @@ class UserController extends Controller
     public function index()
     {
         $role = Role::find(Auth::user()->role_id);
-        if($role->hasPermissionTo('users-index')){
+        if ($role->hasPermissionTo('users-index')) {
             $permissions = Role::findByName($role->name)->permissions;
             foreach ($permissions as $permission)
                 $all_permission[] = $permission->name;
             $lims_user_list = User::where('is_deleted', false)->where('bus_config_id', session('bus_config_id'))->get();
             $numberOfUserAccount = User::where('is_active', true)->where('bus_config_id', session('bus_config_id'))->count();
             return view('backend.user.index', compact('lims_user_list', 'all_permission', 'numberOfUserAccount'));
-        }
-        else
+        } else
             return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
     }
 
     public function create()
     {
         $role = Role::find(Auth::user()->role_id);
-        if($role->hasPermissionTo('users-add')){
-            $lims_role_list = Roles::where('is_active', true)->get();
+        if ($role->hasPermissionTo('users-add')) {
+            $lims_role_list = Roles::where('is_active', true)->where('bus_config_id', session('bus_config_id'))->get();
             $lims_biller_list = Biller::where('is_active', true)->get();
             $lims_warehouse_list = Warehouse::where('is_active', true)->get();
             $lims_customer_group_list = CustomerGroup::where('is_active', true)->get();
             $numberOfUserAccount = User::where('is_active', true)->where('bus_config_id', session('bus_config_id'))->count();
             return view('backend.user.create', compact('lims_role_list', 'lims_biller_list', 'lims_warehouse_list', 'lims_customer_group_list', 'numberOfUserAccount'));
-        }
-        else
+        } else
             return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
     }
 
@@ -66,24 +64,24 @@ class UserController extends Controller
         $this->validate($request, [
             'name' => [
                 'max:255',
-                    Rule::unique($connection.'.users')->where(function ($query) {
+                Rule::unique($connection . '.users')->where(function ($query) {
                     return $query->where('is_deleted', false);
                 }),
             ],
             'email' => [
                 'email',
                 'max:255',
-                    Rule::unique($connection.'.users')->where(function ($query) {
+                Rule::unique($connection . '.users')->where(function ($query) {
                     return $query->where('is_deleted', false);
                 }),
             ],
         ]);
         $role = Role::find($request->role_id);
-        if($role->role_type == 4) {
+        if ($role->role_type == 4) {
             $this->validate($request, [
                 'phone_number' => [
                     'max:255',
-                        Rule::unique('customers')->where(function ($query) {
+                    Rule::unique('customers')->where(function ($query) {
                         return $query->where('is_active', 1);
                     }),
                 ],
@@ -92,23 +90,22 @@ class UserController extends Controller
         $data = $request->all();
         $message = 'User created successfully';
         $mail_setting = MailSetting::latest()->first();
-        if($mail_setting) {
+        if ($mail_setting) {
             $this->setMailInfo($mail_setting);
             try {
                 Mail::to($data['email'])->send(new UserDetails($data));
-            }
-            catch(\Exception $e){
-                $message = 'User created successfully. Please setup your <a href="setting/mail_setting">mail setting</a> to send mail.';
+            } catch (\Exception $e) {
+                $message = 'User created successfully. Please setup your mail setting to send mail.';
             }
         }
-        if(!isset($data['is_active']))
+        if (!isset($data['is_active']))
             $data['is_active'] = false;
         $data['is_deleted'] = false;
         $data['password'] = bcrypt($data['password']);
         $data['phone'] = $data['phone_number'];
-        $data['bus_config_id'] = session('bus_config_id'); 
+        $data['bus_config_id'] = session('bus_config_id');
         $user_data = User::create($data);
-        if($role->role_type == 4) {
+        if ($role->role_type == 4) {
             $data['user_id'] = $user_data->id;
             $data['name'] = $data['customer_name'];
             $data['phone_number'] = $data['phone'];
@@ -121,20 +118,19 @@ class UserController extends Controller
     public function edit($id)
     {
         $role = Role::find(Auth::user()->role_id);
-        if($role->hasPermissionTo('users-edit')){
-            $lims_user_data = User::where('id', $id)->where('bus_config_id', session('bus_config_id'))->firstOrFail();  
-            $lims_role_list = Roles::where('is_active', true)->get();
+        if ($role->hasPermissionTo('users-edit')) {
+            $lims_user_data = User::where('id', $id)->where('bus_config_id', session('bus_config_id'))->firstOrFail();
+            $lims_role_list = Roles::where('is_active', true)->where('bus_config_id', session('bus_config_id'))->get();
             $lims_biller_list = Biller::where('is_active', true)->get();
             $lims_warehouse_list = Warehouse::where('is_active', true)->get();
             return view('backend.user.edit', compact('lims_user_data', 'lims_role_list', 'lims_biller_list', 'lims_warehouse_list'));
-        }
-        else
+        } else
             return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
     }
 
     public function update(Request $request, $id)
     {
-        if(!env('USER_VERIFIED'))
+        if (!env('USER_VERIFIED'))
             return redirect()->back()->with('not_permitted', __('db.This feature is disable for demo!'));
         $connection = getConnectionName(\App\Models\Roles::class);
         $role = Role::find($request->role_id);
@@ -142,23 +138,23 @@ class UserController extends Controller
         $this->validate($request, [
             'name' => [
                 'max:255',
-                Rule::unique($connection.'.users')->ignore($id)->where(function ($query) {
+                Rule::unique($connection . '.users')->ignore($id)->where(function ($query) {
                     return $query->where('is_deleted', false);
                 }),
             ],
             'email' => [
                 'email',
                 'max:255',
-                    Rule::unique($connection.'.users')->ignore($id)->where(function ($query) {
+                Rule::unique($connection . '.users')->ignore($id)->where(function ($query) {
                     return $query->where('is_deleted', false);
                 }),
             ],
         ]);
 
         $input = $request->except('password');
-        if(!isset($input['is_active']))
+        if (!isset($input['is_active']))
             $input['is_active'] = false;
-        if(!empty($request['password']))
+        if (!empty($request['password']))
             $input['password'] = bcrypt($request['password']);
         // $lims_user_data = User::find($id);
         // $lims_user_data->update($input);
@@ -172,9 +168,9 @@ class UserController extends Controller
 
     public function toggleStatus(Request $request)
     {
-        if(!env('USER_VERIFIED'))
+        if (!env('USER_VERIFIED'))
             return redirect()->back()->with('not_permitted', __('db.This feature is disable for demo!'));
-        
+
         $user = User::where('id', $request->id)->where('bus_config_id', session('bus_config_id'))->first();
 
         if ($user) {
@@ -185,7 +181,7 @@ class UserController extends Controller
         }
 
         return response()->json(['success' => false, 'message' => 'User not found.']);
-    } 
+    }
 
     public function superadminProfile($id)
     {
@@ -201,7 +197,7 @@ class UserController extends Controller
 
     public function profileUpdate(Request $request, $id)
     {
-        if(!env('USER_VERIFIED'))
+        if (!env('USER_VERIFIED'))
             return redirect()->back()->with('not_permitted', __('db.This feature is disable for demo!'));
 
         $input = $request->all();
@@ -212,20 +208,19 @@ class UserController extends Controller
 
     public function changePassword(Request $request, $id)
     {
-        if(!env('USER_VERIFIED'))
+        if (!env('USER_VERIFIED'))
             return redirect()->back()->with('not_permitted', __('db.This feature is disable for demo!'));
 
         $input = $request->all();
         $lims_user_data = User::where('id', $id)->where('bus_config_id', session('bus_config_id'))->firstOrFail();
-        if($input['new_pass'] != $input['confirm_pass'])
-            return redirect("user/" .  "profile/" . $id )->with('message2', __("db.Please Confirm your new password"));
+        if ($input['new_pass'] != $input['confirm_pass'])
+            return redirect('user/' . 'profile/' . $id)->with('message2', __('db.Please Confirm your new password'));
 
         if (Hash::check($input['current_pass'], $lims_user_data->password)) {
             $lims_user_data->password = bcrypt($input['new_pass']);
             $lims_user_data->save();
-        }
-        else {
-            return redirect("user/" .  "profile/" . $id )->with('message1', __("db.Current Password does not match"));
+        } else {
+            return redirect('user/' . 'profile/' . $id)->with('message1', __('db.Current Password does not match'));
         }
         auth()->logout();
         return redirect('/');
@@ -234,7 +229,7 @@ class UserController extends Controller
     public function deleteBySelection(Request $request)
     {
         $user_id = $request['userIdArray'];
-        
+
         foreach ($user_id as $id) {
             $lims_user_data = User::where('id', $id)->where('bus_config_id', session('bus_config_id'))->first();
             $lims_user_data->is_deleted = true;
@@ -246,18 +241,17 @@ class UserController extends Controller
 
     public function destroy($id)
     {
-        if(!env('USER_VERIFIED'))
+        if (!env('USER_VERIFIED'))
             return redirect()->back()->with('not_permitted', __('db.This feature is disable for demo!'));
 
         $lims_user_data = User::where('id', $id)->where('bus_config_id', session('bus_config_id'))->firstOrFail();
         $lims_user_data->is_deleted = true;
         $lims_user_data->is_active = false;
         $lims_user_data->save();
-        if(Auth::id() == $id){
+        if (Auth::id() == $id) {
             auth()->logout();
             return redirect('/login');
-        }
-        else
+        } else
             return redirect('user')->with('message3', __('db.Data deleted successfullly'));
     }
 
@@ -269,19 +263,18 @@ class UserController extends Controller
         //     ['role_id', '!=', '5']
         // ])->get();
         $notification_users = DB::connection('master')
-        ->table('users')
-        ->join('roles', 'roles.id', '=', 'users.role_id')
-        ->where('users.is_active', true)
-        ->where('users.id', '!=', Auth::user()->id)
-        ->where('users.bus_config_id', session('bus_config_id'))
-        ->where('roles.role_type', '!=', 4)
-        ->select('users.*') 
-        ->get();
-
+            ->table('users')
+            ->join('roles', 'roles.id', '=', 'users.role_id')
+            ->where('users.is_active', true)
+            ->where('users.id', '!=', Auth::user()->id)
+            ->where('users.bus_config_id', session('bus_config_id'))
+            ->where('roles.role_type', '!=', 4)
+            ->select('users.*')
+            ->get();
 
         $html = '';
-        foreach($notification_users as $user){
-            $html .='<option value="'.$user->id.'">'.$user->name . ' (' . $user->email. ')'.'</option>';
+        foreach ($notification_users as $user) {
+            $html .= '<option value="' . $user->id . '">' . $user->name . ' (' . $user->email . ')' . '</option>';
         }
 
         return response()->json($html);
@@ -292,10 +285,39 @@ class UserController extends Controller
         $lims_user_list = DB::connection('master')->table('users')->where('is_active', true)->where('bus_config_id', session('bus_config_id'))->get();
 
         $html = '';
-        foreach($lims_user_list as $user){
-            $html .='<option value="'.$user->id.'">'.$user->name . ' (' . $user->phone. ')'.'</option>';
+        foreach ($lims_user_list as $user) {
+            $html .= '<option value="' . $user->id . '">' . $user->name . ' (' . $user->phone . ')' . '</option>';
         }
 
         return response()->json($html);
+    }
+
+    /**
+     * Toggle 2FA for a user (Admin only)
+     */
+    public function toggle2FA($id)
+    {
+        $user = \App\Models\User::findOrFail($id);
+
+        // Prevent admin from disabling their own 2FA
+        if ($user->id === auth()->id()) {
+            return redirect()->back()->with('not_permitted', 'You cannot toggle your own 2FA status. Please use the 2FA settings page.');
+        }
+
+        if ($user->two_factor_enabled) {
+            // Disable 2FA
+            $user->two_factor_enabled = false;
+            $user->two_factor_secret = null;
+            $user->two_factor_recovery_codes = null;
+            $user->two_factor_confirmed_at = null;
+            $user->save();
+
+            $message = "Two-factor authentication has been disabled for {$user->name}.";
+        } else {
+            // Enable 2FA (user will need to set it up themselves)
+            return redirect()->back()->with('not_permitted', 'Users must enable 2FA themselves through their account settings.');
+        }
+
+        return redirect()->back()->with('success', $message);
     }
 }

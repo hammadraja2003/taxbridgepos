@@ -102,6 +102,9 @@
                     @can('returns-index')
                         <li id="sale-return-menu"><a href="{{route('return-sale.index')}}">{{__('db.Sale Return')}}</a></li>
                     @endcan
+                     @can('fbr-errors')
+                        <li id="fbr-errors-menu"><a href="{{ route('fbr.post-errors') }}">FBR Errors</a></li>
+                    @endcan
                 </ul>
             </li>
         @endif
@@ -224,6 +227,11 @@
                 @endcan
                 @can('money-transfer')
                     <li id="money-transfer-menu"><a href="{{route('money-transfers.index')}}">{{__('db.Money Transfer')}}</a>
+                    </li>
+                @endcan
+                @can('profit-loss')
+                    <li id="detailed-income-statement-menu">
+                        <a href="{{route('report.detailed_income_statement')}}">{{__('db.Income Statement')}}</a>
                     </li>
                 @endcan
                 @can('balance-sheet')
@@ -457,7 +465,19 @@
                         <li id="warehouse-stock-report-menu">
                             <a href="{{route('report.warehouseStock')}}">{{__('db.Warehouse Stock Chart')}}</a>
                         </li>
+                        <li id="stock-report-menu">
+                            <a href="{{route('report.stock_report')}}">{{__('db.Stock Report')}}</a>
+                        </li>
                     @endcan
+                    @can('profit-loss')
+                        <li id="profitability-report-menu">
+                            <a href="{{route('report.profitability_report')}}">{{__('db.Profitability Report')}}</a>
+                        </li>
+                        <li id="bill-profitability-report-menu">
+                            <a href="{{route('report.bill_profitability_report')}}">{{__('db.Bill Profitability Report')}}</a>
+                        </li>
+                    @endcan
+                    
                     @can('product-expiry-report')
                         <li id="productExpiry-report-menu">
                             <a href="{{route('report.productExpiry')}}">{{__('db.Product Expiry Report')}}</a>

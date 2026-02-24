@@ -8,64 +8,52 @@
     </div>
     <!-- Stats Cards -->
     <div class="row mb-4">
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-0 shadow-sm h-100 py-2 border-left-primary">
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm border-left-primary">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Businesses</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $dashboardData['totalBusinesses'] }}</div>
                         </div>
-                        <div class="col-auto">
-                            <i class="fa fa-building fa-2x text-gray-300"></i>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-0 shadow-sm h-100 py-2 border-left-success">
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm border-left-success">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Active Businesses</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $dashboardData['totalActiveBusinesses'] }}</div>
                         </div>
-                        <div class="col-auto">
-                            <i class="fa fa-check-circle fa-2x text-gray-300"></i>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-0 shadow-sm h-100 py-2 border-left-info">
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm border-left-info">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Trial Businesses</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $dashboardData['totalTrialBusinesses'] }}</div>
                         </div>
-                        <div class="col-auto">
-                            <i class="fa fa-clock fa-2x text-gray-300"></i>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-0 shadow-sm h-100 py-2 border-left-warning">
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm border-left-warning">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Total Users</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $dashboardData['totalUsers'] }}</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fa fa-users fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>

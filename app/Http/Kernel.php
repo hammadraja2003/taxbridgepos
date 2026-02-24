@@ -38,7 +38,6 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
-
         'api' => [
             \App\Http\Middleware\EncryptCookies::class,
             // \Illuminate\Session\Middleware\StartSession::class,
@@ -76,6 +75,7 @@ class Kernel extends HttpKernel
         'validate_mobile_token' => \App\Http\Middleware\ValidateMobileToken::class,
         'hasPermanentDeletePermission' => \App\Http\Middleware\HasPermanentDeletePermission::class,
         'permission' => \App\Http\Middleware\PermissionMiddleware::class,
+        '2fa' => \App\Http\Middleware\VerifyTwoFactor::class,
     ];
 
     /**

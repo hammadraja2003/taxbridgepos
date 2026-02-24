@@ -116,6 +116,7 @@ class ProductController extends Controller
             6 => 'unit_id',
             7 => 'price',
             8 => 'cost',
+            9 => 'wholesale_price',
         ];
 
         $filtered_data = [
@@ -319,6 +320,7 @@ class ProductController extends Controller
 
             $nestedData['price'] = $product->price;
             $nestedData['cost'] = $product->cost;
+            $nestedData['wholesale_price'] = $product->wholesale_price;
 
             if (config('currency_position') == 'prefix') {
                 $stock_worth_price = config('currency') . ' ' . ($nestedData['qty'] * $product->price);
@@ -408,6 +410,7 @@ class ProductController extends Controller
                 ' "' . $nestedData['qty'] . '"',
                 ' "' . $product->image . '"',
                 ' "' . $product->is_variant . '"',
+                ' "' . $product->wholesale_price . '"',
                 '"' . @$nestedData['combo_unit'] . '"',
                 '"' . @$nestedData['wastage_percent'] . '"]'
             );
@@ -538,11 +541,7 @@ class ProductController extends Controller
                 $imageName = date('Ymdhis') . ($key + 1);
 
                 // Handle multi-tenant logic if necessary
-                if (!config('database.connections.saleprosaas_landlord')) {
-                    $imageName = $imageName . '.' . $ext;
-                } else {
-                    $imageName = $this->getTenantId() . '_' . $imageName . '.' . $ext;
-                }
+                $imageName = $imageName . '.' . $ext;
 
                 $image->move(public_path('images/product'), $imageName);
 
@@ -1328,11 +1327,7 @@ class ProductController extends Controller
                 foreach ($images as $key => $image) {
                     $ext = pathinfo($image->getClientOriginalName(), PATHINFO_EXTENSION);
 
-                    if (!config('database.connections.saleprosaas_landlord')) {
-                        $imageName = date('Ymdhis') . ($length + $key + 1) . '.' . $ext;
-                    } else {
-                        $imageName = $this->getTenantId() . '_' . date('Ymdhis') . ($length + $key + 1) . '.' . $ext;
-                    }
+                    $imageName = date('Ymdhis') . ($length + $key + 1) . '.' . $ext;
 
                     $image->move(public_path('images/product'), $imageName);
 
@@ -1905,11 +1900,7 @@ class ProductController extends Controller
                                 $ext = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION) ?: 'jpg';
                                 $imageName = date('Ymdhis') . ($key + 1);
                                 // Handle multi-tenant logic if necessary
-                                if (!config('database.connections.saleprosaas_landlord')) {
-                                    $imageName = $imageName . '.' . $ext;
-                                } else {
-                                    $imageName = $this->getTenantId() . '_' . $imageName . '.' . $ext;
-                                }
+                                $imageName = $imageName . '.' . $ext;
 
                                 $manager = new ImageManager(new GdDriver());
                                 $image = $manager->read($response->body());
@@ -1923,11 +1914,7 @@ class ProductController extends Controller
                                 $ext = pathinfo($url, PATHINFO_EXTENSION) ?: 'jpg';
                                 $imageName = date('Ymdhis') . ($key + 1);
                                 // Handle multi-tenant logic if necessary
-                                if (!config('database.connections.saleprosaas_landlord')) {
-                                    $imageName = $imageName . '.' . $ext;
-                                } else {
-                                    $imageName = $this->getTenantId() . '_' . $imageName . '.' . $ext;
-                                }
+                                $imageName = $imageName . '.' . $ext;
 
                                 if (file_exists(public_path($url))) {
                                     copy(public_path($url), public_path('images/product/') . $imageName);

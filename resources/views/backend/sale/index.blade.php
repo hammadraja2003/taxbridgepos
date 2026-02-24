@@ -321,7 +321,11 @@
                         </div>
 
                         <?php
-                        $payment_methods = explode(',', $lims_pos_setting_data->payment_options);
+                        // $payment_methods = explode(',', $lims_pos_setting_data->payment_options);
+                        $payment_methods = [];
+                        if ($lims_pos_setting_data && $lims_pos_setting_data->payment_options) {
+                            $payment_methods = explode(',', $lims_pos_setting_data->payment_options);
+                        }
                         ?>
                         <div class="col-md-4">
                             <label>{{__('db.Paid By')}}</label>
@@ -463,7 +467,11 @@
                             <p class="change ml-2">{{number_format(0, $general_setting->decimal, '.', '')}}</p>
                         </div>
                         <?php
-                        $payment_methods = explode(',', $lims_pos_setting_data->payment_options);
+                        // $payment_methods = explode(',', $lims_pos_setting_data->payment_options);
+                        $payment_methods = [];
+                        if ($lims_pos_setting_data && $lims_pos_setting_data->payment_options) {
+                            $payment_methods = explode(',', $lims_pos_setting_data->payment_options);
+                        }
                         ?>
                         <div class="col-md-4">
                             <label>{{__('db.Paid By')}}</label>
@@ -816,6 +824,33 @@
             },
             error: function(xhr, status, error) {
                 console.error("Error loading invoice:", error);
+            }
+        });
+    });
+
+    $(document).on("click", ".post-to-fbr-btn", function(e){
+        e.preventDefault();
+        let link = $(this).attr('href');
+        let $btn = $(this);
+        $btn.addClass('disabled').html('<i class="fa fa-spinner fa-spin"></i> Processing...');
+        
+        $.ajax({
+            url: link,
+            type: 'GET',
+            success: function(data) {
+                alert(data.message);
+                saleTable.ajax.reload();
+            },
+            error: function(xhr) {
+                let msg = 'Failed to post to FBR';
+                if(xhr.responseJSON && xhr.responseJSON.message) {
+                    msg = xhr.responseJSON.message;
+                }
+                alert(msg);
+                saleTable.ajax.reload();
+            },
+            complete: function() {
+                $btn.removeClass('disabled').html('<i class="fa fa-copy"></i> Post to FBR');
             }
         });
     });

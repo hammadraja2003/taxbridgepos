@@ -13,9 +13,8 @@
                         <i class="ti ti-arrow-left mr-1"></i> Back to Businesses
                     </a>
                 </div>
-
                 <div class="row">
-                    <div class="col-md-8 col-lg-6">
+                    <div class="col-md-12 col-lg-12">
                         <div class="card shadow-sm border-0 overflow-hidden">
                             <div class="bg-primary-transparent px-4 py-3 border-bottom d-flex align-items-center">
                                 <div class="bg-primary text-white rounded p-2 mr-3">
@@ -25,43 +24,79 @@
                             </div>
 
                             <div class="card-body p-4">
-
-
                                 <form class="app-form needs-validation" action="{{ route('admin.db.clone') }}" method="POST" novalidate>
                                     @csrf
-                                    
-                                    <!-- Source Database -->
-                                    <div class="mb-4">
-                                        <label class="form-label font-weight-bold text-muted small text-uppercase mb-2">
-                                            <i class="ti ti-database mr-1 text-primary"></i> Source Database <span class="text-danger">*</span>
-                                        </label>
-                                        <div class="input-group shadow-xs rounded">
-                                            <span class="input-group-text bg-white border-right-0"><i class="ti ti-search text-muted"></i></span>
-                                            <select name="source_db" class="form-control border-left-0 @error('source_db') is-invalid @enderror" required>
-                                                <option value="">-- Choose existing database --</option>
-                                                @foreach ($databases as $db)
-                                                    <option value="{{ $db }}" {{ old('source_db') == $db ? 'selected' : '' }}>{{ $db }}</option>
-                                                @endforeach
-                                            </select>
+
+                                    <!-- Row 1: Source DB & Target DB -->
+                                    <div class="row mb-4">
+                                        <div class="col-md-6">
+                                            <label class="form-label font-weight-bold text-muted small text-uppercase mb-2">
+                                                <i class="ti ti-database mr-1 text-primary"></i> Source Database <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="input-group shadow-xs rounded">
+                                                <span class="input-group-text bg-white border-right-0">
+                                                    <i class="ti ti-search text-muted"></i>
+                                                </span>
+                                                <select name="source_db" class="form-control border-left-0 @error('source_db') is-invalid @enderror" required>
+                                                    <option value="">-- Choose existing database --</option>
+                                                    @foreach ($databases as $db)
+                                                        <option value="{{ $db }}" {{ old('source_db') == $db ? 'selected' : '' }}>
+                                                            {{ $db }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
                                         </div>
-                                        <div class="form-text mt-2 small text-muted">Select the database structure you want to replicate.</div>
+
+                                        <div class="col-md-6">
+                                            <label class="form-label font-weight-bold text-muted small text-uppercase mb-2">
+                                                <i class="ti ti-edit mr-1 text-primary"></i> New Database Name <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="input-group shadow-xs rounded">
+                                                <span class="input-group-text bg-white border-right-0">
+                                                    <i class="ti ti-tag text-muted"></i>
+                                                </span>
+                                                <input type="text" name="new_db"
+                                                    class="form-control border-left-0 @error('new_db') is-invalid @enderror"
+                                                    placeholder="e.g. client_db_name"
+                                                    value="{{ old('new_db') }}"
+                                                    pattern="^[a-zA-Z0-9_]+$"
+                                                    required>
+                                            </div>
+                                        </div>
                                     </div>
 
-                                    <!-- New Database Name -->
-                                    <div class="mb-4">
-                                        <label class="form-label font-weight-bold text-muted small text-uppercase mb-2">
-                                            <i class="ti ti-edit mr-1 text-primary"></i> New Database Name <span class="text-danger">*</span>
-                                        </label>
-                                        <div class="input-group shadow-xs rounded">
-                                            <span class="input-group-text bg-white border-right-0"><i class="ti ti-tag text-muted"></i></span>
-                                            <input type="text" name="new_db" 
-                                                class="form-control border-left-0 @error('new_db') is-invalid @enderror"
-                                                placeholder="e.g. client_db_name" 
-                                                value="{{ old('new_db') }}"
-                                                pattern="^[a-zA-Z0-9_]+$"
-                                                required>
+                                    <!-- Row 2: DB Username & Password -->
+                                    <div class="row mb-4">
+                                        <div class="col-md-6">
+                                            <label class="form-label font-weight-bold text-muted small text-uppercase mb-2">
+                                                <i class="ti ti-user mr-1 text-primary"></i> Database Username <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="input-group shadow-xs rounded">
+                                                <span class="input-group-text bg-white border-right-0">
+                                                    <i class="ti ti-user text-muted"></i>
+                                                </span>
+                                                <input type="text" name="db_username"
+                                                    class="form-control border-left-0 @error('db_username') is-invalid @enderror"
+                                                    placeholder="DB User Name"
+                                                    value="{{ old('db_username') }}"
+                                                    required>
+                                            </div>
                                         </div>
-                                        <div class="form-text mt-2 small text-muted">Use alphanumeric characters and underscores only. No spaces.</div>
+
+                                        <div class="col-md-6">
+                                            <label class="form-label font-weight-bold text-muted small text-uppercase mb-2">
+                                                <i class="ti ti-key mr-1 text-primary"></i> Database Password
+                                            </label>
+                                            <div class="input-group shadow-xs rounded">
+                                                <span class="input-group-text bg-white border-right-0">
+                                                    <i class="ti ti-lock text-muted"></i>
+                                                </span>
+                                                <input type="password" name="db_password"
+                                                    class="form-control border-left-0 @error('db_password') is-invalid @enderror"
+                                                    placeholder="DB password">
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <!-- Info Box -->
@@ -83,15 +118,13 @@
                                             <i class="ti ti-loader-2 rotate-anim mr-2"></i> Initializing Clone... This may take a moment.
                                         </div>
                                     </div>
+
                                 </form>
                             </div>
                         </div>
-
-                        <div class="text-center mt-4">
-                            <p class="text-muted small">Need assistance? <a href="#" class="text-primary font-weight-bold">Database Maintenance Guide</a></p>
-                        </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>

@@ -14,18 +14,13 @@
     <!-- Fonts -->
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,600" rel="stylesheet" type="text/css">
-    @if(!config('database.connections.saleprosaas_landlord'))
+   
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
     <!-- <script type="text/javascript" src="{{ asset('js/barcode-qrcode-scanner_plugin.js') }}"></script> -->
-    @else
-    <!-- Styles -->
-    <link href="{{ asset('../../css/app.css') }}" rel="stylesheet">
-    <!-- Scripts -->
-    <script src="{{ asset('../../js/app.js') }}" defer></script>
-    @endif
+   
 </head>
 <body>
     <div id="app">

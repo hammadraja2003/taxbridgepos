@@ -1,13 +1,17 @@
 <?php
 namespace App\Http\Controllers\Admin;
+
 use App\Http\Controllers\Controller;
 use App\Models\BusinessConfiguration;
 use App\Models\GeneralSetting;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Http\Request;
+use App\Models\Permissions;
+use App\Models\Roles as Role;
 use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
 
 class BusinessController extends Controller
@@ -15,8 +19,15 @@ class BusinessController extends Controller
     public function index(Request $request)
     {
         // Fetch data from both tables using join
-        $query = DB::connection('master')->table('business_configurations')
+        $query = DB::connection('master')
+            ->table('business_configurations')
             ->leftJoin('general_settings', 'business_configurations.bus_config_id', '=', 'general_settings.bus_config_id')
+            ->leftJoin('business_packages', function ($join) {
+                $join
+                    ->on('business_configurations.bus_config_id', '=', 'business_packages.business_id')
+                    ->where('business_packages.is_active', '=', 1);
+            })
+            ->leftJoin('packages', 'business_packages.package_id', '=', 'packages.package_id')
             ->select(
                 'business_configurations.bus_config_id',
                 'business_configurations.bus_name',
@@ -38,15 +49,36 @@ class BusinessController extends Controller
                 'general_settings.is_rtl',
                 'general_settings.is_zatca',
                 'business_configurations.db_username',
-                'business_configurations.db_password'
+                'business_configurations.db_password',
+                'packages.package_name',
+                'packages.package_billing_cycle',
+                'packages.package_price',
+                'business_packages.start_date',
+                'business_packages.end_date'
             )
             ->addSelect([
-                'users_count' => DB::connection('master')->table('users')
+                'duration_days' => DB::connection('master')
+                    ->table('business_packages')
+                    ->whereColumn('business_packages.business_id', 'business_configurations.bus_config_id')
+                    ->where('business_packages.is_active', 1)
+                    ->selectRaw('DATEDIFF(end_date, start_date)'),
+                'days_left' => DB::connection('master')
+                    ->table('business_packages')
+                    ->whereColumn('business_packages.business_id', 'business_configurations.bus_config_id')
+                    ->where('business_packages.is_active', 1)
+                    ->selectRaw('DATEDIFF(end_date, NOW())'),
+                'users_count' => DB::connection('master')
+                    ->table('users')
                     ->whereColumn('users.bus_config_id', 'business_configurations.bus_config_id')
                     ->selectRaw('count(*)'),
-                'scenarios_count' => DB::connection('master')->table('business_scenarios')
+                'scenarios_count' => DB::connection('master')
+                    ->table('business_scenarios')
                     ->whereColumn('business_scenarios.bus_config_id', 'business_configurations.bus_config_id')
-                    ->selectRaw('count(*)')
+                    ->selectRaw('count(*)'),
+                'package_features' => DB::connection('master')
+                    ->table('package_features')
+                    ->whereColumn('package_features.package_id', 'packages.package_id')
+                    ->selectRaw('GROUP_CONCAT(feature_key SEPARATOR ", ")')
             ]);
 
         // Apply Filters
@@ -74,7 +106,8 @@ class BusinessController extends Controller
 
         return view('admin.businesses.index', compact('businesses'));
     }
-     public function showRegisterForm(Request $request)
+
+    public function showRegisterForm(Request $request)
     {
         $id = $request->query('id') ?? $request->input('id');
         try {
@@ -104,14 +137,14 @@ class BusinessController extends Controller
             DB::transaction(function () use ($request) {
                 $decryptedId = decrypt($request->id);
                 $business = BusinessConfiguration::where('bus_config_id', $decryptedId)->firstOrFail();
-                
+
                 User::create([
                     'name' => $request->name,
                     'email' => $request->email,
                     'password' => Hash::make($request->password),
                     'phone' => $request->phone ?? $business->bus_contact_num ?? 'N/A',
                     'bus_config_id' => $decryptedId,
-                    'role_id' => 1, // Default Admin
+                    'role_id' => Role::where('bus_config_id', $decryptedId)->where('role_type', 1)->first()->id,
                     'is_active' => 1,
                     'is_deleted' => 0,
                 ]);
@@ -122,7 +155,8 @@ class BusinessController extends Controller
             return back()->withInput()->with('error', 'Error registering user: ' . $e->getMessage());
         }
     }
-     public function general(Request $request)
+
+    public function newBusiness(Request $request)
     {
         $busConfigId = $request->query('bus_config_id') ?? $request->query('id');
 
@@ -135,9 +169,10 @@ class BusinessController extends Controller
             $business_config = BusinessConfiguration::where('bus_config_id', $busConfigId)->first();
             $general_setting = GeneralSetting::where('bus_config_id', $busConfigId)->first();
             $admin_user = User::where('bus_config_id', $busConfigId)->first();
-            
+
             // Fetch selected scenarios if editing
-            $selectedScenarioIds = DB::connection('master')->table('business_scenarios')
+            $selectedScenarioIds = DB::connection('master')
+                ->table('business_scenarios')
                 ->where('bus_config_id', $busConfigId)
                 ->pluck('scenario_id')
                 ->toArray();
@@ -147,15 +182,17 @@ class BusinessController extends Controller
             $admin_user = null;
             $selectedScenarioIds = [];
         }
-        
+
         $scenarios = DB::connection('master')->table('sandbox_scenarios')->get();
-        
+
         // Hardcoded currency list for admin context as currencies are tenant-specific
         $lims_currency_list = [
-            (object)['id' => 1, 'name' => 'US Dollar', 'code' => 'USD'],
-            (object)['id' => 2, 'name' => 'Pakistani Rupee', 'code' => 'PKR'],
+            (object) ['id' => 1, 'name' => 'US Dollar', 'code' => 'USD', 'symbol' => '$', 'rate' => 1, 'is_default' => 1],
+            (object) ['id' => 2, 'name' => 'Euro', 'code' => 'EUR', 'symbol' => '€', 'rate' => 0.95, 'is_default' => 1],
+            (object) ['id' => 3, 'name' => 'Bangladeshi Taka', 'code' => 'BDT', 'symbol' => '৳', 'rate' => 110, 'is_default' => 0],
+            (object) ['id' => 4, 'name' => 'Pakistan Rupee', 'code' => 'PKR', 'symbol' => '₨', 'rate' => 1, 'is_default' => 1],
         ];
-        
+
         $zones_array = array();
         $timestamp = time();
         foreach (timezone_identifiers_list() as $key => $zone) {
@@ -164,23 +201,26 @@ class BusinessController extends Controller
         }
 
         return view('admin.businesses.general', compact(
-            'general_setting', 
-            'business_config', 
-            'admin_user', 
-            'scenarios', 
+            'general_setting',
+            'business_config',
+            'admin_user',
+            'scenarios',
             'selectedScenarioIds',
             'lims_currency_list',
             'zones_array'
         ));
     }
 
-    public function storeGeneral(Request $request)
+    public function storeNewBusiness(Request $request)
     {
         $id = $request->input('bus_config_id');
-        
+
         $request->validate([
             'bus_name' => 'required|string|max:255',
             'bus_ntn_cnic' => 'required|string|max:50',
+            'bus_address' => 'required|string',
+            'bus_contact_person' => 'required|string|max:255',
+            'bus_contact_num' => 'required|string|max:20',
             'site_title' => 'required|string|max:255',
             'currency' => 'required',
             'timezone' => 'required',
@@ -191,6 +231,7 @@ class BusinessController extends Controller
             'date_format' => 'required',
             'site_logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'favicon' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:1024',
+            'scenarios' => 'required|array',
         ]);
 
         try {
@@ -198,6 +239,7 @@ class BusinessController extends Controller
 
             // 1. Business Configuration
             $business = $id ? BusinessConfiguration::findOrFail($id) : new BusinessConfiguration();
+
             $business->bus_name = $request->bus_name;
             $business->bus_ntn_cnic = $request->bus_ntn_cnic;
             $business->bus_reg_num = $request->bus_reg_num;
@@ -214,17 +256,19 @@ class BusinessController extends Controller
             $business->fbr_env = $request->fbr_env ?? 'sandbox';
             $business->fbr_api_token_sandbox = $request->fbr_api_token_sandbox;
             $business->fbr_api_token_prod = $request->fbr_api_token_prod;
-            
+
             if (!$id) {
                 // Default DB settings for new business
-                $business->db_host = 'localhost';
+                $business->db_host = '127.0.0.1';
                 // Auto-generate DB name from business name
-                $business->db_name = \Illuminate\Support\Str::slug($request->bus_name, '_') . '_pos'; 
+
+                $business->db_name = \Illuminate\Support\Str::slug($request->bus_name, '_') . '_' . Str::lower(Str::random(4)) . '_pos';
                 $business->db_username = 'dummy';
-                $business->db_password = 'dummy'; // Null/Empty
+                $business->db_password = 'dummy';
             }
-            
+
             $business->save();
+
             $bus_id = $business->bus_config_id;
 
             // 2. General Settings
@@ -235,8 +279,8 @@ class BusinessController extends Controller
             $setting->timezone = $request->timezone;
             $setting->is_rtl = $request->has('is_rtl');
             $setting->company_name = $request->bus_name;
-            $setting->developed_by = 'TaxBridge';
-            
+            $setting->developed_by = 'SalesBridge';
+
             // Map inputs to DB fields
             $setting->date_format = $request->date_format ?? 'd-m-Y';
             $setting->invoice_format = $request->invoice_format ?? 'standard';
@@ -253,28 +297,85 @@ class BusinessController extends Controller
             // Handle File Uploads
             if ($request->hasFile('site_logo')) {
                 $image = $request->file('site_logo');
+
                 $imageName = 'logo_' . time() . '.' . $image->getClientOriginalExtension();
-                $image->move(public_path('images/logo'), $imageName);
+                $image->move(public_path('logo'), $imageName);
+
                 $setting->site_logo = $imageName;
             }
 
             if ($request->hasFile('favicon')) {
                 $icon = $request->file('favicon');
+
                 $iconName = 'favicon_' . time() . '.' . $icon->getClientOriginalExtension();
-                $icon->move(public_path('images/logo'), $iconName);
+                $icon->move(public_path('logo'), $iconName);
+
                 $setting->favicon = $iconName;
             }
-            
+
             $setting->save();
+
+            $allPermissionIds = Permissions::pluck('id')->toArray();
+            $defaultRoles = [
+                [
+                    'name' => 'Admin',
+                    'description' => 'admin can access all data...',
+                    'guard_name' => 'web',
+                    'role_type' => '1',
+                ],
+                [
+                    'name' => 'Owner',
+                    'description' => 'Staff of shop',
+                    'guard_name' => 'web',
+                    'role_type' => '2',
+                ],
+                [
+                    'name' => 'Staff',
+                    'description' => 'staff has specific access...',
+                    'guard_name' => 'web',
+                    'role_type' => '3',
+                ],
+                [
+                    'name' => 'Customer',
+                    'description' => 'customer',
+                    'guard_name' => 'web',
+                    'role_type' => '4',
+                ],
+            ];
+
+            foreach ($defaultRoles as $roleData) {
+                // ✅ Capture created role
+                $createdRole = Role::create([
+                    'name' => $roleData['name'],
+                    'description' => $roleData['description'],
+                    'guard_name' => 'web',
+                    'bus_config_id' => $bus_id,
+                    'role_type' => $roleData['role_type'],
+                    'is_active' => 1,
+                ]);
+
+                // ✅ Assign ALL permissions to Admin & Owner
+                if (in_array($roleData['role_type'], ['1', '2'])) {
+                    foreach ($allPermissionIds as $permissionId) {
+                        DB::table('role_has_permissions')->insert([
+                            'role_id' => $createdRole->id,
+                            'permission_id' => $permissionId,
+                        ]);
+                    }
+                }
+            }
 
             // 3. Admin User (if new or password provided)
             if (!$id || $request->filled('user_email') || $request->filled('user_password')) {
                 $user = User::where('bus_config_id', $bus_id)->where('role_id', 1)->first() ?? new User();
                 $user->bus_config_id = $bus_id;
-                $user->role_id = 1; // Admin
-                if ($request->filled('user_name')) $user->name = $request->user_name;
-                if ($request->filled('user_email')) $user->email = $request->user_email;
-                if ($request->filled('user_password')) $user->password = Hash::make($request->user_password);
+                $user->role_id = Role::where('bus_config_id', $bus_id)->where('role_type', 1)->first()->id;
+                if ($request->filled('user_name'))
+                    $user->name = $request->user_name;
+                if ($request->filled('user_email'))
+                    $user->email = $request->user_email;
+                if ($request->filled('user_password'))
+                    $user->password = Hash::make($request->user_password);
                 $user->phone = $request->bus_contact_num ?? 'N/A';
                 $user->is_active = true;
                 $user->is_deleted = 0;
@@ -288,78 +389,118 @@ class BusinessController extends Controller
 
             DB::commit();
             return redirect()->route('admin.businesses.index')->with('success', 'Business configuration saved successfully.');
-
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withInput()->with('error', 'Error: ' . $e->getMessage());
         }
     }
-    // public function index_bk()
-    // {
-    //     $businesses = AdminBusiness::withCount(['users', 'scenarios'])
-    //         ->orderBy('bus_name')
-    //         ->paginate(15);
-    //     return view('admin.businesses.index', compact('businesses'));
-    // }
+
     public function show($encryptedId)
     {
         try {
             $id = Crypt::decryptString($encryptedId);
         } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
-             return back()
+            return back()
                 ->withInput()
-                ->withErrors(['toast_error' =>  'Invalid ID']);
+                ->withErrors(['toast_error' => 'Invalid ID']);
         }
-        $business = BusinessConfiguration::with(['users.role', 'scenarios'])->findOrFail($id);
+
+        $business = DB::connection('master')
+            ->table('business_configurations')
+            ->leftJoin('business_packages', function ($join) {
+                $join
+                    ->on('business_configurations.bus_config_id', '=', 'business_packages.business_id')
+                    ->where('business_packages.is_active', '=', 1);
+            })
+            ->leftJoin('packages', 'business_packages.package_id', '=', 'packages.package_id')
+            ->where('business_configurations.bus_config_id', $id)
+            ->select(
+                'business_configurations.*',
+                'packages.package_name',
+                'packages.package_billing_cycle',
+                'packages.package_price',
+                'business_packages.start_date',
+                'business_packages.end_date',
+                'business_packages.is_trial'
+            )
+            ->addSelect([
+                'duration_days' => DB::connection('master')
+                    ->table('business_packages')
+                    ->where('business_id', $id)
+                    ->where('is_active', 1)
+                    ->selectRaw('DATEDIFF(end_date, start_date)'),
+                'days_left' => DB::connection('master')
+                    ->table('business_packages')
+                    ->where('business_id', $id)
+                    ->where('is_active', 1)
+                    ->selectRaw('DATEDIFF(end_date, NOW())'),
+                'package_features' => DB::connection('master')
+                    ->table('package_features')
+                    ->whereColumn('package_id', 'packages.package_id')
+                    ->selectRaw('GROUP_CONCAT(feature_key SEPARATOR ", ")')
+            ])
+            ->first();
+
+        if (!$business) {
+            abort(404);
+        }
+
+        // Fetch related models separately since we are using Query Builder for the main query
+        $business_model = BusinessConfiguration::with(['users.role', 'scenarios'])->find($id);
+        $business->users = $business_model->users;
+        $business->scenarios = $business_model->scenarios;
+
         $general_setting = GeneralSetting::where('bus_config_id', $id)->first();
         return view('admin.businesses.show', compact('business', 'general_setting'));
     }
-    public function createUser($encryptedId)
-    {
-        try {
-            $id = Crypt::decryptString($encryptedId);            
-        } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
-             return back()
-                ->withInput()
-                ->withErrors(['toast_error' =>  $e->getMessage()]);
-        }
-        return view('admin.businesses.createbusinessuser', compact('id'));
-    }
-    public function registerUser(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
-            'password' => 'required|string|min:6',
-        ]);
 
-        try {
-            DB::beginTransaction();
+    // public function createUser($encryptedId)
+    // {
+    //     try {
+    //         $id = Crypt::decryptString($encryptedId);
+    //     } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+    //         return back()
+    //             ->withInput()
+    //             ->withErrors(['toast_error' => $e->getMessage()]);
+    //     }
+    //     return view('admin.businesses.createbusinessuser', compact('id'));
+    // }
 
-            $busConfigId = $request->id;
-            $business = BusinessConfiguration::where('bus_config_id', $busConfigId)->first();
+    // public function registerUser(Request $request)
+    // {
+    //     $request->validate([
+    //         'name' => 'required|string|max:255',
+    //         'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+    //         'password' => 'required|string|min:6',
+    //     ]);
 
-            // Create user
-            $user = User::create([
-                'name' => $request->name,
-                'password' => Hash::make($request->password),
-                'bus_config_id' => $busConfigId,
-                'email' => $request->email ?? null,
-                'phone' => $business->bus_contact_num ?? 'N/A',
-                'role_id' => 1, // Default to admin for now, or fetch from request if needed
-                'is_active' => true,
-                'is_deleted' => 0,
-            ]);
+    //     try {
+    //         DB::beginTransaction();
 
-            DB::commit();
-            return redirect()->route('admin.businesses.index')
-                ->with('message', 'User added successfully.');
+    //         $busConfigId = $request->id;
+    //         $business = BusinessConfiguration::where('bus_config_id', $busConfigId)->first();
 
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()
-                ->withInput()
-                ->withErrors(['toast_error' => $e->getMessage()]);
-        }
-    }
+    //         // Create user
+    //         $user = User::create([
+    //             'name' => $request->name,
+    //             'password' => Hash::make($request->password),
+    //             'bus_config_id' => $busConfigId,
+    //             'email' => $request->email ?? null,
+    //             'phone' => $business->bus_contact_num ?? 'N/A',
+    //             'role_id' => 1,  // Default to admin for now, or fetch from request if needed
+    //             'is_active' => true,
+    //             'is_deleted' => 0,
+    //         ]);
+
+    //         DB::commit();
+    //         return redirect()
+    //             ->route('admin.businesses.index')
+    //             ->with('message', 'User added successfully.');
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         return back()
+    //             ->withInput()
+    //             ->withErrors(['toast_error' => $e->getMessage()]);
+    //     }
+    // }
 }

@@ -23,21 +23,27 @@ class RoleController extends Controller
 
     public function store(Request $request)
     {
+        $bus_config_id = session('bus_config_id');
         $connection = getConnectionName(\App\Models\Roles::class);
+
         $this->validate($request, [
             'name' => [
+                'required',
                 'max:255',
-                Rule::unique($connection . '.roles')->where(function ($query) {
-                    return $query->where('is_active', 1);
+                Rule::unique($connection . '.roles')->where(function ($query) use ($bus_config_id) {
+                    return $query
+                        ->where('bus_config_id', $bus_config_id)
+                        ->where('is_active', 1);
                 }),
             ],
+            'role_type' => 'required',
         ]);
 
         $data = $request->all();
-        $bus_config_id = session('bus_config_id');
         $data['bus_config_id'] = $bus_config_id;
-        $data['role_type'] = $request->role_type;
+
         Roles::create($data);
+
         return redirect('role')->with('message', __('db.Data inserted successfully'));
     }
 
@@ -52,36 +58,88 @@ class RoleController extends Controller
 
     public function update(Request $request, $id)
     {
+        $bus_config_id = session('bus_config_id');
         $connection = getConnectionName(\App\Models\Roles::class);
+
         $this->validate($request, [
             'name' => [
+                'required',
                 'max:255',
-                Rule::unique($connection . '.roles')->ignore($request->role_id)->where(function ($query) {
-                    return $query->where('is_active', 1);
-                }),
+                Rule::unique($connection . '.roles')
+                    ->ignore($id)
+                    ->where(function ($query) use ($bus_config_id) {
+                        return $query
+                            ->where('bus_config_id', $bus_config_id)
+                            ->where('is_active', 1);
+                    }),
             ],
+            'role_type' => 'required',
         ]);
 
-        $input = $request->all();
-        $bus_config_id = session('bus_config_id');
-        $input['bus_config_id'] = $bus_config_id;
-        $lims_role_data = Roles::where('id', $input['role_id'])->first();
-        $lims_role_data->update($input);
+        // 🔒 Ensure role belongs to current business
+        $role = Roles::where('id', $id)
+            ->where('bus_config_id', $bus_config_id)
+            ->firstOrFail();
+
+        $input = $request->only(['name', 'description', 'role_type', 'is_active']);
+
+        $role->update($input);
+
         return redirect('role')->with('message', __('db.Data updated successfully'));
     }
 
+    // public function permission($id)
+    // {
+    //     if (Auth::user()->role_type <= 2) {
+    //         $lims_role_data = Roles::find($id);
+    //         $permissions = Role::findByName($lims_role_data->name)->permissions;
+    //         foreach ($permissions as $permission)
+    //             $all_permission[] = $permission->name;
+    //         if (empty($all_permission))
+    //             $all_permission[] = 'dummy text';
+    //         return view('backend.role.permission', compact('lims_role_data', 'all_permission'));
+    //     } else
+    //         return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
+    // }
+    // public function permission($id)
+    // {
+    //     if (Auth::user()->role_type <= 2) {
+    //         $lims_role_data = Role::find($id);
+
+    //         // Current role ki existing permissions (checkboxes check karne ke liye)
+    //         $all_permission = $lims_role_data->permissions()->pluck('name')->toArray();
+    //         $admin_permissions = Auth::user()->role->permissions()->pluck('name')->toArray();
+    //         dd($admin_permissions);
+    //         // }
+
+    //         if (empty($all_permission))
+    //             $all_permission[] = 'dummy text';
+
+    //         return view('backend.role.permission', compact('lims_role_data', 'all_permission', 'admin_permissions'));
+    //     } else {
+    //         return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
+    //     }
+    // }
+
     public function permission($id)
     {
-        if (Auth::user()->role_type <= 2) {
-            $lims_role_data = Roles::find($id);
-            $permissions = Role::findByName($lims_role_data->name)->permissions;
-            foreach ($permissions as $permission)
-                $all_permission[] = $permission->name;
-            if (empty($all_permission))
-                $all_permission[] = 'dummy text';
-            return view('backend.role.permission', compact('lims_role_data', 'all_permission'));
-        } else
-            return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
+        $role = Role::findOrFail($id);
+
+        // Role ki existing permissions (checkbox checked karne ke liye)
+        $rolePermissions = $role->permissions->pluck('name')->toArray();
+
+        // Current logged-in admin ki permissions
+        $adminPermissions = Auth::user()->role->permissions->pluck('name')->toArray();
+
+        // Sab permissions (permissions table se)
+        $permissions = Permission::orderBy('name')->get();
+
+        return view('backend.role.permission', compact(
+            'role',
+            'permissions',
+            'rolePermissions',
+            'adminPermissions'
+        ));
     }
 
     public function setPermission(Request $request)

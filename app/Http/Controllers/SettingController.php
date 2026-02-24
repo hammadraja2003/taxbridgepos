@@ -75,10 +75,9 @@ class SettingController extends Controller
         // Disable FK checks
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
-
         $protectedTables = [
             'accounts', 'hrm_settings', 'languages', 'migrations', 'password_resets',
-            'pos_setting', 'currencies', 'reward_point_settings', 'ecommerce_settings',
+            'pos_setting', 'currencies', 'reward_point_settings',
             'external_services', 'translations', 'invoice_settings', 'units', 'taxes'
         ];
 
@@ -145,11 +144,7 @@ class SettingController extends Controller
         $zones_array = array();
         $timestamp = time();
 
-        if (!config('database.connections.saleprosaas_landlord')) {
-            $installUrl = config('app.url');
-        } else {
-            $installUrl = 'https://' . $this->getTenantId() . '.' . env('CENTRAL_DOMAIN');
-        }
+        $installUrl = config('app.url');
 
         foreach (timezone_identifiers_list() as $key => $zone) {
             date_default_timezone_set($zone);
@@ -292,10 +287,7 @@ class SettingController extends Controller
         $host = env('DB_HOST');
         $username = env('DB_USERNAME');
         $password = env('DB_PASSWORD');
-        if (!config('database.connections.saleprosaas_landlord'))
-            $database_name = env('DB_DATABASE');
-        else
-            $database_name = env('DB_PREFIX') . $this->getTenantId();
+        $database_name = env('DB_DATABASE');
 
         // Get connection object and set the charset
         $conn = mysqli_connect($host, $username, $password, $database_name);

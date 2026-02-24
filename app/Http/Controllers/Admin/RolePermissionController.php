@@ -3,64 +3,54 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Roles;
 use App\Models\Permissions as Permission;
+use App\Models\Roles;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class RolePermissionController extends Controller
 {
-    /**
-     * Display a listing of the roles.
-     */
     public function index(Request $request)
     {
-        // Get all businesses for the filter dropdown
-        $businesses = DB::table('business_configurations')
+        $businesses = DB::connection('master')
+            ->table('business_configurations')
             ->select('bus_config_id', 'bus_name')
             ->get();
-
-        // Check if business filter is applied
         $busConfigId = $request->input('bus_config_id');
-        
+
         if ($busConfigId) {
             $roles = Roles::leftJoin('business_configurations', 'roles.bus_config_id', '=', 'business_configurations.bus_config_id')
                 ->where('roles.bus_config_id', $busConfigId)
                 ->select('roles.*', 'business_configurations.bus_name as business_name')
                 ->get();
         } else {
-            // Return empty collection if no business is selected
             $roles = collect();
         }
-
-        // Return JSON for AJAX requests
         if ($request->ajax()) {
             $roles->transform(function ($role) {
                 $role->encrypted_id = encrypt($role->id);
                 $role->role_type_name = ucfirst(getRoleType($role->role_type) ?? 'Unknown');
                 return $role;
             });
-            
+
             return response()->json([
                 'success' => true,
                 'roles' => $roles,
             ]);
         }
-            
+
         return view('admin.roles.index', compact('roles', 'businesses'));
     }
 
-    /**
-     * Display a listing of the permissions.
-     */
     public function permissions(Request $request)
     {
         $query = Permission::orderBy('id', 'desc');
 
         if ($request->has('search') && !empty($request->search)) {
             $search = $request->search;
-            $query->where('name', 'like', "%{$search}%")
-                  ->orWhere('guard_name', 'like', "%{$search}%");
+            $query
+                ->where('name', 'like', "%{$search}%")
+                ->orWhere('guard_name', 'like', "%{$search}%");
         }
 
         $permissions = $query->get();
@@ -72,9 +62,6 @@ class RolePermissionController extends Controller
         return view('admin.permissions.index', compact('permissions'));
     }
 
-    /**
-     * Show the form for creating a new role.
-     */
     public function createRole()
     {
         $permissions = Permission::all();
@@ -82,13 +69,10 @@ class RolePermissionController extends Controller
         return view('admin.roles.create', compact('permissions', 'businesses'));
     }
 
-    /**
-     * Store a newly created role in storage.
-     */
     public function storeRole(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:191|unique:roles,name',
+            'name' => 'required|string|max:191',
             'role_type' => 'required|in:1,2,3,4',
             'bus_config_id' => 'required|integer',
             'permissions' => 'nullable|array',
@@ -116,9 +100,6 @@ class RolePermissionController extends Controller
         }
     }
 
-    /**
-     * Store a newly created permission in storage.
-     */
     public function storePermission(Request $request)
     {
         $request->validate([
@@ -137,9 +118,6 @@ class RolePermissionController extends Controller
         }
     }
 
-    /**
-     * Update the specified permission in storage.
-     */
     public function updatePermission(Request $request, $id)
     {
         try {
@@ -164,20 +142,17 @@ class RolePermissionController extends Controller
         }
     }
 
-    /**
-     * Remove the specified permission from storage.
-     */
     public function destroyPermission($id)
     {
         try {
             $decryptedId = decrypt($id);
             $permission = Permission::findOrFail($decryptedId);
-            
+
             // Explicitly check role_has_permissions table as requested
             $assignedCount = DB::table('role_has_permissions')
                 ->where('permission_id', $decryptedId)
                 ->count();
-                
+
             if ($assignedCount > 0) {
                 return back()->with('error', "Cannot delete permission! It is currently assigned to {$assignedCount} role(s).");
             }
@@ -189,12 +164,6 @@ class RolePermissionController extends Controller
         }
     }
 
-    /**
-     * Show the form for changing role permissions.
-     */
-    /**
-     * Show the form for changing role permissions.
-     */
     public function changePermissions($id)
     {
         try {
@@ -204,122 +173,70 @@ class RolePermissionController extends Controller
         }
 
         $role = Roles::findOrFail($decryptedId);
-        
-        // Get all permissions
-        $permissions = Permission::orderBy('name')->get();
-        
-        // Get current role permissions from role_has_permissions table explicitly using master connection
-        $rolePermissions = DB::connection('master')->table('role_has_permissions')
-            ->where('role_id', $decryptedId)
-            ->pluck('permission_id')
-            ->toArray();
-        
-        // Group permissions by module (Server-side logic port of the JS logic)
-        $modules = [];
-        $actionMap = [
-            'view' => ['view', 'index', 'show', 'list', 'read'],
-            'add' => ['add', 'create', 'store', 'write'],
-            'edit' => ['edit', 'update'],
-            'delete' => ['delete', 'destroy', 'remove'],
-            'import' => ['import', 'upload']
-        ];
-
+        $permissions = $role->permissions;
+        $all_permission = [];
         foreach ($permissions as $permission) {
-            $lowerName = strtolower($permission->name);
-            $moduleName = 'Other';
-            $actionType = null;
-            
-            // Try to find action in name
-            foreach ($actionMap as $type => $keywords) {
-                foreach ($keywords as $keyword) {
-                    // Regex to match keyword as a whole word or separated by . - _
-                    // In PHP, we can check basic string operations or regex
-                    // $regex = "/(^|[._\\-\\s])$keyword([._\\-\\s]|$)/i";
-                     
-                    // Simplified logic similar to JS robust check
-                    $separators = ['.', '-', '_', ' '];
-                    $found = false;
-                    
-                    // Check EndsWith
-                    foreach ($separators as $sep) {
-                        if (str_ends_with($lowerName, $sep . $keyword)) {
-                            $moduleName = substr($permission->name, 0, -strlen($keyword) - 1);
-                            $actionType = $type;
-                            $found = true;
-                            break;
-                        }
-                    }
-                    if ($found) break;
-
-                    // Check StartsWith
-                    foreach ($separators as $sep) {
-                         if (str_starts_with($lowerName, $keyword . $sep)) {
-                            $moduleName = substr($permission->name, strlen($keyword) + 1);
-                            $actionType = $type;
-                            $found = true;
-                            break;
-                        }
-                    }
-                    if ($found) break;
-                }
-                if ($actionType) break;
-            }
-
-            // Fallback
-            if (!$actionType) {
-                $moduleName = $permission->name;
-                $actionType = 'view';
-            }
-
-            // Standardize module name formatting
-            // Replace separators with spaces and Title Case
-            $moduleName = ucwords(str_replace(['-', '_', '.'], ' ', $moduleName));
-
-            if (!isset($modules[$moduleName])) {
-                $modules[$moduleName] = ['view' => null, 'add' => null, 'edit' => null, 'delete' => null, 'import' => null];
-            }
-            
-            // Prioritize specific module mapping
-            if ($modules[$moduleName][$actionType] === null) {
-                $modules[$moduleName][$actionType] = $permission;
-            }
+            $all_permission[] = $permission->name;
         }
-        
-        // Sort modules by name
-        ksort($modules);
-        
-        $totalPermissions = $permissions->count();
-        $assignedPermissions = count($rolePermissions);
 
-        return view('admin.roles.change_permissions', compact('role', 'modules', 'rolePermissions', 'totalPermissions', 'assignedPermissions'));
+        if (empty($all_permission)) {
+            $all_permission[] = 'dummy text';
+        }
+
+        return view('admin.roles.change_permissions', compact('role', 'all_permission'));
     }
 
-    /**
-     * Update role permissions.
-     */
     public function updatePermissions(Request $request, $id)
     {
         try {
-            //$decryptedId = decrypt($id);
-            $role = Roles::findOrFail($id);
-            
-            $request->validate([
-                'permissions' => 'nullable|array',
-                'permissions.*' => 'exists:permissions,id',
-            ]);
-            
-            // Sync permissions
-            $role->permissions()->sync($request->input('permissions', []));
-            
-            return response()->json([
-                'success' => true,
-                'message' => 'Permissions updated successfully!'
-            ]);
+            try {
+                $decryptedId = decrypt($id);
+            } catch (\Exception $e) {
+                if (is_numeric($id)) {
+                    $decryptedId = $id;
+                } else {
+                    throw $e;
+                }
+            }
+
+            $role = Roles::findOrFail($decryptedId);
+
+            // Logic adapted from RoleController::setPermission to handle permission names as keys
+            $existing_permissions = Permission::pluck('name')->toArray();
+
+            // Identify potential new permissions from request keys (excluding standard fields)
+            $request_keys = array_keys($request->except(['_token', 'role_id']));
+            $new_permissions = array_diff($request_keys, $existing_permissions);
+
+            // Full list of permissions to process (existing in DB + new ones from request)
+            $permissions_to_process = array_unique(array_merge($existing_permissions, $new_permissions));
+
+            foreach ($permissions_to_process as $permission_name) {
+                // Ensure permission exists
+                $permission = Permission::firstOrCreate(['name' => $permission_name, 'guard_name' => 'web']);
+
+                if ($request->has(str_replace('.', '_', $permission_name))) {
+                    // Note: PHP converts dots in request keys to underscores.
+                    // However, our permission names might have dashes.
+                    // The standard behavior for Request::has with standard HTML forms
+                    // usually works with the input name attribute.
+                    // But if keys have dots, PHP replaces them with underscores in $request->all().
+                    // We should check $request->has($permission_name) which usually abstracts this,
+                    // but let's be safe. standard names like 'users-add' are fine.
+
+                    if (!$role->hasPermissionTo($permission_name)) {
+                        $role->givePermissionTo($permission);
+                    }
+                } else {
+                    if ($role->hasPermissionTo($permission_name)) {
+                        $role->revokePermissionTo($permission_name);
+                    }
+                }
+            }
+
+            return redirect()->route('admin.roles_permissions.index')->with('success', 'Permissions updated successfully!');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error updating permissions: ' . $e->getMessage()
-            ], 500);
+            return back()->with('error', 'Error updating permissions: ' . $e->getMessage());
         }
     }
 }

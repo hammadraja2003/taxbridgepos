@@ -7,8 +7,7 @@
             <div class="col-12">
                 <div class="mb-5 text-center text-lg-start">
                     <div class="d-flex justify-content-center align-items-center my-2">
-                        <img src="{{ env('PUB_PATH') . '/logo/tax-bridgePOS-logo.svg' }}" alt="Logo" class="dark-logo">
-
+                        <img src="{{ env('PUB_PATH') . '/logo/LOGO-SalesBridge-01.png' }}" alt="Logo" class="dark-logo" style="width: 100% !important; height: auto !important;">
                     </div>
                 </div>
             </div>
@@ -79,6 +78,7 @@
             <div class="col-md-12 text-center">
                 <div class="" style="font-size:11px;color:#666;margin-bottom:15px">Login as</div>
                 <button data-page="back_admin" data-env=".env" class="btn btn-sm btn-success demo-btn">Admin</button>
+                <button data-page="back_sub_admin" data-env=".env" class="btn btn-sm btn-success demo-btn">Sub Admin</button>
                 <button data-page="back_staff" data-env=".env" class="btn btn-sm btn-info demo-btn">Staff</button>
                 <button data-page="back_customer" data-env=".env" class="btn btn-sm btn-dark demo-btn">Customer</button>
             </div>
@@ -124,31 +124,6 @@
 
         document.cookie = cookieName + "=" + cookieValue + expires + "; path=/";
     }
-
-    $('.demo-btn').on('click', function (e) {
-        e.preventDefault();
-        setEnvCookie($(this).data('env'));
-        if ($(this).data('env') == '.env.ecom' && $(this).data('page') == 'ecom_front') {
-            window.open("{{ url('/') }}", "_blank");
-        }
-        else {
-            if ($(this).data('page') == 'back_staff') {
-                $("input[name='name']").focus().val('staff');
-                $("input[name='password']").focus().val('staff');
-            }
-            else if ($(this).data('page') == 'back_customer') {
-                $("input[name='name']").focus().val('james');
-                $("input[name='password']").focus().val('james');
-            }
-            else {
-                $("input[name='name']").focus().val('admin');
-                $("input[name='password']").focus().val('admin');
-            }
-            let form = $('#login-form');
-            form.attr('action', $(this).attr('href'));
-            form.submit();
-        }
-    });
     $(document).ready(function () {
         $('#super_admin').on('click', function (e) {
             e.preventDefault();

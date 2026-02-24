@@ -208,6 +208,174 @@ class ReportController extends Controller
             return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
     }
 
+    public function stockReport(Request $request)
+    {
+        $role = Role::find(Auth::user()->role_id);
+        if ($role->hasPermissionTo('warehouse-stock-report')) {  // Assuming similar permission
+            $lims_warehouse_list = Warehouse::where('is_active', true)->get();
+            $lims_brand_list = \App\Models\Brand::where('is_active', true)->get();
+            $lims_category_list = \App\Models\Category::where('is_active', true)->get();
+            $lims_product_list_all = \App\Models\Product::where('is_active', true)->select('id', 'name', 'code')->get();
+
+            $warehouse_id = $request->input('warehouse_id', 0);
+            $brand_id = $request->input('brand_id', 0);
+            $category_id = $request->input('category_id', 0);
+            $product_id = $request->input('product_id', 0);
+            $lims_product_list = [];
+
+            if ($request->isMethod('post')) {
+                $query = DB::table('product_warehouse')
+                    ->join('products', 'product_warehouse.product_id', '=', 'products.id')
+                    ->join('warehouses', 'product_warehouse.warehouse_id', '=', 'warehouses.id')
+                    ->leftJoin('brands', 'products.brand_id', '=', 'brands.id')
+                    ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
+                    ->leftJoin('taxes', 'products.tax_id', '=', 'taxes.id');
+
+                $query->where('products.is_active', true);
+                $query->where('product_warehouse.qty', '>', 0);  // show only in stock
+
+                if ($warehouse_id) {
+                    $query->where('product_warehouse.warehouse_id', $warehouse_id);
+                }
+                if ($brand_id) {
+                    $query->where('products.brand_id', $brand_id);
+                }
+                if ($category_id) {
+                    $query->where('products.category_id', $category_id);
+                }
+                if ($product_id) {
+                    $query->where('products.id', $product_id);
+                }
+
+                $lims_product_list = $query->select(
+                    'products.name as product_name',
+                    'products.code as product_code',
+                    'products.price',
+                    'products.cost',
+                    'products.tax_method',
+                    'taxes.rate as tax_rate',
+                    'brands.title as brand_name',
+                    'categories.name as category_name',
+                    'warehouses.name as warehouse_name',
+                    'product_warehouse.qty'
+                )->get();
+            }
+
+            return view('backend.report.stock_report', compact('lims_warehouse_list', 'lims_brand_list', 'lims_category_list', 'lims_product_list', 'warehouse_id', 'brand_id', 'category_id', 'product_id', 'lims_product_list_all'));
+        } else
+            return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
+    }
+
+    public function profitabilityReport(Request $request)
+    {
+        $role = Role::find(Auth::user()->role_id);
+        if ($role->hasPermissionTo('profit-loss')) {  // Reuse profit-loss permission or create new
+            $start_date = $request->input('start_date', date('Y-m-d'));
+            $end_date = $request->input('end_date', date('Y-m-d'));
+            $customer_id = $request->input('customer_id', 0);
+            $product_id = $request->input('product_id', 0);
+
+            $lims_customer_list = \App\Models\Customer::where('is_active', true)->get();
+            $lims_product_list_all = \App\Models\Product::where('is_active', true)->select('id', 'name', 'code')->get();
+            $general_setting = getGeneralSetting();
+
+            $lims_profitability_data = [];
+
+            if ($request->isMethod('post')) {
+                $query = DB::table('product_sales')
+                    ->join('sales', 'product_sales.sale_id', '=', 'sales.id')
+                    ->join('products', 'product_sales.product_id', '=', 'products.id')
+                    ->join('customers', 'sales.customer_id', '=', 'customers.id');
+
+                $query->whereDate('sales.created_at', '>=', $start_date);
+                $query->whereDate('sales.created_at', '<=', $end_date);
+
+                if ($customer_id) {
+                    $query->where('sales.customer_id', $customer_id);
+                }
+                if ($product_id) {
+                    $query->where('product_sales.product_id', $product_id);
+                }
+
+                $lims_profitability_data = $query->select(
+                    'sales.created_at',
+                    'sales.reference_no',
+                    'customers.name as customer_name',
+                    'products.name as product_name',
+                    'products.code as product_code',
+                    'products.cost',
+                    'product_sales.qty',
+                    'product_sales.total',  // total column in product_sales is (net_unit_price * qty) + tax - discount
+                    // Verification from SaleController:
+                    // $product_sale['total'] = $mail_data['total'][$i] = $total[$i];
+                    // $total[$i] is calculated in frontend usually as (price * qty) + tax - discount.
+                    // The backend code stores it directly: $product_sale['total'] = ... $total[$i].
+                    // So 'total' column represents the final Line Total.
+                )->orderBy('sales.created_at', 'desc')->get();
+            }
+
+            return view('backend.report.profitability_report', compact('lims_customer_list', 'lims_product_list_all', 'lims_profitability_data', 'start_date', 'end_date', 'customer_id', 'product_id', 'general_setting'));
+        } else
+            return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
+    }
+
+    public function getCustomerSales($customer_id)
+    {
+        $lims_sale_data = Sale::where('customer_id', $customer_id)->orderBy('created_at', 'desc')->pluck('reference_no', 'id');
+        return json_encode($lims_sale_data);
+    }
+
+    public function billProfitabilityReport(Request $request)
+    {
+        $role = Role::find(Auth::user()->role_id);
+        if ($role->hasPermissionTo('profit-loss')) {
+            $start_date = $request->input('start_date', date('Y-m-d'));
+            $end_date = $request->input('end_date', date('Y-m-d'));
+            $customer_id = $request->input('customer_id', 0);
+            $sale_id = $request->input('sale_id', []);
+
+            $lims_customer_list = \App\Models\Customer::where('is_active', true)->get();
+            $lims_sale_list = [];
+            if ($customer_id)
+                $lims_sale_list = Sale::where('customer_id', $customer_id)->orderBy('created_at', 'desc')->get();  // We need object list for view loop
+
+            $general_setting = getGeneralSetting();
+            $lims_profitability_data = [];
+
+            if ($request->isMethod('post')) {
+                $query = DB::table('product_sales')
+                    ->join('sales', 'product_sales.sale_id', '=', 'sales.id')
+                    ->join('products', 'product_sales.product_id', '=', 'products.id')
+                    ->join('customers', 'sales.customer_id', '=', 'customers.id');
+
+                // If sale IDs are selected, filter by them directly
+                if (!empty($sale_id)) {
+                    $query->whereIn('sales.id', $sale_id);
+                } else {
+                    $query->whereDate('sales.created_at', '>=', $start_date);
+                    $query->whereDate('sales.created_at', '<=', $end_date);
+                    if ($customer_id) {
+                        $query->where('sales.customer_id', $customer_id);
+                    }
+                }
+
+                $lims_profitability_data = $query->select(
+                    'sales.created_at',
+                    'sales.reference_no',
+                    'customers.name as customer_name',
+                    'products.name as product_name',
+                    'products.code as product_code',
+                    'products.cost',
+                    'product_sales.qty',
+                    'product_sales.total',
+                )->orderBy('sales.created_at', 'desc')->get();
+            }
+
+            return view('backend.report.bill_profitability_report', compact('lims_customer_list', 'lims_sale_list', 'lims_profitability_data', 'start_date', 'end_date', 'customer_id', 'sale_id', 'general_setting'));
+        } else
+            return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
+    }
+
     public function dailySale($year, $month)
     {
         $role = Role::find(Auth::user()->role_id);
@@ -4920,5 +5088,254 @@ class ReportController extends Controller
         $lims_supplier_list = Supplier::where('is_active', true)->get();
 
         return view('backend.report.supplier_due_report', compact('lims_purchase_data', 'start_date', 'end_date', 'lims_supplier_list', 'supplier_id'));
+    }
+
+    // public function profitLoss(Request $request)
+    // {
+    //     $role = Role::find(Auth::user()->role_id);
+    //     if ($role->hasPermissionTo('profit-loss')) {
+    //         $start_date = $request->input('start_date', date('Y-m-d'));
+    //         $end_date = $request->input('end_date', date('Y-m-d'));
+
+    //         // 1. Purchases
+    //         $purchase = DB::table('purchases')
+    //             ->whereDate('created_at', '>=', $start_date)
+    //             ->whereDate('created_at', '<=', $end_date)
+    //             ->whereNull('deleted_at')
+    //             ->select(DB::raw('SUM(grand_total) as grand_total, SUM(paid_amount) as paid_amount, SUM(total_tax) as tax, SUM(total_discount) as discount'))
+    //             ->get();
+    //         $total_purchase = DB::table('purchases')->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->whereNull('deleted_at')->count();
+
+    //         // 2. Sales
+    //         $sale = DB::table('sales')
+    //             ->whereDate('created_at', '>=', $start_date)
+    //             ->whereDate('created_at', '<=', $end_date)
+    //             ->whereNull('deleted_at')
+    //             ->select(DB::raw('SUM(grand_total) as grand_total, SUM(paid_amount) as paid_amount, SUM(total_tax) as tax, SUM(total_discount) as discount, SUM(shipping_cost) as shipping_cost'))
+    //             ->get();
+    //         $total_sale = DB::table('sales')->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->whereNull('deleted_at')->count();
+
+    //         // 3. Sale Returns
+    //         $return = DB::table('returns')
+    //             ->whereDate('created_at', '>=', $start_date)
+    //             ->whereDate('created_at', '<=', $end_date)
+    //             ->select(DB::raw('SUM(grand_total) as grand_total, SUM(total_tax) as tax'))
+    //             ->get();
+    //         $total_return = DB::table('returns')->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->count();
+
+    //         // 4. Purchase Returns
+    //         $purchase_return = DB::table('return_purchases')
+    //             ->whereDate('created_at', '>=', $start_date)
+    //             ->whereDate('created_at', '<=', $end_date)
+    //             ->select(DB::raw('SUM(grand_total) as grand_total, SUM(total_tax) as tax'))
+    //             ->get();
+    //         $total_purchase_return = DB::table('return_purchases')->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->count();
+
+    //         // 5. Product Cost (COGS)
+    //         $product_cost = 0;
+    //         $product_tax = 0;
+    //         // Join product_sales with products to multiply qty * product.cost
+    //         // Note: This uses current product cost. For strictly accurate historical COGS, you should store cost in product_sales table.
+    //         $product_sale_data = DB::table('product_sales')
+    //             ->join('sales', 'product_sales.sale_id', '=', 'sales.id')
+    //             ->join('products', 'product_sales.product_id', '=', 'products.id')
+    //             ->whereDate('sales.created_at', '>=', $start_date)
+    //             ->whereDate('sales.created_at', '<=', $end_date)
+    //             ->whereNull('sales.deleted_at')
+    //             ->select('product_sales.qty', 'products.cost', 'products.tax_method', 'product_sales.tax')
+    //             ->get();
+
+    //         foreach ($product_sale_data as $product_sale) {
+    //             $product_cost += $product_sale->cost * $product_sale->qty;
+    //             $product_tax += $product_sale->tax;
+    //         }
+
+    //         // 6. Expenses
+    //         $expense = DB::table('expenses')
+    //             ->whereDate('created_at', '>=', $start_date)
+    //             ->whereDate('created_at', '<=', $end_date)
+    //             ->sum('amount');
+    //         $total_expense = DB::table('expenses')->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->count();
+
+    //         // 7. Payroll
+    //         $payroll = DB::table('payrolls')
+    //             ->whereDate('created_at', '>=', $start_date)
+    //             ->whereDate('created_at', '<=', $end_date)
+    //             ->sum('amount');
+    //         $total_payroll = DB::table('payrolls')->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->count();
+
+    //         // 8. Income
+    //         $income = DB::table('incomes')
+    //             ->whereDate('created_at', '>=', $start_date)
+    //             ->whereDate('created_at', '<=', $end_date)
+    //             ->sum('amount');
+    //         $total_income = DB::table('incomes')->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->count();
+
+    //         // 9. Payment Data (Cash Flow)
+    //         $payment_recieved = DB::table('payments')->whereNotNull('sale_id')->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('amount');
+    //         $payment_sent = DB::table('payments')->whereNotNull('purchase_id')->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('amount');
+    //         $payment_recieved_number = DB::table('payments')->whereNotNull('sale_id')->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->count();
+    //         $payment_sent_number = DB::table('payments')->whereNotNull('purchase_id')->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->count();
+
+    //         // Payment Methods Breakdown
+    //         $cash_payment_sale = DB::table('payments')->where('paying_method', 'Cash')->whereNotNull('sale_id')->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('amount');
+    //         $cheque_payment_sale = DB::table('payments')->where('paying_method', 'Cheque')->whereNotNull('sale_id')->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('amount');
+    //         $credit_card_payment_sale = DB::table('payments')->where('paying_method', 'Credit Card')->whereNotNull('sale_id')->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('amount');
+    //         $gift_card_payment_sale = DB::table('payments')->where('paying_method', 'Gift Card')->whereNotNull('sale_id')->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('amount');
+    //         $paypal_payment_sale = DB::table('payments')->where('paying_method', 'Paypal')->whereNotNull('sale_id')->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('amount');
+    //         $deposit_payment_sale = DB::table('payments')->where('paying_method', 'Deposit')->whereNotNull('sale_id')->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('amount');
+
+    //         $cash_payment_purchase = DB::table('payments')->where('paying_method', 'Cash')->whereNotNull('purchase_id')->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('amount');
+    //         $cheque_payment_purchase = DB::table('payments')->where('paying_method', 'Cheque')->whereNotNull('purchase_id')->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('amount');
+    //         $credit_card_payment_purchase = DB::table('payments')->where('paying_method', 'Credit Card')->whereNotNull('purchase_id')->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('amount');
+
+    //         // 10. Warehouse Breakdown
+    //         $warehouses = Warehouse::where('is_active', true)->get();
+    //         $warehouse_name = [];
+    //         $warehouse_sale = [];
+    //         $warehouse_purchase = [];
+    //         $warehouse_expense = [];
+    //         $warehouse_return = [];
+    //         $warehouse_purchase_return = [];
+
+    //         foreach ($warehouses as $key => $warehouse) {
+    //             $warehouse_name[] = $warehouse->name;
+    //             $warehouse_sale[] = DB::table('sales')->where('warehouse_id', $warehouse->id)->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->whereNull('deleted_at')->select(DB::raw('SUM(grand_total) as grand_total, SUM(total_tax) as tax'))->get();
+    //             $warehouse_purchase[] = DB::table('purchases')->where('warehouse_id', $warehouse->id)->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->whereNull('deleted_at')->select(DB::raw('SUM(grand_total) as grand_total, SUM(total_tax) as tax'))->get();
+    //             $warehouse_expense[] = DB::table('expenses')->where('warehouse_id', $warehouse->id)->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('amount');
+    //             $warehouse_return[] = DB::table('returns')->where('warehouse_id', $warehouse->id)->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->select(DB::raw('SUM(grand_total) as grand_total, SUM(total_tax) as tax'))->get();
+    //             $warehouse_purchase_return[] = DB::table('return_purchases')->where('warehouse_id', $warehouse->id)->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->select(DB::raw('SUM(grand_total) as grand_total, SUM(total_tax) as tax'))->get();
+    //         }
+
+    //         $general_setting = getGeneralSetting();
+
+    //         return view('backend.report.profit_loss', compact(
+    //             'start_date', 'end_date', 'purchase', 'total_purchase', 'sale', 'total_sale',
+    //             'return', 'total_return', 'purchase_return', 'total_purchase_return',
+    //             'expense', 'total_expense', 'payroll', 'total_payroll', 'income', 'total_income',
+    //             'product_cost', 'product_tax',
+    //             'payment_recieved', 'payment_sent', 'payment_recieved_number', 'payment_sent_number',
+    //             'cash_payment_sale', 'cheque_payment_sale', 'credit_card_payment_sale', 'gift_card_payment_sale', 'paypal_payment_sale', 'deposit_payment_sale',
+    //             'cash_payment_purchase', 'cheque_payment_purchase', 'credit_card_payment_purchase',
+    //             'warehouse_name', 'warehouse_sale', 'warehouse_purchase', 'warehouse_return', 'warehouse_purchase_return', 'warehouse_expense',
+    //             'general_setting'
+    //         ));
+    //     } else
+    //         return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
+    // }
+
+    public function detailedIncomeStatement(Request $request)
+    {
+        $role = Role::find(Auth::user()->role_id);
+        if ($role->hasPermissionTo('profit-loss')) {
+            $start_date = $request->input('start_date', date('Y-m-d'));
+            $end_date = $request->input('end_date', date('Y-m-d'));
+            $warehouse_id = $request->input('warehouse_id', 0);
+            $general_setting = getGeneralSetting();
+            $lims_warehouse_list = Warehouse::where('is_active', true)->get();
+
+            // 1. Revenue (Sales)
+            $sales_q = Sale::whereDate('created_at', '>=', $start_date)
+                ->whereDate('created_at', '<=', $end_date)
+                ->whereNull('deleted_at');
+
+            $returns_q = Returns::whereDate('created_at', '>=', $start_date)
+                ->whereDate('created_at', '<=', $end_date);
+
+            if ($warehouse_id != 0) {
+                $sales_q->where('warehouse_id', $warehouse_id);
+                $returns_q->where('warehouse_id', $warehouse_id);
+            }
+
+            $total_sales = $sales_q->sum('grand_total');
+            $sales_returns = $returns_q->sum('grand_total');
+            $net_sales = $total_sales - $sales_returns;
+
+            // 2. COGS (Matches Dashboard Logic)
+            config()->set('database.connections.mysql.strict', false);
+            DB::reconnect();
+
+            $q = Sale::join('product_sales', 'sales.id', '=', 'product_sales.sale_id')
+                ->select(DB::raw('product_sales.product_id, product_sales.product_batch_id, product_sales.sale_unit_id, sum(product_sales.qty) as sold_qty, sum(product_sales.return_qty) as return_qty'))
+                ->whereNull('sales.deleted_at')
+                ->whereDate('sales.created_at', '>=', $start_date)
+                ->whereDate('sales.created_at', '<=', $end_date);
+
+            if ($warehouse_id != 0) {
+                $q->where('sales.warehouse_id', $warehouse_id);
+            }
+
+            $product_sale_data = $q->groupBy('product_sales.product_id', 'product_sales.product_batch_id', 'product_sales.sale_unit_id')->get();
+
+            config()->set('database.connections.mysql.strict', true);
+            DB::reconnect();
+
+            $cogs_data = $this->calculateAverageCOGS($product_sale_data);
+            $cogs = $cogs_data[0];
+
+            $gross_profit = $net_sales - $cogs;
+
+            // 3. Operating Expenses
+            $expenses_q = DB::table('expenses')
+                ->join('expense_categories', 'expenses.expense_category_id', '=', 'expense_categories.id')
+                ->whereDate('expenses.created_at', '>=', $start_date)
+                ->whereDate('expenses.created_at', '<=', $end_date);
+
+            // Payroll
+            $payroll_q = DB::table('payrolls')
+                ->whereDate('created_at', '>=', $start_date)
+                ->whereDate('created_at', '<=', $end_date);
+
+            if ($warehouse_id != 0) {
+                $expenses_q->where('expenses.warehouse_id', $warehouse_id);
+                // Payroll usually doesn't have warehouse_id directly, so we skip filtering it by warehouse to be safe,
+                // OR we could try to join users -> warehouse if applicable, but dashboard logic doesn't filter payroll either in the strict sense for profit.
+            }
+
+            $expenses_by_category = $expenses_q
+                ->select('expense_categories.name', DB::raw('SUM(expenses.amount) as total_amount'))
+                ->groupBy('expense_categories.name')
+                ->get();
+
+            $total_operating_expenses = $expenses_by_category->sum('total_amount');
+            $payroll_total = $payroll_q->sum('amount');
+
+            if ($payroll_total > 0) {
+                $expenses_by_category->push((object) [
+                    'name' => 'Payroll / Salaries',
+                    'total_amount' => $payroll_total
+                ]);
+                $total_operating_expenses += $payroll_total;
+            }
+
+            // 4. Other Income
+            $incomes_q = DB::table('incomes')
+                ->join('income_categories', 'incomes.income_category_id', '=', 'income_categories.id')
+                ->whereDate('incomes.created_at', '>=', $start_date)
+                ->whereDate('incomes.created_at', '<=', $end_date);
+
+            if ($warehouse_id != 0) {
+                $incomes_q->where('incomes.warehouse_id', $warehouse_id);
+            }
+
+            $incomes_by_category = $incomes_q
+                ->select('income_categories.name', DB::raw('SUM(incomes.amount) as total_amount'))
+                ->groupBy('income_categories.name')
+                ->get();
+
+            $total_other_income = $incomes_by_category->sum('total_amount');
+
+            $net_profit = $gross_profit - $total_operating_expenses + $total_other_income;
+
+            return view('backend.report.detailed_income_statement', compact(
+                'start_date', 'end_date', 'general_setting', 'warehouse_id', 'lims_warehouse_list',
+                'total_sales', 'sales_returns', 'net_sales', 'cogs', 'gross_profit',
+                'expenses_by_category', 'total_operating_expenses',
+                'incomes_by_category', 'total_other_income',
+                'net_profit'
+            ));
+        } else {
+            return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
+        }
     }
 }

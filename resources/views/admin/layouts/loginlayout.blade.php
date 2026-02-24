@@ -111,6 +111,10 @@
         .img-fluid {
             filter: drop-shadow(2px 4px 6px black);
         }
+        .dark-logo {
+            width: 100% !important;
+            height: auto !important;
+        }
     </style>
 </head>
 <body>
@@ -151,7 +155,7 @@
     </div>
 </footer>
 <script>
-    $("div.alert").delay(4000).slideUp(800);
+    $(".alert").delay(4000).slideUp(800);
 
     //switch theme code
     var theme = <?php echo json_encode(isset($theme) ? $theme : ''); ?>;
@@ -191,7 +195,7 @@
     $('.demo-btn').on('click', function(e) {
         e.preventDefault();
         setEnvCookie($(this).data('env'));
-        $("input[name='email']").focus().val('admin@taxbridge.pk');
+        $("input[name='email']").focus().val('admin@salesbridge.pk');
         $("input[name='password']").focus().val('Admin@123');
         let form = $('#login-form');
         form.attr('action', $(this).attr('href'));

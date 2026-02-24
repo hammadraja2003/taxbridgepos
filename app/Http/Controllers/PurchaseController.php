@@ -162,18 +162,14 @@ class PurchaseController extends Controller
                         'extension' => 'in:jpg,jpeg,png,gif,pdf,csv,docx,xlsx,txt',
                     ]
                 );
-                if ($v->fails())
+                if ($v->fails()) {
                     return redirect()->back()->withErrors($v->errors());
+                }
 
                 $ext = pathinfo($document->getClientOriginalName(), PATHINFO_EXTENSION);
                 $documentName = date('Ymdhis');
-                if (!config('database.connections.saleprosaas_landlord')) {
-                    $documentName = $documentName . '.' . $ext;
-                    $document->move(public_path('documents/purchase'), $documentName);
-                } else {
-                    $documentName = $this->getTenantId() . '_' . $documentName . '.' . $ext;
-                    $document->move(public_path('documents/purchase'), $documentName);
-                }
+                $documentName = $documentName . '.' . $ext;
+                $document->move(public_path('documents/purchase'), $documentName);
                 $data['document'] = $documentName;
             }
 
@@ -185,7 +181,6 @@ class PurchaseController extends Controller
 
             $data['paid_amount'] = 0;  // important as paid amount will be updated by PaymentService
 
-            // return dd($data);
             $lims_purchase_data = Purchase::create($data);
             // return $lims_purchase_data;
             // inserting data for custom fields
@@ -200,8 +195,9 @@ class PurchaseController extends Controller
                         $custom_field_data[$field_name] = $data[$field_name];
                 }
             }
-            if (count($custom_field_data))
+            if (count($custom_field_data)) {
                 DB::table('purchases')->where('id', $lims_purchase_data->id)->update($custom_field_data);
+            }
             $product_id = $data['product_id'];
             $product_code = $data['product_code'];
             $qty = $data['qty'];
@@ -251,8 +247,9 @@ class PurchaseController extends Controller
                         ]);
                     }
                     $product_purchase['product_batch_id'] = $product_batch_data->id;
-                } else
+                } else {
                     $product_purchase['product_batch_id'] = null;
+                }
 
                 if ($lims_product_data->is_variant) {
                     $lims_product_variant_data = ProductVariant::select('id', 'variant_id', 'qty')->FindExactProductWithCode($lims_product_data->id, $product_code[$i])->first();
@@ -513,13 +510,8 @@ class PurchaseController extends Controller
 
                 $ext = pathinfo($document->getClientOriginalName(), PATHINFO_EXTENSION);
                 $documentName = date('Ymdhis');
-                if (!config('database.connections.saleprosaas_landlord')) {
-                    $documentName = $documentName . '.' . $ext;
-                    $document->move(public_path('documents/purchase'), $documentName);
-                } else {
-                    $documentName = $this->getTenantId() . '_' . $documentName . '.' . $ext;
-                    $document->move(public_path('documents/purchase'), $documentName);
-                }
+                $documentName = $documentName . '.' . $ext;
+                $document->move(public_path('documents/purchase'), $documentName);
                 $data['document'] = $documentName;
             }
             $item = 0;
@@ -1200,13 +1192,8 @@ class PurchaseController extends Controller
 
             $ext = pathinfo($document->getClientOriginalName(), PATHINFO_EXTENSION);
             $documentName = date('Ymdhis');
-            if (!config('database.connections.saleprosaas_landlord')) {
-                $documentName = $documentName . '.' . $ext;
-                $document->move(public_path('documents/purchase'), $documentName);
-            } else {
-                $documentName = $this->getTenantId() . '_' . $documentName . '.' . $ext;
-                $document->move(public_path('documents/purchase'), $documentName);
-            }
+            $documentName = $documentName . '.' . $ext;
+            $document->move(public_path('documents/purchase'), $documentName);
             $data['document'] = $documentName;
         }
         // return dd($data);
@@ -1972,13 +1959,8 @@ class PurchaseController extends Controller
 
             $ext = pathinfo($document->getClientOriginalName(), PATHINFO_EXTENSION);
             $documentName = date('Ymdhis');
-            if (!config('database.connections.saleprosaas_landlord')) {
-                $documentName = $documentName . '.' . $ext;
-                $document->move(public_path('documents/purchase'), $documentName);
-            } else {
-                $documentName = $this->getTenantId() . '_' . $documentName . '.' . $ext;
-                $document->move(public_path('documents/purchase'), $documentName);
-            }
+            $documentName = $documentName . '.' . $ext;
+            $document->move(public_path('documents/purchase'), $documentName);
             $data['document'] = $documentName;
         }
         // return dd($data);

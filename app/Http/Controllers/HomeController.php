@@ -41,9 +41,7 @@ class HomeController extends Controller
 
     public function __construct()
     {
-        if (!config('database.connections.saleprosaas_landlord')) {
-            $this->versionUpgradeInfo = $this->isUpdateAvailable();
-        }
+        $this->versionUpgradeInfo = $this->isUpdateAvailable();
     }
 
     public function home()
@@ -58,11 +56,9 @@ class HomeController extends Controller
 
     public function addonList()
     {
-        if (!config('database.connections.saleprosaas_landlord')) {
-            $role = Role::find(Auth::user()->role_id);
-            if (!$role->hasPermissionTo('addons')) {
-                return redirect('dashboard')->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
-            }
+        $role = Role::find(Auth::user()->role_id);
+        if (!$role->hasPermissionTo('addons')) {
+            return redirect('dashboard')->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
         }
         return view('backend.addonlist');
     }
@@ -274,12 +270,8 @@ class HomeController extends Controller
         config()->set('database.connections.mysql.strict', true);
         DB::reconnect();
         // fetching data for auto updates
-        if (!config('database.connections.saleprosaas_landlord') && Auth::user()->role_type <= 2) {
-            $versionUpgradeData = [];
-            $versionUpgradeData = $this->versionUpgradeInfo;
-        } else {
-            $versionUpgradeData = [];
-        }
+        $versionUpgradeData = [];
+        $versionUpgradeData = $this->versionUpgradeInfo;
 
         // return view('backend.index', compact('revenue','purchase_due','total_sale','invoice_due', 'purchase', 'expense', 'return', 'purchase_return', 'profit', 'payment_recieved', 'payment_sent', 'month', 'yearly_sale_amount', 'yearly_purchase_amount', 'versionUpgradeData'));
         return view('backend.index', compact('revenue', 'purchase_due', 'total_sale', 'invoice_due', 'purchase', 'expense', 'return', 'purchase_return', 'profit', 'payment_recieved', 'payment_sent', 'month', 'yearly_sale_amount', 'yearly_purchase_amount', 'yearly_sale_return_amount', 'yearly_purchase_return_amount', 'versionUpgradeData'));

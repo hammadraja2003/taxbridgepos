@@ -211,12 +211,16 @@
             }
             else {
                 if ($(this).data('page') == 'back_staff') {
-                    $("input[name='name']").focus().val('staff');
-                    $("input[name='password']").focus().val('staff');
+                    $("input[name='name']").focus().val('taimoor.alizafar@f3technologies.eu');
+                    $("input[name='password']").focus().val('Taimoor@123');
                 }
                 else if ($(this).data('page') == 'back_customer') {
-                    $("input[name='name']").focus().val('james');
-                    $("input[name='password']").focus().val('james');
+                    $("input[name='name']").focus().val('adeel.ahmed@secureism.com');
+                    $("input[name='password']").focus().val('Hammad@123');
+                }
+                else if ($(this).data('page') == 'back_sub_admin') {
+                    $("input[name='name']").focus().val('hammad.ali@f3technologies.eu');
+                    $("input[name='password']").focus().val('Hammad@123');
                 }
                 else {
                     $("input[name='name']").focus().val('admin');

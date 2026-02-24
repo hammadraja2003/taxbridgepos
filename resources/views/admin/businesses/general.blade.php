@@ -17,11 +17,11 @@
                 </a>
             </div>
 
-            @if(session()->has('error'))
+            {{-- @if(session()->has('error'))
                 <div class="alert alert-danger shadow-sm border-0 mb-4">
                     <i class="ti ti-alert-circle mr-2"></i> {{ session()->get('error') }}
                 </div>
-            @endif
+            @endif --}}
 
             <form action="{{ route('admin.businesses.general.store') }}" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
                 @csrf
@@ -37,11 +37,11 @@
                     <div class="card-body p-4">
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label font-weight-bold text-muted small text-uppercase">Business Name *</label>
-                                <input type="text" name="bus_name" class="form-control shadow-xs" value="{{ old('bus_name', $business_config->bus_name ?? '') }}" required placeholder="e.g. Secureism Pvt Ltd">
+                                <label class="form-label font-weight-bold text-muted small text-uppercase">Business Name <span class="text-danger">*</span></label>
+                                <input type="text" name="bus_name" class="form-control shadow-xs" value="{{ old('bus_name', $business_config->bus_name ?? '') }}" required placeholder="Enter Business Name ">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label font-weight-bold text-muted small text-uppercase">NTN / CNIC *</label>
+                                <label class="form-label font-weight-bold text-muted small text-uppercase">NTN / CNIC <span class="text-danger">*</span></label>
                                 <input type="text" name="bus_ntn_cnic" class="form-control shadow-xs" value="{{ old('bus_ntn_cnic', $business_config->bus_ntn_cnic ?? '') }}" required placeholder="e.g. 1234567-8">
                             </div>
                             <div class="col-md-6">
@@ -49,8 +49,8 @@
                                 <input type="text" name="bus_reg_num" class="form-control shadow-xs" value="{{ old('bus_reg_num', $business_config->bus_reg_num ?? '') }}" placeholder="e.g. REG-9922">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label font-weight-bold text-muted small text-uppercase">Province</label>
-                                <select name="bus_province" class="form-control shadow-xs">
+                                <label class="form-label font-weight-bold text-muted small text-uppercase">Province <span class="text-danger">*</span></label>
+                                <select name="bus_province" class="form-control shadow-xs" required>
                                     <option value="">Select Province</option>
                                     @foreach(['Punjab', 'Sindh', 'KPK', 'Balochistan', 'Gilgit Baltistan', 'Azad Kashmir', 'Islamabad'] as $p)
                                         <option value="{{ $p }}" {{ old('bus_province', $business_config->bus_province ?? '') == $p ? 'selected' : '' }}>{{ $p }}</option>
@@ -58,16 +58,16 @@
                                 </select>
                             </div>
                             <div class="col-md-12">
-                                <label class="form-label font-weight-bold text-muted small text-uppercase">Full Address</label>
-                                <textarea name="bus_address" class="form-control shadow-xs" rows="2" placeholder="Enter complete business address">{{ old('bus_address', $business_config->bus_address ?? '') }}</textarea>
+                                <label class="form-label font-weight-bold text-muted small text-uppercase">Full Address <span class="text-danger">*</span></label>
+                                <textarea name="bus_address" class="form-control shadow-xs" rows="2" required placeholder="Enter complete business address">{{ old('bus_address', $business_config->bus_address ?? '') }}</textarea>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label font-weight-bold text-muted small text-uppercase">Contact Person</label>
-                                <input type="text" name="bus_contact_person" class="form-control shadow-xs" value="{{ old('bus_contact_person', $business_config->bus_contact_person ?? '') }}" placeholder="e.g. Ahmed Jawad">
+                                <label class="form-label font-weight-bold text-muted small text-uppercase">Contact Person <span class="text-danger">*</span></label>
+                                <input type="text" name="bus_contact_person" class="form-control shadow-xs" value="{{ old('bus_contact_person', $business_config->bus_contact_person ?? '') }}" required placeholder="e.g. Hammad Ali">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label font-weight-bold text-muted small text-uppercase">Contact Number</label>
-                                <input type="text" name="bus_contact_num" class="form-control shadow-xs" value="{{ old('bus_contact_num', $business_config->bus_contact_num ?? '') }}" placeholder="e.g. +92 300 1234567">
+                                <label class="form-label font-weight-bold text-muted small text-uppercase">Contact Number <span class="text-danger">*</span></label>
+                                <input type="text" name="bus_contact_num" class="form-control shadow-xs" value="{{ old('bus_contact_num', $business_config->bus_contact_num ?? '') }}" required placeholder="e.g. +92 300 1234567">
                             </div>
                         </div>
                     </div>
@@ -116,15 +116,15 @@
                     <div class="card-body p-4">
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label font-weight-bold text-muted small text-uppercase">Admin Name *</label>
+                                <label class="form-label font-weight-bold text-muted small text-uppercase">Admin Name <span class="text-danger">*</span></label>
                                 <input type="text" name="user_name" class="form-control shadow-xs" value="{{ old('user_name', $admin_user->name ?? '') }}" {{ !$business_config ? 'required' : '' }} placeholder="Username for login">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label font-weight-bold text-muted small text-uppercase">Admin Email *</label>
+                                <label class="form-label font-weight-bold text-muted small text-uppercase">Admin Email <span class="text-danger">*</span></label>
                                 <input type="email" name="user_email" class="form-control shadow-xs" value="{{ old('user_email', $admin_user->email ?? '') }}" {{ !$business_config ? 'required' : '' }} placeholder="john@example.com">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label font-weight-bold text-muted small text-uppercase">Password {{ $business_config ? '(Leave blank to keep current)' : '*' }}</label>
+                                <label class="form-label font-weight-bold text-muted small text-uppercase">Password {!! $business_config ? '<small class="text-muted">(Leave blank to keep current)</small>' : '<span class="text-danger">*</span>' !!}</label>
                                 <input type="password" name="user_password" class="form-control shadow-xs" {{ !$business_config ? 'required' : '' }} placeholder="••••••••">
                             </div>
                             <div class="col-md-6">
@@ -136,18 +136,18 @@
                 </div>
 
                 <!-- Section 4: System Settings -->
-                <div class="card shadow-sm border-0 mb-4 overflow-hidden">
+                <div class="card shadow-sm border-0 mb-4">
                     <div class="card-header bg-light border-bottom py-3">
                         <h6 class="m-0 font-weight-bold text-dark"><i class="ti ti-settings mr-2 text-secondary"></i>System Settings</h6>
                     </div>
                     <div class="card-body p-4">
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label font-weight-bold text-muted small text-uppercase">Site Title *</label>
-                                <input type="text" name="site_title" class="form-control shadow-xs" value="{{ old('site_title', $general_setting->site_title ?? '') }}" required placeholder="e.g. TaxBridge POS">
+                                <label class="form-label font-weight-bold text-muted small text-uppercase">Site Title <span class="text-danger">*</span></label>
+                                <input type="text" name="site_title" class="form-control shadow-xs" value="{{ old('site_title', $general_setting->site_title ?? '') }}" required placeholder="e.g. SalesBridge POS">
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label font-weight-bold text-muted small text-uppercase">Currency *</label>
+                                <label class="form-label font-weight-bold text-muted small text-uppercase">Currency <span class="text-danger">*</span></label>
                                 <select name="currency" class="form-control shadow-xs" required>
                                     @foreach($lims_currency_list as $currency)
                                         <option value="{{ $currency->id }}" {{ old('currency', $general_setting->currency ?? '') == $currency->id ? 'selected' : '' }}>{{ $currency->name }}</option>
@@ -180,13 +180,14 @@
                                     value="{{ old('fbr_api_token_prod', $business_config->fbr_api_token_prod ?? '') }}" 
                                     placeholder="Enter Production API Key">
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label font-weight-bold text-muted small text-uppercase">Timezone *</label>
+                            <div class="col-md-6 mb-5">
+                                <label class="form-label font-weight-bold text-muted small text-uppercase">Timezone <span class="text-danger">*</span></label>
                                 <select name="timezone" class="form-control shadow-xs selectpicker" data-live-search="true" required>
                                     @foreach($zones_array as $zone)
                                         <option value="{{ $zone['zone'] }}" {{ old('timezone', $general_setting->timezone ?? '') == $zone['zone'] ? 'selected' : '' }}>{{ $zone['diff_from_GMT'] }} - {{ $zone['zone'] }}</option>
                                     @endforeach
                                 </select>
+                                <small class="text-muted">Select the timezone for your business operations.</small>
                             </div>
                                 <div class="form-check mt-4 pt-2">
                                     <input type="checkbox" name="is_rtl" class="form-check-input" id="is_rtl" {{ old('is_rtl', $general_setting->is_rtl ?? false) ? 'checked' : '' }}>
@@ -194,9 +195,7 @@
                                 </div>
                             
 
-                            <!-- Branding -->
-                            <div class="col-md-12 my-3"><hr class="text-muted"></div>
-                            
+                           
                             <div class="col-md-6">
                                 <label class="form-label font-weight-bold text-muted small text-uppercase">Site Logo</label>
                                 <input type="file" name="site_logo" class="form-control shadow-xs">
@@ -216,19 +215,18 @@
                                 @endif
                             </div>
 
-                            <!-- Formatting Preferences -->
-                            <div class="col-md-12 my-3"><hr class="text-muted"></div>
-
+                            
                             <div class="col-md-3">
                                 <label class="form-label font-weight-bold text-muted small text-uppercase">Date Format</label>
                                 <select name="date_format" class="form-control shadow-xs">
-                                    @php $formats = ['d-m-Y', 'm-d-Y', 'Y-m-d', 'd/m/Y', 'm/d/Y', 'Y/m/d']; @endphp
+                                    @php $formats = ['d-m-Y', 'm-d-Y', 'Y-m-d', 'd/m/Y', 'm/d/Y', 'Y/m/d', 'd-M-Y']; @endphp
                                     @foreach($formats as $fmt)
                                         <option value="{{ $fmt }}" {{ old('date_format', $general_setting->date_format ?? 'd-m-Y') == $fmt ? 'selected' : '' }}>
                                             {{ date($fmt) }} ({{ $fmt }})
                                         </option>
                                     @endforeach
                                 </select>
+                                <small class="text-muted">This format will be applied to all date displays.</small>
                             </div>
                             
                             <div class="col-md-3">
@@ -265,6 +263,7 @@
                                 <select name="staff_access" class="form-control shadow-xs">
                                     <option value="all" {{ old('staff_access', $general_setting->staff_access ?? 'all') == 'all' ? 'selected' : '' }}>All Records</option>
                                     <option value="own" {{ old('staff_access', $general_setting->staff_access ?? 'all') == 'own' ? 'selected' : '' }}>Own Records</option>
+                                    <option value="warehouse" {{ old('staff_access', $general_setting->staff_access ?? 'all') == 'warehouse' ? 'selected' : '' }}>Warehouse Wise</option>
                                 </select>
                             </div>
 
@@ -297,16 +296,17 @@
                 </div>
 
                 <!-- Section 5: Allowed Scenarios -->
-                <div class="card shadow-sm border-0 mb-5 overflow-hidden">
+                <div class="card shadow-sm border-0 mb-5">
                     <div class="card-header bg-light border-bottom py-3">
                         <h6 class="m-0 font-weight-bold text-dark"><i class="ti ti-layout-grid mr-2 text-warning"></i>Allowed Scenarios</h6>
                     </div>
                     <div class="card-body p-3">
                         <div class="">
                             
-                                <label class="form-label font-weight-bold text-muted small text-uppercase mb-2">Select Accessible Scenarios</label>
+                                <label class="form-label font-weight-bold text-muted small text-uppercase mb-2">Select Accessible Scenarios <span class="text-danger">*</span></label>
                                 <select name="scenarios[]" class="form-control selectpicker shadow-xs" 
                                     multiple="multiple" 
+                                    required
                                     data-live-search="true" 
                                     data-actions-box="true" 
                                     data-style="btn-outline-light text-dark border shadow-xs"
@@ -337,7 +337,6 @@
         </div>
     </div>
 </div>
-
 <style>
     .font-weight-600 { font-weight: 600; }
     .shadow-xs { box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
@@ -349,10 +348,11 @@
     .selectpicker + .btn:focus { box-shadow: 0 0 0 0.25rem rgba(13,110,253,.1) !important; }
 </style>
 <script>
-    (function() {
+    (function() 
+    {
         const envSelect = document.getElementById('fbr_env_select');
-        const sandboxInput = document.querySelector('input[name="sandbox_api_key"]');
-        const productionInput = document.querySelector('input[name="production_api_key"]');
+        const sandboxInput = document.querySelector('input[name="fbr_api_token_sandbox"]');
+        const productionInput = document.querySelector('input[name="fbr_api_token_prod"]');
         const sandboxStar = document.querySelector('.sandbox-required');
         const productionStar = document.querySelector('.production-required');
         const form = document.querySelector('form[action*="businesses/general"]');

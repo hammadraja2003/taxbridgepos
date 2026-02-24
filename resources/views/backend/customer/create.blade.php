@@ -284,17 +284,25 @@
 @push('scripts')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
 <script>
-    const input = document.querySelector("#wa_number");
-    window.intlTelInput(input, {
-        initialCountry: "auto",
-        geoIpLookup: function (callback) {
-        fetch("https://ipapi.co/json")
-            .then((res) => res.json())
-            .then((data) => callback(data.country_code))
-            .catch(() => callback("pk"));
-        },
-        utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"
-    });
+     const input = document.querySelector("#wa_number");
+    if (input) {
+        window.intlTelInput(input, {
+            initialCountry: "pk", // ✅ Default fallback
+            geoIpLookup: function (callback) {
+                fetch("https://ipapi.co/json")
+                    .then((res) => {
+                        if (!res.ok) throw new Error('API failed');
+                        return res.json();
+                    })
+                    .then((data) => callback(data.country_code))
+                    .catch(() => {
+                        console.log('Using default country: PK');
+                        callback("pk"); // ✅ Fallback to Pakistan
+                    });
+            },
+            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"
+        });
+    }
 
     $("#customer_form").submit(function(e) {
         e.preventDefault();

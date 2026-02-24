@@ -720,6 +720,7 @@
     var lims_productcodeSearch = $('#lims_productcodeSearch');
 
     lims_productcodeSearch.autocomplete({
+         minLength: 3, // <--- Add this line to prevent searching until 3 chars are typed
         source: function(request, response) {
             var matcher = new RegExp(".?" + $.ui.autocomplete.escapeRegex(request.term), "i");
             response($.grep(lims_product_code, function(item) {
@@ -738,6 +739,8 @@
             productSearch(data);
         }
     });
+
+
 
     $('body').on('focus',".expired-date", function() {
         $(this).datepicker({

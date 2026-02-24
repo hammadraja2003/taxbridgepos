@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Roles as Role;
-use App\Models\Warehouse;
 use App\Models\Biller;
-use App\Models\Employee;
-use App\Models\User;
 use App\Models\Department;
 use App\Models\Designation;
+use App\Models\Employee;
+use App\Models\Roles as Role;
 use App\Models\Shift;
-use Auth;
-use Illuminate\Validation\Rule;
+use App\Models\User;
+use App\Models\Warehouse;
 use App\Traits\TenantInfo;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Validation\Rule;
+use Auth;
 
 class EmployeeController extends Controller
 {
@@ -23,11 +23,11 @@ class EmployeeController extends Controller
     public function index()
     {
         $role = Role::find(Auth::user()->role_id);
-        if($role->hasPermissionTo('employees-index')){
+        if ($role->hasPermissionTo('employees-index')) {
             $permissions = Role::findByName($role->name)->permissions;
             foreach ($permissions as $permission)
                 $all_permission[] = $permission->name;
-            if(empty($all_permission))
+            if (empty($all_permission))
                 $all_permission[] = 'dummy text';
 
             // $lims_employee_all = Employee::with('user')->where('is_active', true)->where('is_sale_agent', 0)->get();
@@ -40,9 +40,8 @@ class EmployeeController extends Controller
             $lims_warehouse_list = Warehouse::where('is_active', true)->get();
             $lims_biller_list = Biller::where('is_active', true)->get();
 
-            return view('backend.employee.index', compact('lims_biller_list','lims_warehouse_list','lims_role_list','lims_designation_list','lims_shift_list','lims_employee_all', 'lims_department_list', 'all_permission', 'numberOfEmployee'));
-        }
-        else {
+            return view('backend.employee.index', compact('lims_biller_list', 'lims_warehouse_list', 'lims_role_list', 'lims_designation_list', 'lims_shift_list', 'lims_employee_all', 'lims_department_list', 'all_permission', 'numberOfEmployee'));
+        } else {
             return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
         }
     }
@@ -50,7 +49,7 @@ class EmployeeController extends Controller
     public function create()
     {
         $role = Role::find(Auth::user()->role_id);
-        if($role->hasPermissionTo('employees-add')){
+        if ($role->hasPermissionTo('employees-add')) {
             $lims_role_list = Role::where('is_active', true)->get();
             $lims_warehouse_list = Warehouse::where('is_active', true)->get();
             $lims_biller_list = Biller::where('is_active', true)->get();
@@ -62,7 +61,7 @@ class EmployeeController extends Controller
             $numberOfUserAccount = User::where('is_active', true)->where('bus_config_id', session('bus_config_id'))->count();
 
             $general_setting = \App\Models\GeneralSetting::first();
-            if(in_array('project', explode(',', $general_setting->modules))){
+            if (in_array('project', explode(',', $general_setting->modules))) {
                 $companies = \Modules\Project\Entities\Company::where('is_active', true)->get();
             } else {
                 $companies = [];
@@ -79,8 +78,7 @@ class EmployeeController extends Controller
                 'lims_shift_list',
                 'lims_designation_list'
             ));
-        }
-        else {
+        } else {
             return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
         }
     }
@@ -94,7 +92,7 @@ class EmployeeController extends Controller
         $data['is_active'] = true;
 
         // Handle user creation if checkbox selected
-        if(isset($data['user'])){
+        if (isset($data['user'])) {
             $this->validate($request, [
                 'name' => [
                     'max:255',
@@ -114,7 +112,7 @@ class EmployeeController extends Controller
             $data['is_deleted'] = false;
             $data['password'] = bcrypt($data['password']);
             $data['phone'] = $data['phone_number'];
-            if(isset($data['company']))
+            if (isset($data['company']))
                 $data['company_name'] = $data['company'];
 
             User::create($data);
@@ -138,15 +136,10 @@ class EmployeeController extends Controller
         $image = $request->image;
         if ($image) {
             $ext = pathinfo($image->getClientOriginalName(), PATHINFO_EXTENSION);
-            $imageName = date("Ymdhis");
-            if(!config('database.connections.saleprosaas_landlord')) {
-                $imageName = $imageName . '.' . $ext;
-                $image->move(public_path('images/employee'), $imageName);
-            }
-            else {
-                $imageName = $this->getTenantId() . '_' . $imageName . '.' . $ext;
-                $image->move(public_path('images/employee'), $imageName);
-            }
+            $imageName = date('Ymdhis');
+            $imageName = $imageName . '.' . $ext;
+            $image->move(public_path('images/employee'), $imageName);
+
             $data['image'] = $imageName;
         }
 
@@ -171,10 +164,10 @@ class EmployeeController extends Controller
             'image' => $data['image'] ?? null,
             'is_active' => true,
             'is_sale_agent' => $isSaleAgent,
-            'sales_target'  => $isSaleAgent == 1 ? ($data['sales_target'] ?? null) : null,
+            'sales_target' => $isSaleAgent == 1 ? ($data['sales_target'] ?? null) : null,
         ]);
 
-        if($isSaleAgent){
+        if ($isSaleAgent) {
             return redirect('sale-agents')->with('message', $message);
         }
 
@@ -185,7 +178,7 @@ class EmployeeController extends Controller
     {
         $lims_employee_data = Employee::find($request->employee_id);
 
-        if($lims_employee_data->user_id){
+        if ($lims_employee_data->user_id) {
             $this->validate($request, [
                 'name' => [
                     'max:255',
@@ -215,21 +208,14 @@ class EmployeeController extends Controller
 
         $data = $request->except('image');
 
-
         // Handle image update
         $image = $request->image;
         if ($image) {
             $this->fileDelete(public_path('images/employee/'), $lims_employee_data->image);
             $ext = pathinfo($image->getClientOriginalName(), PATHINFO_EXTENSION);
-            $imageName = date("Ymdhis");
-            if(!config('database.connections.saleprosaas_landlord')) {
-                $imageName = $imageName . '.' . $ext;
-                $image->move(public_path('images/employee'), $imageName);
-            }
-            else {
-                $imageName = $this->getTenantId() . '_' . $imageName . '.' . $ext;
-                $image->move(public_path('images/employee'), $imageName);
-            }
+            $imageName = date('Ymdhis');
+            $imageName = $imageName . '.' . $ext;
+            $image->move(public_path('images/employee'), $imageName);
             $data['image'] = $imageName;
         }
 
@@ -260,7 +246,7 @@ class EmployeeController extends Controller
         $employee_id = $request['employeeIdArray'];
         foreach ($employee_id as $id) {
             $lims_employee_data = Employee::find($id);
-            if($lims_employee_data->user_id){
+            if ($lims_employee_data->user_id) {
                 $lims_user_data = User::find($lims_employee_data->user_id);
                 $lims_user_data->is_deleted = true;
                 $lims_user_data->save();
@@ -276,7 +262,7 @@ class EmployeeController extends Controller
     public function destroy($id)
     {
         $lims_employee_data = Employee::find($id);
-        if($lims_employee_data->user_id){
+        if ($lims_employee_data->user_id) {
             $lims_user_data = User::find($lims_employee_data->user_id);
             $lims_user_data->is_deleted = true;
             $lims_user_data->save();

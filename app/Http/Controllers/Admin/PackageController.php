@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\BusinessPackage;
 use App\Models\Package;
 use App\Models\PackageFeature;
 use Illuminate\Http\Request;
@@ -130,8 +131,20 @@ class PackageController extends Controller
         } catch (\Exception $e) {
             abort(404);
         }
-        $package = Package::findOrFail($id);
-        $package->delete();
-        return redirect()->route('admin.packages.index')->with('success', 'Package deleted successfully.');
+
+        $package = Package::where('package_id', $id)->firstOrFail();
+        $isAssigned = BusinessPackage::where('package_id', $id)->exists();
+
+        if ($isAssigned) {
+            return redirect()
+                ->route('admin.packages.index')
+                ->with('error', 'This package is assigned to one or more businesses and cannot be deleted.');
+        }
+        $package->features()->delete();  // package_features
+        $package->delete();  // packages
+
+        return redirect()
+            ->route('admin.packages.index')
+            ->with('success', 'Package deleted successfully.');
     }
 }

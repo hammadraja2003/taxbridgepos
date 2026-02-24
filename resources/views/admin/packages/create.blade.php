@@ -24,11 +24,11 @@
                         @csrf
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
-                                <label class="form-label font-weight-bold text-muted small text-uppercase">Package Name *</label>
+                                <label class="form-label font-weight-bold text-muted small text-uppercase">Package Name <span class="text-danger">*</span></label>
                                 <input type="text" name="package_name" class="form-control shadow-xs" placeholder="e.g. Premium Plan" value="{{ old('package_name') }}" required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label font-weight-bold text-muted small text-uppercase">Billing Cycle *</label>
+                                <label class="form-label font-weight-bold text-muted small text-uppercase">Billing Cycle <span class="text-danger">*</span></label>
                                 <select name="package_billing_cycle" class="form-control shadow-xs" required>
                                     <option value="monthly">Monthly</option>
                                     <option value="quarterly">Quarterly</option>
@@ -37,7 +37,7 @@
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label font-weight-bold text-muted small text-uppercase">Price *</label>
+                                <label class="form-label font-weight-bold text-muted small text-uppercase">Price <span class="text-danger">*</span></label>
                                 <div class="input-group shadow-xs">
                                     <input type="number" name="package_price" class="form-control border-start-0 ps-0" step="0.01" placeholder="0.00" value="{{ old('package_price') }}" required>
                                 </div>

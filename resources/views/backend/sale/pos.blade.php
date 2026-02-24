@@ -2841,16 +2841,24 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
     <script>
         const input = document.querySelector("#wa_number");
-        window.intlTelInput(input, {
-            initialCountry: "auto",
-            geoIpLookup: function (callback) {
-                fetch("https://ipapi.co/json")
-                    .then((res) => res.json())
-                    .then((data) => callback(data.country_code))
-                    .catch(() => callback("us"));
-            },
-            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"
-        });
+        if (input) {
+            window.intlTelInput(input, {
+                initialCountry: "pk", // ✅ Default fallback
+                geoIpLookup: function (callback) {
+                    fetch("https://ipapi.co/json")
+                        .then((res) => {
+                            if (!res.ok) throw new Error('API failed');
+                            return res.json();
+                        })
+                        .then((data) => callback(data.country_code))
+                        .catch(() => {
+                            console.log('Using default country: PK');
+                            callback("pk"); // ✅ Fallback to Pakistan
+                        });
+                },
+                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"
+            });
+        }
     </script>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>

@@ -1,8 +1,10 @@
 <?php
 namespace App\Http\Controllers\Admin;
+
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
+
 class LogController extends Controller
 {
     public function index(Request $request)
@@ -24,6 +26,7 @@ class LogController extends Controller
             return view('admin.logs.show', ['log' => $logs]);
         }
     }
+
     public function clear()
     {
         $logPath = storage_path('logs/laravel.log');
@@ -31,18 +34,17 @@ class LogController extends Controller
             return response()->json(['message' => 'No log file found.'], 404);
         }
         try {
-            $lines = (int)200;
+            $lines = (int) 200;
             File::put($logPath, '');
-            // $logs = $this->tailLog($logPath, $lines);
-            // return view('admin.logs.show', ['log' => $logs]);
             return response()->json(['message' => 'Logs cleared successfully']);
-       } catch (\Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(['message' => '❌ Failed to clear log file: ' . $e->getMessage()]);
         }
     }
+
     private function tailLog($filePath, $lines = 100)
     {
-        $handle = fopen($filePath, "r");
+        $handle = fopen($filePath, 'r');
         $buffer = '';
         $chunkSize = 4096;
         fseek($handle, 0, SEEK_END);

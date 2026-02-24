@@ -12,8 +12,6 @@ fbr k lye fbr invoice setting ka table bana kar usme setting rakhni ha
     "scenarioId": "SN018",
 
 
-
-
      "hsCode": "9815.6000",
      "fixedNotifiedValueOrRetailPrice": 0,
       "salesTaxWithheldAtSource": 0.0,
@@ -24,7 +22,7 @@ fbr k lye fbr invoice setting ka table bana kar usme setting rakhni ha
       "sroItemSerialNo": ""
 
       above fields nned to be added in product table
-       "saleType": "Services (FED in ST Mode)",  // scenario_id ki base pr aay gi
+      "saleType": "Services (FED in ST Mode)",  // scenario_id ki base pr aay gi
 
       "productDescription": "API Integration Services",  //name
       "rate": "16%",  //tax_id
@@ -49,3 +47,96 @@ ALTER TABLE products ADD COLUMN (
   sro_schedule_no VARCHAR(50) NULL,
   sro_item_serial_no VARCHAR(50) NULL,
 );
+
+/*****************************************************************************************************************/
+//                                                       TO DO                                                   //
+/*****************************************************************************************************************/
+
+-> MFA  (DONE)
+-> Password Forget Email (DONE)
+-> Direct Bill Print (DONE) (design Remaning)
+-> Backlog (user storewise login , multi language , manufecturing , whatsapp api integration . sms api integration , hrm module , )
+-> Data Migration (skipped)
+-> Tutorial Recording (parallel) (DONE)
+-> Permission jo visible hoti hain backend.role.permission me wo sab permissions aati hain jab k sirf wo aani chaye jo usk admin ko assign hain
+
+/*****************************************************************************************************************/
+//                                              Client feedback                                                  //
+/*****************************************************************************************************************/
+
+-> Customer wise, product wise profitability report (DONE)  (profit including price k hisab se calculate hona chaye )
+-> bill wise profitability report (DONE) (profit including price k hisab se calculate hona chaye )
+-> Stock Report With Inclusive/Exclusive Rate. (isme value , gst including , excluding sab kuch lana ah ) (DONE) 
+-> Detailed Income STatment (DONE)
+-> Sale Discount On Which Amount  (in both cases, the Product Discount is applied to 
+    the Sale Price net_unit_price =  row_product_price - product_discount) (DONE)
+-> Detailed Balance Sheet 
+-> Each Transaction Should Have COA Value
+-> Total Payable and Receivable Report
+
+
+
+/*************************************Auto Fetch Client Type****************************************************/
+-> Auto Fetch Client Type (Registerd/Not Registed) by giving his ntn/cnic
+FBR ki api ALready lookup me ha usko client create side pr lana hoga aur dekhna hoga k kya wo API sahe results Fetch karti ha
+/***************************************************************************************************************/
+
+
+/***********************************************Third Schedule Product******************************************/
+-> Third Schedule Product (sales tax apply hota ha MRP(Maximum Retail Price) ka ) aur (value apply hoti ha after discount) (suppose me aik prodcut customer A ko 1000 ka sale karta hu aur csutomer b ko 900 ka to dono customer k lye sales tax 1000 ka apply hoga aur value 900 apply hogi )
+Suppose:
+MRP = 1000
+Customer A ko sale = 1000
+Customer B ko sale = 900
+Aapka sawal:
+Kya dono cases me sales tax 1000 par lagega?
+Correct Answer
+Haan — agar product Third Schedule me hai
+To:
+Case	              Selling Price	            Sales Tax Base
+Customer A	          1000	                    1000
+Customer B	          900	                    1000
+Sales tax MRP par hi calculate hoga, chahe discount de diya ho.
+
+sales tax MRP pr calculate hoga lakin discount sale price pr calculate hoga like MRP 1000 ha to sales tax 1000 pr calculate hoga lakin age ham customer ko  wo prodcut 900 ki dety hain to total value excluding tax 900 show hogi  aur 1000 pr  18 % calculate ho kar total value including tax show hogi jo k 1080 show ho rhi ha 
+
+hamary sytem me sales tax to dono ka MRP pr calculate ho rha ha but Total Value Excluding Tax and Total Value Including Tax ko review karna pary ga
+Rule (Third Schedule Product ke liye)
+
+Sales Tax hamesha MRP par calculate hota hai
+Discount / Sale price change ho sakti hai
+Tax amount fix rehta hai (jab tak MRP same hai)
+Case 1
+MRP = 1000
+Tax rate = 18%
+➡ Sales Tax = 1000 × 18% = 180
+Agar product 900 me sell ki:
+Value (Excl. Tax) = 900
+Sales Tax = 180
+Total (Incl. Tax) = 1080
+Correct
+Case 2
+Same product, MRP abhi bhi 1000
+Agar product 950 me sell ki:
+Value (Excl. Tax) = 950
+Sales Tax = 180 (same rahega)
+Total (Incl. Tax) = 1130
+Correct
+/*****************************************************************************************************************/
+
+/*************************************Third Schedule products*******************************************/
+-> THird Schedule Product ki R&D karni ha aur kya hamary sytem me ye product add ho sakta ha k nae 
+Third Schedule Product kya hota hai?
+
+Pakistan me sales tax law ke andar kuch products “Third Schedule” me hote hain.
+Ye aam products jaise nahi hote.
+In products par:
+Retail price (MRP) par tax lagta hai
+Invoice me special rules follow karne hote hain
+FBR zyada strict monitoring karti hai
+Example (samajhne ke liye):
+Mobile phones
+Electronics (kuch categories)
+Cigarettes, etc.
+/***************************************************************************************************************/
+ 

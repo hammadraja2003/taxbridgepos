@@ -8,7 +8,7 @@
             <div class="col-12">
                 <div class="mb-5 text-center text-lg-start">
                     <div class="d-flex justify-content-center align-items-center my-2">
-                        <img src="{{ env('PUB_PATH') . '/logo/tax-bridgePOS-logo.svg' }}" alt="Logo" class="dark-logo">
+                        <img src="{{ env('PUB_PATH') . '/logo/LOGO-SalesBridge-01.png' }}" alt="Logo" class="dark-logo">
                     </div>
                     <h4 class="text-center mt-3">Reset Password</h4>
                     <p class="text-center text-muted">Create a new password for your account.</p>

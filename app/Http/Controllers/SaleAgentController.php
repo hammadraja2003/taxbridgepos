@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Roles as Role;
-use App\Models\Warehouse;
 use App\Models\Biller;
-use App\Models\Employee;
-use App\Models\User;
 use App\Models\Department;
-use Auth;
-use Illuminate\Validation\Rule;
+use App\Models\Employee;
+use App\Models\Roles as Role;
+use App\Models\User;
+use App\Models\Warehouse;
 use App\Traits\TenantInfo;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
+use Auth;
 
 class SaleAgentController extends Controller
 {
@@ -24,7 +24,6 @@ class SaleAgentController extends Controller
         $role = Role::find(Auth::user()->role_id);
 
         if ($role && $role->hasPermissionTo('sale-agents')) {
-
             // Get all permission names for current role
             $permissions = Role::findByName($role->name)->permissions;
             $all_permission = [];
@@ -43,11 +42,11 @@ class SaleAgentController extends Controller
 
             // Auxiliary lists used by the blade (create / edit forms)
             $lims_department_list = Department::where('is_active', true)->get();
-            $lims_role_list       = Role::where('is_active', true)->where('id', '!=', 5)->get();
-            $lims_warehouse_list  = \App\Models\Warehouse::where('is_active', true)->get();
-            $lims_biller_list     = \App\Models\Biller::where('is_active', true)->get();
-            $lims_shift_list      = \App\Models\Shift::where('is_active', true)->get();
-            $lims_designation_list= \App\Models\Designation::where('is_active', true)->get();
+            $lims_role_list = Role::where('is_active', true)->where('id', '!=', 5)->get();
+            $lims_warehouse_list = \App\Models\Warehouse::where('is_active', true)->get();
+            $lims_biller_list = \App\Models\Biller::where('is_active', true)->get();
+            $lims_shift_list = \App\Models\Shift::where('is_active', true)->get();
+            $lims_designation_list = \App\Models\Designation::where('is_active', true)->get();
 
             $numberOfEmployee = Employee::where('is_active', true)->count();
 
@@ -67,12 +66,11 @@ class SaleAgentController extends Controller
         }
     }
 
-
     public function create()
     {
         $role = Role::find(Auth::user()->role_id);
-        if($role->hasPermissionTo('employees-add')){
-            $lims_role_list = Role::where('is_active', true)->where('id','!=',5)->get();
+        if ($role->hasPermissionTo('employees-add')) {
+            $lims_role_list = Role::where('is_active', true)->where('id', '!=', 5)->get();
             $lims_warehouse_list = Warehouse::where('is_active', true)->get();
             $lims_biller_list = Biller::where('is_active', true)->get();
             $lims_department_list = Department::where('is_active', true)->get();
@@ -81,18 +79,17 @@ class SaleAgentController extends Controller
 
             $general_setting = \App\Models\GeneralSetting::first();
 
-            if(in_array('project',explode(',',$general_setting->modules))){
+            if (in_array('project', explode(',', $general_setting->modules))) {
                 $companies = \Modules\Project\Entities\Company::where('is_active', true)->get();
             } else {
                 $companies = [];
             }
 
-
-            return view('backend.hrm.sale_agent.create', compact('lims_role_list', 'lims_warehouse_list', 'lims_biller_list', 'lims_department_list', 'numberOfEmployee', 'numberOfUserAccount','companies'));
-        }
-        else
+            return view('backend.hrm.sale_agent.create', compact('lims_role_list', 'lims_warehouse_list', 'lims_biller_list', 'lims_department_list', 'numberOfEmployee', 'numberOfUserAccount', 'companies'));
+        } else
             return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
     }
+
     public function store(Request $request)
     {
         try {
@@ -100,22 +97,22 @@ class SaleAgentController extends Controller
             $message = 'Sale Agent created successfully';
 
             if (isset($data['user'])) {
-                 $connection = getConnectionName(\App\Models\Roles::class);
+                $connection = getConnectionName(\App\Models\Roles::class);
                 $this->validate($request, [
                     'name' => [
                         'max:255',
-                        Rule::unique($connection.'.users')->where(function ($query) {
+                        Rule::unique($connection . '.users')->where(function ($query) {
                             return $query->where('is_deleted', false);
                         }),
                     ],
                     'email' => [
                         'email',
                         'max:255',
-                        Rule::unique($connection.'.users')->where(function ($query) {
+                        Rule::unique($connection . '.users')->where(function ($query) {
                             return $query->where('is_deleted', false);
                         }),
                     ],
-                    'role_id' => 'required|exists:roles,id', // added role validation
+                    'role_id' => 'required|exists:roles,id',  // added role validation
                 ]);
 
                 $data['is_active'] = true;
@@ -148,15 +145,9 @@ class SaleAgentController extends Controller
             $image = $request->image;
             if ($image) {
                 $ext = pathinfo($image->getClientOriginalName(), PATHINFO_EXTENSION);
-                $imageName = date("Ymdhis");
-
-                if (!config('database.connections.saleprosaas_landlord')) {
-                    $imageName = $imageName . '.' . $ext;
-                    $image->move(public_path('images/sale_agent'), $imageName);
-                } else {
-                    $imageName = $this->getTenantId() . '_' . $imageName . '.' . $ext;
-                    $image->move(public_path('images/sale_agent'), $imageName);
-                }
+                $imageName = date('Ymdhis');
+                $imageName = $imageName . '.' . $ext;
+                $image->move(public_path('images/sale_agent'), $imageName);
 
                 $data['image'] = $imageName;
             }
@@ -167,25 +158,24 @@ class SaleAgentController extends Controller
             $store = Employee::create($data);
 
             return redirect('sale-agents')->with('message', $message);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return redirect()->back()
+            return redirect()
+                ->back()
                 ->withErrors($e->validator)
                 ->withInput();
-
         } catch (\Exception $e) {
-            Log::error('Sale Agent Store Error: '.$e->getMessage());
-            return redirect()->back()
+            Log::error('Sale Agent Store Error: ' . $e->getMessage());
+            return redirect()
+                ->back()
                 ->with('error', 'Something went wrong: ' . $e->getMessage())
                 ->withInput();
         }
     }
 
-
     public function update(Request $request, $id)
     {
         $lims_employee_data = Employee::find($request['employee_id']);
-        if($lims_employee_data->user_id){
+        if ($lims_employee_data->user_id) {
             $this->validate($request, [
                 'name' => [
                     'max:255',
@@ -196,18 +186,18 @@ class SaleAgentController extends Controller
                 'email' => [
                     'email',
                     'max:255',
-                        Rule::unique('users')->ignore($lims_employee_data->user_id)->where(function ($query) {
+                    Rule::unique('users')->ignore($lims_employee_data->user_id)->where(function ($query) {
                         return $query->where('is_deleted', false);
                     }),
                 ],
             ]);
         }
-        //validation in employee table
+        // validation in employee table
         $this->validate($request, [
             'email' => [
                 'email',
                 'max:255',
-                    Rule::unique('employees')->ignore($lims_employee_data->id)->where(function ($query) {
+                Rule::unique('employees')->ignore($lims_employee_data->id)->where(function ($query) {
                     return $query->where('is_active', true);
                 }),
             ],
@@ -219,15 +209,9 @@ class SaleAgentController extends Controller
         if ($image) {
             $this->fileDelete(public_path('images/employee/'), $lims_employee_data->image);
             $ext = pathinfo($image->getClientOriginalName(), PATHINFO_EXTENSION);
-            $imageName = date("Ymdhis");
-            if(!config('database.connections.saleprosaas_landlord')) {
-                $imageName = $imageName . '.' . $ext;
-                $image->move(public_path('images/employee'), $imageName);
-            }
-            else {
-                $imageName = $this->getTenantId() . '_' . $imageName . '.' . $ext;
-                $image->move(public_path('images/employee'), $imageName);
-            }
+            $imageName = date('Ymdhis');
+            $imageName = $imageName . '.' . $ext;
+            $image->move(public_path('images/employee'), $imageName);
             $data['image'] = $imageName;
         }
         $lims_employee_data->is_sale_agent = 1;
@@ -240,7 +224,7 @@ class SaleAgentController extends Controller
         $employee_id = $request['employeeIdArray'];
         foreach ($employee_id as $id) {
             $lims_employee_data = Employee::find($id);
-            if($lims_employee_data->user_id){
+            if ($lims_employee_data->user_id) {
                 $lims_user_data = User::find($lims_employee_data->user_id);
                 $lims_user_data->is_deleted = true;
                 $lims_user_data->save();
@@ -254,11 +238,10 @@ class SaleAgentController extends Controller
         return 'Employee deleted successfully!';
     }
 
-
     public function destroy($id)
     {
         $lims_employee_data = Employee::find($id);
-        if($lims_employee_data->user_id){
+        if ($lims_employee_data->user_id) {
             $lims_user_data = User::find($lims_employee_data->user_id);
             $lims_user_data->is_deleted = true;
             $lims_user_data->save();

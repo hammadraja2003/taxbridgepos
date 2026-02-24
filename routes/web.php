@@ -34,6 +34,7 @@ use App\Http\Controllers\DiscountPlanController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ExpenseCategoryController;
 use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\FbrController;
 use App\Http\Controllers\GiftCardController;
 use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\HomeController;
@@ -46,6 +47,7 @@ use App\Http\Controllers\LabelsController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\LeaveTypeController;
+use App\Http\Controllers\MfaController;
 use App\Http\Controllers\MoneyTransferController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OvertimeController;
@@ -342,6 +344,7 @@ Route::group(['middleware' => ['auth', 'settenantconnection', 'common', 'active'
         Route::get('sales/paypalSuccess', 'paypalSuccess');
         Route::get('sales/paypalPaymentSuccess/{id}', 'paypalPaymentSuccess');
         Route::get('sales/gen_invoice/{id}', 'genInvoice')->name('sale.invoice');
+        Route::get('sales/post-to-fbr/{id}', 'postToFbr')->name('sale.post-to-fbr');
         Route::post('sales/add_payment', 'addPayment')->name('sale.add-payment');
         Route::get('sales/getpayment/{id}', 'getPayment')->name('sale.get-payment');
         Route::post('sales/updatepayment', 'updatePayment')->name('sale.update-payment');
@@ -495,6 +498,11 @@ Route::group(['middleware' => ['auth', 'settenantconnection', 'common', 'active'
             Route::post('daily-sale-objective-data', 'dailySaleObjectiveData');
             Route::get('product-expiry', 'productExpiry')->name('report.productExpiry');
             Route::get('warehouse_stock', 'warehouseStock')->name('report.warehouseStock');
+            Route::any('stock_report', 'stockReport')->name('report.stock_report');
+            Route::any('profitability_report', 'profitabilityReport')->name('report.profitability_report');
+            Route::any('bill_profitability_report', 'billProfitabilityReport')->name('report.bill_profitability_report');
+            Route::any('detailed_income_statement', 'detailedIncomeStatement')->name('report.detailed_income_statement');
+            Route::get('get_customer_sales/{customer_id}', 'getCustomerSales');
             Route::get('daily_sale/{year}/{month}', 'dailySale');
             Route::post('daily_sale/{year}/{month}', 'dailySaleByWarehouse')->name('report.dailySaleByWarehouse');
             Route::get('monthly_sale/{year}', 'monthlySale');
@@ -564,6 +572,9 @@ Route::group(['middleware' => ['auth', 'settenantconnection', 'common', 'active'
         Route::get('user/notification', 'notificationUsers')->name('user.notification');
         Route::get('user/all', 'allUsers')->name('user.all');
         Route::post('user/toggle-status', [UserController::class, 'toggleStatus'])->name('user.toggleStatus');
+
+        Route::get('/admin/users/{id}/toggle-2fa', [UserController::class, 'toggle2FA'])
+            ->name('admin.users.toggle-2fa');
     });
     Route::resource('user', UserController::class);
 
@@ -741,14 +752,30 @@ Route::group(['middleware' => ['auth', 'settenantconnection', 'common', 'active'
         Route::get('/send', [WhatsappController::class, 'sendPage'])->name('whatsapp.send.page');
         Route::post('/send', [WhatsappController::class, 'sendMessage'])->name('whatsapp.send');
     });
+});
 
-    // ticket routes
-    Route::controller(\App\Http\Controllers\landlord\TicketController::class)->group(function () {
-        Route::get('tickets', 'index')->name('tickets.index');
-        Route::get('tickets/create', 'create')->name('tickets.create');
-        Route::post('tickets', 'store')->name('tickets.store');
-        Route::get('tickets/{id}', 'show')->name('tickets.show');
-        Route::post('tickets/{id}/reply', 'reply')->name('tickets.reply');
-        Route::delete('tickets/{id}', 'destroy')->name('tickets.destroy');
+// Two-Factor Authentication Routes
+Route::middleware(['auth', 'common', 'active'])->group(function () {
+    Route::controller(MfaController::class)->group(function () {
+        Route::get('/mfa/setup', 'show')->name('mfa.show');
+        Route::post('/mfa/enable', 'enable')->name('mfa.enable');
+        Route::post('/mfa/confirm', 'confirm')->name('mfa.confirm');
+        Route::post('/mfa/disable', 'disable')->name('mfa.disable');
+        Route::get('/mfa/recovery-codes', 'showRecoveryCodes')->name('mfa.recovery-codes');
+        Route::post('/mfa/recovery-codes/regenerate', 'regenerateRecoveryCodes')->name('mfa.recovery-codes.regenerate');
     });
+});
+
+// 2FA Verification (after login)
+Route::controller(LoginController::class)->group(function () {
+    Route::get('/mfa/verify', 'showVerifyForm')->name('mfa.verify');
+    Route::post('/mfa/verify', 'verify')->name('mfa.verify.post');
+});
+
+// FBR Routes
+Route::middleware(['auth', 'settenantconnection', 'common', 'active'])->controller(FbrController::class)->group(function () {
+    Route::get('/fbr/post-errors', 'postErrors')->name('fbr.post-errors');
+    Route::post('/fbr/{id}/mark-resolved', 'markResolved')->name('fbr.mark-resolved');
+    Route::delete('/fbr/{id}/delete', 'deleteError')->name('fbr.delete-error');
+    Route::post('/fbr/clear-resolved', 'clearResolved')->name('fbr.clear-resolved');
 });

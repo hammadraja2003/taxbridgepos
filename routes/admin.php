@@ -8,8 +8,8 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DatabaseController;
 use App\Http\Controllers\Admin\LogController;
 use App\Http\Controllers\Admin\PackageController;
-use App\Http\Controllers\Admin\SupportTicketController;
 use App\Http\Controllers\Admin\RolePermissionController;
+use App\Http\Controllers\Admin\SupportTicketController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,11 +25,11 @@ Route::middleware(['web'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('configuration', [RegisteredUserController::class, 'create'])->name('register');
         // Business Registration (New Methods)
         Route::get('businesses/register-user', [BusinessController::class, 'showRegisterForm'])->name('businesses.register.form');
-        Route::post('businesses/register-user', [BusinessController::class, 'registerBusinessUser'])->name('businesses.register.submit');
+        // Route::post('businesses/register-user', [BusinessController::class, 'registerBusinessUser'])->name('businesses.register.submit');
 
         // Business General Form (Add/Edit)
-        Route::get('businesses/general', [BusinessController::class, 'general'])->name('businesses.general');
-        Route::post('businesses/general', [BusinessController::class, 'storeGeneral'])->name('businesses.general.store');
+        Route::get('businesses/general', [BusinessController::class, 'newBusiness'])->name('businesses.general');
+        Route::post('businesses/general', [BusinessController::class, 'storeNewBusiness'])->name('businesses.general.store');
 
         Route::post('configuration', [RegisteredUserController::class, 'store'])->middleware('throttle:5,1');
         // Logout
@@ -37,8 +37,8 @@ Route::middleware(['web'])->prefix('admin')->name('admin.')->group(function () {
         // Business Management
         Route::get('businesses', [BusinessController::class, 'index'])->name('businesses.index');
         Route::get('businesses/{id}', [BusinessController::class, 'show'])->name('businesses.show');
-        Route::get('businesses/createuser/{id}', [BusinessController::class, 'createUser'])->name('businesses.create-user');
-        Route::post('businesses/registeruser', [BusinessController::class, 'registerUser'])->name('businesses.register');
+        // Route::get('businesses/createuser/{id}', [BusinessController::class, 'createUser'])->name('businesses.create-user');
+        // Route::post('businesses/registeruser', [BusinessController::class, 'registerUser'])->name('businesses.register');
         // Log Management
         Route::controller(LogController::class)->group(function () {
             Route::get('logs', 'show')->name('logs.show');
@@ -91,19 +91,24 @@ Route::middleware(['web'])->prefix('admin')->name('admin.')->group(function () {
         });
 
         // Global Settings
-        Route::get('settings/mail', [AdminSettingController::class, 'mailSetting'])->name('settings.mail');
-        Route::post('settings/mail', [AdminSettingController::class, 'mailSettingStore'])->name('settings.mail.store');
-
-        Route::prefix('roles-permissions')->name('roles_permissions.')->group(function () {
-            Route::get('/', [RolePermissionController::class, 'index'])->name('index');
-            Route::get('/permissions', [RolePermissionController::class, 'permissions'])->name('permissions');
-            Route::get('/role/create', [RolePermissionController::class, 'createRole'])->name('create_role');
-            Route::post('/role', [RolePermissionController::class, 'storeRole'])->name('store_role');
-            Route::get('/role/{id}/change-permissions', [RolePermissionController::class, 'changePermissions'])->name('change_permissions');
-            Route::post('/role/{id}/update-permissions', [RolePermissionController::class, 'updatePermissions'])->name('update_permissions');
-            Route::post('/permission', [RolePermissionController::class, 'storePermission'])->name('store_permission');
-            Route::put('/permission/{id}', [RolePermissionController::class, 'updatePermission'])->name('update_permission');
-            Route::delete('/permission/{id}', [RolePermissionController::class, 'destroyPermission'])->name('destroy_permission');
+        Route::controller(AdminSettingController::class)->group(function () {
+            Route::get('settings/mail', 'mailSetting')->name('settings.mail');
+            Route::post('settings/mail', 'mailSettingStore')->name('settings.mail.store');
         });
+
+        Route::prefix('roles-permissions')
+            ->name('roles_permissions.')
+            ->controller(RolePermissionController::class)
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/permissions', 'permissions')->name('permissions');
+                Route::get('/role/create', 'createRole')->name('create_role');
+                Route::post('/role', 'storeRole')->name('store_role');
+                Route::get('/role/{id}/change-permissions', 'changePermissions')->name('change_permissions');
+                Route::post('/role/{id}/update-permissions', 'updatePermissions')->name('update_permissions');
+                Route::post('/permission', 'storePermission')->name('store_permission');
+                Route::put('/permission/{id}', 'updatePermission')->name('update_permission');
+                Route::delete('/permission/{id}', 'destroyPermission')->name('destroy_permission');
+            });
     });
 });

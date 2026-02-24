@@ -25,7 +25,7 @@
     <div class="wrapper">
         <div class="container">
             <div class="header">
-                <h2>Welcome to TaxBridge POS</h2>
+                <h2>Welcome to SalesBridge POS</h2>
             </div>
             <div class="content">
                 <p class="welcome-text">Hello {{ $user_data->name }},</p>
@@ -36,13 +36,18 @@
                         <span class="label">Login Email:</span>
                         <span class="value">{{ $user_data->email }}</span>
                     </div>
-                    <div class="credential-item">
-                        <span class="label">Password:</span>
-                        <span class="value">{{ $user_data->password }}</span>
-                    </div>
+                   
                     <div class="credential-item">
                         <span class="label">Database:</span>
                         <span class="value">{{ $user_data->db_name }}</span>
+                    </div>
+                    <div class="credential-item">
+                        <span class="label">Database User:</span>
+                        <span class="value">{{ $user_data->db_username ?? 'N/A' }}</span>
+                    </div>
+                    <div class="credential-item">
+                        <span class="label">Database Pass:</span>
+                        <span class="value">{{ $user_data->db_password ?? 'N/A' }}</span>
                     </div>
                 </div>
 
@@ -55,7 +60,7 @@
                 <p class="description" style="margin-top: 32px; font-size: 14px;">If you didn't expect this email or need help, please reach out to our support team.</p>
             </div>
             <div class="footer">
-                <p>&copy; {{ date('Y') }} TaxBridge POS. All rights reserved.</p>
+                <p>&copy; {{ date('Y') }} SalesBridge POS. All rights reserved.</p>
                 <p>Advanced Inventory & POS Management System</p>
             </div>
         </div>

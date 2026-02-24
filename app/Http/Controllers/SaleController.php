@@ -429,7 +429,14 @@ class SaleController extends Controller
                 $nestedData['id'] = $sale->id;
                 $nestedData['key'] = $key;
                 $nestedData['date'] = date(config('date_format') . ' h:i:s a', strtotime($sale->created_at));
+                $rawReferenceNo = $sale->reference_no;
                 $nestedData['reference_no'] = $sale->reference_no;
+                if ($sale->is_posted_to_fbr == 1 && $sale->fbr_invoice_number) {
+                    $nestedData['reference_no'] .= '<br><small class="text-muted">' . $sale->fbr_invoice_number . '</small>'
+                        . ' <span class="badge badge-success" style="font-size:10px;">FBR ✓</span>';
+                } else {
+                    $nestedData['reference_no'] .= ' <span class="badge badge-danger" style="font-size:10px;">FBR ✗</span>';
+                }
                 // $nestedData['created_by'] = $user->name;
                 $nestedData['created_by'] = $sale->user->name ?? 'N/A';
                 $nestedData['customer'] = $sale->customer->name . '<br>' . $sale->customer->phone_number . '<input type="hidden" class="deposit" value="' . ($sale->customer->deposit - $sale->customer->expense) . '" />' . '<input type="hidden" class="points" value="' . $sale->customer->points . '" />';
@@ -579,6 +586,12 @@ class SaleController extends Controller
                         <li>
                             <button type="button" class="btn btn-link view"><i class="fa fa-eye"></i> ' . __('db.View') . '</button>
                         </li>';
+
+                if (in_array('fbr-errors', $request['all_permission'])) {
+                    if ($sale->is_posted_to_fbr == 0)
+                        $nestedData['options'] .= '<li>
+                            <a href="' . route('sale.post-to-fbr', $sale->id) . '" class="btn btn-link post-to-fbr-btn"><i class="fa fa-copy"></i> ' . __('Post to FBR') . '</a></li>';
+                }
                 if (in_array('sales-edit', $request['all_permission'])) {
                     if ($sale->sale_status != 3)
                         $nestedData['options'] .= '<li>
@@ -625,7 +638,7 @@ class SaleController extends Controller
                 if ($sale->sale_status !== 4)
                     $nestedData['options'] .=
                         '<li>
-                            <a href="return-sale/create?reference_no=' . $nestedData['reference_no'] . '" class="add-payment btn btn-link"><i class="dripicons-return"></i> ' . __('db.Add Return') . '</a>
+                            <a href="return-sale/create?reference_no=' . $rawReferenceNo . '" class="add-payment btn btn-link"><i class="dripicons-return"></i> ' . __('db.Add Return') . '</a>
                         </li>';
 
                 // $nestedData['options'] .=
@@ -732,6 +745,31 @@ class SaleController extends Controller
                 cache()->put('tenant_' . session('bus_config_id') . '_general_setting', $general_setting, 60 * 60 * 24);
             }
 
+            $requiredChecks = [
+                'lims_customer_list' => 'Customers',
+                'lims_customer_group_all' => 'Customer Groups',
+                'lims_warehouse_list' => 'Warehouses',
+                'lims_biller_list' => 'Billers',
+                'lims_tax_list' => 'Taxes',
+                'lims_pos_setting_data' => 'POS Settings',
+                'general_setting' => 'General Settings',
+                'currency_list' => 'Currencies',
+            ];
+            $missingItems = [];
+
+            foreach ($requiredChecks as $varName => $label) {
+                if (!isset($$varName) || (
+                    $$varName instanceof \Illuminate\Support\Collection && $$varName->isEmpty()
+                ) || $$varName === null) {
+                    $missingItems[] = $label;
+                }
+            }
+
+            if (!empty($missingItems)) {
+                $errorMessage = 'Sale cannot be opened because the following required data is missing: ' . implode(', ', $missingItems);
+                return redirect()->back()->with('not_permitted', $errorMessage);
+            }
+
             return view('backend.sale.create', compact('currency_list', 'lims_customer_list', 'lims_warehouse_list', 'lims_biller_list', 'lims_pos_setting_data', 'lims_tax_list', 'lims_reward_point_setting_data', 'options', 'numberOfInvoice', 'custom_fields', 'lims_customer_group_all', 'lims_account_list'));
         } else
             return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
@@ -800,10 +838,11 @@ class SaleController extends Controller
             if (is_array($data['paid_amount'])) {
                 $data['paid_amount'] = array_sum($data['paid_amount']);
             }
-            if ($balance > 0 || $balance < 0)
+            if ($balance > 0 || $balance < 0) {
                 $data['payment_status'] = 2;
-            else
+            } else {
                 $data['payment_status'] = 4;
+            }
 
             if ($data['draft']) {
                 $lims_sale_data = Sale::find($data['sale_id']);
@@ -834,13 +873,8 @@ class SaleController extends Controller
 
             $ext = pathinfo($document->getClientOriginalName(), PATHINFO_EXTENSION);
             $documentName = date('Ymdhis');
-            if (!config('database.connections.saleprosaas_landlord')) {
-                $documentName = $documentName . '.' . $ext;
-                $document->move(public_path('documents/sale'), $documentName);
-            } else {
-                $documentName = $this->getTenantId() . '_' . $documentName . '.' . $ext;
-                $document->move(public_path('documents/sale'), $documentName);
-            }
+            $documentName = $documentName . '.' . $ext;
+            $document->move(public_path('documents/sale'), $documentName);
             $data['document'] = $documentName;
         }
         if ($data['coupon_active'] && !$data['draft']) {
@@ -1312,10 +1346,11 @@ class SaleController extends Controller
                     if ($cash_register_data)
                         $lims_payment_data->cash_register_id = $cash_register_data->id;
                     $lims_account_data = Account::where('is_default', true)->first();
-                    if (!empty($data['account_id']) && $data['account_id'] != 0)
+                    if (!empty($data['account_id']) && $data['account_id'] != 0) {
                         $lims_payment_data->account_id = $data['account_id'];
-                    else
+                    } else {
                         $lims_payment_data->account_id = $lims_account_data->id;
+                    }
                     $lims_payment_data->sale_id = $lims_sale_data->id;
                     $data['payment_reference'] = 'spr-' . date('Ymd') . '-' . date('his');
                     $lims_payment_data->payment_reference = $data['payment_reference'];
@@ -1431,6 +1466,8 @@ class SaleController extends Controller
                     'invoice_statuses' => $validation['invoiceStatuses'] ?? null,
                     'raw_response' => $validation['data'] ?? null,
                     'fbr_env' => getFbrEnv(),
+                    'reference_no' => $lims_sale_data->reference_no,
+                    'sale_id' => $lims_sale_data->id,
                 ];
                 $userErrors[] = 'FBR Validation Failed: ' . (
                     $validation['error']
@@ -1455,6 +1492,8 @@ class SaleController extends Controller
                         'invoice_statuses' => $posting['invoiceStatuses'] ?? null,
                         'raw_response' => $posting['data'] ?? null,
                         'fbr_env' => getFbrEnv(),
+                        'reference_no' => $lims_sale_data->reference_no,
+                        'sale_id' => $lims_sale_data->id,
                     ];
                     $userErrors[] = 'FBR Posting Failed: ' . (
                         $posting['error']
@@ -2209,6 +2248,33 @@ class SaleController extends Controller
                 $variables[] = 'draft_product_discount';
             }
 
+            $requiredChecks = [
+                'lims_customer_list' => 'Customers',
+                'lims_customer_group_all' => 'Customer Groups',
+                'lims_warehouse_list' => 'Warehouses',
+                'lims_biller_list' => 'Billers',
+                'lims_tax_list' => 'Taxes',
+                'lims_pos_setting_data' => 'POS Settings',
+                'lims_brand_list' => 'Brands',
+                'lims_category_list' => 'Categories',
+                'general_setting' => 'General Settings',
+                'currency_list' => 'Currencies',
+            ];
+            $missingItems = [];
+
+            foreach ($requiredChecks as $varName => $label) {
+                if (!isset($$varName) || (
+                    $$varName instanceof \Illuminate\Support\Collection && $$varName->isEmpty()
+                ) || $$varName === null) {
+                    $missingItems[] = $label;
+                }
+            }
+
+            if (!empty($missingItems)) {
+                $errorMessage = 'POS cannot be opened because the following required data is missing: ' . implode(', ', $missingItems);
+                return redirect()->back()->with('not_permitted', $errorMessage);
+            }
+
             return view('backend.sale.pos', compact(...$variables));
         } else
             return redirect()->back()->with('not_permitted', __('db.Sorry! You are not allowed to access this module'));
@@ -2893,13 +2959,8 @@ class SaleController extends Controller
 
                 $ext = pathinfo($document->getClientOriginalName(), PATHINFO_EXTENSION);
                 $documentName = date('Ymdhis');
-                if (!config('database.connections.saleprosaas_landlord')) {
-                    $documentName = $documentName . '.' . $ext;
-                    $document->move(public_path('documents/sale'), $documentName);
-                } else {
-                    $documentName = $this->getTenantId() . '_' . $documentName . '.' . $ext;
-                    $document->move(public_path('documents/sale'), $documentName);
-                }
+                $documentName = $documentName . '.' . $ext;
+                $document->move(public_path('documents/sale'), $documentName);
                 $data['document'] = $documentName;
             }
             $item = 0;
@@ -3056,13 +3117,8 @@ class SaleController extends Controller
 
             $ext = pathinfo($document->getClientOriginalName(), PATHINFO_EXTENSION);
             $documentName = date('Ymdhis');
-            if (!config('database.connections.saleprosaas_landlord')) {
-                $documentName = $documentName . '.' . $ext;
-                $document->move(public_path('documents/sale'), $documentName);
-            } else {
-                $documentName = $this->getTenantId() . '_' . $documentName . '.' . $ext;
-                $document->move(public_path('documents/sale'), $documentName);
-            }
+            $documentName = $documentName . '.' . $ext;
+            $document->move(public_path('documents/sale'), $documentName);
             $data['document'] = $documentName;
         }
         $balance = $data['grand_total'] - $data['paid_amount'];
@@ -3629,7 +3685,8 @@ class SaleController extends Controller
         $product_custom_fields,
         $qrText,
         $totalDue,
-        $lims_bill_by
+        $lims_bill_by,
+        $fbr_logo
     ) {
         $data = [];
         // $general_setting = DB::table('general_settings')->latest()->first();
@@ -3799,6 +3856,7 @@ class SaleController extends Controller
         if ($lims_sale_data->shipping_cost) {
             $data['shipping_cost'] = number_format((float) $lims_sale_data->shipping_cost, $general_setting->decimal, '.', ',');
         }
+
         // ✅ Totals
         $data['grand_total'] = number_format((float) $lims_sale_data->grand_total, $general_setting->decimal, '.', ',');
 
@@ -3859,6 +3917,13 @@ class SaleController extends Controller
         if (isset($show->show_qr_code) && $show->show_qr_code == 1) {
             $data['qrcode'] = $qrText;
         }
+
+        // ✅ FBR Logo
+        if ($lims_sale_data->is_posted_to_fbr == 1 && !empty($lims_sale_data->fbr_invoice_number)) {
+            $data['fbr_logo'] = $fbr_logo;
+        }
+
+        $data['developed_by'] = $general_setting->developed_by;
 
         return $data;
     }
@@ -4046,6 +4111,7 @@ class SaleController extends Controller
             $receipt_printer = Printer::where('warehouse_id', $lims_sale_data->warehouse_id)->first();
             if ($receipt_printer && $is_print) {
                 if ($invoice_settings->size == '58mm' || $invoice_settings->size == '80mm') {
+                    $fbr_logo = url('images/digital_fbr_logo.jpg');
                     $data = $this->getReceiptData(
                         $invoice_settings,
                         $lims_sale_data,
@@ -4061,7 +4127,8 @@ class SaleController extends Controller
                         $product_custom_fields,
                         $qrText,
                         $totalDue,
-                        $lims_bill_by
+                        $lims_bill_by,
+                        $fbr_logo,
                     );
                     app(PrinterService::class)->printReceipt($receipt_printer, $data);
                     return 'receipt_printer';
@@ -4119,13 +4186,8 @@ class SaleController extends Controller
 
             $ext = pathinfo($document->getClientOriginalName(), PATHINFO_EXTENSION);
             $documentName = date('Ymdhis');
-            if (!config('database.connections.saleprosaas_landlord')) {
-                $documentName = $documentName . '.' . $ext;
-                $document->move(public_path('documents/add-payment'), $documentName);
-            } else {
-                $documentName = $this->getTenantId() . '_' . $documentName . '.' . $ext;
-                $document->move(public_path('documents/add-payment'), $documentName);
-            }
+            $documentName = $documentName . '.' . $ext;
+            $document->move(public_path('documents/add-payment'), $documentName);
             $data['document'] = $documentName;
         }
         if (!$data['amount'])
@@ -5780,5 +5842,134 @@ class SaleController extends Controller
             });
 
         return response()->json(['data' => $sales]);
+    }
+
+    public function postToFbr($id)
+    {
+        $lims_sale_data = Sale::find($id);
+        if (!$lims_sale_data) {
+            return request()->ajax()
+                ? response()->json(['success' => false, 'message' => 'Sale not found'], 404)
+                : redirect()->back()->with('error', 'Sale not found');
+        }
+
+        if ($lims_sale_data->is_posted_to_fbr == 1) {
+            return request()->ajax()
+                ? response()->json(['success' => true, 'message' => 'Already posted'])
+                : redirect()->back()->with('message', 'Sale is already posted to FBR.');
+        }
+
+        $customer_data = Customer::find($lims_sale_data->customer_id);
+        $business_configurations = getBusinessConfigurations();
+        $general_setting = getGeneralSetting();
+        $scenario_id = $general_setting->default_fbr_scenario;
+        $scenario = DB::connection('master')->table('sandbox_scenarios')->where('scenario_id', $scenario_id)->first();
+        $scenarioId = $scenario->scenario_code;
+        $scenarioType = $general_setting->default_fbr_scenario_type;
+
+        $fbrProductsData = [];
+        $lims_product_sale_data = Product_Sale::where('sale_id', $id)->get();
+
+        foreach ($lims_product_sale_data as $product_sale) {
+            $product = Product::find($product_sale->product_id);
+            $unit = Unit::find($product_sale->sale_unit_id);
+
+            $fbrProductsData[] = [
+                'hsCode' => $product->hs_code,
+                'productDescription' => $product->name,
+                'rate' => str_ends_with($product_sale->tax_rate, '%') ? (int) $product_sale->tax_rate : (int) $product_sale->tax_rate . '%',
+                'uoM' => $unit->unit_code ?? '',
+                'quantity' => (int) $product_sale->qty,
+                'totalValues' => (float) $product_sale->total,
+                'valueSalesExcludingST' => (float) $product_sale->value_sales_excluding_st,
+                'fixedNotifiedValueOrRetailPrice' => (float) $product_sale->fixed_notified_value_or_retail_price,
+                'salesTaxApplicable' => (float) $product_sale->tax,
+                'salesTaxWithheldAtSource' => (float) $product_sale->sales_tax_withheld_at_source,
+                'extraTax' => (float) $product_sale->extra_tax,
+                'furtherTax' => (float) $product_sale->further_tax,
+                'sroScheduleNo' => $product_sale->sro_schedule_no ?? '',
+                'fedPayable' => (float) $product_sale->fed_payable,
+                'discount' => (float) $product_sale->discount,
+                'saleType' => $scenarioType,
+                'sroItemSerialNo' => $product_sale->sro_item_serial_no ?? '',
+            ];
+        }
+
+        $fbrPayload = [
+            'invoiceType' => 'Sale Invoice',
+            'invoiceDate' => date('Y-m-d', strtotime($lims_sale_data->created_at)),
+            'sellerNTNCNIC' => preg_replace('/\D/', '', $business_configurations->bus_ntn_cnic),
+            'sellerBusinessName' => $business_configurations->bus_name,
+            'sellerProvince' => $business_configurations->bus_province,
+            'sellerAddress' => $business_configurations->bus_address,
+            'buyerNTNCNIC' => (string) $customer_data['customer_ntn_cnic'] ?? '',
+            'buyerBusinessName' => $customer_data['company_name'] ?? '',
+            'buyerProvince' => $customer_data['customer_province'] ?? '',
+            'buyerAddress' => $customer_data['address'] ?? '',
+            'buyerRegistrationType' => $customer_data['is_fbr_registered'] == 1 ? 'Registered' : 'Unregistered',
+            'invoiceRefNo' => $lims_sale_data->reference_no ?? '',
+            'scenarioId' => $scenarioId,
+            'items' => $fbrProductsData,
+        ];
+
+        $fbrService = new FbrInvoiceService();
+        $validation = $fbrService->validateInvoice($fbrPayload);
+
+        if (!$validation['success']) {
+            FbrPostError::logError([
+                'type' => 'validation',
+                'status_code' => $validation['statusCode'] ?? null,
+                'status' => $validation['status'] ?? 'failed',
+                'error_code' => $validation['errorCode'] ?? null,
+                'error' => $validation['error'] ?? 'Unknown error',
+                'invoice_statuses' => $validation['invoiceStatuses'] ?? null,
+                'raw_response' => $validation['data'] ?? null,
+                'fbr_env' => getFbrEnv(),
+                'reference_no' => $lims_sale_data->reference_no,
+                'sale_id' => $lims_sale_data->id,
+            ]);
+
+            $errorMsg = 'FBR Validation Failed: ' . ($validation['error'] ?? 'Unknown validation error');
+            return request()->ajax()
+                ? response()->json(['success' => false, 'message' => $errorMsg], 422)
+                : redirect()->back()->with('not_permitted', $errorMsg);
+        }
+
+        $posting = $fbrService->postInvoice($fbrPayload);
+        if (!$posting['success']) {
+            FbrPostError::logError([
+                'type' => 'posting',
+                'status_code' => $posting['statusCode'] ?? null,
+                'status' => $posting['status'] ?? 'failed',
+                'error_code' => $posting['errorCode'] ?? null,
+                'error' => $posting['error'] ?? 'Unknown error',
+                'invoice_statuses' => $posting['invoiceStatuses'] ?? null,
+                'raw_response' => $posting['data'] ?? null,
+                'fbr_env' => getFbrEnv(),
+                'reference_no' => $lims_sale_data->reference_no,
+                'sale_id' => $lims_sale_data->id,
+            ]);
+
+            $errorMsg = 'FBR Posting Failed: ' . ($posting['error'] ?? 'Unknown posting error');
+            return request()->ajax()
+                ? response()->json(['success' => false, 'message' => $errorMsg], 422)
+                : redirect()->back()->with('not_permitted', $errorMsg);
+        }
+
+        if ($posting['success']) {
+            $lims_sale_data->update([
+                'fbr_invoice_number' => $posting['data']['invoiceNumber'] ?? null,
+                'is_posted_to_fbr' => 1,
+            ]);
+
+            $successMsg = 'Sale posted to FBR successfully. FBR Invoice: ' . ($posting['data']['invoiceNumber'] ?? '');
+            return request()->ajax()
+                ? response()->json(['success' => true, 'message' => $successMsg])
+                : redirect()->back()->with('message', $successMsg);
+        }
+
+        return request()->ajax()
+            ? response()->json(['success' => false, 'message' => 'Failed to post to FBR'], 500)
+            : redirect()->back()->with('not_permitted', 'Failed to post sale to FBR.');
     }
 }

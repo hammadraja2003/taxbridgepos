@@ -27,7 +27,7 @@
                                     <th>Permission Name</th>
                                     <th>Guard</th>
                                     <th>Created At</th>
-                                    <th class="text-end">Actions</th>
+                                    <!-- <th class="text-end">Actions</th> -->
                                 </tr>
                             </thead>
                             <tbody id="permissions_table_body">

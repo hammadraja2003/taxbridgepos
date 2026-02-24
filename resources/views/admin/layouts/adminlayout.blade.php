@@ -89,6 +89,14 @@
   <!-- Custom CSS removed -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
   <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  <style>
+    .form-label {
+          margin-top: 15px;
+    }
+    nav.navbar a.menu-btn {
+      padding: 12px !important;
+    }
+  </style>
 </head>
 <body class="@if(Route::current()->getName() == 'sale.pos') pos-page @endif" onload="myFunction()">
   <div id="loader"></div>
@@ -98,22 +106,19 @@
     <nav class="side-navbar shrink d-print-none">
     <span class="brand-big">
       <a href="{{route('admin.admin_dashboard')}}">
-        <img src="{{url('logo/tax-bridgePOS-logo.svg')}}" alt="TaxBridge" style="height: 50px;">
-        {{-- <h1 class="d-inline">{{ config('app.name', 'TaxBridge') }}</h1> --}}
+        <img src="{{url('logo/LOGO-SalesBridge-01.png')}}" alt="SalesBridge" style="height: 50px;">
+        {{-- <h1 class="d-inline">{{ config('app.name', 'SalesBridge') }}</h1> --}}
       </a>
     </span>
     @include('admin.layouts.sidebar')
   </nav>
-@if(Route::current()->getName() != 'sale.pos')
     <header class="container-fluid app-header">
       <nav class="navbar">
         <a id="toggle-btn" href="#" class="menu-btn"><i class="fa fa-bars"> </i></a>
 
         <div class="d-flex align-items-center gap-3 mb-3">
-          <h5 class="mb-0 fw-semibold">
-            {{-- {{ $business_config->db_name ?? '—' }} --}}
-          </h5>
-      </div>
+          
+        </div>
 
         <ul class="nav-menu list-unstyled d-flex flex-md-row align-items-md-center">
           <li class="nav-item d-none d-lg-block"><a id="btnFullscreen" data-toggle="tooltip" title="{{ __('Full Screen') }}"><i class="dripicons-expand"></i></a></li>
@@ -132,7 +137,7 @@
         </ul>
       </nav>
     </header>
-    @endif
+ 
     <div style="display:none;background: #f8f9fa;"  id="content" class="animate-bottom">
       <div class="container-fluid pt-3">
         @if (session('success') || session('message'))
@@ -299,7 +304,9 @@
       document.getElementById("content").style.display = "block";
     }
 
-    $("div.alert").delay(4000);
+    $(".alert").delay(4000);
+    $(".alert").fadeOut("slow");
+
 
     function confirmDelete() {
       if (confirm("Are you sure want to delete?")) {

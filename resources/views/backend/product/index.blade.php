@@ -166,6 +166,7 @@
                         <th>{{__('db.Quantity')}}</th>
                         <th>{{__('db.Unit')}}</th>
                         <th>{{__('db.Price')}}</th>
+                        <th>{{__('db.Wholesale Price')}}</th>
                         @if($role_type <= 2)
                             <th>{{__('db.Cost')}}</th>
                             <th>{{__('db.Stock Worth') . '(' . __('db.Price') . '/' . __('db.Cost') . ')'}}</th>
@@ -233,8 +234,8 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-md-5" id="slider-content"></div>
-                        <div class="col-md-5 offset-1" id="product-content"></div>
+                        <div class="col-md-3" id="slider-content"></div>
+                        <div class="col-md-6 offset-2" id="product-content"></div>
                         @if($role_type <= 2)
                             <div class="col-md-12 mt-2" id="product-warehouse-section">
                                 <h5>{{__('db.Warehouse Quantity')}}</h5>
@@ -299,6 +300,7 @@
         var columns = [{ "data": "key" }, { "data": "name" }, { "data": "code" }, { "data": "brand" }, { "data": "category" }, { "data": "qty" }, { "data": "unit" }, { "data": "price" }];
         if (role_type <= 2) {
             columns.push({ "data": "cost" });
+            columns.push({ "data": "wholesale_price" });
             columns.push({ "data": "stock_worth" });
         }
         var field_name = <?php echo json_encode($field_name) ?>;
@@ -351,6 +353,7 @@
 
         $(document).on("click", "tr.product-link td:not(:first-child, :last-child)", function () {
 
+
             productDetails($(this).parent().data('product'), $(this).parent().data('imagedata'), $(this).parent().data('fbr-data'));
 
         });
@@ -371,217 +374,211 @@
           setTimeout(function(){newWin.close();},10);
     });
 
-        function productDetails(product, imagedata, fbr_data) {
-            product[11] = product[11].replace(/@/g, '"');
-            htmltext = slidertext = '';
+    function productDetails(product, imagedata, fbr_data) {
 
-            htmltext = '<p>{{__("db.Type")}}:  ' +product[0 ]+
-                '</p><p>{{__("db.name")}}: ' + product[1] +
-                '</p><p>{{__("db.Code")}}: ' + product[2] +
-                '</p><p>{{__("db.Brand")}}: ' + product[3] +
-                '</p><p>{{__("db.category")}}: ' + product[4] +
-                '</p><p>{{__("db.Quantity")}}: ' + product[17] +
-                '</p><p>{{__("db.Unit")}}: ' + product[5] +
-                (role_type < 3 ? '</p><p>{{__("db.Cost")}}: ' + product[6] : '') +
-                '</p><p>{{__("db.Price")}}: ' + product[7] +
-                '</p><p>{{__("db.Tax")}}: ' + product[8] +
-                '</p><p>{{__("db.Tax Method")}} : ' + product[9] +
-                '</p><p>{{__("db.Alert Quantity")}} : ' + product[10] +
-                '</p><p>{{__("db.Product Details")}}: </p>' + product[11];
+        product[11] = product[11].replace(/@/g, '"');
+        htmltext = slidertext = '';
 
-            if (product[18]) {
-                var product_image = product[18].split(",");
-                if (product_image.length > 1) {
-                    slidertext = '<div id="product-img-slider" class="carousel slide" data-ride="carousel"><div class="carousel-inner">';
-                    for (var i = 0; i < product_image.length; i++) {
-                        if (!i)
-                            slidertext += '<div class="carousel-item active"><img src="images/product/' + product_image[i] + '" height="300" width="100%"></div>';
-                        else
-                            slidertext += '<div class="carousel-item"><img src="images/product/' + product_image[i] + '" height="300" width="100%"></div>';
-                    }
-                    slidertext += '</div><a class="carousel-control-prev" href="#product-img-slider" data-slide="prev"><span class="carousel-control-prev-icon" aria-hidden="true"></span><span class="sr-only">Previous</span></a><a class="carousel-control-next" href="#product-img-slider" data-slide="next"><span class="carousel-control-next-icon" aria-hidden="true"></span><span class="sr-only">Next</span></a></div>';
+        /* ================= PRODUCT BASIC INFO (TABLE) ================= */
+
+        htmltext =
+            '<table class="table table-bordered table-sm mb-0">' +
+                '<tbody>' +
+                    '<tr><th>{{__("db.Type")}}</th><td>' + product[0] + '</td></tr>' +
+                    '<tr><th>{{__("db.name")}}</th><td>' + product[1] + '</td></tr>' +
+                    '<tr><th>{{__("db.Code")}}</th><td>' + product[2] + '</td></tr>' +
+                    '<tr><th>{{__("db.Brand")}}</th><td>' + product[3] + '</td></tr>' +
+                    '<tr><th>{{__("db.category")}}</th><td>' + product[4] + '</td></tr>' +
+                    '<tr><th>{{__("db.Quantity")}}</th><td>' + product[17] + '</td></tr>' +
+                    '<tr><th>{{__("db.Unit")}}</th><td>' + product[5] + '</td></tr>' +
+
+                    (role_type < 3
+                        ? '<tr><th>{{__("db.Cost")}}</th><td>' + product[6] + '</td></tr>'
+                        : ''
+                    ) +
+
+                    '<tr><th>{{__("db.Price")}}</th><td>' + product[7] + '</td></tr>' +
+                    '<tr><th>{{__("db.Wholesale Price")}}</th><td>' + product[20] + '</td></tr>' +
+                    '<tr><th>{{__("db.Tax")}}</th><td>' + product[8] + '</td></tr>' +
+                    '<tr><th>{{__("db.Tax Method")}}</th><td>' + product[9] + '</td></tr>' +
+                    '<tr><th>{{__("db.Alert Quantity")}}</th><td>' + product[10] + '</td></tr>' +
+                    '<tr><th>{{__("db.Product Details")}}</th><td>' + product[11] + '</td></tr>' +
+                '</tbody>' +
+            '</table>';
+
+        /* ================= PRODUCT IMAGES ================= */
+
+        if (product[18]) {
+            var product_image = product[18].split(",");
+            if (product_image.length > 1) {
+                slidertext = '<div id="product-img-slider" class="carousel slide" data-ride="carousel"><div class="carousel-inner">';
+                for (var i = 0; i < product_image.length; i++) {
+                    if (!i)
+                        slidertext += '<div class="carousel-item active"><img src="images/product/' + product_image[i] + '" height="300" width="100%"></div>';
+                    else
+                        slidertext += '<div class="carousel-item"><img src="images/product/' + product_image[i] + '" height="300" width="100%"></div>';
                 }
-                else {
-                    slidertext = '<img src="images/product/' + product[18] + '" height="300" width="100%">';
-                }
+                slidertext += '</div>' +
+                    '<a class="carousel-control-prev" href="#product-img-slider" data-slide="prev">' +
+                    '<span class="carousel-control-prev-icon"></span></a>' +
+                    '<a class="carousel-control-next" href="#product-img-slider" data-slide="next">' +
+                    '<span class="carousel-control-next-icon"></span></a>' +
+                    '</div>';
+            } else {
+                slidertext = '<img src="images/product/' + product[18] + '" height="300" width="100%">';
             }
-            else {
-                slidertext = '<img src="{{url('/images/zummXD2dvAtI.png')}}" height="300" width="100%">';
-            }
-            $("#combo-header").text('');
-            $("table.item-list thead").remove();
-            $("table.item-list tbody").remove();
-            $("table.product-warehouse-list thead").remove();
-            $("table.product-warehouse-list tbody").remove();
-            $(".product-variant-list thead").remove();
-            $(".product-variant-list tbody").remove();
-            $(".product-variant-warehouse-list thead").remove();
-            $(".product-variant-warehouse-list tbody").remove();
-            $("#product-warehouse-section").addClass('d-none');
-            $("#product-variant-section").addClass('d-none');
-            $("#product-variant-warehouse-section").addClass('d-none');
-            if (product[0] == 'combo') {
-                $("#combo-header").text('{{__("db.Combo Products")}}');
-                // console.log(product)
-                product_list = product[13].split(",");
-                variant_list = product[14].split(",");
-                qty_list = product[15].split(",");
-                price_list = product[16].split(",");
-                combo_unit = product[20].split(",");
-                wastage_percent = product[21].split(",");
-                $(".item-list thead").remove();
-                $(".item-list tbody").remove();
-                var newHead = $("<thead>");
-                var newBody = $("<tbody>");
-                var newRow = $("<tr>");
-                newRow.append('<th>{{__("db.product")}}</th><th>{{__("db.Wastage Percent")}}</th><th>{{__("db.Quantity")}}</th><th>{{__("db.Price")}}</th>');
-                newHead.append(newRow);
-                // console.log(product)
-                $(product_list).each(function (i) {
-                    if (!variant_list[i])
-                        variant_list[i] = 0;
-                    $.get('products/getdata/' + product_list[i] + '/' + variant_list[i], function (data) {
-                        var newRow = $("<tr>");
-                        var cols = '';
-                        cols += '<td>' + data['name'] + ' [' + data['code'] + ']</td>';
-                        cols += '<td>' + wastage_percent[i] + '</td>';
-                        cols += '<td>' + qty_list[i] + '(' + combo_unit[i] + ')</td>';
-                        cols += '<td>' + price_list[i] + '</td>';
+        } else {
+            slidertext = '<img src="{{url('/images/zummXD2dvAtI.png')}}" height="300" width="100%">';
+        }
 
-                        newRow.append(cols);
-                        newBody.append(newRow);
+        /* ================= RESET SECTIONS ================= */
+
+        $("#combo-header").text('');
+        $("table.item-list thead, table.item-list tbody").remove();
+        $("table.product-warehouse-list thead, table.product-warehouse-list tbody").remove();
+        $(".product-variant-list thead, .product-variant-list tbody").remove();
+        $(".product-variant-warehouse-list thead, .product-variant-warehouse-list tbody").remove();
+
+        $("#product-warehouse-section").addClass('d-none');
+        $("#product-variant-section").addClass('d-none');
+        $("#product-variant-warehouse-section").addClass('d-none');
+
+        /* ================= COMBO PRODUCTS ================= */
+
+        if (product[0] == 'combo') {
+
+            $("#combo-header").text('{{__("db.Combo Products")}}');
+
+            product_list = product[13].split(",");
+            variant_list = product[14].split(",");
+            qty_list = product[15].split(",");
+            price_list = product[16].split(",");
+            combo_unit = product[21].split(",");
+            wastage_percent = product[22].split(",");
+
+            var newHead = $("<thead>");
+            var newBody = $("<tbody>");
+            var newRow = $("<tr>");
+
+            newRow.append('<th>{{__("db.product")}}</th><th>{{__("db.Wastage Percent")}}</th><th>{{__("db.Quantity")}}</th><th>{{__("db.Price")}}</th>');
+            newHead.append(newRow);
+
+            $(product_list).each(function (i) {
+                if (!variant_list[i]) variant_list[i] = 0;
+
+                $.get('products/getdata/' + product_list[i] + '/' + variant_list[i], function (data) {
+                    var row = $("<tr>");
+                    row.append('<td>' + data.name + ' [' + data.code + ']</td>');
+                    row.append('<td>' + wastage_percent[i] + '</td>');
+                    row.append('<td>' + qty_list[i] + '(' + combo_unit[i] + ')</td>');
+                    row.append('<td>' + price_list[i] + '</td>');
+                    newBody.append(row);
+                });
+            });
+
+            $("table.item-list").append(newHead).append(newBody);
+        }
+
+        /* ================= VARIANTS & WAREHOUSES ================= */
+
+        if (product[0] == 'standard' || product[0] == 'combo') {
+
+            if (product[19]) {
+                $.get('products/variant-data/' + product[12], function (variantData) {
+
+                    var newHead = $("<thead>");
+                    var newBody = $("<tbody>");
+                    var newRow = $("<tr>");
+
+                    newRow.append('<th>{{__("db.Variant")}}</th><th>{{__("db.Item Code")}}</th><th>{{__("db.Additional Cost")}}</th><th>{{__("db.Additional Price")}}</th><th>{{__("db.Qty")}}</th>');
+                    newHead.append(newRow);
+
+                    $.each(variantData, function (i) {
+                        var row = $("<tr>");
+                        row.append('<td>' + variantData[i].name + '</td>');
+                        row.append('<td>' + variantData[i].item_code + '</td>');
+                        row.append('<td>' + (variantData[i].additional_cost || 0) + '</td>');
+                        row.append('<td>' + (variantData[i].additional_price || 0) + '</td>');
+                        row.append('<td>' + variantData[i].qty + '</td>');
+                        newBody.append(row);
                     });
+
+                    $("table.product-variant-list").append(newHead).append(newBody);
                 });
 
-                $("table.item-list").append(newHead);
-                $("table.item-list").append(newBody);
+                $("#product-variant-section").removeClass('d-none');
             }
-            if (product[0] == 'standard' || product[0] == 'combo') {
-                if (product[19]) {
-                    $.get('products/variant-data/' + product[12], function (variantData) {
+
+            if (role_type <= 2) {
+                $.get('products/product_warehouse/' + product[12], function (data) {
+
+                    if (data.product_warehouse[0].length) {
+
+                        warehouse = data.product_warehouse[0];
+                        qty = data.product_warehouse[1];
+                        batch = data.product_warehouse[2];
+                        expired_date = data.product_warehouse[3];
+                        imei_numbers = data.product_warehouse[4];
+
                         var newHead = $("<thead>");
                         var newBody = $("<tbody>");
                         var newRow = $("<tr>");
-                        newRow.append('<th>{{__("db.Variant")}}</th><th>{{__("db.Item Code")}}</th><th>{{__("db.Additional Cost")}}</th><th>{{__("db.Additional Price")}}</th><th>{{__("db.Qty")}}</th>');
+
+                        newRow.append('<th>{{__("db.Warehouse")}}</th><th>{{__("db.Batch No")}}</th><th>{{__("db.Expired Date")}}</th><th>{{__("db.Quantity")}}</th><th>{{__("db.IMEI or Serial Numbers")}}</th>');
                         newHead.append(newRow);
-                        $.each(variantData, function (i) {
-                            var newRow = $("<tr>");
-                            var cols = '';
-                            cols += '<td>' + variantData[i]['name'] + '</td>';
-                            cols += '<td>' + variantData[i]['item_code'] + '</td>';
-                            if (variantData[i]['additional_cost'])
-                                cols += '<td>' + variantData[i]['additional_cost'] + '</td>';
-                            else
-                                cols += '<td>0</td>';
-                            if (variantData[i]['additional_price'])
-                                cols += '<td>' + variantData[i]['additional_price'] + '</td>';
-                            else
-                                cols += '<td>0</td>';
-                            cols += '<td>' + variantData[i]['qty'] + '</td>';
 
-                            newRow.append(cols);
-                            newBody.append(newRow);
+                        $.each(warehouse, function (i) {
+                            var row = $("<tr>");
+                            row.append('<td>' + warehouse[i] + '</td>');
+                            row.append('<td>' + batch[i] + '</td>');
+                            row.append('<td>' + expired_date[i] + '</td>');
+                            row.append('<td>' + qty[i] + '</td>');
+                            row.append('<td>' + (imei_numbers[i] ? imei_numbers[i].split(',').join('<br>') : 'N/A') + '</td>');
+                            newBody.append(row);
                         });
-                        $("table.product-variant-list").append(newHead);
-                        $("table.product-variant-list").append(newBody);
-                    });
-                    $("#product-variant-section").removeClass('d-none');
-                }
-                if (role_type <= 2) {
-                    $.get('products/product_warehouse/' + product[12], function (data) {
-                        // console.log(data);
-                        if (data.product_warehouse[0].length != 0) {
-                            warehouse = data.product_warehouse[0];
-                            qty = data.product_warehouse[1];
-                            batch = data.product_warehouse[2];
-                            expired_date = data.product_warehouse[3];
-                            imei_numbers = data.product_warehouse[4];
-                            // console.log(imei_numbers, 'hi imei');
-                            var newHead = $("<thead>");
-                            var newBody = $("<tbody>");
-                            var newRow = $("<tr>");
-                            var productQty = 0;
-                            newRow.append('<th>{{__("db.Warehouse")}}</th><th>{{__("db.Batch No")}}</th><th>{{__("db.Expired Date")}}</th><th>{{__("db.Quantity")}}</th><th>{{__("db.IMEI or Serial Numbers")}}</th>');
-                            newHead.append(newRow);
-                            $.each(warehouse, function (index) {
-                                // productQty += qty[index];
-                                var newRow = $("<tr>");
-                                var cols = '';
-                                cols += '<td>' + warehouse[index] + '</td>';
-                                cols += '<td>' + batch[index] + '</td>';
-                                cols += '<td>' + expired_date[index] + '</td>';
-                                cols += '<td>' + qty[index] + '</td>';
-                                // console.log(imei_numbers);
-                                if (imei_numbers.length <= index) {
-                                    cols += '<td style="max-height: 100px; overflow-y: auto; word-break: break-word; white-space: normal; display: block; padding-right: 10px;">' + 'N/A' + '</td>';
-                                } else {
-                                    cols += '<td style="max-height: 100px; overflow-y: auto; word-break: break-word; white-space: normal; display: block; padding-right: 10px;">' + imei_numbers[index].split(',').join(",<br/>") + '</td>';
-                                }
 
-                                newRow.append(cols);
-                                newBody.append(newRow);
-                                $("table.product-warehouse-list").append(newHead);
-                                $("table.product-warehouse-list").append(newBody);
-                            });
-                            // console.log(productQty);
-                            $("#product-warehouse-section").removeClass('d-none');
-                        }
-                        if (data.product_variant_warehouse[0].length != 0) {
-                            warehouse = data.product_variant_warehouse[0];
-                            variant = data.product_variant_warehouse[1];
-                            qty = data.product_variant_warehouse[2];
-                            var newHead = $("<thead>");
-                            var newBody = $("<tbody>");
-                            var newRow = $("<tr>");
-                            newRow.append('<th>{{__("db.Warehouse")}}</th><th>{{__("db.Variant")}}</th><th>{{__("db.Quantity")}}</th>');
-                            newHead.append(newRow);
-                            $.each(warehouse, function (index) {
-                                var newRow = $("<tr>");
-                                var cols = '';
-                                cols += '<td>' + warehouse[index] + '</td>';
-                                cols += '<td>' + variant[index] + '</td>';
-                                cols += '<td>' + qty[index] + '</td>';
-
-                                newRow.append(cols);
-                                newBody.append(newRow);
-                                $("table.product-variant-warehouse-list").append(newHead);
-                                $("table.product-variant-warehouse-list").append(newBody);
-                            });
-                            $("#product-variant-warehouse-section").removeClass('d-none');
-                        }
-                    });
-                }
-            }
-
-            if (fbr_data[8] == 1 && fbr_data.length > 0) {
-                let fbrLabels = [
-                    '{{__("db.HS Code")}}',
-                    '{{__("db.Fixed or Retail Price")}}',
-                    '{{__("db.Sales Tax Withheld")}}',
-                    '{{__("db.Extra Tax")}}',
-                    '{{__("db.Further Tax")}}',
-                    '{{__("db.FED Payable")}}',
-                    '{{__("db.SRO Schedule No")}}',
-                    '{{__("db.SRO Item Serial No")}}',
-                    '{{__("db.This Product has FBR Invoice Attributes")}}'
-                ];
-
-                for (let i = 0; i < fbr_data.length; i++) {
-                    if (i == 8) {
-
-                        htmltext += fbr_data[i] == '1' ? '<p>' + fbrLabels[i] + ': Yes</p>' : '<p>' + fbrLabels[i] + ': No</p>';
-                    } else {
-                        htmltext += '<p>' + fbrLabels[i] + ': ' + fbr_data[i] + '</p>';
+                        $("table.product-warehouse-list").append(newHead).append(newBody);
+                        $("#product-warehouse-section").removeClass('d-none');
                     }
-                }
+                });
+            }
+        }
+
+        /* ================= FBR DATA ================= */
+
+        if (fbr_data.length && fbr_data[8] == 1) {
+
+            let fbrLabels = [
+                '{{__("db.HS Code")}}',
+                '{{__("db.Fixed or Retail Price")}}',
+                '{{__("db.Sales Tax Withheld")}}',
+                '{{__("db.Extra Tax")}}',
+                '{{__("db.Further Tax")}}',
+                '{{__("db.FED Payable")}}',
+                '{{__("db.SRO Schedule No")}}',
+                '{{__("db.SRO Item Serial No")}}',
+                '{{__("db.This Product has FBR Invoice Attributes")}}'
+            ];
+
+            htmltext += '<hr><table class="table table-bordered table-sm"><tbody>';
+
+            for (let i = 0; i < fbr_data.length; i++) {
+                if (i == 8)
+                    htmltext += '<tr><th>' + fbrLabels[i] + '</th><td>' + (fbr_data[i] == '1' ? 'Yes' : 'No') + '</td></tr>';
+                else
+                    htmltext += '<tr><th>' + fbrLabels[i] + '</th><td>' + fbr_data[i] + '</td></tr>';
             }
 
-
-            $('#product-content').html(htmltext);
-            $('#slider-content').html(slidertext);
-            $('#product-details').modal('show');
-            $('#product-img-slider').carousel(0);
+            htmltext += '</tbody></table>';
         }
+
+        /* ================= FINAL RENDER ================= */
+
+        $('#product-content').html(htmltext);
+        $('#slider-content').html(slidertext);
+        $('#product-details').modal('show');
+        $('#product-img-slider').carousel(0);
+    }
 
         $('#toggle-filter').on('click', function () {
             $('#filter-card').slideToggle('slow');

@@ -34,7 +34,7 @@
                 $lims_warehouse_list = App\Models\Warehouse::where('is_active', true)->get();
             @endphp
 
-            @if (!config('database.connections.saleprosaas_landlord') && \Auth::user()->role_type <= 2)
+            @if (\Auth::user()->role_type <= 2)
                 @if (isset($versionUpgradeData['alert_version_upgrade_enable']) &&
                         $versionUpgradeData['alert_version_upgrade_enable'] == true)
                     <div id="alertSection" class="alert not-slide alert-primary alert-dismissible fade show" role="alert">

@@ -136,13 +136,9 @@ class CategoryController extends Controller
         if ($image) {
             $ext = pathinfo($image->getClientOriginalName(), PATHINFO_EXTENSION);
             $imageName = date('Ymdhis');
-            if (!config('database.connections.saleprosaas_landlord')) {
-                $imageName = $imageName . '.' . $ext;
-                $image->move(public_path('images/category'), $imageName);
-            } else {
-                $imageName = $this->getTenantId() . '_' . $imageName . '.' . $ext;
-                $image->move(public_path('images/category'), $imageName);
-            }
+            $imageName = $imageName . '.' . $ext;
+            $image->move(public_path('images/category'), $imageName);
+
             if (!file_exists(public_path('images/category/large/'))) {
                 mkdir(public_path('images/category/large/'), 0755, true);
             }
@@ -160,13 +156,8 @@ class CategoryController extends Controller
             }
             $ext = pathinfo($icon->getClientOriginalName(), PATHINFO_EXTENSION);
             $iconName = date('Ymdhis');
-            if (!config('database.connections.saleprosaas_landlord')) {
-                $iconName = $iconName . '.' . $ext;
-                $icon->move(public_path('images/category/icons/'), $iconName);
-            } else {
-                $iconName = $this->getTenantId() . '_' . $iconName . '.' . $ext;
-                $icon->move(public_path('images/category/icons/'), $iconName);
-            }
+            $iconName = $iconName . '.' . $ext;
+            $icon->move(public_path('images/category/icons/'), $iconName);
 
             $manager = new ImageManager(new GdDriver());
             $image = $manager->read(public_path('images/category/icons/' . $iconName));
@@ -218,13 +209,8 @@ class CategoryController extends Controller
 
             $ext = pathinfo($image->getClientOriginalName(), PATHINFO_EXTENSION);
             $imageName = date('Ymdhis');
-            if (!config('database.connections.saleprosaas_landlord')) {
-                $imageName = $imageName . '.' . $ext;
-                $image->move(public_path('images/category'), $imageName);
-            } else {
-                $imageName = $this->getTenantId() . '_' . $imageName . '.' . $ext;
-                $image->move(public_path('images/category'), $imageName);
-            }
+            $imageName = $imageName . '.' . $ext;
+            $image->move(public_path('images/category'), $imageName);
             if (!file_exists(public_path('images/category/large/'))) {
                 mkdir(public_path('images/category/large/'), 0755, true);
             }
@@ -246,13 +232,8 @@ class CategoryController extends Controller
 
             $ext = pathinfo($icon->getClientOriginalName(), PATHINFO_EXTENSION);
             $iconName = date('Ymdhis');
-            if (!config('database.connections.saleprosaas_landlord')) {
-                $iconName = $iconName . '.' . $ext;
-                $icon->move(public_path('images/category/icons/'), $iconName);
-            } else {
-                $iconName = $this->getTenantId() . '_' . $iconName . '.' . $ext;
-                $icon->move(public_path('images/category/icons/'), $iconName);
-            }
+            $iconName = $iconName . '.' . $ext;
+            $icon->move(public_path('images/category/icons/'), $iconName);
 
             $manager = new ImageManager(new GdDriver());
             $image = $manager->read(public_path('images/category/icons/' . $iconName));

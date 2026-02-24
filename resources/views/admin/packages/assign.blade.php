@@ -39,7 +39,7 @@
                         <!-- Business and Package selection -->
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
-                                <label class="form-label font-weight-bold text-muted small text-uppercase">Select Business *</label>
+                                <label class="form-label font-weight-bold text-muted small text-uppercase">Select Business <span class="text-danger">*</span></label>
                                 <select name="business_id" class="form-control shadow-xs" required>
                                     <option value="">-- Choose Business --</option>
                                     @foreach ($businesses as $b)
@@ -49,7 +49,7 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label font-weight-bold text-muted small text-uppercase">Select Package *</label>
+                                <label class="form-label font-weight-bold text-muted small text-uppercase">Select Package <span class="text-danger">*</span></label>
                                 <select name="package_id" id="packageSelect" class="form-control shadow-xs" required>
                                     <option value="">-- Choose Package --</option>
                                     @foreach ($packages as $p)

@@ -2,29 +2,29 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Models\User;
-use App\Models\Customer;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Foundation\Auth\RegistersUsers;
-use Illuminate\Validation\Rule;
-use App\Models\Roles;
-use App\Models\CustomerGroup;
 use App\Models\Biller;
+use App\Models\Customer;
+use App\Models\CustomerGroup;
+use App\Models\Roles;
+use App\Models\User;
 use App\Models\Warehouse;
+use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class RegisterController extends Controller
 {
     /*
-    |--------------------------------------------------------------------------
-    | Register Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles the registration of new users as well as their
-    | validation and creation. By default this controller uses a trait to
-    | provide this functionality without requiring any additional code.
-    |
-    */
+     * |--------------------------------------------------------------------------
+     * | Register Controller
+     * |--------------------------------------------------------------------------
+     * |
+     * | This controller handles the registration of new users as well as their
+     * | validation and creation. By default this controller uses a trait to
+     * | provide this functionality without requiring any additional code.
+     * |
+     */
 
     use RegistersUsers;
 
@@ -52,7 +52,7 @@ class RegisterController extends Controller
      */
     public function showRegistrationForm()
     {
-        $lims_role_list = Roles::where('is_active', true)->get();
+        $lims_role_list = Roles::where('is_active', true)->where('bus_config_id', session('bus_config_id'))->get();
         $lims_customer_group_list = CustomerGroup::where('is_active', true)->get();
         $lims_biller_list = Biller::where('is_active', true)->get();
         $lims_warehouse_list = Warehouse::where('is_active', true)->get();
@@ -73,7 +73,7 @@ class RegisterController extends Controller
             'email' => [
                 'email',
                 'max:255',
-                    Rule::unique('users')->where(function ($query) {
+                Rule::unique('users')->where(function ($query) {
                     return $query->where('is_deleted', false);
                 }),
             ],
@@ -104,7 +104,7 @@ class RegisterController extends Controller
             'password' => bcrypt($data['password']),
         ]);
 
-        if($role->role_type == 4) {
+        if ($role->role_type == 4) {
             $data['name'] = $data['customer_name'];
             $data['user_id'] = $user->id;
             $data['is_active'] = true;

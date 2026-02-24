@@ -487,7 +487,7 @@ class CustomerController extends Controller
         // }
         // validation for user if given user access
         if (isset($request->user)) {
-            $connection = getConnectionName(\App\Models\Roles::class);
+            $connection = getConnectionName(\App\Models\User::class);
             $this->validate($request, [
                 'name' => [
                     'max:255',
@@ -577,8 +577,9 @@ class CustomerController extends Controller
                     $custom_field_data[$field_name] = $customer_data[$field_name];
             }
         }
-        if (count($custom_field_data))
+        if (count($custom_field_data)) {
             DB::table('customers')->where('id', $lims_customer_data->id)->update($custom_field_data);
+        }
         $key_prefix = 'tenant_' . session('bus_config_id') . '_';
         $this->cacheForget($key_prefix . 'customer_list');
         $customerInfo['id'] = $lims_customer_data->id;
@@ -604,10 +605,11 @@ class CustomerController extends Controller
             ]);
         }
 
-        if ($customer_data['pos'])
+        if ($customer_data['pos']) {
             return $customerInfo;
-        else
+        } else {
             return redirect('customer')->with('create_message', 'Customer created successfully');
+        }
     }
 
     public function show($id)

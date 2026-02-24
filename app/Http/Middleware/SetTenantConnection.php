@@ -22,6 +22,22 @@ class SetTenantConnection
                     ->where('bus_config_id', $bus_config_id)
                     ->first();
                 // Verify tenant database exists
+                // $dbName = $business->db_name;
+                // Validate database name to prevent injection attempts
+                // if (!preg_match('/^[a-zA-Z0-9_]+$/', $dbName)) {
+                //     \Log::critical('Invalid database name detected - possible SQL injection attempt', [
+                //         'bus_config_id' => $bus_config_id,
+                //         'db_name' => $dbName,
+                //         'user_id' => auth()->id()
+                //     ]);
+
+                //     auth()->logout();
+                //     session()->invalidate();
+                //     return redirect()
+                //         ->route('login')
+                //         ->with('delete_message', 'Security violation detected. This incident has been logged.');
+                // }
+                // $dbExists = DB::select('SHOW DATABASES LIKE ?', [$dbName]);
                 $dbName = $business->db_name;
                 $dbExists = DB::select("SHOW DATABASES LIKE '{$dbName}'");
                 if (empty($dbExists)) {

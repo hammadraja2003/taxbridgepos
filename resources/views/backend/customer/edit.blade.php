@@ -151,8 +151,8 @@
                                             @elseif($field->type == 'checkbox')
                                                 <br>
                                                 <?php
-                                                $option_values = explode(",", $field->option_value);
-                                                $field_values =  explode(",", $lims_customer_data->$field_name);
+                                                $option_values = explode(',', $field->option_value);
+                                                $field_values = explode(',', $lims_customer_data->$field_name);
                                                 ?>
                                                 @foreach($option_values as $value)
                                                     <label>
@@ -162,8 +162,8 @@
                                                 @endforeach
                                             @elseif($field->type == 'radio_button')
                                                 <br>
-                                                <?php 
-                                                $option_values = explode(",", $field->option_value);
+                                                <?php
+                                                $option_values = explode(',', $field->option_value);
                                                 ?>
                                                 @foreach($option_values as $value)
                                                     <label class="radio-inline">
@@ -172,7 +172,7 @@
                                                     &nbsp;
                                                 @endforeach
                                             @elseif($field->type == 'select')
-                                                <?php $option_values = explode(",", $field->option_value); ?>
+                                                <?php $option_values = explode(',', $field->option_value); ?>
                                                 <select class="form-control" name="{{$field_name}}" @if($field->is_required){{'required'}}@endif>
                                                     @foreach($option_values as $value)
                                                         <option value="{{$value}}" @if($value == $lims_customer_data->$field_name){{'selected'}}@endif>{{$value}}</option>
@@ -180,8 +180,8 @@
                                                 </select>
                                             @elseif($field->type == 'multi_select')
                                                 <?php
-                                                $option_values = explode(",", $field->option_value);
-                                                $field_values =  explode(",", $lims_customer_data->$field_name);
+                                                $option_values = explode(',', $field->option_value);
+                                                $field_values = explode(',', $lims_customer_data->$field_name);
                                                 ?>
                                                 <select class="form-control" name="{{$field_name}}[]" @if($field->is_required){{'required'}}@endif multiple>
                                                     @foreach($option_values as $value)
@@ -269,16 +269,24 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
 <script>
     const input = document.querySelector("#wa_number");
-    window.intlTelInput(input, {
-        initialCountry: "auto",
-        geoIpLookup: function (callback) {
-        fetch("https://ipapi.co/json")
-            .then((res) => res.json())
-            .then((data) => callback(data.country_code))
-            .catch(() => callback("pk"));
-        },
-        utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"
-    });
+    if (input) {
+        window.intlTelInput(input, {
+            initialCountry: "pk", // ✅ Default fallback
+            geoIpLookup: function (callback) {
+                fetch("https://ipapi.co/json")
+                    .then((res) => {
+                        if (!res.ok) throw new Error('API failed');
+                        return res.json();
+                    })
+                    .then((data) => callback(data.country_code))
+                    .catch(() => {
+                        console.log('Using default country: PK');
+                        callback("pk"); // ✅ Fallback to Pakistan
+                    });
+            },
+            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"
+        });
+    }
 
     $("#customer_form").submit(function(e) {
         e.preventDefault();

@@ -75,7 +75,7 @@
                             </div>
                             <div class="col-md-6 mb-4">
                                 <label class="form-label fw-600">From Name <span class="text-danger">*</span></label>
-                                <input type="text" name="from_name" class="form-control" value="{{ $mail_setting_data->from_name ?? '' }}" required placeholder="e.g., TaxBridge POS">
+                                <input type="text" name="from_name" class="form-control" value="{{ $mail_setting_data->from_name ?? '' }}" required placeholder="e.g., SalesBridge POS">
                                 @error('from_name') <small class="text-danger">{{ $message }}</small> @enderror
                             </div>
                         </div>

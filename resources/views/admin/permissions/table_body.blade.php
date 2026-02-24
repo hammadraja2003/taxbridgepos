@@ -4,7 +4,7 @@
     <td class="fw-semibold">{{ $permission->name }}</td>
     <td><span class="badge bg-light text-dark font-monospace">{{ $permission->guard_name }}</span></td>
     <td class="text-muted small">{{ $permission->created_at?->format('d M, Y') ?? 'N/A' }}</td>
-    <td class="text-end">
+    <!-- <td class="text-end">
         <div class="dropdown">
             <button class="btn btn-sm btn-icon btn-light" type="button" data-toggle="dropdown">
                 <i class="ti ti-dots-vertical"></i>
@@ -23,7 +23,7 @@
                 </li>
             </ul>
         </div>
-    </td>
+    </td> -->
 </tr>
 
 <!-- Edit Modal -->

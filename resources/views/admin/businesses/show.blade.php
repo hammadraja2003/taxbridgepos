@@ -118,21 +118,13 @@
                                 <span class="text-dark small">{{ $business->db_host }}</span>
                             </div>
                             <hr class="my-2 opacity-25">
-                            <!-- <div class="mb-2">
-                                <label class="text-xs text-muted mb-0 d-block">Sandbox API Key</label>
-                                <code class="small text-break">{{ $business->sandbox_api_key ?: 'Not Set' }}</code>
-                            </div>
-                            <div class="mb-2">
-                                <label class="text-xs text-muted mb-0 d-block">Production API Key</label>
-                                <code class="small text-break">{{ $business->production_api_key ?: 'Not Set' }}</code>
-                            </div> -->
                             <div class="mb-2">
                                 <label class="text-xs text-muted mb-0 d-block">FBR Token (Sandbox)</label>
-                                <code class="small text-break">{{ $business->fbr_api_token_sandbox ?: 'Not Set' }}</code>
+                                <code class="small text-break">{{ $business->fbr_api_token_sandbox ?? 'Not Set' }}</code>
                             </div>
                             <div class="mb-0">
                                 <label class="text-xs text-muted mb-0 d-block">FBR Token (Prod)</label>
-                                <code class="small text-break">{{ $business->fbr_api_token_prod ?: 'Not Set' }}</code>
+                                <code class="small text-break">{{ $business->fbr_api_token_prod ?? 'Not Set' }}</code>
                             </div>
                         </div>
                     </div>
@@ -144,10 +136,7 @@
                 <div class="col-lg-8">
                     <div class="card shadow-sm border-0 mb-4">
                         <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
-                            <h6 class="m-0 font-weight-bold text-dark"><i class="ti ti-users mr-1 text-primary"></i> Team Members</h6>
-                            <a href="{{ route('admin.businesses.create-user', \Illuminate\Support\Facades\Crypt::encryptString($business->bus_config_id)) }}" class="btn btn-primary btn-xs rounded-pill px-3">
-                                <i class="ti ti-user-plus mr-1"></i> Add User
-                            </a>
+                            <h6 class="m-0 font-weight-bold text-dark"><i class="ti ti-users mr-1 text-primary"></i> Users</h6>
                         </div>
                         <div class="card-body pt-0">
                             @if ($business->users->count() > 0)
@@ -277,16 +266,47 @@
                                         </ul>
 
                                         <h6 class="text-xs font-weight-bold text-uppercase text-success mb-3"><i class="ti ti-calendar-event mr-1"></i> Subscription Details</h6>
-                                        <div class="bg-light p-2 rounded small mb-4">
-                                            <div class="d-flex justify-content-between mb-1">
-                                                <span class="text-muted">Valid Until:</span>
-                                                <span class="font-weight-bold {{ $general_setting->expiry_date ? 'text-dark' : 'text-success' }}">{{ $general_setting->expiry_date ?: 'Life-time Access' }}</span>
+                                        @if($business->package_name)
+                                            <div class="bg-light p-3 rounded small mb-4">
+                                                <div class="d-flex justify-content-between mb-2">
+                                                    <span class="text-muted">Active Package:</span>
+                                                    <span class="font-weight-bold text-primary">{{ $business->package_name }}</span>
+                                                </div>
+                                                <div class="d-flex justify-content-between mb-2">
+                                                    <span class="text-muted">Type:</span>
+                                                    @if($business->is_trial)
+                                                        <span class="badge badge-warning text-uppercase" style="font-size: 9px;">Trial</span>
+                                                    @else
+                                                        <span class="badge badge-success text-uppercase" style="font-size: 9px;">Paid ({{ ucfirst($business->package_billing_cycle) }})</span>
+                                                    @endif
+                                                </div>
+                                                <div class="d-flex justify-content-between mb-2">
+                                                    <span class="text-muted">Valid From:</span>
+                                                    <span class="font-weight-600">{{ \Carbon\Carbon::parse($business->start_date)->format('d M, Y') }}</span>
+                                                </div>
+                                                <div class="d-flex justify-content-between mb-2">
+                                                    <span class="text-muted">Valid Until:</span>
+                                                    <span class="font-weight-bold {{ $business->days_left <= 7 ? 'text-danger' : 'text-dark' }}">
+                                                        {{ \Carbon\Carbon::parse($business->end_date)->format('d M, Y') }}
+                                                    </span>
+                                                </div>
+                                                <div class="d-flex justify-content-between mb-3">
+                                                    <span class="text-muted">Status:</span>
+                                                    @if($business->days_left > 7)
+                                                        <span class="text-success font-weight-bold">{{ $business->days_left }} Days Left</span>
+                                                    @elseif($business->days_left > 0)
+                                                        <span class="text-warning font-weight-bold">{{ $business->days_left }} Days Left (Expiring)</span>
+                                                    @else
+                                                        <span class="text-danger font-weight-bold">Expired</span>
+                                                    @endif
+                                                </div>
                                             </div>
-                                            <div class="d-flex justify-content-between">
-                                                <span class="text-muted">Grace Period:</span>
-                                                <span class="font-weight-600">{{ $general_setting->expiry_alert_days }} Days</span>
+                                        @else
+                                            <div class="bg-light p-3 rounded small mb-4 text-center">
+                                                <i class="ti ti-alert-circle text-muted mb-2 fa-2x"></i>
+                                                <p class="mb-0 text-muted italic">No active package subscription found for this business.</p>
                                             </div>
-                                        </div>
+                                        @endif
                                     </div>
 
                                     <div class="col-md-6 pl-md-4 border-left">

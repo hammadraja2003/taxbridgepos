@@ -81,6 +81,7 @@
                     <th>{{__('db.Email')}}</th>
                     <th>{{__('db.Company Name')}}</th>
                     <th>{{__('db.Phone Number')}}</th>
+                    <th>{{__('db.MFA')}}</th>
                     <th>{{__('db.Role')}}</th>
                     <th>{{__('db.status')}}</th>
                     <th class="not-exported">{{__('db.action')}}</th>
@@ -94,9 +95,20 @@
                     <td>{{ $user->email}}</td>
                     <td>{{ $user->company_name}}</td>
                     <td>{{ $user->phone}}</td>
-
+                    <td class="text-center">
+                        @if($user->two_factor_enabled)
+                            <span class="badge badge-success">
+                                <i class="fa fa-shield-alt"></i> Enabled
+                            </span>
+                        @else
+                            <span class="badge badge-secondary">
+                                <i class="fa fa-shield-alt"></i> Disabled
+                            </span> 
+                        @endif
+                    </td>
                     <?php $role = DB::connection('master')->table('roles')->find($user->role_id); ?>
                     <td>{{ $role->name }}</td>
+                    
                     <td class="text-center">
                         <div class="custom-control custom-switch">
                             <input type="checkbox"
@@ -127,6 +139,14 @@
                                 </li>
                                 {{ Form::close() }}
                                 @endif
+                                <li>
+                                    <a href="{{ route('admin.users.toggle-2fa', $user->id) }}" 
+                                    class="btn btn-sm btn-{{ $user->two_factor_enabled ? 'danger' : 'success' }}"
+                                    onclick="return confirm('Are you sure you want to {{ $user->two_factor_enabled ? 'disable' : 'enable' }} 2FA for this user?')">
+                                        <i class="fa fa-shield-alt"></i> 
+                                        {{ $user->two_factor_enabled ? 'Disable' : 'Enable' }} 2FA
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </td>

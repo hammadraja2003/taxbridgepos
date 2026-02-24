@@ -69,7 +69,7 @@
           <input type="text" name="name" required="required" class="form-control">
         </div>
         <div class="form-group">
-          <label>{{__('db.Percentage')}}(%) * <i class="dripicons-question" data-toggle="tooltip" title="{{__('db.If you want to sell your product at default price, then the percentage value must be zero')}}"></i></label>
+          <label>{{__('db.Percentage')}}(%) * <i class="dripicons-question" data-toggle="tooltip" title="{{__('db.If you want to sell your product at default price, then the percentage value must be zero and if percentage value is greater than zero then it will be added to the default price')}}"></i></label>
           <input type="number" min="0" name="percentage" required="required" class="form-control">
         </div>
         <div class="form-group">
@@ -99,7 +99,7 @@
           <input type="text" name="name" required="required" class="form-control">
         </div>
         <div class="form-group">
-          <label>{{__('db.Percentage')}}(%) *  <i class="dripicons-question" data-toggle="tooltip" title="{{__('db.If you want to sell your product at default price, then the percentage value must be zero')}}"></i></label>
+          <label>{{__('db.Percentage')}}(%) *  <i class="dripicons-question" data-toggle="tooltip" title="{{__('db.If you want to sell your product at default price, then the percentage value must be zero and if percentage value is greater than zero then it will be added to the default price')}}"></i></label>
           <input type="text" name="percentage" required="required" class="form-control">
         </div>
         <div class="form-group">

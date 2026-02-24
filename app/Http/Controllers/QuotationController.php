@@ -391,13 +391,8 @@ class QuotationController extends Controller
                 return redirect()->back()->withErrors($v->errors());
             $ext = pathinfo($document->getClientOriginalName(), PATHINFO_EXTENSION);
             $documentName = date('Ymdhis');
-            if (!config('database.connections.saleprosaas_landlord')) {
-                $documentName = $documentName . '.' . $ext;
-                $document->move(public_path('documents/quotation'), $documentName);
-            } else {
-                $documentName = $this->getTenantId() . '_' . $documentName . '.' . $ext;
-                $document->move(public_path('documents/quotation'), $documentName);
-            }
+            $documentName = $documentName . '.' . $ext;
+            $document->move(public_path('documents/quotation'), $documentName);
             $data['document'] = $documentName;
         }
         $data['reference_no'] = 'QR-' . date('Ymd') . '-' . date('his');
@@ -1095,13 +1090,8 @@ class QuotationController extends Controller
 
             $ext = pathinfo($document->getClientOriginalName(), PATHINFO_EXTENSION);
             $documentName = date('Ymdhis');
-            if (!config('database.connections.saleprosaas_landlord')) {
-                $documentName = $documentName . '.' . $ext;
-                $document->move(public_path('documents/quotation'), $documentName);
-            } else {
-                $documentName = $this->getTenantId() . '_' . $documentName . '.' . $ext;
-                $document->move(public_path('documents/quotation'), $documentName);
-            }
+            $documentName = $documentName . '.' . $ext;
+            $document->move(public_path('documents/quotation'), $documentName);
             $data['document'] = $documentName;
         }
         $lims_product_quotation_data = ProductQuotation::where('quotation_id', $id)->get();

@@ -4,7 +4,6 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  @if(!config('database.connections.saleprosaas_landlord'))
   <link rel="icon" type="image/png" href="{{ env('PUB_PATH') . '/logo/'. $general_setting->favicon ?? $general_setting->site_logo}}" />
   <title>{{$general_setting->site_title}}</title>
   <meta name="description" content="">
@@ -83,8 +82,6 @@
   <link rel="stylesheet" href="{{ env('ASSETS_PATH') . '/bootstrap/css/bootstrap-rtl.min.css' }}" type="text/css">
   <link rel="stylesheet" href="{{ env('ASSETS_PATH') . '/css/custom-rtl.css' }}" type="text/css" id="custom-style">
   @endif
-  
-  @endif
 
   <!-- Google fonts -->
   @if($general_setting->font_css)
@@ -104,7 +101,6 @@
   {!! $general_setting->custom_css !!}
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
   <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-  
 
 </head>
 
@@ -130,14 +126,10 @@
     <header class="container-fluid app-header">
       <nav class="navbar">
         <a id="toggle-btn" href="#" class="menu-btn"><i class="fa fa-bars"> </i></a>
-
         <div class="d-flex align-items-center gap-3 mb-3">
           <!-- <h5 class="mb-0 fw-semibold">
-             Company: {{ $general_setting->company_name ?? '—' }}
-          </h5> -->
-          <h5 class="mb-0 fw-semibold">
              DB: {{ $business_config->db_name ?? '—' }}
-          </h5>
+          </h5> -->
       </div>
 
         <ul class="nav-menu list-unstyled d-flex flex-md-row align-items-md-center">
@@ -364,6 +356,13 @@
 
                 </ul>
             </li>
+            @if(auth()->user()->hasTwoFactorEnabled())
+                <li class="nav-item">
+                    <span class="badge badge-success">
+                        <i class="dripicons-lock mr-1"></i> 2FA
+                    </span>
+                </li>
+            @endif
 
             <!-- <li class="nav-item">
               <a rel="nofollow" title="{{ __('db.language') }}" data-toggle="tooltip" class="nav-link dropdown-item"><i class="dripicons-web"></i></a>
@@ -389,6 +388,11 @@
               <ul class="right-sidebar">
                 <li>
                   <a href="{{route('user.profile', ['id' => Auth::id()])}}"><i class="dripicons-user"></i> {{ __('db.profile') }}</a>
+                </li>
+                <li>
+                    <a href="{{ route('mfa.show') }}">
+                        <i class="dripicons-lock"></i> Two-Factor Authentication
+                    </a>
                 </li>
                 @if($general_setting_permission_active)
                 <li>
@@ -1089,64 +1093,62 @@
     </div>
   </footer>
 
-  @if(!config('database.connections.saleprosaas_landlord'))
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/jquery/jquery.min.js' }}"></script>
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/jquery/jquery-ui.min.js' }}"></script>
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/jquery/bootstrap-datepicker.min.js' }}"></script>
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/jquery/jquery.timepicker.min.js' }}"></script>
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/popper.js/umd/popper.min.js' }}">
-  </script>
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/bootstrap/js/bootstrap.min.js' }}"></script>
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/bootstrap-toggle/js/bootstrap-toggle.min.js' }}"></script>
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/bootstrap/js/bootstrap-select.min.js' }}"></script>
-  @if(Route::current()->getName() == 'sale.pos')
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/keyboard/js/jquery.keyboard.js' }}"></script>
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/keyboard/js/jquery.keyboard.extension-autocomplete.js' }}"></script>
-  @endif
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/js/grasp_mobile_progress_circle-1.0.0.min.js' }}"></script>
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/jquery.cookie/jquery.cookie.js' }}"></script>
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/chart.js/Chart.min.js' }}"></script>
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/js/charts-custom.js' }}"></script>
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/jquery-validation/jquery.validate.min.js' }}"></script>
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js' }}"></script>
-  @if( Config::get('app.locale') == 'ar' || $general_setting->is_rtl)
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/js/front_rtl.js' }}"></script>
-  @else
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/js/front.js' }}"></script>
-  @endif
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/jquery/jquery.min.js' }}"></script>
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/jquery/jquery-ui.min.js' }}"></script>
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/jquery/bootstrap-datepicker.min.js' }}"></script>
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/jquery/jquery.timepicker.min.js' }}"></script>
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/popper.js/umd/popper.min.js' }}">
+      </script>
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/bootstrap/js/bootstrap.min.js' }}"></script>
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/bootstrap-toggle/js/bootstrap-toggle.min.js' }}"></script>
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/bootstrap/js/bootstrap-select.min.js' }}"></script>
+      @if(Route::current()->getName() == 'sale.pos')
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/keyboard/js/jquery.keyboard.js' }}"></script>
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/keyboard/js/jquery.keyboard.extension-autocomplete.js' }}"></script>
+      @endif
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/js/grasp_mobile_progress_circle-1.0.0.min.js' }}"></script>
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/jquery.cookie/jquery.cookie.js' }}"></script>
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/chart.js/Chart.min.js' }}"></script>
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/js/charts-custom.js' }}"></script>
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/jquery-validation/jquery.validate.min.js' }}"></script>
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js' }}"></script>
+      @if( Config::get('app.locale') == 'ar' || $general_setting->is_rtl)
+        <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/js/front_rtl.js' }}"></script>
+      @else
+        <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/js/front.js' }}"></script>
+      @endif
 
-  @if(Route::current()->getName() != '/')
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/daterange/js/moment.min.js' }}"></script>
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/daterange/js/knockout-3.4.2.js' }}"></script>
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/daterange/js/daterangepicker.min.js' }}"></script>
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/tinymce/js/tinymce/tinymce.min.js' }}"></script>
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/js/dropzone.js' }}"></script>
+      @if(Route::current()->getName() != '/')
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/daterange/js/moment.min.js' }}"></script>
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/daterange/js/knockout-3.4.2.js' }}"></script>
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/daterange/js/daterangepicker.min.js' }}"></script>
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/tinymce/js/tinymce/tinymce.min.js' }}"></script>
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/js/dropzone.js' }}"></script>
 
-  <!-- table sorter js-->
-  @if( Config::get('app.locale') == 'ar')
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/pdfmake_arabic.min.js' }}"></script>
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/vfs_fonts_arabic.js' }}"></script>
-  @else
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/pdfmake.min.js' }}"></script>
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/vfs_fonts.js' }}"></script>
-  @endif
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/jquery.dataTables.min.js' }}"></script>
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/dataTables.bootstrap4.min.js' }}"></script>
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/dataTables.buttons.min.js' }}"></script>
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/jszip.min.js' }}"></script>
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/buttons.bootstrap4.min.js' }}"></script>
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/buttons.colVis.min.js' }}"></script>
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/buttons.html5.min.js' }}"></script>
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/buttons.printnew.js' }}"></script>
+      <!-- table sorter js-->
+      @if( Config::get('app.locale') == 'ar')
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/pdfmake_arabic.min.js' }}"></script>
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/vfs_fonts_arabic.js' }}"></script>
+      @else
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/pdfmake.min.js' }}"></script>
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/vfs_fonts.js' }}"></script>
+      @endif
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/jquery.dataTables.min.js' }}"></script>
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/dataTables.bootstrap4.min.js' }}"></script>
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/dataTables.buttons.min.js' }}"></script>
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/jszip.min.js' }}"></script>
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/buttons.bootstrap4.min.js' }}"></script>
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/buttons.colVis.min.js' }}"></script>
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/buttons.html5.min.js' }}"></script>
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/buttons.printnew.js' }}"></script>
 
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/sum().js' }}"></script>
-  <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/dataTables.checkboxes.min.js' }}"></script>
-  <script type="text/javascript" src="https://cdn.datatables.net/fixedheader/3.1.6/js/dataTables.fixedHeader.min.js"></script>
-  <script type="text/javascript" src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
-  <script type="text/javascript" src="https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap.min.js"></script>
-  @endif
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/sum().js' }}"></script>
+      <script type="text/javascript" src="{{ env('ASSETS_PATH') . '/datatable/dataTables.checkboxes.min.js' }}"></script>
+      <script type="text/javascript" src="https://cdn.datatables.net/fixedheader/3.1.6/js/dataTables.fixedHeader.min.js"></script>
+      <script type="text/javascript" src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+      <script type="text/javascript" src="https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap.min.js"></script>
+      @endif
 
-  @endif
   @stack('scripts')
 
   <script type="text/javascript">

@@ -61,6 +61,9 @@
                                     </div>
                                 </div>
                             </div>
+                            @php
+                            $fbr_posting = $lims_pos_setting_data->fbr_posting ?? null;
+                            @endphp
                             <div class="row">
                                  <div class="col-md-3">
                                 <div class="form-group">
@@ -68,7 +71,7 @@
                                         @if($lims_pos_setting_data)
                                         <input type="hidden" name="fbr_posting_hidden" value="{{$lims_pos_setting_data->fbr_posting}}">
                                         @endif
-                                         {!! fbrPostDropdown('fbr_posting', $lims_pos_setting_data->fbr_posting, 'fbr_posting') !!}
+                                         {!! fbrPostDropdown('fbr_posting', $fbr_posting, 'fbr_posting') !!}
                                 </div>
                                 </div>
                             </div>
@@ -137,7 +140,7 @@
                                     <label class="mt-2">Card</label>
                                 </div>
 
-                                <div class="form-group col-md-2">
+                                <!-- <div class="form-group col-md-2">
                                     @if(in_array("credit",$options))
                                     <input class="mt-2" type="checkbox" name="options[]" value="credit" checked>
                                     @else
@@ -153,7 +156,7 @@
                                     <input class="mt-2" type="checkbox" name="options[]" value="cheque">
                                     @endif
                                     <label class="mt-2">Cheque</label>
-                                </div>
+                                </div> -->
 
                                 <div class="form-group col-md-2">
                                     @if(in_array("gift_card",$options))
@@ -182,7 +185,7 @@
                                     <label class="mt-2">Points</label>
                                 </div>
 
-                                <div class="form-group col-md-2">
+                                <!-- <div class="form-group col-md-2">
                                     @if(in_array("razorpay",$options))
                                     <input class="mt-2" type="checkbox" name="options[]" value="razorpay" checked>
                                     @else
@@ -198,7 +201,7 @@
                                     <input class="mt-2" type="checkbox" name="options[]" value="pesapal">
                                     @endif
                                     <label class="mt-2">Pesapal</label>
-                                </div>
+                                </div> -->
 
                                 <div class="form-group col-md-2">
                                     @if(in_array("installment",$options))

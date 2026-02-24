@@ -15,13 +15,13 @@
 
     <style type="text/css">
         * {
-            font-size: 11px !important;
+            font-size: 12px !important;
             line-height: 24px;
             font-family: 'Ubuntu', sans-serif;
             text-transform: capitalize;
         }
         body{
-            font-size: 11px !important;
+            font-size: 12px !important;
             margin: 0;
             padding: 0;
         }
@@ -84,7 +84,7 @@
         @media print {
             * {
                 font-size: 12px;
-                line-height: 20px;
+                line-height: 18px;/* line-height: 20px; */
             }
 
             td,
@@ -97,7 +97,8 @@
             }
 
             @page {
-                margin: 1.5cm 0.5cm 0.5cm;
+                /* margin: 1.5cm 0.5cm 0.5cm; */
+                margin: 0.3cm 0.2cm 0.3cm;
             }
 
             @page: first {
@@ -113,7 +114,8 @@
         }
 
         td, th {
-            padding: 2px 0;
+            /* padding: 2px 0; */
+            padding: 2px 3px;
             width: auto !important;
         }
     </style>
@@ -121,7 +123,8 @@
 
 <body>
 
-    <div style="max-width:290px;margin:0 auto">
+    <!-- <div style="max-width:290px;margin:0 auto"> -->
+    <div style="max-width:300px;margin:0 auto;padding:0 2px">
         @if (preg_match('~[0-9]~', url()->previous()))
             @php $url = '../../pos'; @endphp
         @else
@@ -423,15 +426,17 @@
                         @endforeach
                     @endif
                     <tr>
-                        <td class="centered" colspan="4">
-                            <small>
-                                @if (isset($show->show_biller_info) && $show->show_biller_info == 1)
-                                {{ __('db.Served By') }}: {{ $lims_bill_by['name'] }} - ({{ $lims_bill_by['user_name'] }})
-                                @endif
-                            </small><br>
+                        <td class="centered" colspan="4" style="padding: 3px 0;">
+                            @if (isset($show->show_biller_info) && $show->show_biller_info == 1)
+                                <small>{{ __('db.Served By') }}: {{ $lims_bill_by['name'] }} - ({{ $lims_bill_by['user_name'] }})</small>
+                            @endif
                             @if (isset($show->show_footer_text) && $show->show_footer_text == 1)
+                                @if (isset($show->show_biller_info) && $show->show_biller_info == 1)
+                                    <br>
+                                @endif
                                 <strong>{!! $invoice_settings->footer_text ?? __('db.Thank you for shopping with us Please come again') !!}</strong>
                             @endif
+                        </td>
                     </tr>
                     @if ($lims_sale_data->is_posted_to_fbr == 1 && !empty($lims_sale_data->fbr_invoice_number))
                     <tr>
@@ -466,7 +471,7 @@
                 </tbody>
             </table>
             <p style="text-align:center;">
-                <small>Developed By Secureism Pvt. Ltd.</small> 
+                <small>Developed By {{ $general_setting->developed_by }}</small> 
             </p>  
         </div>
     </div>

@@ -2,24 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Database\Eloquent\Collection;
 use App\Models\Account;
-use App\Models\Payment;
-use App\Models\Returns;
-use App\Models\ReturnPurchase;
 use App\Models\Expense;
 use App\Models\Income;
-use App\Models\Payroll;
 use App\Models\MoneyTransfer;
+use App\Models\Payment;
+use App\Models\Payroll;
 use App\Models\Purchase;
-use App\Models\Sale;
-use DB;
-use Illuminate\Validation\Rule;
+use App\Models\ReturnPurchase;
+use App\Models\Returns;
 use App\Models\Roles as Role;
+use App\Models\Sale;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Permission;
 use Auth;
-use Carbon\Carbon;
+use DB;
 
 class AccountsController extends Controller
 {
@@ -33,7 +33,6 @@ class AccountsController extends Controller
         $lims_account_all = Account::where('is_active', true)->get();
 
         foreach ($lims_account_all as $account) {
-
             // -------------------
             // CREDIT
             // -------------------
@@ -64,15 +63,16 @@ class AccountsController extends Controller
             $total_sales_return_debit = 0;
             foreach ($sales_returns as $return) {
                 $sale = $return->sale;
-                if (!$sale) continue;
+                if (!$sale)
+                    continue;
 
-                $sale_total  = $sale->grand_total;
-                $paid        = $sale->paid_amount;
-                $return_amt  = $return->grand_total;
-                $due         = $sale_total - $paid;
+                $sale_total = $sale->grand_total;
+                $paid = $sale->paid_amount;
+                $return_amt = $return->grand_total;
+                $due = $sale_total - $paid;
 
-                $due_adjust  = min($due, $return_amt);
-                $refund      = $return_amt - $due_adjust;
+                $due_adjust = min($due, $return_amt);
+                $refund = $return_amt - $due_adjust;
 
                 if ($refund > 0) {
                     $total_sales_return_debit += $refund;
@@ -104,8 +104,6 @@ class AccountsController extends Controller
 
         return view('backend.account.index', compact('lims_account_all'));
     }
-
-
 
     public function store(Request $request)
     {
@@ -195,10 +193,10 @@ class AccountsController extends Controller
         $data = $request->all();
 
         $lims_account_data = Account::find($data['account_id']);
-        $initial_balance =  $lims_account_data;
+        $initial_balance = $lims_account_data;
 
         $start_date = Carbon::parse($data['start_date'])->startOfDay();
-        $end_date   = Carbon::parse($data['end_date'])->endOfDay();
+        $end_date = Carbon::parse($data['end_date'])->endOfDay();
 
         $balance = $initial_balance->initial_balance ?? 0;
 
@@ -208,7 +206,6 @@ class AccountsController extends Controller
         // CREDIT TRANSACTIONS
         // -----------------------------
         if ($data['type'] == '0' || $data['type'] == '2') {
-
             // Sale Payment
             $sale_payments = Payment::whereNotNull('sale_id')
                 ->where('account_id', $data['account_id'])
@@ -257,7 +254,6 @@ class AccountsController extends Controller
         // DEBIT TRANSACTIONS
         // -----------------------------
         if ($data['type'] == '0' || $data['type'] == '1') {
-
             // Purchase Payment
             $purchase_payment = Payment::whereNotNull('purchase_id')
                 ->where('account_id', $data['account_id'])
@@ -302,26 +298,28 @@ class AccountsController extends Controller
                 ->get()
                 ->map(function ($return) {
                     $sale = $return->sale;
-                    if (!$sale) return null;
+                    if (!$sale)
+                        return null;
 
                     $sale_total = $sale->grand_total;
-                    $paid       = $sale->paid_amount;
+                    $paid = $sale->paid_amount;
                     $return_amt = $return->grand_total;
-                    $due        = $sale_total - $paid;
+                    $due = $sale_total - $paid;
 
                     $due_adjust = min($due, $return_amt);
-                    $refund     = $return_amt - $due_adjust;
+                    $refund = $return_amt - $due_adjust;
 
                     if ($refund > 0) {
                         $obj = new \stdClass();
                         $obj->reference_no = $return->reference_no;
-                        $obj->amount       = $refund;
-                        $obj->created_at   = $return->created_at;
-                        $obj->type         = 'debit';
+                        $obj->amount = $refund;
+                        $obj->created_at = $return->created_at;
+                        $obj->type = 'debit';
                         return $obj;
                     }
                     return null;
-                })->filter();
+                })
+                ->filter();
 
             $account_statement_array = $account_statement_array
                 ->concat($purchase_payment)
@@ -343,7 +341,7 @@ class AccountsController extends Controller
         $final_array = [];
         foreach ($account_statement_array as $data) {
             $credit = $data->type == 'credit' ? $data->amount : 0;
-            $debit  = $data->type == 'debit' ? $data->amount : 0;
+            $debit = $data->type == 'debit' ? $data->amount : 0;
 
             $balance_tracker += $credit;
             $balance_tracker -= $debit;
@@ -371,10 +369,6 @@ class AccountsController extends Controller
             'initial_balance'
         ));
     }
-
-
-
-
 
     public function destroy($id)
     {

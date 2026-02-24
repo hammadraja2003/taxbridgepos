@@ -1,12 +1,16 @@
 <?php
 namespace App\Models;
-use Illuminate\Database\Eloquent\Model;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
 class BusinessConfiguration extends Model
 {
     use HasFactory;
+
     protected $connection = 'master';
     protected $primaryKey = 'bus_config_id';
+
     protected $fillable = [
         'bus_name',
         'bus_ntn_cnic',
@@ -31,14 +35,12 @@ class BusinessConfiguration extends Model
         'fbr_api_token_sandbox',
         'fbr_api_token_prod',
     ];
-    // public function invoices()
-    // {
-    //     return $this->hasMany(Invoice::class, 'seller_id', 'bus_config_id');
-    // }
+
     public function users()
     {
         return $this->hasMany(User::class, 'bus_config_id', 'bus_config_id');
     }
+
     public function scenarios()
     {
         return $this->belongsToMany(
@@ -48,31 +50,4 @@ class BusinessConfiguration extends Model
             'scenario_id'
         )->withTimestamps();
     }
-    // protected static function booted()
-    // {
-    //     static::creating(function ($config) {
-    //         $config->hash = $config->generateHash();
-    //     });
-    //     static::updating(function ($config) {
-    //         $config->hash = $config->generateHash();
-    //     });
-    // }
-    // public function generateHash()
-    // {
-    //     return md5(
-    //         $this->bus_name .
-    //             $this->bus_ntn_cnic .
-    //             $this->bus_address .
-    //             $this->bus_province .
-    //             $this->bus_account_title .
-    //             $this->bus_account_number .
-    //             $this->bus_reg_num .
-    //             $this->bus_contact_num .
-    //             $this->bus_contact_person .
-    //             $this->bus_IBAN .
-    //             $this->bus_swift_code .
-    //             $this->bus_acc_branch_name .
-    //             $this->bus_acc_branch_code
-    //     );
-    // }
 }

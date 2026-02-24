@@ -15,31 +15,24 @@
                     <div class="mb-4">
                         <div class="card border-0 shadow-sm bg-light">
                             <div class="card-body py-3">
-                                <div class="row align-items-center">
-                                    <div class="col-md-3">
-                                        <div class="d-flex align-items-center">
-                                            {{-- <div class="me-3">
-                                                <i class="ti ti-building-store text-primary" style="font-size: 24px;"></i>
-                                            </div> --}}
-                                            <div class="flex-grow-1">
-                                                <label for="business_filter" class="form-label font-weight-bold text-muted small text-uppercase mb-1">
-                                                    Filter by Business
-                                                </label>
-                                                <select id="business_filter" class="form-control shadow-xs">
-                                                    <option value="">All Businesses</option>
-                                                    @foreach($businesses as $business)
-                                                        <option value="{{ $business->bus_config_id }}">{{ $business->bus_name }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
+                                <div class="row g-3 align-items-end">
+                                    <div class="col-md-4">
+                                        <label for="business_filter" class="form-label font-weight-bold text-muted small text-uppercase mb-2">
+                                            <i class="ti ti-building-store me-1 text-primary"></i> Filter by Business
+                                        </label>
+                                        <select id="business_filter" class="form-control selectpicker shadow-xs" data-live-search="true">
+                                            <option value="">All Businesses</option>
+                                            @foreach($businesses as $business)
+                                                <option value="{{ $business->bus_config_id }}">{{ $business->bus_name }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
-                                    <div class="col-md-4 text-end mt-3">
+                                    <div class="col-md-4">
                                         <button type="button" id="apply_filter" class="btn btn-primary shadow-sm px-4">
                                             <i class="ti ti-search me-2"></i>Apply Filter
                                         </button>
-                                        <button type="button" id="clear_filter" class="btn btn-outline-secondary shadow-sm px-3 ms-2" style="display: none;">
-                                            <i class="ti ti-x"></i>
+                                        <button type="button" id="clear_filter" class="btn bg-danger-soft text-danger border-0 shadow-sm px-3 ms-2" style="display: none;">
+                                            <i class="ti ti-rotate-clockwise me-1"></i> Reset
                                         </button>
                                     </div>
                                 </div>
@@ -97,7 +90,7 @@ $(document).ready(function() {
 
     // Clear Filter Button Click
     $('#clear_filter').on('click', function() {
-        $('#business_filter').val('');
+        $('#business_filter').val('').selectpicker('refresh');
         $('#clear_filter').hide();
         $('#empty_state').html('<i class="ti ti-filter" style="font-size: 48px; color: #ccc;"></i><p class="text-muted mt-3">Please select a business from the filter above to view roles.</p>').show();
         $('#roles_table_container').hide();
@@ -158,7 +151,7 @@ $(document).ready(function() {
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
                               
-                                <li><a class="dropdown-item" href="${ "{{ route('admin.roles_permissions.change_permissions', 'ROLE_ID') }}".replace('ROLE_ID', role.encrypted_id) }"><i class="ti ti-shield-check me-2"></i> Change Permission</a></li>
+                                <li><a class="dropdown-item" href="${ "{{ route('admin.roles_permissions.change_permissions', 'ROLE_ID') }}".replace('ROLE_ID', role.encrypted_id) }"><i class="ti ti-shield-check me-2"></i> Assign Permission</a></li>
                              
                             </ul>
                         </div>
@@ -221,6 +214,18 @@ $(document).ready(function() {
     .modal-header.bg-primary .close:hover {
         color: white;
         opacity: 0.8;
+    }
+
+    .bg-danger-soft {
+        background-color: rgba(220, 53, 69, 0.1) !important;
+    }
+    
+    .bg-success-soft {
+        background-color: rgba(40, 167, 69, 0.1) !important;
+    }
+    
+    .bg-primary-soft {
+        background-color: rgba(13, 110, 253, 0.1) !important;
     }
 </style>
 @endpush

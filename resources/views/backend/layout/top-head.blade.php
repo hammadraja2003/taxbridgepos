@@ -12,7 +12,6 @@
 
   <link rel="icon" type="image/png"
     href="{{env('PUB_PATH') . '/logo/' . $general_setting->favicon ?? $general_setting->site_logo}}" />
-  <!-- Bootstrap CSS-->
   <link rel="stylesheet" href="{{ env('ASSETS_PATH') . '/bootstrap/css/bootstrap.min.css' }}" type="text/css">
   <link rel="preload" href="{{ env('ASSETS_PATH') . '/bootstrap/css/bootstrap-datepicker.min.css' }}" as="style"
     onload="this.onload=null;this.rel='stylesheet'">
@@ -29,26 +28,22 @@
   <noscript>
     <link href="{{ env('ASSETS_PATH') . '/bootstrap/css/bootstrap-select.min.css' }}" rel="stylesheet">
   </noscript>
-  <!-- Font Awesome CSS-->
   <link rel="preload" href="{{ env('ASSETS_PATH') . '/font-awesome/css/font-awesome.min.css' }}" as="style"
     onload="this.onload=null;this.rel='stylesheet'">
   <noscript>
     <link href="{{ env('ASSETS_PATH') . '/font-awesome/css/font-awesome.min.css' }}" rel="stylesheet">
   </noscript>
-  <!-- Drip icon font-->
   <link rel="preload" href="{{ env('ASSETS_PATH') . '/dripicons/webfont.css' }}" as="style"
     onload="this.onload=null;this.rel='stylesheet'">
   <noscript>
     <link href="{{ env('ASSETS_PATH') . '/dripicons/webfont.css' }}" rel="stylesheet">
   </noscript>
-  <!-- Custom Scrollbar-->
   <link rel="preload" href="{{ env('ASSETS_PATH') . '/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css' }}"
     as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript>
     <link href="{{ env('ASSETS_PATH') . '/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css' }}"
       rel="stylesheet">
   </noscript>
-  <!-- virtual keybord stylesheet-->
   <link rel="preload" href="{{ env('ASSETS_PATH') . '/keyboard/css/keyboard.css' }}" as="style"
     onload="this.onload=null;this.rel='stylesheet'">
   <noscript>
@@ -56,17 +51,13 @@
   </noscript>
   <link rel="stylesheet" href="{{ env('ASSETS_PATH') . '/css/style.default.css' }}" id="theme-stylesheet"
     type="text/css">
-  <!-- Custom stylesheet - for your changes-->
   <link rel="stylesheet" href="{{ env('ASSETS_PATH') . '/css/custom-' . $general_setting->theme }}" type="text/css"
     id="custom-style">
   @if(Config::get('app.locale') == 'ar' || $general_setting->is_rtl)
-    <!-- RTL css -->
     <link rel="stylesheet" href="{{ env('ASSETS_PATH') . '/bootstrap/css/bootstrap-rtl.min.css' }}" type="text/css">
     <link rel="stylesheet" href="{{ env('ASSETS_PATH') . '/css/custom-rtl.css' }}" type="text/css" id="custom-style">
   @endif
 
-
-  <!-- Google fonts -->
   @if($general_setting->font_css)
     {!! $general_setting->font_css !!}
   @else
@@ -77,7 +68,6 @@
 
   @stack('css')
 
-  <!-- Custom CSS from general settings -->
   {!! $general_setting->pos_css !!}
 </head>
 

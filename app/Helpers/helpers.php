@@ -204,7 +204,7 @@ if (!function_exists('businessLogo')) {
                 ]);
             }
         }
-        return asset('assets/images/logo/tax-bridge.svg');
+        return asset('assets/images/logo/LOGO-SalesBridge-01.png');
     }
 }
 

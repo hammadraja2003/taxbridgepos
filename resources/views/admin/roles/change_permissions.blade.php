@@ -1,162 +1,1931 @@
 @extends('admin.layouts.adminlayout')
 @section('content')
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
-                    <h5 class="mb-0 fw-bold">
-                        <i class="ti ti-shield-check me-2 text-primary"></i> Change Permissions : <span class="text-primary">{{ $role->name }}</span>
-                        <span class="badge bg-light text-dark ms-3 shadow-sm border">
-                            Total: <span class="fw-bold">{{ $totalPermissions }}</span>
-                        </span>
-                        <span class="badge bg-primary-soft text-primary ms-2 shadow-sm border">
-                            Assigned: <span class="fw-bold">{{ $assignedPermissions }}</span>
-                        </span>
-                    </h5>
-                    <a href="{{ route('admin.roles_permissions.index') }}" class="btn btn-light btn-sm">
-                        <i class="ti ti-arrow-left me-1"></i> Back to Roles
-                    </a>
-                </div>
-                <div class="card-body">
-                    <form action="{{ route('admin.roles_permissions.update_permissions', $role->id) }}" method="POST" id="permissionsForm">
-                        @csrf
-                        <div class="table-responsive">
-                            <table class="table table-hover table-bordered align-middle">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th style="width: 250px;">Module Name</th>
-                                        <th class="text-center">View</th>
-                                        <th class="text-center">Add</th>
-                                        <th class="text-center">Edit</th>
-                                        <th class="text-center">Delete</th>
-                                        <th class="text-center">Import / Other</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($modules as $moduleName => $actions)
-                                    <tr>
-                                        <td class="fw-bold text-dark">{{ $moduleName }}</td>
-                                        
-                                        {{-- View --}}
-                                        <td class="text-center">
-                                            @if($actions['view'])
-                                                <div class="form-check d-inline-block">
-                                                    <input class="form-check-input" type="checkbox" name="permissions[]" 
-                                                        value="{{ $actions['view']->id }}" 
-                                                        id="perm_{{ $actions['view']->id }}"
-                                                        {{ in_array($actions['view']->id, $rolePermissions) ? 'checked' : '' }}>
-                                                </div>
-                                            @else
-                                                <span class="text-muted small">-</span>
-                                            @endif
-                                        </td>
 
-                                        {{-- Add --}}
-                                        <td class="text-center">
-                                            @if($actions['add'])
-                                                <div class="form-check d-inline-block">
-                                                    <input class="form-check-input" type="checkbox" name="permissions[]" 
-                                                        value="{{ $actions['add']->id }}" 
-                                                        id="perm_{{ $actions['add']->id }}"
-                                                        {{ in_array($actions['add']->id, $rolePermissions) ? 'checked' : '' }}>
-                                                </div>
-                                            @else
-                                                <span class="text-muted small">-</span>
-                                            @endif
-                                        </td>
 
-                                        {{-- Edit --}}
-                                        <td class="text-center">
-                                            @if($actions['edit'])
-                                                <div class="form-check d-inline-block">
-                                                    <input class="form-check-input" type="checkbox" name="permissions[]" 
-                                                        value="{{ $actions['edit']->id }}" 
-                                                        id="perm_{{ $actions['edit']->id }}"
-                                                        {{ in_array($actions['edit']->id, $rolePermissions) ? 'checked' : '' }}>
-                                                </div>
-                                            @else
-                                                <span class="text-muted small">-</span>
-                                            @endif
-                                        </td>
 
-                                        {{-- Delete --}}
-                                        <td class="text-center">
-                                            @if($actions['delete'])
-                                                <div class="form-check d-inline-block">
-                                                    <input class="form-check-input" type="checkbox" name="permissions[]" 
-                                                        value="{{ $actions['delete']->id }}" 
-                                                        id="perm_{{ $actions['delete']->id }}"
-                                                        {{ in_array($actions['delete']->id, $rolePermissions) ? 'checked' : '' }}>
-                                                </div>
-                                            @else
-                                                <span class="text-muted small">-</span>
-                                            @endif
-                                        </td>
-
-                                        {{-- Import --}}
-                                        <td class="text-center">
-                                            @if($actions['import'])
-                                                <div class="form-check d-inline-block">
-                                                    <input class="form-check-input" type="checkbox" name="permissions[]" 
-                                                        value="{{ $actions['import']->id }}" 
-                                                        id="perm_{{ $actions['import']->id }}"
-                                                        {{ in_array($actions['import']->id, $rolePermissions) ? 'checked' : '' }}>
-                                                </div>
-                                            @else
-                                                <span class="text-muted small">-</span>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+<section class="forms">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <h4>Group Permission</h4>
+                        <div>
+                            <span class="badge badge-info mr-2 p-2">Total: <span id="total-permissions">0</span></span>
+                            <span class="badge badge-success p-2">Assigned: <span id="active-permissions">0</span></span>
                         </div>
-                        
-                        <div class="mt-4 text-end">
-                            <a href="{{ route('admin.roles_permissions.index') }}" class="btn btn-light me-2">Cancel</a>
-                            <button type="button" id="submitBtn" class="btn btn-primary px-4">
-                                <i class="ti ti-device-floppy me-1"></i> Save Changes
-                            </button>
-                        </div>
+                    </div>
+                    <form action="{{ route('admin.roles_permissions.update_permissions', $role->id) }}" method="POST">
+@csrf
+                    <div class="card-body">
+                    	<input type="hidden" name="role_id" value="{{$role->id}}" />
+						<div class="table-responsive">
+						    <table class="table table-bordered permission-table">
+						        <thead>
+						        <tr>
+						            <th colspan="6" class="text-center">{{$role->name}} Group Permission</th>
+						        </tr>
+						        <tr>
+						            <th rowspan="2" class="text-center">Module Name</th>
+						            <th colspan="5" class="text-center">
+						            	<div class="checkbox">
+						            		<input type="checkbox" id="select_all">
+						            		<label for="select_all">Permissions</label>
+						            	</div>
+						            </th>
+						        </tr>
+						        <tr>
+						            <th class="text-center">View</th>
+						            <th class="text-center">add</th>
+						            <th class="text-center">edit</th>
+						            <th class="text-center">delete</th>
+									<th class="text-center">import</th>
+						        </tr>
+						        </thead>
+						        <tbody>
+						        @php
+									$permissions = ['index', 'add', 'edit', 'delete', 'import'];
+									@endphp
+
+									<tr>
+										<td>category</td>
+										@foreach ($permissions as $perm)
+											@php $key = "categories-{$perm}"; @endphp
+											<td class="text-center">
+												<div class="checkbox icheckbox_square-blue">
+													<input type="checkbox"
+														value="1"
+														id="{{ $key }}"
+														name="{{ $key }}"
+														{{ in_array($key, $all_permission) ? 'checked' : '' }}>
+													<label for="{{ $key }}"></label>
+												</div>
+											</td>
+										@endforeach
+									</tr>
+									<tr>
+										<td>brand</td>
+										@foreach ($permissions as $perm)
+											@php $key = "brand-{$perm}"; @endphp
+											<td class="text-center">
+												<div class="checkbox icheckbox_square-blue">
+													<input type="checkbox"
+														value="1"
+														id="{{ $key }}"
+														name="{{ $key }}"
+														{{ in_array($key, $all_permission) ? 'checked' : '' }}>
+													<label for="{{ $key }}"></label>
+												</div>
+											</td>
+										@endforeach
+									</tr>
+
+									<tr>
+										<td>unit</td>
+										@foreach ($permissions as $perm)
+											@php $key = "unit-{$perm}"; @endphp
+											<td class="text-center">
+												<div class="checkbox icheckbox_square-blue">
+													<input type="checkbox"
+														value="1"
+														id="{{ $key }}"
+														name="{{ $key }}"
+														{{ in_array($key, $all_permission) ? 'checked' : '' }}>
+													<label for="{{ $key }}"></label>
+												</div>
+											</td>
+										@endforeach
+									</tr>
+
+									<tr>
+										<td>product</td>
+										@foreach ($permissions as $perm)
+											@php $key = "products-{$perm}"; @endphp
+											<td class="text-center">
+												<div class="checkbox icheckbox_square-blue">
+													<input type="checkbox"
+														value="1"
+														id="{{ $key }}"
+														name="{{ $key }}"
+														{{ in_array($key, $all_permission) ? 'checked' : '' }}>
+													<label for="{{ $key }}"></label>
+												</div>
+											</td>
+										@endforeach
+									</tr>
+
+									<tr>
+										<td>Purchase</td>
+										@foreach ($permissions as $perm)
+											@php $key = "purchases-{$perm}"; @endphp
+											<td class="text-center">
+												<div class="checkbox icheckbox_square-blue">
+													<input type="checkbox"
+														value="1"
+														id="{{ $key }}"
+														name="{{ $key }}"
+														{{ in_array($key, $all_permission) ? 'checked' : '' }}>
+													<label for="{{ $key }}"></label>
+												</div>
+											</td>
+										@endforeach
+									</tr>
+
+
+						        <tr>
+						            <td>Purchase Payment</td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue checked" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("purchase-payment-index", $all_permission))
+								                <input type="checkbox" value="1" id="purchase-payment-index" name="purchase-payment-index" checked />
+								                @else
+								                <input type="checkbox" value="1" id="purchase-payment-index" name="purchase-payment-index">
+								                @endif
+								                <label for="purchase-payment-index"></label>
+								            </div>
+						            	</div>
+						            </td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue checked" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("purchase-payment-add", $all_permission))
+								                <input type="checkbox" value="1" id="purchase-payment-add" name="purchase-payment-add" checked />
+								                @else
+								                <input type="checkbox" value="1" id="purchase-payment-add" name="purchase-payment-add">
+								                @endif
+								                <label for="purchase-payment-add"></label>
+								            </div>
+						            	</div>
+						            </td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("purchase-payment-edit", $all_permission))
+								                <input type="checkbox" value="1" id="purchase-payment-edit" name="purchase-payment-edit" checked>
+								                @else
+								                <input type="checkbox" value="1" id="purchase-payment-edit" name="purchase-payment-edit">
+								                @endif
+								                <label for="purchase-payment-edit"></label>
+								            </div>
+						            	</div>
+						            </td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("purchase-payment-delete", $all_permission))
+								                <input type="checkbox" value="1" id="purchase-payment-delete" name="purchase-payment-delete" checked>
+								                @else
+								                <input type="checkbox" value="1" id="purchase-payment-delete" name="purchase-payment-delete">
+								                @endif
+								                <label for="purchase-payment-delete"></label>
+								            </div>
+						            	</div>
+						            </td>
+									<td class="text-center">
+						                <div class="icheckbox_square-blue" aria-checked="false" aria-disabled="false">
+						            	</div>
+						            </td>
+						        </tr>
+
+								<tr>
+									<td>Sale</td>
+									@foreach ($permissions as $perm)
+										@php $key = "sales-{$perm}"; @endphp
+										<td class="text-center">
+											<div class="checkbox icheckbox_square-blue">
+												<input type="checkbox"
+													value="1"
+													id="{{ $key }}"
+													name="{{ $key }}"
+													{{ in_array($key, $all_permission) ? 'checked' : '' }}>
+												<label for="{{ $key }}"></label>
+											</div>
+										</td>
+									@endforeach
+								</tr>
+
+
+						        <tr>
+						            <td>Sale Payment</td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue checked" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("sale-payment-index", $all_permission))
+								                <input type="checkbox" value="1" id="sale-payment-index" name="sale-payment-index" checked />
+								                @else
+								                <input type="checkbox" value="1" id="sale-payment-index" name="sale-payment-index">
+								                @endif
+								                <label for="sale-payment-index"></label>
+								            </div>
+						            	</div>
+						            </td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue checked" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("sale-payment-add", $all_permission))
+								                <input type="checkbox" value="1" id="sale-payment-add" name="sale-payment-add" checked />
+								                @else
+								                <input type="checkbox" value="1" id="sale-payment-add" name="sale-payment-add">
+								                @endif
+								                <label for="sale-payment-add"></label>
+								            </div>
+						            	</div>
+						            </td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("sale-payment-edit", $all_permission))
+								                <input type="checkbox" value="1" id="sale-payment-edit" name="sale-payment-edit" checked>
+								                @else
+								                <input type="checkbox" value="1" id="sale-payment-edit" name="sale-payment-edit">
+								                @endif
+								                <label for="sale-payment-edit"></label>
+								            </div>
+						            	</div>
+						            </td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("sale-payment-delete", $all_permission))
+								                <input type="checkbox" value="1" id="sale-payment-delete" name="sale-payment-delete" checked>
+								                @else
+								                <input type="checkbox" value="1" id="sale-payment-delete" name="sale-payment-delete">
+								                @endif
+								                <label for="sale-payment-delete"></label>
+								            </div>
+						            	</div>
+						            </td>
+									<td class="text-center">
+						                <div class="icheckbox_square-blue" aria-checked="false" aria-disabled="false">
+						            	</div>
+						            </td>
+						        </tr>
+
+						        <tr class="expense-row">
+						            <td>Expense</td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue checked" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("expenses-index", $all_permission))
+								                <input type="checkbox" value="1" id="expenses-index" name="expenses-index" checked />
+								                @else
+								                <input type="checkbox" value="1" id="expenses-index" name="expenses-index">
+								                @endif
+								                <label for="expenses-index"></label>
+								            </div>
+						            	</div>
+						            </td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue checked" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("expenses-add", $all_permission))
+								                <input type="checkbox" value="1" id="expenses-add" name="expenses-add" checked />
+								                @else
+								                <input type="checkbox" value="1" id="expenses-add" name="expenses-add">
+								                @endif
+								                <label for="expenses-add"></label>
+								            </div>
+						            	</div>
+						            </td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("expenses-edit", $all_permission))
+								                <input type="checkbox" value="1" id="expenses-edit" name="expenses-edit" checked>
+								                @else
+								                <input type="checkbox" value="1" id="expenses-edit" name="expenses-edit">
+								                @endif
+								                <label for="expenses-edit"></label>
+								            </div>
+						            	</div>
+						            </td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("expenses-delete", $all_permission))
+								                <input type="checkbox" value="1" id="expenses-delete" name="expenses-delete" checked>
+								                @else
+								                <input type="checkbox" value="1" id="expenses-delete" name="expenses-delete">
+								                @endif
+								                <label for="expenses-delete"></label>
+								            </div>
+						            	</div>
+						            </td>
+									<td class="text-center">
+						                <div class="icheckbox_square-blue" aria-checked="false" aria-disabled="false">
+						            	</div>
+						            </td>
+						        </tr>
+								<tr class="income-row">
+						            <td>Income</td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue checked" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("incomes-index", $all_permission))
+								                <input type="checkbox" value="1" id="incomes-index" name="incomes-index" checked />
+								                @else
+								                <input type="checkbox" value="1" id="incomes-index" name="incomes-index">
+								                @endif
+								                <label for="incomes-index"></label>
+								            </div>
+						            	</div>
+						            </td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue checked" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("incomes-add", $all_permission))
+								                <input type="checkbox" value="1" id="incomes-add" name="incomes-add" checked />
+								                @else
+								                <input type="checkbox" value="1" id="incomes-add" name="incomes-add">
+								                @endif
+								                <label for="incomes-add"></label>
+								            </div>
+						            	</div>
+						            </td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("incomes-edit", $all_permission))
+								                <input type="checkbox" value="1" id="incomes-edit" name="incomes-edit" checked>
+								                @else
+								                <input type="checkbox" value="1" id="incomes-edit" name="incomes-edit">
+								                @endif
+								                <label for="incomes-edit"></label>
+								            </div>
+						            	</div>
+						            </td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("incomes-delete", $all_permission))
+								                <input type="checkbox" value="1" id="incomes-delete" name="incomes-delete" checked>
+								                @else
+								                <input type="checkbox" value="1" id="incomes-delete" name="incomes-delete">
+								                @endif
+								                <label for="incomes-delete"></label>
+								            </div>
+						            	</div>
+						            </td>
+									<td class="text-center">
+						                <div class="icheckbox_square-blue" aria-checked="false" aria-disabled="false">
+						            	</div>
+						            </td>
+						        </tr>
+						        <tr class="quotation-row">
+						            <td>Quotation</td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue checked" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("quotes-index", $all_permission))
+								                <input type="checkbox" value="1" id="quotes-index" name="quotes-index" checked>
+								                @else
+								                <input type="checkbox" value="1" id="quotes-index" name="quotes-index">
+								                @endif
+								                <label for="quotes-index"></label>
+								            </div>
+						            	</div>
+						            </td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue checked" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("quotes-add", $all_permission))
+								                <input type="checkbox" value="1" id="quotes-add" name="quotes-add" checked>
+								                @else
+								                <input type="checkbox" value="1" id="quotes-add" name="quotes-add">
+								                @endif
+								                <label for="quotes-add"></label>
+								            </div>
+						            	</div>
+						            </td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue checked" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("quotes-edit", $all_permission))
+								                <input type="checkbox" value="1" id="quotes-edit" name="quotes-edit" checked>
+								                @else
+								                <input type="checkbox" value="1" id="quotes-edit" name="quotes-edit">
+								                @endif
+								                <label for="quotes-edit"></label>
+								            </div>
+						            	</div>
+						            </td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("quotes-delete", $all_permission))
+								                <input type="checkbox" value="1" id="quotes-delete" name="quotes-delete" checked>
+								                @else
+								                <input type="checkbox" value="1" id="quotes-delete" name="quotes-delete">
+								                @endif
+								                <label for="quotes-delete"></label>
+								            </div>
+						            	</div>
+						            </td>
+									<td class="text-center">
+						                <div class="icheckbox_square-blue" aria-checked="false" aria-disabled="false">
+						            	</div>
+						            </td>
+						        </tr>
+
+								<tr class="transfer-row">
+									<td>Transfer</td>
+									@foreach ($permissions as $perm)
+										@php $key = "transfers-{$perm}"; @endphp
+										<td class="text-center">
+											<div class="checkbox icheckbox_square-blue">
+												<input type="checkbox"
+													value="1"
+													id="{{ $key }}"
+													name="{{ $key }}"
+													{{ in_array($key, $all_permission) ? 'checked' : '' }}>
+												<label for="{{ $key }}"></label>
+											</div>
+										</td>
+									@endforeach
+								</tr>
+
+
+						        <tr class="sale-return-row">
+						            <td>Sale Return</td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("returns-index", $all_permission))
+								                <input type="checkbox" value="1" id="returns-index" name="returns-index" checked>
+								                @else
+								                <input type="checkbox" value="1" id="returns-index" name="returns-index">
+								                @endif
+								                <label for="returns-index"></label>
+								            </div>
+						            	</div>
+						            </td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("returns-add", $all_permission))
+								                <input type="checkbox" value="1" id="returns-add" name="returns-add" checked>
+								                @else
+								                <input type="checkbox" value="1" id="returns-add" name="returns-add">
+								                @endif
+								                <label for="returns-add"></label>
+							                </div>
+							            </div>
+						            </td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("returns-edit", $all_permission))
+								                <input type="checkbox" value="1" id="returns-edit" name="returns-edit" checked>
+								                @else
+								                <input type="checkbox" value="1" id="returns-edit" name="returns-edit">
+								                @endif
+								                <label for="returns-edit"></label>
+								            </div>
+						            	</div>
+						            </td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("returns-delete", $all_permission))
+								                <input type="checkbox" value="1" id="returns-delete" name="returns-delete" checked>
+								                @else
+								                <input type="checkbox" value="1" id="returns-delete" name="returns-delete">
+								                @endif
+								                <label for="returns-delete"></label>
+								            </div>
+						            	</div>
+						            </td>
+									<td class="text-center">
+						                <div class="icheckbox_square-blue" aria-checked="false" aria-disabled="false">
+						            	</div>
+						            </td>
+						        </tr>
+
+						        <tr class="purchase-return-row">
+						            <td>Purchase Return</td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("purchase-return-index", $all_permission))
+								                <input type="checkbox" value="1" id="purchase-return-index" name="purchase-return-index" checked>
+								                @else
+								                <input type="checkbox" value="1" id="purchase-return-index" name="purchase-return-index">
+								                @endif
+								                <label for="purchase-return-index"></label>
+								            </div>
+						            	</div>
+						            </td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("purchase-return-add", $all_permission))
+								                <input type="checkbox" value="1" id="purchase-return-add" name="purchase-return-add" checked>
+								                @else
+								                <input type="checkbox" value="1" id="purchase-return-add" name="purchase-return-add">
+								                @endif
+								                <label for="purchase-return-add"></label>
+								            </div>
+						                </div>
+						            </td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("purchase-return-edit", $all_permission))
+								                <input type="checkbox" value="1" id="purchase-return-edit" name="purchase-return-edit" checked>
+								                @else
+								                <input type="checkbox" value="1" id="purchase-return-edit" name="purchase-return-edit">
+								                @endif
+								                <label for="purchase-return-edit"></label>
+								            </div>
+						            	</div>
+						            </td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue" aria-checked="false" aria-disabled="false">
+						                	<div class="checkbox">
+								                @if(in_array("purchase-return-delete", $all_permission))
+								                <input type="checkbox" value="1" id="purchase-return-delete" name="purchase-return-delete" checked>
+								                @else
+								                <input type="checkbox" value="1" id="purchase-return-delete" name="purchase-return-delete">
+								                @endif
+								                <label for="purchase-return-delete"></label>
+								            </div>
+						            	</div>
+						            </td>
+									<td class="text-center">
+						                <div class="icheckbox_square-blue" aria-checked="false" aria-disabled="false">
+						            	</div>
+						            </td>
+						        </tr>
+						        <tr class="employee-row">
+						            <td>Employee</td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue checked" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("employees-index", $all_permission))
+								                <input type="checkbox" value="1" id="employees-index" name="employees-index" checked>
+								                @else
+								                <input type="checkbox" value="1" id="employees-index" name="employees-index">
+								                @endif
+								                <label for="employees-index"></label>
+								            </div>
+						            	</div>
+						            </td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue checked" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("employees-add", $all_permission))
+								                <input type="checkbox" value="1" id="employees-add" name="employees-add" checked>
+								                @else
+								                <input type="checkbox" value="1" id="employees-add" name="employees-add">
+								                @endif
+								                <label for="employees-add"></label>
+								            </div>
+						            	</div>
+						            </td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue checked" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("employees-edit", $all_permission))
+								                <input type="checkbox" value="1" id="employees-edit" name="employees-edit" checked>
+								                @else
+								                <input type="checkbox" value="1" id="employees-edit" name="employees-edit">
+								                @endif
+								                <label for="employees-edit"></label>
+								            </div>
+						            	</div>
+						            </td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("employees-delete", $all_permission))
+								                <input type="checkbox" value="1" id="employees-delete" name="employees-delete" checked>
+								                @else
+								                <input type="checkbox" value="1" id="employees-delete" name="employees-delete">
+								                @endif
+								                <label for="employees-delete"></label>
+								            </div>
+						            	</div>
+						            </td>
+									<td class="text-center">
+						                <div class="icheckbox_square-blue" aria-checked="false" aria-disabled="false">
+						            	</div>
+						            </td>
+						        </tr>
+						        <tr>
+						            <td>User</td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue checked" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("users-index", $all_permission))
+								                <input type="checkbox" value="1" id="users-index" name="users-index" checked>
+								                @else
+								                <input type="checkbox" value="1" id="users-index" name="users-index">
+								                @endif
+								                <label for="users-index"></label>
+								            </div>
+						            	</div>
+						            </td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue checked" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("users-add", $all_permission))
+								                <input type="checkbox" value="1" id="users-add" name="users-add" checked>
+								                @else
+								                <input type="checkbox" value="1" id="users-add" name="users-add">
+								                @endif
+								                <label for="users-add"></label>
+								            </div>
+						            	</div>
+						            </td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue checked" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("users-edit", $all_permission))
+								                <input type="checkbox" value="1" id="users-edit" name="users-edit" checked>
+								                @else
+								                <input type="checkbox" value="1" id="users-edit" name="users-edit">
+								                @endif
+								                <label for="users-edit"></label>
+								            </div>
+						            	</div>
+						            </td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("users-delete", $all_permission))
+								                <input type="checkbox" value="1" id="users-delete" name="users-delete" checked>
+								                @else
+								                <input type="checkbox" value="1" id="users-delete" name="users-delete">
+								                @endif
+								                <label for="users-delete"></label>
+								            </div>
+						            	</div>
+						            </td>
+									<td class="text-center">
+						                <div class="icheckbox_square-blue" aria-checked="false" aria-disabled="false">
+						            	</div>
+						            </td>
+						        </tr>
+
+								<tr>
+									<td>customer</td>
+									@foreach ($permissions as $perm)
+										@php $key = "customers-{$perm}"; @endphp
+										<td class="text-center">
+											<div class="checkbox icheckbox_square-blue">
+												<input type="checkbox"
+													value="1"
+													id="{{ $key }}"
+													name="{{ $key }}"
+													{{ in_array($key, $all_permission) ? 'checked' : '' }}>
+												<label for="{{ $key }}"></label>
+											</div>
+										</td>
+									@endforeach
+								</tr>
+
+								<tr>
+									<td>Biller</td>
+									@foreach ($permissions as $perm)
+										@php $key = "billers-{$perm}"; @endphp
+										<td class="text-center">
+											<div class="checkbox icheckbox_square-blue">
+												<input type="checkbox"
+													value="1"
+													id="{{ $key }}"
+													name="{{ $key }}"
+													{{ in_array($key, $all_permission) ? 'checked' : '' }}>
+												<label for="{{ $key }}"></label>
+											</div>
+										</td>
+									@endforeach
+								</tr>
+
+								<tr>
+									<td>Supplier</td>
+									@foreach ($permissions as $perm)
+										@php $key = "suppliers-{$perm}"; @endphp
+										<td class="text-center">
+											<div class="checkbox icheckbox_square-blue">
+												<input type="checkbox"
+													value="1"
+													id="{{ $key }}"
+													name="{{ $key }}"
+													{{ in_array($key, $all_permission) ? 'checked' : '' }}>
+												<label for="{{ $key }}"></label>
+											</div>
+										</td>
+									@endforeach
+								</tr>
+
+								{{-- import sidebar permissions data --}}
+								@php
+									$permissions_data = include(resource_path('views/backend/role/permission_data.php'));
+									$sidebar_permissions = $permissions_data['sidebar_permissions'];
+								@endphp
+								<tr>
+						            <td>Sidebar</td>
+						            <td class="report-permissions" colspan="5">
+										@foreach($sidebar_permissions as $key => $label)
+											<span>
+												<div aria-checked="false" aria-disabled="false">
+													<div class="checkbox">
+														@if(in_array($key, $all_permission))
+															<input type="checkbox" value="1" id={{$key}} name={{$key}} checked>
+														@else
+															<input type="checkbox" value="1" id={{$key}} name={{$key}}>
+														@endif
+														<label for={{$key}} class="padding05">{{$label}} &nbsp;&nbsp;</label>
+													</div>
+												</div>
+											</span>
+										@endforeach
+									</td>
+								</tr>
+
+						        <tr>
+						            <td>dashboard</td>
+						            <td class="report-permissions" colspan="5">
+						            	<span>
+								            <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("revenue_profit_summary", $all_permission))
+							                    	<input type="checkbox" value="1" id="revenue_profit_summary" name="revenue_profit_summary" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="revenue_profit_summary" name="revenue_profit_summary">
+							                    	@endif
+								                    <label for="revenue_profit_summary" class="padding05">Revenue and Profit Summary &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						            	</span>
+						            	<span>
+						            		<div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("cash_flow", $all_permission))
+							                    	<input type="checkbox" value="1" id="cash_flow" name="cash_flow" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="cash_flow" name="cash_flow">
+							                    	@endif
+								                    <label for="cash_flow" class="padding05">Cash Flow &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						            	</span>
+						            	<span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("monthly_summary", $all_permission))
+							                    	<input type="checkbox" value="1" id="monthly_summary" name="monthly_summary" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="monthly_summary" name="monthly_summary">
+							                    	@endif
+								                    <label for="monthly_summary" class="padding05">Monthly Summary &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("yearly_report", $all_permission))
+							                    	<input type="checkbox" value="1" id="yearly_report" name="yearly_report" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="yearly_report" name="yearly_report">
+							                    	@endif
+								                    <label for="yearly_report" class="padding05">yearly report &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						            </td>
+						        </tr>
+								<tr>
+						            <td>POS</td>
+						            <td class="report-permissions" colspan="5">
+										<span>
+								            <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("cart-product-update", $all_permission))
+							                    	<input type="checkbox" value="1" id="cart-product-update" name="cart-product-update" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="cart-product-update" name="cart-product-update">
+							                    	@endif
+								                    <label for="cart-product-update" class="padding05">Cart Product Update &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						            	</span>
+						            	<span>
+								            <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("handle_discount", $all_permission))
+							                    	<input type="checkbox" value="1" id="handle_discount" name="handle_discount" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="handle_discount" name="handle_discount">
+							                    	@endif
+								                    <label for="handle_discount" class="padding05">Handle Discount &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						            	</span>
+						            </td>
+						        </tr>
+								<tr>
+									<td>Exports</td>
+									<td class="report-permissions" colspan="5">
+										<span>
+								            <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("product_export", $all_permission))
+							                    	<input type="checkbox" value="1" id="product_export" name="product_export" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="product_export" name="product_export">
+							                    	@endif
+								                    <label for="product_export" class="padding05">Product Export &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						            	</span>
+										<span>
+								            <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("purchase_export", $all_permission))
+							                    	<input type="checkbox" value="1" id="purchase_export" name="purchase_export" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="purchase_export" name="purchase_export">
+							                    	@endif
+								                    <label for="purchase_export" class="padding05">Purchase Export &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						            	</span>
+										<span>
+								            <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("sale_export", $all_permission))
+							                    	<input type="checkbox" value="1" id="sale_export" name="sale_export" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="sale_export" name="sale_export">
+							                    	@endif
+								                    <label for="sale_export" class="padding05">Sale Export &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						            	</span>
+										<span>
+								            <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("customer_export", $all_permission))
+							                    	<input type="checkbox" value="1" id="customer_export" name="customer_export" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="customer_export" name="customer_export">
+							                    	@endif
+								                    <label for="customer_export" class="padding05">Customer Export &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						            	</span>
+									</td>
+								</tr>
+						      	<tr class="accounting-row">
+						            <td>Accounting</td>
+						            <td class="report-permissions" colspan="5">
+						            	<span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("account-index", $all_permission))
+							                    	<input type="checkbox" value="1" id="account-index" name="account-index" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="account-index" name="account-index">
+							                    	@endif
+								                    <label for="account-index" class="padding05">Account &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("money-transfer", $all_permission))
+							                    	<input type="checkbox" value="1" id="money-transfer" name="money-transfer" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="money-transfer" name="money-transfer">
+							                    	@endif
+								                    <label for="money-transfer" class="padding05">Money Transfer &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("balance-sheet", $all_permission))
+							                    	<input type="checkbox" value="1" id="balance-sheet" name="balance-sheet" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="balance-sheet" name="balance-sheet">
+							                    	@endif
+								                    <label for="balance-sheet" class="padding05">Balance Sheet &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+						                    	<div class="checkbox">
+							                    	@if(in_array("account-statement", $all_permission))
+							                    	<input type="checkbox" value="1" id="account-statement-permission" name="account-statement" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="account-statement-permission" name="account-statement">
+							                    	@endif
+								                    <label for="account-statement-permission" class="padding05">Account Statement &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+										<span>
+						                    <div aria-checked="false" aria-disabled="false">
+						                    	<div class="checkbox">
+							                    	@if(in_array("account-selection", $all_permission))
+							                    	<input type="checkbox" value="1" id="account-selection-permission" name="account-selection" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="account-selection-permission" name="account-selection">
+							                    	@endif
+								                    <label for="account-selection-permission" class="padding05">Account Selection &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						            </td>
+						        </tr>
+						        <tr class="hrm-row">
+						            <td>HRM</td>
+						            <td class="report-permissions" colspan="5">
+
+
+										{{-- hrm report profile --}}
+										<span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("hrm-panel", $all_permission))
+							                    	<input type="checkbox" value="1" id="hrm-panel" name="hrm-panel" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="hrm-panel" name="hrm-panel">
+							                    	@endif
+								                    <label for="hrm-panel" class="padding05">HRM Panel &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+
+                                        {{-- hrm report profile  --}}
+										<span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("sale-agents", $all_permission))
+							                    	<input type="checkbox" value="1" id="sale-agents" name="sale-agents" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="sale-agents" name="sale-agents">
+							                    	@endif
+								                    <label for="sale-agents" class="padding05">Sale Agents &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+
+                                        {{-- department --}}
+						            	<span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("department", $all_permission))
+							                    	<input type="checkbox" value="1" id="department" name="department" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="department" name="department">
+							                    	@endif
+								                    <label for="department" class="padding05">Department &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+
+                                        {{-- designation --}}
+                                        <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("designations", $all_permission))
+							                    	<input type="checkbox" value="1" id="designations" name="designations" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="designations" name="designations">
+							                    	@endif
+								                    <label for="designations" class="padding05">Designations &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+
+                                        {{-- Shift --}}
+                                        <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("shift", $all_permission))
+							                    	<input type="checkbox" value="1" id="shift" name="shift" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="shift" name="shift">
+							                    	@endif
+								                    <label for="shift" class="padding05">Shift &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+
+                                        {{-- Overtime --}}
+                                        <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("overtime", $all_permission))
+							                    	<input type="checkbox" value="1" id="overtime" name="overtime" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="overtime" name="overtime">
+							                    	@endif
+								                    <label for="overtime" class="padding05">Overtime &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+
+                                        {{-- leave type --}}
+                                        <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("leave-type", $all_permission))
+							                    	<input type="checkbox" value="1" id="leave-type" name="leave-type" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="leave-type" name="leave-type">
+							                    	@endif
+								                    <label for="leave-type" class="padding05">Leave Type</label>
+								                </div>
+								            </div>
+						                </span>
+
+                                        {{-- leave --}}
+                                        <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("leave", $all_permission))
+							                    	<input type="checkbox" value="1" id="leave" name="leave" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="leave" name="leave">
+							                    	@endif
+								                    <label for="leave" class="padding05">Leave</label>
+								                </div>
+								            </div>
+						                </span>
+
+
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("attendance", $all_permission))
+							                    	<input type="checkbox" value="1" id="attendance" name="attendance" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="attendance" name="attendance">
+							                    	@endif
+								                    <label for="attendance" class="padding05">Attendance &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("payroll", $all_permission))
+							                    	<input type="checkbox" value="1" id="payroll" name="payroll" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="payroll" name="payroll">
+							                    	@endif
+								                    <label for="payroll" class="padding05">Payroll &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("holiday", $all_permission))
+							                    	<input type="checkbox" value="1" id="holiday" name="holiday" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="holiday" name="holiday">
+							                    	@endif
+								                    <label for="holiday" class="padding05">Holiday Approve &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						            </td>
+						        </tr>
+						        <tr class="report-row">
+						            <td>Reports</td>
+						            <td class="report-permissions" colspan="5">
+						            	<span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("profit-loss", $all_permission))
+							                    	<input type="checkbox" value="1" id="profit-loss" name="profit-loss" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="profit-loss" name="profit-loss">
+							                    	@endif
+								                    <label for="profit-loss" class="padding05">Summary Report &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("best-seller", $all_permission))
+							                    	<input type="checkbox" value="1" id="best-seller" name="best-seller" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="best-seller" name="best-seller">
+							                    	@endif
+								                    <label for="best-seller" class="padding05">Best Seller &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("daily-sale", $all_permission))
+							                    	<input type="checkbox" value="1" id="daily-sale" name="daily-sale" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="daily-sale" name="daily-sale">
+							                    	@endif
+								                    <label for="daily-sale" class="padding05">Daily Sale &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("monthly-sale", $all_permission))
+							                    	<input type="checkbox" value="1" id="monthly-sale" name="monthly-sale" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="monthly-sale" name="monthly-sale">
+							                    	@endif
+								                    <label for="monthly-sale" class="padding05">Monthly Sale &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("daily-purchase", $all_permission))
+							                    	<input type="checkbox" value="1" id="daily-purchase" name="daily-purchase" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="daily-purchase" name="daily-purchase">
+							                    	@endif
+								                    <label for="daily-purchase" class="padding05">Daily Purchase &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+						                    	<div class="checkbox">
+							                    	@if(in_array("monthly-purchase", $all_permission))
+							                    	<input type="checkbox" value="1" id="monthly-purchase" name="monthly-purchase" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="monthly-purchase" name="monthly-purchase">
+							                    	@endif
+								                    <label for="monthly-purchase" class="padding05">Monthly Purchase &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("product-report", $all_permission))
+							                    	<input type="checkbox" value="1" id="product-report" name="product-report" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="product-report" name="product-report">
+							                    	@endif
+								                    <label for="product-report" class="padding05">Product Report &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("payment-report", $all_permission))
+							                    	<input type="checkbox" value="1" id="payment-report" name="payment-report" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="payment-report" name="payment-report">
+							                    	@endif
+								                    <label for="payment-report" class="padding05">Payment Report &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("purchase-report", $all_permission))
+							                    	<input type="checkbox" value="1" id="purchase-report" name="purchase-report" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="purchase-report" name="purchase-report">
+							                    	@endif
+								                    <label for="purchase-report" class="padding05"> Purchase Report &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("sale-report", $all_permission))
+							                    	<input type="checkbox" value="1" id="sale-report" name="sale-report" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="sale-report" name="sale-report">
+							                    	@endif
+								                    <label for="sale-report" class="padding05">Sale Report &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("challan-report", $all_permission))
+							                    	<input type="checkbox" value="1" id="challan-report" name="challan-report" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="challan-report" name="challan-report">
+							                    	@endif
+								                    <label for="challan-report" class="padding05">Challan Report &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("sale-report-chart", $all_permission))
+							                    	<input type="checkbox" value="1" id="sale-report-chart" name="sale-report-chart" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="sale-report-chart" name="sale-report-chart">
+							                    	@endif
+								                    <label for="sale-report-chart" class="padding05">Sale Report Chart &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+						                    	<div class="checkbox">
+							                    	@if(in_array("warehouse-report", $all_permission))
+							                    	<input type="checkbox" value="1" id="warehouse-report" name="warehouse-report" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="warehouse-report" name="warehouse-report">
+							                    	@endif
+								                    <label for="warehouse-report" class="padding05">Warehouse Report &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+						                    	<div class="checkbox">
+							                    	@if(in_array("warehouse-stock-report", $all_permission))
+							                    	<input type="checkbox" value="1" id="warehouse-stock-report" name="warehouse-stock-report" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="warehouse-stock-report" name="warehouse-stock-report">
+							                    	@endif
+								                    <label for="warehouse-stock-report" class="padding05">Warehouse Stock Chart &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+						                    	<div class="checkbox">
+							                    	@if(in_array("product-expiry-report", $all_permission))
+							                    	<input type="checkbox" value="1" id="product-expiry-report" name="product-expiry-report" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="product-expiry-report" name="product-expiry-report">
+							                    	@endif
+													<label for="product-expiry-report" class="padding05">Product Expiry Report &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+								        </span>
+								        <span>
+						                    <div aria-checked="false" aria-disabled="false">
+						                    	<div class="checkbox">
+							                    	@if(in_array("dso-report", $all_permission))
+							                    	<input type="checkbox" value="1" id="dso-report" name="dso-report" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="dso-report" name="dso-report">
+							                    	@endif
+													<label for="dso-report" class="padding05">Daily Sale Objective Report &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+								        </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+						                    	<div class="checkbox">
+							                    	@if(in_array("product-qty-alert", $all_permission))
+							                    	<input type="checkbox" value="1" id="product-qty-alert" name="product-qty-alert" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="product-qty-alert" name="product-qty-alert">
+							                    	@endif
+													<label for="product-qty-alert" class="padding05">Product Quantity Alert &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+								        </span>
+								        <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("user-report", $all_permission))
+							                    	<input type="checkbox" value="1" id="user-report" name="user-report" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="user-report" name="user-report">
+							                    	@endif
+								                    <label for="user-report" class="padding05">User Report &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+										<span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("biller-report", $all_permission))
+							                    	<input type="checkbox" value="1" id="biller-report" name="biller-report" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="biller-report" name="biller-report">
+							                    	@endif
+								                    <label for="biller-report" class="padding05">Biller Report &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("customer-report", $all_permission))
+							                    	<input type="checkbox" value="1" id="customer-report" name="customer-report" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="customer-report" name="customer-report">
+							                    	@endif
+								                    <label for="customer-report" class="padding05">Customer Report &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("supplier-report", $all_permission))
+							                    	<input type="checkbox" value="1" id="supplier-report" name="supplier-report" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="supplier-report" name="supplier-report">
+							                    	@endif
+								                    <label for="supplier-report" class="padding05">Supplier Report &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("supplier-due-report", $all_permission))
+							                    	<input type="checkbox" value="1" id="supplier-due-report" name="supplier-due-report" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="supplier-due-report" name="supplier-due-report">
+							                    	@endif
+								                    <label for="supplier-due-report" class="padding05">Supplier Due Report &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("due-report", $all_permission))
+							                    	<input type="checkbox" value="1" id="due-report" name="due-report" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="due-report" name="due-report">
+							                    	@endif
+								                    <label for="due-report" class="padding05">Customer Due Report &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						            </td>
+						        </tr>
+								<tr class="addon-row">
+									<td>Addonds</td>
+									<td class="addons">
+										<span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("addons", $all_permission))
+							                    	<input type="checkbox" value="1" id="addons" name="addons" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="addons" name="addons">
+							                    	@endif
+								                    <label for="addons" class="padding05">Addons &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+									</td>
+								</tr>
+						        <tr>
+						            <td>settings</td>
+						            <td class="report-permissions" colspan="5">
+						            	<span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("custom_field", $all_permission))
+							                    	<input type="checkbox" value="1" id="custom_field" name="custom_field" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="custom_field" name="custom_field">
+							                    	@endif
+								                    <label for="custom_field" class="padding05">Custom Field &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						            	<span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("all_notification", $all_permission))
+							                    	<input type="checkbox" value="1" id="all_notification" name="all_notification" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="all_notification" name="all_notification">
+							                    	@endif
+								                    <label for="all_notification" class="padding05">All Notification &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						            	<span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("send_notification", $all_permission))
+							                    	<input type="checkbox" value="1" id="send_notification" name="send_notification" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="send_notification" name="send_notification">
+							                    	@endif
+								                    <label for="send_notification" class="padding05">Send Notification &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("discount_plan", $all_permission))
+							                    	<input type="checkbox" value="1" id="discount_plan" name="discount_plan" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="discount_plan" name="discount_plan">
+							                    	@endif
+								                    <label for="discount_plan" class="padding05">Discount Plan &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("discount", $all_permission))
+							                    	<input type="checkbox" value="1" id="discount" name="discount" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="discount" name="discount">
+							                    	@endif
+								                    <label for="discount" class="padding05">Discount &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						            	<span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("warehouse", $all_permission))
+							                    	<input type="checkbox" value="1" id="warehouse" name="warehouse" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="warehouse" name="warehouse">
+							                    	@endif
+								                    <label for="warehouse" class="padding05">Warehouse &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						            	<span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("customer_group", $all_permission))
+							                    	<input type="checkbox" value="1" id="customer_group" name="customer_group" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="customer_group" name="customer_group">
+							                    	@endif
+								                    <label for="customer_group" class="padding05">Customer Group &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						             
+						                <span>
+								            <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("currency", $all_permission))
+							                    	<input type="checkbox" value="1" id="currency" name="currency" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="currency" name="currency">
+							                    	@endif
+								                    <label for="currency" class="padding05">Currency &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+								            <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("tax", $all_permission))
+							                    	<input type="checkbox" value="1" id="tax" name="tax" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="tax" name="tax">
+							                    	@endif
+								                    <label for="tax" class="padding05">Tax &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("backup_database", $all_permission))
+							                    	<input type="checkbox" value="1" id="backup_database" name="backup_database" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="backup_database" name="backup_database">
+							                    	@endif
+								                    <label for="backup_database" class="padding05">Backup Database &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						            	<span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("general_setting", $all_permission))
+							                    	<input type="checkbox" value="1" id="general_setting" name="general_setting" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="general_setting" name="general_setting">
+							                    	@endif
+								                    <label for="general_setting" class="padding05">General Setting &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("mail_setting", $all_permission))
+							                    	<input type="checkbox" value="1" id="mail_setting" name="mail_setting" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="mail_setting" name="mail_setting">
+							                    	@endif
+								                    <label for="mail_setting" class="padding05">Mail Setting &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("payment_gateway_setting", $all_permission))
+							                    	<input type="checkbox" value="1" id="payment_gateway_setting" name="payment_gateway_setting" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="payment_gateway_setting" name="payment_gateway_setting">
+							                    	@endif
+								                    <label for="payment_gateway_setting" class="padding05">Payment Gateway &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("sms_setting", $all_permission))
+							                    	<input type="checkbox" value="1" id="sms_setting" name="sms_setting" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="sms_setting" name="sms_setting">
+							                    	@endif
+								                    <label for="sms_setting" class="padding05">SMS Setting &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("create_sms", $all_permission))
+							                    	<input type="checkbox" value="1" id="create_sms" name="create_sms" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="create_sms" name="create_sms">
+							                    	@endif
+								                    <label for="create_sms" class="padding05">Create SMS &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("pos_setting", $all_permission))
+							                    	<input type="checkbox" value="1" id="pos_setting" name="pos_setting" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="pos_setting" name="pos_setting">
+							                    	@endif
+								                    <label for="pos_setting" class="padding05">POS Setting &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span class="hrm-setting-section">
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("hrm_setting", $all_permission))
+							                    	<input type="checkbox" value="1" id="hrm_setting" name="hrm_setting" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="hrm_setting" name="hrm_setting">
+							                    	@endif
+								                    <label for="hrm_setting" class="padding05">HRM Setting &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span class="barcode_setting">
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("barcode_setting", $all_permission))
+							                    	<input type="checkbox" value="1" id="barcode_setting" name="barcode_setting" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="barcode_setting" name="barcode_setting">
+							                    	@endif
+								                    <label for="barcode_setting" class="padding05">Barcode &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span class="language_setting">
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("language_setting", $all_permission))
+							                    	<input type="checkbox" value="1" id="language_setting" name="language_setting" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="language_setting" name="language_setting">
+							                    	@endif
+								                    <label for="language_setting" class="padding05">Language &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("reward_point_setting", $all_permission))
+							                    	<input type="checkbox" value="1" id="reward_point_setting" name="reward_point_setting" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="reward_point_setting" name="reward_point_setting">
+							                    	@endif
+								                    <label for="reward_point_setting" class="padding05">Reward Point Setting &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("invoice_setting", $all_permission))
+							                    	<input type="checkbox" value="1" id="invoice_setting" name="invoice_setting" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="invoice_setting" name="invoice_setting">
+							                    	@endif
+								                    <label for="invoice_setting" class="padding05">Invoice Settings &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("invoice_create_edit_delete", $all_permission))
+							                    	<input type="checkbox" value="1" id="invoice_create_edit_delete" name="invoice_create_edit_delete" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="invoice_create_edit_delete" name="invoice_create_edit_delete">
+							                    	@endif
+								                    <label for="invoice_create_edit_delete" class="padding05">Invoice Settings Create/Edit/Delete &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+                                        <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("role_permission", $all_permission))
+							                    	<input type="checkbox" value="1" id="role_permission" name="role_permission" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="role_permission" name="role_permission">
+							                    	@endif
+								                    <label for="role_permission" class="padding05">Role Permission &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+                                        <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("sms_template", $all_permission))
+							                    	<input type="checkbox" value="1" id="sms_template" name="sms_template" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="sms_template" name="sms_template">
+							                    	@endif
+								                    <label for="sms_template" class="padding05">SMS Template &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						            </td>
+						        </tr>
+						        <tr>
+						            <td>Miscellaneous</td>
+						            <td class="report-permissions" colspan="5">
+						            	<span>
+								            <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("category", $all_permission))
+							                    	<input type="checkbox" value="1" id="category" name="category" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="category" name="category">
+							                    	@endif
+								                    <label for="category" class="padding05">category &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						            	</span>
+                                        <span class="packing-slip-challan-section">
+						            		<div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("packing_slip_challan", $all_permission))
+							                    	<input type="checkbox" value="1" id="packing_slip_challan" name="packing_slip_challan" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="packing_slip_challan" name="packing_slip_challan">
+							                    	@endif
+								                    <label for="packing_slip_challan" class="padding05">Packing Slip & Challan &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						            	</span>
+						            	<span class="delivery-section">
+						            		<div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("delivery", $all_permission))
+							                    	<input type="checkbox" value="1" id="delivery" name="delivery" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="delivery" name="delivery">
+							                    	@endif
+								                    <label for="delivery" class="padding05">Delivery &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						            	</span>
+						            	<span class="stock-count-section">
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("stock_count", $all_permission))
+							                    	<input type="checkbox" value="1" id="stock_count" name="stock_count" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="stock_count" name="stock_count">
+							                    	@endif
+								                    <label for="stock_count" class="padding05">Stock Count &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span class="adjustment-section">
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("adjustment", $all_permission))
+							                    	<input type="checkbox" value="1" id="adjustment" name="adjustment" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="adjustment" name="adjustment">
+							                    	@endif
+								                    <label for="adjustment" class="padding05">Adjustment &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("gift_card", $all_permission))
+							                    	<input type="checkbox" value="1" id="gift_card" name="gift_card" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="gift_card" name="gift_card">
+							                    	@endif
+								                    <label for="gift_card" class="padding05">Gift Card &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("coupon", $all_permission))
+							                    	<input type="checkbox" value="1" id="coupon" name="coupon" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="coupon" name="coupon">
+							                    	@endif
+								                    <label for="coupon" class="padding05">Coupon &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("product_history", $all_permission))
+							                    	<input type="checkbox" value="1" id="product_history" name="product_history" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="product_history" name="product_history">
+							                    	@endif
+								                    <label for="product_history" class="padding05">Product History &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("print_barcode", $all_permission))
+							                    	<input type="checkbox" value="1" id="print_barcode" name="print_barcode" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="print_barcode" name="print_barcode">
+							                    	@endif
+								                    <label for="print_barcode" class="padding05">print_barcode &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("empty_database", $all_permission))
+							                    	<input type="checkbox" value="1" id="empty_database" name="empty_database" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="empty_database" name="empty_database">
+							                    	@endif
+								                    <label for="empty_database" class="padding05">Empty Database &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("today_sale", $all_permission))
+							                    	<input type="checkbox" value="1" id="today_sale" name="today_sale" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="today_sale" name="today_sale">
+							                    	@endif
+								                    <label for="today_sale" class="padding05">Today Sale &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("today_profit", $all_permission))
+							                    	<input type="checkbox" value="1" id="today_profit" name="today_profit" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="today_profit" name="today_profit">
+							                    	@endif
+								                    <label for="today_profit" class="padding05">Today Profit &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						                <span>
+						                    <div aria-checked="false" aria-disabled="false">
+								                <div class="checkbox">
+							                    	@if(in_array("change_sale_date", $all_permission))
+							                    	<input type="checkbox" value="1" id="change_sale_date" name="change_sale_date" checked>
+							                    	@else
+							                    	<input type="checkbox" value="1" id="change_sale_date" name="change_sale_date">
+							                    	@endif
+								                    <label for="change_sale_date" class="padding05">Change Sale Date &nbsp;&nbsp;</label>
+								                </div>
+								            </div>
+						                </span>
+						            </td>
+						        </tr>
+						        </tbody>
+						    </table>
+						</div>
+						<div class="form-group">
+	                        <input type="submit" value="submit" class="btn btn-primary">
+	                    </div>
+                    </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
+
+@endsection
 
 @push('scripts')
-<script>
-    $(document).ready(function() {
-        $('#submitBtn').on('click', function() {
-            const btn = $(this);
-            const originalText = btn.html();
-            
-            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Saving...');
+<script type="text/javascript">
 
-            $.ajax({
-                url: $('#permissionsForm').attr('action'),
-                type: 'POST',
-                data: $('#permissionsForm').serialize(),
-                success: function(response) {
-                    if (response.success) {
-                        // Use SweetAlert or Toastr if available, otherwise native alert
-                        alert('Permissions updated successfully!');
-                        window.location.href = "{{ route('admin.roles_permissions.index') }}";
-                    } else {
-                        alert(response.message || 'Error updating permissions.');
-                        btn.prop('disabled', false).html(originalText);
-                    }
-                },
-                error: function(xhr) {
-                    alert('An error occurred. Please try again.');
-                    console.error(xhr);
-                    btn.prop('disabled', false).html(originalText);
-                }
-            });
+	$("ul#setting").siblings('a').attr('aria-expanded','true');
+    $("ul#setting").addClass("show");
+    $("ul#setting #role-menu").addClass("active");
+
+    function updatePermissionCounts() {
+        var total = $('tbody input[type="checkbox"]').length;
+        var checked = $('tbody input[type="checkbox"]:checked').length;
+        $('#total-permissions').text(total);
+        $('#active-permissions').text(checked);
+
+        // Update styling: Red border for unchecked items
+        $('tbody input[type="checkbox"]').each(function() {
+            var $parentDiv = $(this).closest('.icheckbox_square-blue');
+            // If closest div not found, might be a different structure or label wrapper, try parent
+            if ($parentDiv.length === 0) $parentDiv = $(this).parent();
+
+            if ($(this).is(':checked')) {
+                $parentDiv.css('border', 'none');
+            } else {
+                $parentDiv.css({
+                    'border': '1px solid red',
+                    'border-radius': '2px',
+					'margin-bottom': '5px'
+                });
+            }
         });
+    }
+
+    updatePermissionCounts();
+
+    $('tbody input[type="checkbox"]').on('change', function() {
+        updatePermissionCounts();
     });
+    
+    // Hook into iCheck events if available (common for this theme)
+    $('input[type="checkbox"]').on('ifToggled', function(event){
+        setTimeout(updatePermissionCounts, 50); // Small delay to let iCheck update DOM
+    });
+
+	$("#select_all").on( "change", function() {
+	    if ($(this).is(':checked')) {
+            $("tbody input[type='checkbox']").prop('checked', true);
+            // If iCheck is used, we might need to update it manually or trigger change
+            if(typeof $.fn.iCheck !== 'undefined') {
+                 $("tbody input[type='checkbox']").iCheck('check');
+            }
+	    }
+	    else {
+            $("tbody input[type='checkbox']").prop('checked', false);
+             if(typeof $.fn.iCheck !== 'undefined') {
+                 $("tbody input[type='checkbox']").iCheck('uncheck');
+            }
+	    }
+        updatePermissionCounts();
+	});
 </script>
 @endpush
-@endsection

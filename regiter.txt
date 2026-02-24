@@ -29,3 +29,24 @@ Role type
 2=Owner
 3=Staff
 4=Customer
+
+
+
+
+
+Extra Tables
+blogs
+collections
+ecommerce_settings
+links
+menu_items
+menus
+newsletter
+page_widgets
+pages
+sliders
+social_links
+tables
+widgets
+woocommerce_settings
+woocommerce_sync_logs

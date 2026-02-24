@@ -239,7 +239,8 @@
                                         <select name="tax_id" class="selectpicker form-control" style="width: 100px">
                                             <option value="">No Tax</option>
                                             @foreach($lims_tax_list as $tax)
-                                                <option value="{{$tax->id}}">{{$tax->name}}</option>
+                                                <!-- <option value="{{$tax->id}}">{{$tax->name}}</option> -->
+                                                <option value="{{$tax->id}}" data-rate="{{$tax->rate}}">{{$tax->name}}</option>
                                             @endforeach
                                         </select>
                                         <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#addTax"><i class="dripicons-plus"></i></button>
@@ -1889,39 +1890,83 @@
 </script>
 
 <script>
-$(document).on('click', '#create_unit', function (e) {
-    e.preventDefault();
+    $(document).on('click', '#create_unit', function (e) {
+        e.preventDefault();
 
-    let form = $(this).closest('form');
-    let formData = form.serialize();
+        let form = $(this).closest('form');
+        let formData = form.serialize();
 
-    $.ajax({
-        url: form.attr('action'),
-        method: 'POST',
-        data: formData,
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        success: function (response) {
-            if (response.success) {
-                // close modal
-                $('#createUnitModal').modal('hide');
+        $.ajax({
+            url: form.attr('action'),
+            method: 'POST',
+            data: formData,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function (response) {
+                if (response.success) {
+                    // close modal
+                    $('#createUnitModal').modal('hide');
 
-                // clear form
-                form.trigger('reset');
+                    // clear form
+                    form.trigger('reset');
 
-                // append new unit to dropdown (example)
-                if (response.unit) {
-                    $("select[name='unit_id']").append(
-                        `<option value="${response.unit.id}">${response.unit.unit_name}</option>`
-                    ).selectpicker('refresh');
+                    // append new unit to dropdown (example)
+                    if (response.unit) {
+                        $("select[name='unit_id']").append(
+                            `<option value="${response.unit.id}">${response.unit.unit_name}</option>`
+                        ).selectpicker('refresh');
+                    }
+
+                } else {
                 }
-
-            } else {
             }
-        }
+        });
     });
-});
+</script>
+
+<script>
+    $('input[name="cost"], input[name="price"], input[name="wholesale_price"], select[name="tax_id"], select[name="tax_method"]').on('input change',function() {
+        validateProfit();
+    });
+
+    function validateProfit() {
+        var cost = parseFloat($('input[name="cost"]').val()) || 0;
+        var price = parseFloat($('input[name="price"]').val()) || 0;
+        var tax_method = $('select[name="tax_method"]').val(); // 1 = Exclusive, 2 = Inclusive
+        
+        // Get tax rate from the selected option's data-rate attribute
+        var tax_option = $('select[name="tax_id"] option:selected');
+        var tax_rate = parseFloat(tax_option.data('rate')) || 0;
+
+        // If cost is 0, no need to check (or you can alert if cost is required)
+        if (cost === 0) return;
+
+        var net_price = price;
+
+        // If Tax is INCLUSIVE, we must remove the tax to find the actual price you keep
+        // Formula: Net = Price / (1 + Rate/100)
+        if (tax_method == "2") { 
+            net_price = price / (1 + (tax_rate / 100));
+        }
+        // If Tax is EXCLUSIVE, the Price field IS the Net Price you keep
+        // (Customer pays Price + Tax, but you only keep Price)
+        
+        // Check for loss
+        if (net_price < cost) {
+            var loss = (cost - net_price).toFixed(2);
+            
+            // Show error (you can customize this to show a div instead of alert)
+            // Ideally, use the existing warning div structure like this:
+            $('#product-price-warning').removeClass('d-none');
+            $('#product-price-warning').text('Loss Alert: Net sales price (' + net_price.toFixed(2) + ') is less than cost (' + cost + '). Loss: ' + loss);
+            $('input[name="price"]').addClass('is-invalid'); // Add red border
+        } else {
+            // Clear error
+            $('#product-price-warning').addClass('d-none');
+            $('input[name="price"]').removeClass('is-invalid');
+        }
+    }
 </script>
 
 @endpush
